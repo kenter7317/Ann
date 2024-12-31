@@ -1,3 +1,15 @@
+option(ae2f_IS_SHARED "Is a shared library or static one." OFF)
+option(ae2f_DOC "When activated, it would generate project with the deaders of cmake utility functions." OFF)
+option(ae2f_TEST "When activated, it would generate test projects." ON)
+set(ae2f_float float CACHE STRING "Float type for the template.")
+set(ae2f_packcount 0 CACHE STRING "Pack count for pre-defined structures.")
+set(ae2f_LibDirGlob ${CMAKE_CURRENT_SOURCE_DIR}/mod CACHE STRING "A directory where the fetched library would stay.")
+if(ae2f_IS_SHARED)
+    set(ae2f_LIBPREFIX SHARED CACHE STRING "SHARED")
+else()
+    set(ae2f_LIBPREFIX STATIC CACHE STRING "STATIC")
+endif()
+
 # @namespace ___DOC_CMAKE
 # @brief
 # Note they functions defined on CMake, not C/C++.
