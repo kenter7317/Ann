@@ -6,7 +6,7 @@ message(${ae2f_packcount})
 message(${ae2f_LibDirGlob})
 message(${ae2f_LIBPREFIX})
 
-project(Core-Template VERSION 0.2.3 LANGUAGES C CXX)
+project(Core-Template VERSION 1.2.3 LANGUAGES C CXX)
 
 if(NOT TARGET ${PROJECT_NAME})
     message(${PROJECT_NAME})
