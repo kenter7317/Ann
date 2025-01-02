@@ -1,5 +1,5 @@
 # Core-Template
-- Rel-v1.2.4
+- Rel-v1.2.5
 > Template project under https://github.com/ae2f/Core.
 
 # Dependency
