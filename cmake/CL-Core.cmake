@@ -14,7 +14,7 @@ function(ae2fCL_CoreAppendInclude)
         
         foreach(tar IN LISTS INCLUDE_TAR)
             file(RELATIVE_PATH tar_rel "${prm_IncludeDir}" "${tar}")
-            configure_file("${prm_IncludeDir}/${tar_rel}" "${ae2fCL_Core_Dir}/pyinclude/${tar_rel}")
+            configure_file("${prm_IncludeDir}/${tar_rel}" "${ae2f_ProjRoot}/pyinclude/${tar_rel}")
         endforeach()
 
         unset (INCLUDE_TAR)

@@ -2,10 +2,6 @@
 
 namespace ___DOC_CMAKE {
     /// @brief 
-    /// Pre-defined CL-Core's Directory
-    CACHE STRING ae2fCL_Core_Dir;
-
-    /// @brief 
     /// Copies all files under wanted include path to /pyinclude
     ///
     /// @param ...
