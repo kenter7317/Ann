@@ -9,6 +9,7 @@
 - gcc
 - make
 - cmake
+- opencl
 
 # Directory
 > The projects under the template has two possible custom directories.
