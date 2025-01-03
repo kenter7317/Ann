@@ -1,7 +1,12 @@
 include(cmake/Core.cmake)
 
+if(NOT ae2f_clincludecleaned)
+    set(ae2f_clincludecleaned ON CACHE STRING "")
+    file(REMOVE_RECURSE ${ae2f_ProjRoot}/clinclude)
+endif()
+
 # @brief 
-# Copies all files under wanted include path to /pyinclude
+# Copies all files under wanted include path to /clinclude
 # 
 # @param ... 
 # Absolute path where the files will be collected.
@@ -14,7 +19,7 @@ function(ae2fCL_CoreAppendInclude)
         
         foreach(tar IN LISTS INCLUDE_TAR)
             file(RELATIVE_PATH tar_rel "${prm_IncludeDir}" "${tar}")
-            configure_file("${prm_IncludeDir}/${tar_rel}" "${ae2f_ProjRoot}/pyinclude/${tar_rel}")
+            configure_file("${prm_IncludeDir}/${tar_rel}" "${ae2f_ProjRoot}/clinclude/${tar_rel}")
         endforeach()
 
         unset (INCLUDE_TAR)
