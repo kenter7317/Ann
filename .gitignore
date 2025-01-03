@@ -4,3 +4,6 @@ CMakeFiles/*
 build/*
 .vscode/*
 clinclude/*
+
+*.clh
+*.cl
