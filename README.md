@@ -1,8 +1,9 @@
 # CL-Core-Template
-- Rel-v0.0.0
+- Rel-v0.0.1
 > Template project under https://github.com/ae2f/Core.
 
 # See Also
+- ae2f::Core-Template
 
 # Dependency
 - gcc
