@@ -1,6 +1,8 @@
-# Core-Template
-- Rel-v1.2.5
+# CL-Core-Template
+- Rel-v0.0.0
 > Template project under https://github.com/ae2f/Core.
+
+# See Also
 
 # Dependency
 - gcc
@@ -15,3 +17,6 @@
 
 ## submod
 > It could possibly contain the dependency of current project.
+
+## clinclude
+> It could be possibly generated in order to copy all of header files in order to preprocess the cl code.
