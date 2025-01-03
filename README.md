@@ -1,5 +1,5 @@
 # CL-Core-Template
-- Rel-v0.0.1
+- Rel-v0.0.2
 > Template project under https://github.com/ae2f/Core.
 
 # See Also
