@@ -5,7 +5,7 @@ message(${ae2f_IS_SHARED})
 message(${ae2f_packcount})
 message(${ae2f_LIBPREFIX})
 
-project(CL-Core-Template VERSION 0.0.4 LANGUAGES C CXX)
+project(CL-Core-Template VERSION 0.1.4 LANGUAGES C CXX)
 
 if(NOT TARGET ${PROJECT_NAME})
     message(${PROJECT_NAME})
