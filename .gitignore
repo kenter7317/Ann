@@ -1,0 +1,9 @@
+.vs/*
+out/*
+CMakeFiles/*
+build/*
+.vscode/*
+clinclude/*
+
+*.clh
+*.cl
