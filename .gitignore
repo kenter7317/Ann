@@ -7,3 +7,5 @@ clinclude/*
 
 *.clh
 *.cl
+
+submod
