@@ -4,16 +4,20 @@
 #include <ae2f/Float.h>
 #include <math.h>
 
+#define ae2fCL_mAnnActEnumDef(name) ae2fCL_eAnnAct##name
+#define ae2fCL_mAnnActFuncDef(name) ae2fCL_eAnnAct##name##_func
+#define ae2fCL_mAnnActFuncName(enumname) enumname##_func
+
 typedef enum ae2fCL_eAnnAct {
     ae2fCL_eAnnAct_NULL,
-    ae2fCL_eAnnActSigmoid,
+    ae2fCL_mAnnActEnumDef(Sigmoid),
     #include "Act/Extension.Enum.h"
     ae2fCL_eAnnAct_LEN
 } ae2fCL_efAnnAct_t;
 
 typedef ae2f_float_t(ae2fCL_fAnnAct_t)(ae2f_float_t x);
 
-inline static ae2f_float_t __ae2fCL_eAnnActSigmoid(ae2f_float_t x) {
+inline static ae2f_float_t ae2fCL_mAnnActFuncDef(Sigmoid)(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 

@@ -20,7 +20,6 @@ __kernel void ae2fCL_eAnnKernsPercMkRand(
 }
 #include "Act.h"
 
-#if 1
 __kernel void ae2fCL_eAnnKernsPercPredict(
     __global const ae2fCL_AnnPerc* _this,
     __global ae2f_float_t* out,
@@ -28,34 +27,42 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
     const __global ae2f_float_t* in,
     ae2fCL_whenCL(__local) ae2f_float_t* loc,
     #if cl_mem_SIZE == 4
-    uint16_t idxA,
-    uint16_t idxB,
+    uint16_t out_idxA,
+    uint16_t out_idxB,
 
-    #define idxtent() uint32_t idx = idxA | (idxB << 16)
+    uint16_t in_idxA,
+    uint16_t in_idxB
+
+    #define out_idxtent() uint32_t out_idx = out_idxA | (out_idxB << 16)
+    #define in_idxtent() uint32_t in_idx = in_idxA | (in_idxB << 16)
     #else
-    uint32_t idx
-    #define idxtent()
+    uint32_t out_idx,
+    uint32_t in_idx
+    #define out_idxtent()
+    #define in_idxtent()
     #endif
 ) {
-    idxtent();
+    out_idxtent();
+    in_idxtent();
 
     const size_t globalid = get_global_id(0);
     const size_t localid = get_local_id(0);
-    #undef idxtent
+    #undef out_idxtent
     ae2fCL_whenCL(__local) ae2f_float_t* __got
         = loc + globalid;
 
     #define got (*__got)
-    got = in[globalid] * field[globalid] + _this->m_bias;
+    got = in[globalid + in_idx] * field[globalid] + _this->m_bias;
 
+    
     #pragma region Switch
     #define __Case(name) \
-    case name: \
-    got = __##name(got); \
+    case ae2fCL_mAnnActEnumDef(name): \
+    got = ae2fCL_mAnnActFuncDef(name)(got); \
     break;
     #pragma endregion
     switch(_this->act) {
-        __Case(ae2fCL_eAnnActSigmoid);
+        __Case(Sigmoid);
         default: break;
     }
 
@@ -77,7 +84,43 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
         halfBlockSize = blockSize >> 1;
     }
     if (localid==0) {
-        out[idx] = loc[0];
+        out[out_idx] = loc[0];
     }
 }
+
+#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
+
+#if cl_mem_SIZE == 8
+typedef uint32_t cl_mem_half_t;
 #endif
+
+#if cl_mem_SIZE == 4
+typedef uint16_t cl_mem_half_t;
+#endif
+
+#if cl_mem_SIZE == ae2f_float_t_SIZE
+typedef union UF_t {
+    cl_mem_half_t UHalf[2];
+    ae2f_float_t F;
+} UF_t;
+#endif
+
+__kernel void ae2fCL_eAnnKernsPercTrain(
+    __global const ae2f_float_t* _in,
+    __global ae2f_float_t* field,
+
+    #if cl_mem_SIZE == ae2f_float_t_SIZE
+    cl_mem_half_t LrErrA,
+    cl_mem_half_t LrErrB
+    #define LrErrTent() \
+        ae2f_float_t LrErr = \
+        ((UF_t) { LrErrA, LrErrB }).F
+    #else
+    ae2f_float_t LrErr
+    #define LrErrTent()
+    #endif
+) {
+    const size_t i = get_global_id(0);
+    LrErrTent();
+    field[i] += LrErr * _in[i];
+}

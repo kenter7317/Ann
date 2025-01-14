@@ -29,7 +29,7 @@ int main() {
     err = ae2fCL_AnnPercMk(
         &perceptron,
         0, sizeof(Buff)/sizeof(ae2f_float_t), 
-        1, context, queue, 0, 0, 0
+        1, 0, context, queue, 0, 0, 0
     );
     #if 1
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -63,8 +63,8 @@ int main() {
     if(err) goto __failure;
 
     err = ae2fCL_AnnPercPredict(
-        &perceptron, inbuff, outbuff, 0, queue, 
-        0, 0, 0
+        &perceptron, inbuff, outbuff, 0, 0, 
+        queue, 0, 0, 0
     );
     if(err) goto __failure;
 
@@ -89,12 +89,12 @@ int main() {
 
         #pragma region Switch
         #define __Case(name) \
-        case name: \
-        got = __##name(got); \
+        case ae2fCL_mAnnActEnumDef(name): \
+        got = ae2fCL_mAnnActFuncDef(name)(got); \
         break;
         #pragma endregion
         switch(perceptron.act) {
-            __Case(ae2fCL_eAnnActSigmoid);
+            __Case(Sigmoid);
             default: break;
         }
 

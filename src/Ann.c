@@ -36,6 +36,7 @@ cl_int ae2fCL_AnnMk(
     }
     LocCreateKernel(ae2fCL_eAnnKernsPercMkRand);
     LocCreateKernel(ae2fCL_eAnnKernsPercPredict);
+    LocCreateKernel(ae2fCL_eAnnKernsPercTrain);
 
     #undef LocCreateKernel
     return _err;

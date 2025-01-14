@@ -11,11 +11,18 @@
 #include "Act.h"
 
 #include <ae2f/Pack/Beg.h>
+
+typedef ae2f_float_t(*ae2fCL_fpAnnPercGetLoss_t)
+    ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
+
 typedef struct ae2fCL_AnnPerc {
     ae2f_float_t m_bias;
     ae2fCL_efAnnAct_t act;
     ae2fCL_HostPtr(__global, void) self;
     ae2fCL_HostPtr(__global, ae2f_float_t) mg_field;
+
+    ae2fCL_fpAnnPercGetLoss_t mfp_GetLoss;
+
     size_t mg_fieldLen;
 } ae2fCL_AnnPerc;
 #include <ae2f/Pack/End.h>
@@ -26,6 +33,8 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnPercMk(
     const ae2f_float_t* inputs,
     size_t inputsCount,
     ae2fCL_efAnnAct_t act,
+    ae2fCL_fpAnnPercGetLoss_t fpGetLoss,
+
     cl_context ctx,
     cl_command_queue queue,
     cl_uint num_events_in_wait_list,
@@ -53,7 +62,8 @@ ae2f_err_t ae2fCL_AnnPercPredict(
     ae2fCL_AnnPerc* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out,
-    uint32_t idx,
+    uint32_t in_idx,
+    uint32_t out_idx,
 
     cl_command_queue queue,
     cl_uint num_events_in_wait_list,
