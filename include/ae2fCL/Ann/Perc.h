@@ -8,22 +8,24 @@
 #include <ae2fCL/Loc.h>
 #include <ae2f/errGlob.h>
 
-#define ae2fCL_fAnnPercAct_t uint8_t
+#include "Act.h"
 
 #include <ae2f/Pack/Beg.h>
 typedef struct ae2fCL_AnnPerc {
-      ae2f_float_t m_bias;
-      ae2fCL_HostPtr(__global, ae2f_float_t) mg_field;
-      size_t mg_fieldLen;
-      ae2fCL_fAnnPercAct_t act;
+    ae2fCL_HostPtr(__global, void) self;
+    ae2f_float_t m_bias;
+    ae2fCL_HostPtr(__global, ae2f_float_t) mg_field;
+    size_t mg_fieldLen;
+    ae2fCL_fAnnAct_t act;
 } ae2fCL_AnnPerc;
 #include <ae2f/Pack/End.h>
 
+#ifndef ae2fCL_LocAsCL
 ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnPercMk(
     ae2f_struct ae2fCL_AnnPerc* _this,
     const ae2f_float_t* inputs,
     size_t inputsCount,
-    ae2fCL_fAnnPercAct_t act,
+    ae2fCL_fAnnAct_t act,
     cl_context ctx,
     cl_command_queue queue,
     cl_uint num_events_in_wait_list,
@@ -46,4 +48,5 @@ clEnqueueReadBuffer( \
       0, 0, 0 \
 )
 
+#endif
 #endif

@@ -11,8 +11,8 @@ ae2f_err_t ae2fCL_AnnPercDel(
     ae2fCL_AnnPerc* _this
 ) {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    if(!_this->mg_field) return ae2f_errGlob_PTR_IS_NULL;
-    clReleaseMemObject(_this->mg_field);
+    if(_this->mg_field) clReleaseMemObject(_this->mg_field);
+    if(_this->self) clReleaseMemObject(_this->self);
     _this->mg_fieldLen = 0;
     _this->mg_field = 0;
     _this->m_bias = 0;
@@ -24,14 +24,13 @@ ae2f_err_t ae2fCL_AnnPercMk(
     ae2f_struct ae2fCL_AnnPerc* _this,
     const ae2f_float_t* inputs,
     size_t inputsCount,
-    ae2fCL_fAnnPercAct_t act,
+    ae2fCL_fAnnAct_t act,
     cl_context ctx,
     cl_command_queue queue,
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
 ) {
-
     #define K ae2fCL_AnnKerns[ae2fCL_eAnnKernsPercMkRand]
     #undef K
     #ifndef K
@@ -49,6 +48,12 @@ ae2f_err_t ae2fCL_AnnPercMk(
     _this->mg_field = clCreateBuffer(
         ctx, CL_MEM_READ_WRITE, 
         inputsCount * sizeof(ae2f_float_t), 
+        0, &err
+    );
+    _this->mg_fieldLen = inputsCount;
+    _this->self = clCreateBuffer(
+        ctx, CL_MEM_READ_ONLY,
+        inputsCount * sizeof(ae2f_float_t),
         0, &err
     );
     _this->mg_fieldLen = inputsCount;
@@ -102,4 +107,17 @@ ae2f_err_t ae2fCL_AnnPercMk(
 
     ae2fCL_AnnLcgRandSeed.u64 = got;
     return ae2f_errGlob_OK;
+}
+
+
+ae2f_SHAREDEXPORT 
+ae2f_err_t ae2fCL_AnnPercPredict(
+    ae2f_struct ae2fCL_AnnPerc* _this,
+    ae2fCL_HostPtr(__global, ae2f_float_t) out,
+    uint32_t idx
+) {
+    if(!out) return ae2f_errGlob_PTR_IS_NULL;
+    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+
+    return 0;
 }

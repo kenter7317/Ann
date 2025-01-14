@@ -2,6 +2,7 @@
 #include <ae2fCL/Loc.h>
 static const char* __clsrc =
 #include "CLCode/Perc.clh" 
+#include "CLCode/Act.clh"
 "";
 
 #include <stdio.h>
@@ -35,6 +36,7 @@ cl_int ae2fCL_AnnMk(
         if(_err != CL_SUCCESS) return _err; \
     }
     LocCreateKernel(ae2fCL_eAnnKernsPercMkRand);
+    LocCreateKernel(ae2fCL_eAnnKernsPercPredict);
 
     #undef LocCreateKernel
     return _err;

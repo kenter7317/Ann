@@ -11,3 +11,5 @@ __kernel void ae2fCL_eAnnKernsPercMkRand(
     uint64_t seed
     #endif
 );
+
+#include <ae2fCL/Ann/Perc.h>
