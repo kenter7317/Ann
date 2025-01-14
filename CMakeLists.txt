@@ -5,7 +5,7 @@ include(cmake/Core.cmake)
 project(CL-Ann VERSION 0.1.5 LANGUAGES C CXX)
 if(NOT TARGET CL-Ann)
     ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.9.14)
-    ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.1)
+    ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.2)
 
     ae2f_CoreLibTent(
         CL-Ann ${ae2f_LIBPREFIX}
@@ -23,18 +23,22 @@ if(NOT TARGET CL-Ann)
     )
     
     target_link_libraries(CL-Ann PUBLIC CL-Core)
+    if(NOT WIN32)
+        target_link_libraries(CL-Ann PUBLIC m)
+    endif()
+
     ae2fCL_CoreAppendInclude(
         ${PROJECT_SOURCE_DIR}/include
         ${ae2f_ProjRoot}/submod/ae2f/Core/include
         ${ae2f_ProjRoot}/submod/ae2f/CL-Core/include
     )
     message(${OpenCL_INCLUDE_DIR}/CL/cl.h)
-    ae2f_RulerMeasure(cl_mem ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/cl_mem.h -I${OpenCL_INCLUDE_DIR} CL/cl.h)
-    ae2f_RulerMeasure(ae2f_float_t ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/ae2f_float_t.h -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f Float.h)
-
+    
     ae2fCL_CoreAddConfProjTarDep(
         CL-Ann
         "${PROJECT_SOURCE_DIR}/src"
     )
     ae2f_CoreTestTent(CL-Ann test/src)
+    ae2f_RulerMeasure(cl_mem ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/cl_mem.h -I${OpenCL_INCLUDE_DIR} CL/cl.h)
+    ae2f_RulerMeasure(ae2f_float_t ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/ae2f_float_t.h -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f Float.h)
 endif()

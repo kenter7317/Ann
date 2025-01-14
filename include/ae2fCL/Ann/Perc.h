@@ -12,11 +12,11 @@
 
 #include <ae2f/Pack/Beg.h>
 typedef struct ae2fCL_AnnPerc {
-    ae2fCL_HostPtr(__global, void) self;
     ae2f_float_t m_bias;
+    ae2fCL_efAnnAct_t act;
+    ae2fCL_HostPtr(__global, void) self;
     ae2fCL_HostPtr(__global, ae2f_float_t) mg_field;
     size_t mg_fieldLen;
-    ae2fCL_fAnnAct_t act;
 } ae2fCL_AnnPerc;
 #include <ae2f/Pack/End.h>
 
@@ -25,7 +25,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnPercMk(
     ae2f_struct ae2fCL_AnnPerc* _this,
     const ae2f_float_t* inputs,
     size_t inputsCount,
-    ae2fCL_fAnnAct_t act,
+    ae2fCL_efAnnAct_t act,
     cl_context ctx,
     cl_command_queue queue,
     cl_uint num_events_in_wait_list,
@@ -38,7 +38,7 @@ ae2f_err_t ae2fCL_AnnPercDel(
     ae2fCL_AnnPerc* _this
 );
 
-#define ae2fCL_AnnPercCheck(_this, _out, queue) \ 
+#define ae2fCL_AnnPercCheck(_this, _out, queue) \
 clEnqueueReadBuffer( \
       queue,  \
       (_this)->mg_field, \
@@ -47,6 +47,19 @@ clEnqueueReadBuffer( \
       (_out), \
       0, 0, 0 \
 )
+
+ae2f_extern ae2f_SHAREDCALL
+ae2f_err_t ae2fCL_AnnPercPredict(
+    ae2fCL_AnnPerc* _this,
+    ae2fCL_HostPtr(__global, ae2f_float_t) in,
+    ae2fCL_HostPtr(__global, ae2f_float_t) out,
+    uint32_t idx,
+
+    cl_command_queue queue,
+    cl_uint num_events_in_wait_list,
+    const cl_event *event_wait_list,
+    cl_event *event
+);
 
 #endif
 #endif

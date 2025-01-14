@@ -1,8 +1,7 @@
 #include <ae2fCL/Ann.h>
 #include <ae2fCL/Loc.h>
 static const char* __clsrc =
-#include "CLCode/Perc.clh" 
-#include "CLCode/Act.clh"
+#include "CLCode/Perc.clh"
 "";
 
 #include <stdio.h>
