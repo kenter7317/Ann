@@ -13,3 +13,4 @@
 - make
 - cmake
 - opencl
+- python
