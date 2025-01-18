@@ -96,9 +96,6 @@ ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
     cl_context context
 );
 
-/// @see ae2f_float_t
-typedef union ae2f_floatvague ae2f_floatvague_t;
-
 ae2f_extern ae2f_SHAREDCALL 
 ae2f_err_t ae2fCL_AnnPercTrain(
     ae2fCL_AnnPerc* _this,
@@ -109,7 +106,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 
     ae2f_float_t goal,
     ae2f_float_t learning_rate,
-    ae2f_floatvague_t* diff_ret_optional,
+    ae2f_float_t* diff_ret_optional,
 
     cl_command_queue queue,
     cl_bool blocking_read,

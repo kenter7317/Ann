@@ -272,11 +272,6 @@ ae2f_err_t ae2fCL_AnnPercPredict(
 
 #include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
 
-union ae2f_floatvague {
-    ae2f_float_t whole;
-    uint8_t CV[ae2f_float_t_SIZE];
-};
-
 ae2f_SHAREDEXPORT 
 ae2f_err_t ae2fCL_AnnPercTrain(
     ae2fCL_AnnPerc* _this,
@@ -287,7 +282,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 
     ae2f_float_t goal,
     ae2f_float_t learning_rate,
-    ae2f_floatvague_t* diff_ret_optional,
+    ae2f_float_t* diff_ret_optional,
 
     cl_command_queue queue,
     cl_bool blocking_read,
@@ -297,8 +292,6 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 
     cl_context context_optionalB
 ) {
-    ae2f_floatvague_t diff;
-
     ae2f_float_t outF;
     ae2f_err_t err2 = ae2f_errGlob_OK;
     cl_event evbuff = 0;
@@ -306,7 +299,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     cl_int err = CL_SUCCESS;
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsPercTrain];
     
-    if(!diff_ret_optional) diff_ret_optional = &diff;
+    if(!diff_ret_optional) diff_ret_optional = &outF;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!out) {
@@ -332,8 +325,8 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     );
     if(err2) goto END;
 
-    diff_ret_optional->whole = _this->mpGetLoss(outF, goal) * learning_rate;
-    _this->mBias += (diff_ret_optional->whole);
+    *diff_ret_optional = _this->mpGetLoss(outF, goal) * learning_rate;
+    _this->mBias += (*diff_ret_optional);
 
     err = clSetKernelArg(K, 0, cl_mem_SIZE, &in);
     if(err) {
@@ -352,7 +345,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
         const size_t Half_CL_Mem = cl_mem_SIZE >> 1;
         err = clSetKernelArg(
             K, 2, Half_CL_Mem, 
-            diff_ret_optional->CV
+            diff_ret_optional
         );
         if(err) {
             err2 = ae2f_errGlob_NFOUND;
@@ -361,7 +354,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 
         err = clSetKernelArg(
             K, 3, Half_CL_Mem,
-            diff_ret_optional->CV + Half_CL_Mem
+            ((const char*)diff_ret_optional) + Half_CL_Mem
         );
         if(err) {
             err2 = ae2f_errGlob_NFOUND;
@@ -372,7 +365,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     #else
         err = clSetKernelArg(
             K, 2, ae2f_float_t_SIZE, 
-            diff_ret_optional->CV
+            diff_ret_optional
         );
         if(err) {
             err2 = ae2f_errGlob_NFOUND;
