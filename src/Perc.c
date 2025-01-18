@@ -4,6 +4,7 @@
 #include <ae2fCL/Ann/LcgRand.h>
 #include <ae2fCL/Ann.h>
 #include <ae2fCL/Ann/Sizes/cl_mem.h>
+#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
 
 #include <stdio.h>
 
@@ -12,17 +13,16 @@ ae2f_err_t ae2fCL_AnnPercDel(
     ae2fCL_AnnPerc* _this
 ) {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    if(_this->mg_field) clReleaseMemObject(_this->mg_field);
-    if(_this->self) clReleaseMemObject(_this->self);
-    _this->mg_fieldLen = 0;
-    _this->mg_field = 0;
-    _this->m_bias = 0;
-    _this->act = 0;
-    _this->self = 0;
-    _this->mfp_GetLoss = 0;
+    if(_this->mgWeight) clReleaseMemObject(_this->mgWeight);
+    if(_this->mSelf) clReleaseMemObject(_this->mSelf);
+    _this->mgWeightLen = 0;
+    _this->mgWeight = 0;
+    _this->mBias = 0;
+    _this->mAct = 0;
+    _this->mSelf = 0;
+    _this->mpGetLoss = 0;
     return ae2f_errGlob_OK;
 }
-
 
 static ae2f_float_t __LOSS_DEFAULT(ae2f_float_t out, ae2f_float_t goal) {
     return goal - out;
@@ -33,7 +33,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
     ae2f_struct ae2fCL_AnnPerc* _this,
     const ae2f_float_t* inputs,
     size_t inputsCount,
-    ae2fCL_efAnnAct_t act,
+    ae2fCL_fpAnnAct_t mAct,
     ae2fCL_fpAnnPercGetLoss_t fpGetLoss,
 
     cl_context ctx,
@@ -51,29 +51,29 @@ ae2f_err_t ae2fCL_AnnPercMk(
     return ae2f_errGlob_PTR_IS_NULL;
     uint64_t got = ae2fCL_AnnLcgRandG();
 
-    _this->mfp_GetLoss = fpGetLoss;
-    if(!_this->mfp_GetLoss) {
-        _this->mfp_GetLoss = __LOSS_DEFAULT;
+    _this->mpGetLoss = fpGetLoss;
+    if(!_this->mpGetLoss) {
+        _this->mpGetLoss = __LOSS_DEFAULT;
     }
-    _this->m_bias = ae2fCL_AnnLcgRandDistribute(got);
-    _this->act = act;
-    _this->mg_field = clCreateBuffer(
+    _this->mBias = ae2fCL_AnnLcgRandDistribute(got);
+    _this->mAct = mAct;
+    _this->mgWeight = clCreateBuffer(
         ctx, CL_MEM_READ_WRITE, 
         inputsCount * sizeof(ae2f_float_t), 
         0, &err
     );
-    _this->mg_fieldLen = inputsCount;
+    _this->mgWeightLen = inputsCount;
     
-    _this->self = clCreateBuffer(
+    _this->mSelf = clCreateBuffer(
         ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
         sizeof(ae2fCL_AnnPerc),
         _this, &err
     );
-    _this->mg_fieldLen = inputsCount;
+    _this->mgWeightLen = inputsCount;
     if(err) return ae2f_errGlob_ALLOC_FAILED;
     if(inputs) {
         err = clEnqueueWriteBuffer(
-            queue, _this->mg_field, blocking_read, 0, sizeof(ae2f_float_t) * inputsCount, inputs, 
+            queue, _this->mgWeight, blocking_read, 0, sizeof(ae2f_float_t) * inputsCount, inputs, 
             num_events_in_wait_list, event_wait_list, event
         );
 
@@ -83,7 +83,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
 
     err = clSetKernelArg(
         K, 0, sizeof(cl_mem),
-        &_this->mg_field
+        &_this->mgWeight
     );
     if(err) return ae2f_errGlob_NFOUND;
 
@@ -131,45 +131,58 @@ ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnPercPredict(
     ae2fCL_AnnPerc* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
-    ae2fCL_HostPtr(__global, ae2f_float_t) out,
+    ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
     uint32_t out_idx,
-
+    ae2f_float_t* outbuff_optional_,
     cl_command_queue queue,
     cl_bool blocking_event,
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
-    cl_event *event
+    cl_event *event,
+    cl_context context_optionalB
 ) {
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
-    if(!out) return ae2f_errGlob_PTR_IS_NULL;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-
     const cl_kernel K = ae2fCL_AnnKerns[
         ae2fCL_eAnnKernsPercPredict
     ];
 
+    cl_mem out = 0;
     cl_int err = CL_SUCCESS;
+    ae2f_err_t errret = ae2f_errGlob_OK;
+    ae2f_float_t outbuff = 0;
+    #define Throw(code) { errret = code; goto __RET; }
+
+    if(out_optionalA) {
+        out = out_optionalA;
+    } else {
+        out_idx = 0;
+        out = clCreateBuffer(
+            context_optionalB, CL_MEM_READ_WRITE, 
+            ae2f_float_t_SIZE, 0, &err
+        ); if(err) Throw(ae2f_errGlob_ALLOC_FAILED);
+    }
+
     err = clSetKernelArg(
         K, 0, sizeof(cl_mem),
-        &_this->self
-    );
-    if(err != CL_SUCCESS) 
-    return ae2f_errGlob_WRONG_OPERATION;
+        &_this->mSelf
+    ); if(err != CL_SUCCESS)
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 1, sizeof(cl_mem),
         &out
     );
-    if(err != CL_SUCCESS) 
-    return ae2f_errGlob_WRONG_OPERATION;
+    if(err != CL_SUCCESS)
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 2, sizeof(cl_mem),
-        &_this->mg_field
+        &_this->mgWeight
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 3, 
@@ -177,67 +190,84 @@ ae2f_err_t ae2fCL_AnnPercPredict(
         &in
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 4, 
-        sizeof(ae2f_float_t) * _this->mg_fieldLen,
+        sizeof(ae2f_float_t) * _this->mgWeightLen,
         0
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     #if cl_mem_SIZE == 4
     err = clSetKernelArg(
         K, 5, 2, &out_idx
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 6, 2, ((const uint16_t*)(&out_idx)) + 1
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 7, 2, &in_idx
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 8, 2, ((const uint16_t*)(&in_idx)) + 1
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
     #else
     err = clSetKernelArg(
         K, 5, 4, &out_idx
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
 
     err = clSetKernelArg(
         K, 6, 4, &in_idx
     );
     if(err != CL_SUCCESS)
-    return ae2f_errGlob_WRONG_OPERATION;
+    Throw(ae2f_errGlob_WRONG_OPERATION);
     #endif
 
     err = clEnqueueNDRangeKernel(
         queue, K,
         1, 0, 
-        &_this->mg_fieldLen,
-        &_this->mg_fieldLen,
+        &_this->mgWeightLen,
+        &_this->mgWeightLen,
+        0, 0, 0
+    );
+    if(err) Throw(ae2f_errGlob_NFOUND);
+
+    err = clEnqueueReadBuffer(
+        queue, out, blocking_event, 0, ae2f_float_t_SIZE, &outbuff, 
         num_events_in_wait_list, 
         event_wait_list, event
-    );
-    if(err) return ae2f_errGlob_NFOUND;
-    if(blocking_event && event)
-    clWaitForEvents(1, event);
+    ); if(err) Throw(ae2f_errGlob_NFOUND);
 
-    return ae2f_errGlob_OK;
+    outbuff += _this->mBias;
+    if(_this->mAct) {
+        outbuff = _this->mAct(outbuff);
+    }
+
+    if(outbuff_optional_) {
+        outbuff_optional_[0] = outbuff;
+    }
+
+    __RET:
+    #undef Throw
+    if(out && out != out_optionalA) {
+        clReleaseMemObject(out);
+    }
+    return errret;
 }
 
 #include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
@@ -251,9 +281,10 @@ ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnPercTrain(
     ae2fCL_AnnPerc* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
-    ae2fCL_HostPtr(__global, ae2f_float_t) out_optional,
+    ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
-    uint32_t out_idx,
+    uint32_t out_idx_optionalA,
+
     ae2f_float_t goal,
     ae2f_float_t learning_rate,
     ae2f_floatvague_t* diff_ret_optional,
@@ -264,14 +295,14 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     const cl_event *event_wait_list,
     cl_event *event,
 
-    cl_context context_optional
+    cl_context context_optionalB
 ) {
     ae2f_floatvague_t diff;
 
     ae2f_float_t outF;
     ae2f_err_t err2 = ae2f_errGlob_OK;
     cl_event evbuff = 0;
-    cl_mem out = out_optional;
+    cl_mem out = out_optionalA;
     cl_int err = CL_SUCCESS;
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsPercTrain];
     
@@ -279,41 +310,30 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!out) {
-        if(!context_optional)
+        if(!context_optionalB)
         return ae2f_errGlob_PTR_IS_NULL;
         out = clCreateBuffer(
-            context_optional,
+            context_optionalB,
             CL_MEM_WRITE_ONLY, 
             ae2f_float_t_SIZE,
             0, &err
-        );
-        if(!out || err) {
+        ); if(!out || err) {
             err2 = ae2f_errGlob_NFOUND;
             goto END;
         }
-        out_idx = 0;
+        out_idx_optionalA = 0;
     }
 
-    err2 = ae2fCL_AnnPercPredict(
+    err2 = ae2fCL_AnnPercPredictA(
         _this, in, out,
-        in_idx, out_idx,
+        in_idx, out_idx_optionalA, &outF,
         queue, CL_TRUE,
         0, 0, 0
     );
     if(err2) goto END;
 
-    err = clEnqueueReadBuffer(
-        queue, out, CL_TRUE,
-        out_idx * ae2f_float_t_SIZE,
-        ae2f_float_t_SIZE, &outF, 
-        0, 0, 0
-    );
-    if(err) {
-        err2 = ae2f_errGlob_NFOUND;
-        goto END;
-    }
-    diff_ret_optional->whole = _this->mfp_GetLoss(outF, goal) * learning_rate;
-    _this->m_bias += (diff_ret_optional->whole);
+    diff_ret_optional->whole = _this->mpGetLoss(outF, goal) * learning_rate;
+    _this->mBias += (diff_ret_optional->whole);
 
     err = clSetKernelArg(K, 0, cl_mem_SIZE, &in);
     if(err) {
@@ -322,7 +342,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     }
 
     err = clSetKernelArg(
-        K, 1, cl_mem_SIZE, &_this->mg_field
+        K, 1, cl_mem_SIZE, &_this->mgWeight
     );
     if(err) {
         err2 = ae2f_errGlob_NFOUND;
@@ -389,7 +409,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     #endif
 
     err = clEnqueueNDRangeKernel(
-        queue, K, 1, 0, &_this->mg_fieldLen,
+        queue, K, 1, 0, &_this->mgWeightLen,
         0, 
         num_events_in_wait_list, 
         event_wait_list, event
@@ -400,7 +420,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     }
 
     END:
-    if(!out && out != out_optional) {
+    if(!out && out != out_optionalA) {
         clReleaseMemObject(out);
     }
     if(blocking_read && event) {
@@ -427,12 +447,12 @@ ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
     if(!out) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_DONE_HOWEV;
     cl_int err;
     ae2f_err_t E = ae2f_errGlob_OK;
-    cl_mem inbuff, outbuff;
+    cl_mem inbuff;
 
     inbuff = clCreateBuffer(
         context,
         CL_MEM_READ_ONLY,
-        _this->mg_fieldLen * ae2f_float_t_SIZE,
+        _this->mgWeightLen * ae2f_float_t_SIZE,
         0, &err
     ); if(err) {
         E = ae2f_errGlob_ALLOC_FAILED;
@@ -441,34 +461,17 @@ ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
 
     err = clEnqueueWriteBuffer(
         queue, inbuff, CL_TRUE, 0,
-        _this->mg_fieldLen * ae2f_float_t_SIZE,
+        _this->mgWeightLen * ae2f_float_t_SIZE,
         in, 0, 0, 0
     ); if(err) {
         E = ae2f_errGlob_ALLOC_FAILED;
         goto END;
     }
-    
-    outbuff = clCreateBuffer(
-        context,
-        CL_MEM_WRITE_ONLY,
-        ae2f_float_t_SIZE,
-        0, &err
-    ); if(err) {
-        E = ae2f_errGlob_ALLOC_FAILED;
-        goto END;
-    }
 
-    E = ae2fCL_AnnPercPredict(
-        _this, inbuff, outbuff,
-        0, 0, queue, CL_TRUE, 
-        0, 0, 0
-    );
-
-    err = clEnqueueReadBuffer(
-        queue, outbuff, blocking_read, 
-        0, ae2f_float_t_SIZE,
-        out, num_events_in_wait_list,
-        event_wait_list, event 
+    E = ae2fCL_AnnPercPredictB(
+        _this, inbuff, 0, out, context, queue, 
+        blocking_read, num_events_in_wait_list, 
+        event_wait_list, event
     ); if(err) {
         E = ae2f_errGlob_NFOUND;
         goto END;
@@ -476,6 +479,5 @@ ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
 
     END:
     if(inbuff) clReleaseMemObject(inbuff);
-    if(outbuff) clReleaseMemObject(outbuff);
     return E;
 }

@@ -5,7 +5,10 @@
 
 
 #define gThreshold 0.0001
-
+static ae2f_float_t 
+Sigmoid(ae2f_float_t x) {
+    return 1.0 / (1.0 + exp(-x));
+}
 int main() {
     cl_int err = 0;
     cl_platform_id platform = 0;
@@ -38,13 +41,13 @@ int main() {
     err = ae2fCL_AnnPercMk(
         &perceptron,
         0, sizeof(Buff)/sizeof(ae2f_float_t), 
-        ae2fCL_efAnnAct_t::ae2fCL_eAnnActSigmoid, 0, context, 
+        Sigmoid, 0, context, 
         queue, CL_TRUE, 0, 0, 0
     );
     #if 1
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnPercCheck(&perceptron, Buff, queue);
+    err = ae2fCL_AnnPercWeightCheck(&perceptron, Buff, queue);
     CHECK_ERR(err, CL_SUCCESS, __failure);
     
     for(size_t i = 0; i < sizeof(Buff) / sizeof(ae2f_float_t); i++) {
@@ -71,45 +74,26 @@ int main() {
     if(!outbuff) goto __failure;
     if(err) goto __failure;
 
-    err = ae2fCL_AnnPercPredict(
-        &perceptron, inbuff, outbuff, 0, 0, 
+    err = ae2fCL_AnnPercPredictA(
+        &perceptron, inbuff, outbuff, 0, 0, &outfloat,
         queue, CL_TRUE, 0, 0, 0
-    );
-    if(err) goto __failure;
-
-    err = clEnqueueReadBuffer(
-        queue, outbuff, 1, 
-        0, sizeof(ae2f_float_t), &outfloat,
-        0, 0, 0
     );
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        perceptron.m_bias, 
-        perceptron.m_bias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        perceptron.mBias, 
+        perceptron.mBias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < perceptron.mg_fieldLen; i++) 
+    for(size_t i = 0; i < perceptron.mgWeightLen; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
-
-        #pragma region Switch
-        #define __Case(name) \
-        case ae2fCL_mAnnActEnumDef(name): \
-        out_checksum = ae2fCL_mAnnActFuncDef(name)(out_checksum); \
-        break;
-        #pragma endregion
-
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-
-    out_checksum += perceptron.m_bias;
-    switch(perceptron.act) {
-        __Case(Sigmoid);
-        default: break;
-    }
+    out_checksum += perceptron.mBias;
+    out_checksum = perceptron.mAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -123,6 +107,6 @@ int main() {
     if(queue) clReleaseCommandQueue(queue);
     if(outbuff) clReleaseMemObject(outbuff);
     if(inbuff) clReleaseMemObject(inbuff);
-    if(!perceptron.mg_field) ae2fCL_AnnPercDel(&perceptron);
+    if(!perceptron.mgWeight) ae2fCL_AnnPercDel(&perceptron);
     return err;
 }

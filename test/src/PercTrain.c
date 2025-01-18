@@ -6,6 +6,11 @@
 #define gLearningRate 0.1
 #define gEpochs 10
 
+static ae2f_float_t
+Step(ae2f_float_t x) {
+    return x >= 0;
+}
+
 int main() {
     cl_int err = 0;
     cl_platform_id platform = 0;
@@ -30,7 +35,7 @@ int main() {
     ae2fCL_AnnPerc perceptron;
     err2 = ae2fCL_AnnPercMk(
         &perceptron, 0, 2,
-        ae2fCL_eAnnActStep, 0,
+        Step, 0,
         context, queue, CL_TRUE, 0, 0, 0 
     );
     if(err2) {
@@ -145,6 +150,6 @@ int main() {
     if(inbuff) clReleaseMemObject(inbuff);
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
-    if(!perceptron.mg_field) ae2fCL_AnnPercDel(&perceptron); 
+    if(!perceptron.mgWeight) ae2fCL_AnnPercDel(&perceptron); 
     return err;
 }

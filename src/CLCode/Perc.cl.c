@@ -1,4 +1,3 @@
-
 #include "Perc.h"
 #include "Rand.h"
 
@@ -80,19 +79,10 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
         halfBlockSize = blockSize >> 1;
     }
     if (!localid) {
-        outbuff = loc[0] + _this->m_bias;
-
-        switch(_this->act) {
-            __Case(Sigmoid);
-            __Case(Step);
-            default: break;
-        }
-        
+        outbuff = loc[0];
         out[out_idx] = outbuff;
     }
 }
-
-#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
 
 #if cl_mem_SIZE == 8
 typedef uint32_t cl_mem_half_t;
