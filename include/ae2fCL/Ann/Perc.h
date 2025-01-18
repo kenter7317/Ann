@@ -37,6 +37,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnPercMk(
 
     cl_context ctx,
     cl_command_queue queue,
+    cl_bool blocking_read,
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
@@ -66,9 +67,49 @@ ae2f_err_t ae2fCL_AnnPercPredict(
     uint32_t out_idx,
 
     cl_command_queue queue,
+    cl_bool blocking_read,
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
+);
+
+#define ae2fCL_AnnPercPredictNoEvents(_this, in, out, in_idx, out_idx, queue) \
+    ae2fCL_AnnPercPredict(_this, in, out, in_idx, out_idx, queue, 0, 0, 0)
+
+ae2f_extern ae2f_SHAREDCALL
+ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
+    ae2fCL_AnnPerc* _this,
+    const ae2f_float_t* in,
+    ae2f_float_t* out,
+    cl_command_queue queue,
+    cl_bool blocking_read,
+    cl_uint num_events_in_wait_list,
+    const cl_event *event_wait_list,
+    cl_event *event,
+    cl_context context
+);
+
+/// @see ae2f_float_t
+typedef union ae2f_floatvague ae2f_floatvague_t;
+
+ae2f_extern ae2f_SHAREDCALL 
+ae2f_err_t ae2fCL_AnnPercTrain(
+    ae2fCL_AnnPerc* _this,
+    ae2fCL_HostPtr(__global, ae2f_float_t) in,
+    ae2fCL_HostPtr(__global, ae2f_float_t) out_optional,
+    uint32_t in_idx,
+    uint32_t out_idx,
+    ae2f_float_t goal,
+    ae2f_float_t learning_rate,
+    ae2f_floatvague_t* diff_ret_optional,
+
+    cl_command_queue queue,
+    cl_bool blocking_read,
+    cl_uint num_events_in_wait_list,
+    const cl_event *event_wait_list,
+    cl_event *event,
+
+    cl_context context_optional
 );
 
 #endif

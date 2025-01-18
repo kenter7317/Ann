@@ -45,36 +45,32 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
     out_idxtent();
     in_idxtent();
 
+    ae2f_float_t outbuff = 0;
     const size_t globalid = get_global_id(0);
     const size_t localid = get_local_id(0);
     #undef out_idxtent
     ae2fCL_whenCL(__local) ae2f_float_t* __got
         = loc + globalid;
 
-    #define got (*__got)
-    got = in[globalid + in_idx] * field[globalid] + _this->m_bias;
+    *__got = in[globalid + in_idx] * field[globalid];
 
     
     #pragma region Switch
     #define __Case(name) \
     case ae2fCL_mAnnActEnumDef(name): \
-    got = ae2fCL_mAnnActFuncDef(name)(got); \
+    outbuff = ae2fCL_mAnnActFuncDef(name)(outbuff); \
     break;
     #pragma endregion
-    switch(_this->act) {
-        __Case(Sigmoid);
-        default: break;
-    }
 
     ae2fCL_whenCL(barrier(CLK_LOCAL_MEM_FENCE));
 
     size_t blockSize = get_local_size(0);
     size_t halfBlockSize = blockSize >> 1;
     while (halfBlockSize>0) {
-        if (localid <halfBlockSize) {
+        if (localid < halfBlockSize) {
             loc[localid] += loc[localid + halfBlockSize];
             if ((halfBlockSize*2)<blockSize) {
-                if (localid==0) { 
+                if (localid==0) {
                     loc[localid] += loc[localid + (blockSize-1)];
                 }
             }
@@ -83,8 +79,17 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
         blockSize = halfBlockSize;
         halfBlockSize = blockSize >> 1;
     }
-    if (localid==0) {
-        out[out_idx] = loc[0];
+    if (!localid) {
+        outbuff = loc[0] + _this->m_bias;
+        printf("predict out: %f\n", outbuff);
+
+        switch(_this->act) {
+            __Case(Sigmoid);
+            __Case(Step);
+            default: break;
+        }
+        
+        out[out_idx] = outbuff;
     }
 }
 
@@ -110,17 +115,30 @@ __kernel void ae2fCL_eAnnKernsPercTrain(
     __global ae2f_float_t* field,
 
     #if cl_mem_SIZE == ae2f_float_t_SIZE
-    cl_mem_half_t LrErrA,
-    cl_mem_half_t LrErrB
+        cl_mem_half_t LrErrA,
+        cl_mem_half_t LrErrB,
     #define LrErrTent() \
-        ae2f_float_t LrErr = \
+        const ae2f_float_t LrErr = \
         ((UF_t) { LrErrA, LrErrB }).F
     #else
-    ae2f_float_t LrErr
-    #define LrErrTent()
+        ae2f_float_t LrErr,
+        #define LrErrTent()
+    #endif
+
+    #if cl_mem_SIZE == 4
+        uint16_t in_idxA,
+        uint16_t in_idxB
+        #define in_idxTent() uint32_t in_idx
+    #else
+        uint32_t in_idx
+        #define in_idxTent()
     #endif
 ) {
     const size_t i = get_global_id(0);
     LrErrTent();
-    field[i] += LrErr * _in[i];
+    in_idxTent();
+    printf("In %d: %f\n", i, _in[i + in_idx]);
+    printf("Before %d: %f\n", i, field[i]);
+    field[i] += LrErr * _in[i + in_idx];
+    printf("After %d: %f\n", i, field[i]);
 }

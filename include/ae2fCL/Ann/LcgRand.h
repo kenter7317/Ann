@@ -29,5 +29,4 @@ ae2fCL_AnnLcgRandSeed;
 #define ae2fCL_AnnLcgRandRealG() ae2fCL_AnnLcgRandReal(ae2fCL_AnnLcgRandSeed.u64)
 
 #endif
-
 #endif
