@@ -274,8 +274,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     cl_mem out = out_optional;
     cl_int err = CL_SUCCESS;
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsPercTrain];
-    printf("======================\n");
-
+    
     if(!diff_ret_optional) diff_ret_optional = &diff;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
@@ -315,9 +314,6 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     }
     diff_ret_optional->whole = _this->mfp_GetLoss(outF, goal) * learning_rate;
     _this->m_bias += (diff_ret_optional->whole);
-    printf("outf: %f loss: %f, goal: %f\n",
-    outF, diff_ret_optional->whole, goal);
-    printf("Learning Rate * loss: %f\n", diff_ret_optional->whole);
 
     err = clSetKernelArg(K, 0, cl_mem_SIZE, &in);
     if(err) {
@@ -404,7 +400,6 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     }
 
     END:
-    printf("======================\n");
     if(!out && out != out_optional) {
         clReleaseMemObject(out);
     }

@@ -81,7 +81,6 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
     }
     if (!localid) {
         outbuff = loc[0] + _this->m_bias;
-        printf("predict out: %f\n", outbuff);
 
         switch(_this->act) {
             __Case(Sigmoid);
@@ -137,8 +136,5 @@ __kernel void ae2fCL_eAnnKernsPercTrain(
     const size_t i = get_global_id(0);
     LrErrTent();
     in_idxTent();
-    printf("In %d: %f\n", i, _in[i + in_idx]);
-    printf("Before %d: %f\n", i, field[i]);
     field[i] += LrErr * _in[i + in_idx];
-    printf("After %d: %f\n", i, field[i]);
 }
