@@ -1,4 +1,4 @@
-#include <ae2fCL/Ann/Perc.h>
+#include <ae2fCL/Ann/Slp.h>
 #include <ae2f/errGlob.h>
 
 #include <ae2fCL/Ann/LcgRand.h>
@@ -9,8 +9,8 @@
 #include <stdio.h>
 
 ae2f_SHAREDEXPORT
-ae2f_err_t ae2fCL_AnnPercDel(
-    ae2fCL_AnnPerc* _this
+ae2f_err_t ae2fCL_AnnSlpDel(
+    ae2fCL_AnnSlp* _this
 ) {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(_this->mgWeight) clReleaseMemObject(_this->mgWeight);
@@ -29,12 +29,12 @@ static ae2f_float_t __LOSS_DEFAULT(ae2f_float_t out, ae2f_float_t goal) {
 }
 
 ae2f_SHAREDEXPORT
-ae2f_err_t ae2fCL_AnnPercMk(
-    ae2f_struct ae2fCL_AnnPerc* _this,
+ae2f_err_t ae2fCL_AnnSlpMk(
+    ae2f_struct ae2fCL_AnnSlp* _this,
     const ae2f_float_t* inputs,
     size_t inputsCount,
     ae2fCL_fpAnnAct_t mAct,
-    ae2fCL_fpAnnPercGetLoss_t fpGetLoss,
+    ae2fCL_fpAnnSlpGetLoss_t fpGetLoss,
 
     cl_context ctx,
     cl_command_queue queue,
@@ -44,7 +44,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
     cl_event *event
 ) {
     const cl_kernel K = ae2fCL_AnnKerns[
-        ae2fCL_eAnnKernsPercMkRand
+        ae2fCL_eAnnKernsSlpMkRand
     ];
     cl_int err;
     if(!_this)
@@ -66,7 +66,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
     
     _this->mSelf = clCreateBuffer(
         ctx, CL_MEM_READ_ONLY | CL_MEM_USE_HOST_PTR,
-        sizeof(ae2fCL_AnnPerc),
+        sizeof(ae2fCL_AnnSlp),
         _this, &err
     );
     _this->mgWeightLen = inputsCount;
@@ -128,8 +128,8 @@ ae2f_err_t ae2fCL_AnnPercMk(
 
 
 ae2f_SHAREDEXPORT 
-ae2f_err_t ae2fCL_AnnPercPredict(
-    const ae2fCL_AnnPerc* _this,
+ae2f_err_t ae2fCL_AnnSlpPredict(
+    const ae2fCL_AnnSlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -145,7 +145,7 @@ ae2f_err_t ae2fCL_AnnPercPredict(
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     const cl_kernel K = ae2fCL_AnnKerns[
-        ae2fCL_eAnnKernsPercPredict
+        ae2fCL_eAnnKernsSlpPredict
     ];
 
     cl_mem out = 0;
@@ -273,8 +273,8 @@ ae2f_err_t ae2fCL_AnnPercPredict(
 #include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
 
 ae2f_SHAREDEXPORT 
-ae2f_err_t ae2fCL_AnnPercTrain(
-    ae2fCL_AnnPerc* _this,
+ae2f_err_t ae2fCL_AnnSlpTrain(
+    ae2fCL_AnnSlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -297,7 +297,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
     cl_event evbuff = 0;
     cl_mem out = out_optionalA;
     cl_int err = CL_SUCCESS;
-    cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsPercTrain];
+    cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsSlpTrain];
     
     if(!diff_ret_optional) diff_ret_optional = &outF;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
@@ -317,7 +317,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
         out_idx_optionalA = 0;
     }
 
-    err2 = ae2fCL_AnnPercPredictA(
+    err2 = ae2fCL_AnnSlpPredictA(
         _this, in, out,
         in_idx, out_idx_optionalA, &outF,
         queue, CL_TRUE,
@@ -423,8 +423,8 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 }
 
 ae2f_SHAREDEXPORT
-ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
-    const ae2fCL_AnnPerc* _this,
+ae2f_err_t ae2fCL_AnnSlpPredictBuffAuto(
+    const ae2fCL_AnnSlp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* out,
 
@@ -461,7 +461,7 @@ ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
         goto END;
     }
 
-    E = ae2fCL_AnnPercPredictB(
+    E = ae2fCL_AnnSlpPredictB(
         _this, inbuff, 0, out, context, queue, 
         blocking_read, num_events_in_wait_list, 
         event_wait_list, event

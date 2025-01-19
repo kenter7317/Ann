@@ -4,6 +4,7 @@
 #define ae2fCL_AnnLcgRandA 1664525
 #define ae2fCL_AnnLcgRandC 1013904223
 #define ae2fCL_AnnLcgRandM 4294967296
+
 #define ae2fCL_AnnLcgRand(seed) ((ae2fCL_AnnLcgRandA * (seed) + ae2fCL_AnnLcgRandC) % ae2fCL_AnnLcgRandM)
 
 #include <ae2f/Float.h>

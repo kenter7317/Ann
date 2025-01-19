@@ -1,10 +1,10 @@
 #include <ae2f/Float.h>
 #include <ae2fCL/Loc.h>
 #include <ae2fCL/Ann/Sizes/cl_mem.h>
-#include <ae2fCL/Ann/Perc.h>
+#include <ae2fCL/Ann/Slp.h>
 
-__kernel void ae2fCL_eAnnKernsPercPredict(
-    __global const ae2fCL_AnnPerc* _this,
+__kernel void ae2fCL_eAnnKernsSlpPredict(
+    __global const ae2fCL_AnnSlp* _this,
     __global ae2f_float_t* out,
     const __global ae2f_float_t* field,
     const __global ae2f_float_t* in,

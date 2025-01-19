@@ -1,17 +1,21 @@
-#ifndef ae2fCL_Ann_Perc_hpp
-#define ae2fCL_Ann_Perc_hpp
+#ifndef ae2fCL_Ann_Slp_hpp
+#define ae2fCL_Ann_Slp_hpp
 
-#include "Perc.h"
+#include "Slp.h"
 
 namespace ae2fCL { namespace Ann {
-    using rPerc = ae2fCL_AnnPerc; 
-    struct cPerc : public rPerc {
-        inline cPerc(
+    using rSlp = ae2fCL_AnnSlp; 
+    struct cSlp : public rSlp {
+        inline ~cSlp() {
+            ae2fCL_AnnSlpDel(this);
+        }
+
+        inline cSlp(
             ae2f_err_t* err_optional,
             const ae2f_float_t* inputs_optional,
             size_t inputsCount,
             ae2fCL_fpAnnAct_t mAct,
-            ae2fCL_fpAnnPercGetLoss_t fpGetLoss,
+            ae2fCL_fpAnnSlpGetLoss_t fpGetLoss,
             cl_context ctx,
             cl_command_queue queue,
             cl_bool blocking_read,
@@ -22,7 +26,7 @@ namespace ae2fCL { namespace Ann {
             ae2f_err_t err = 0;
             if(!err_optional) err_optional = &err;
 
-            *err_optional |= ae2fCL_AnnPercMk(
+            *err_optional |= ae2fCL_AnnSlpMk(
                 this, inputs_optional, inputsCount, 
                 mAct, fpGetLoss, ctx, queue, 
                 blocking_read, num_events_in_wait_list, 
@@ -31,7 +35,7 @@ namespace ae2fCL { namespace Ann {
         }
 
         inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const {
-            return ae2fCL_AnnPercWeightCheck(this, buff, queue);
+            return ae2fCL_AnnSlpWeightCheck(this, buff, queue);
         }
 
         inline ae2f_err_t Predict(
@@ -46,7 +50,7 @@ namespace ae2fCL { namespace Ann {
             const cl_event *event_wait_list,
             cl_event *event
         ) const {
-            return ae2fCL_AnnPercPredictA(
+            return ae2fCL_AnnSlpPredictA(
                 this, in, out, in_idx, out_idx, 
                 outbuff_optional, queue, blocking_event, 
                 num_events_in_wait_list, event_wait_list, event
@@ -64,7 +68,7 @@ namespace ae2fCL { namespace Ann {
             cl_event *event,
             cl_context context
         ) const {
-            return ae2fCL_AnnPercPredictB(
+            return ae2fCL_AnnSlpPredictB(
                 this, in, in_idx,
                 outbuff_optional, context,
                 queue, blocking_event, num_events_in_wait_list,
@@ -82,7 +86,7 @@ namespace ae2fCL { namespace Ann {
             cl_event *event,
             cl_context context
         ) const {
-            return ae2fCL_AnnPercPredictBuffAuto(
+            return ae2fCL_AnnSlpPredictBuffAuto(
                 this, in, out, queue,
                 blocking_read, num_events_in_wait_list,
                 event_wait_list, event, context
@@ -105,7 +109,7 @@ namespace ae2fCL { namespace Ann {
             const cl_event *event_wait_list,
             cl_event *event
         ) {
-            return ae2fCL_AnnPercTrainA(
+            return ae2fCL_AnnSlpTrainA(
                 this, in, out, in_idx, out_idx,
                 goal, learning_rate, diff_ret_optional,
                 queue, blocking_read, num_events_in_wait_list,
@@ -129,7 +133,7 @@ namespace ae2fCL { namespace Ann {
 
             cl_context context
         ) {
-            return ae2fCL_AnnPercTrainB(
+            return ae2fCL_AnnSlpTrainB(
                 this, in, in_idx, goal, learning_rate,
                 diff_ret_optional, queue, blocking_read,
                 num_events_in_wait_list, event_wait_list,

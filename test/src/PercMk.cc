@@ -1,6 +1,6 @@
 #include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2fCL/Ann/Perc.h>
+#include <ae2fCL/Ann/Slp.h>
 #include <stdio.h>
 
 
@@ -18,7 +18,7 @@ int main() {
     ae2f_float_t Buff[] = {
         -1, -1, -1, -1, -1
     };
-    ae2fCL_AnnPerc perceptron;
+    ae2fCL_AnnSlp Slpeptron;
     cl_command_queue queue = 0;
     cl_mem inbuff = 0;
     cl_mem outbuff = 0;
@@ -38,8 +38,8 @@ int main() {
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnPercMk(
-        &perceptron,
+    err = ae2fCL_AnnSlpMk(
+        &Slpeptron,
         0, sizeof(Buff)/sizeof(ae2f_float_t), 
         Sigmoid, 0, context, 
         queue, CL_TRUE, 0, 0, 0
@@ -47,7 +47,7 @@ int main() {
     #if 1
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnPercWeightCheck(&perceptron, Buff, queue);
+    err = ae2fCL_AnnSlpWeightCheck(&Slpeptron, Buff, queue);
     CHECK_ERR(err, CL_SUCCESS, __failure);
     
     for(size_t i = 0; i < sizeof(Buff) / sizeof(ae2f_float_t); i++) {
@@ -74,26 +74,26 @@ int main() {
     if(!outbuff) goto __failure;
     if(err) goto __failure;
 
-    err = ae2fCL_AnnPercPredictA(
-        &perceptron, inbuff, outbuff, 0, 0, &outfloat,
+    err = ae2fCL_AnnSlpPredictA(
+        &Slpeptron, inbuff, outbuff, 0, 0, &outfloat,
         queue, CL_TRUE, 0, 0, 0
     );
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        perceptron.mBias, 
-        perceptron.mBias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        Slpeptron.mBias, 
+        Slpeptron.mBias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < perceptron.mgWeightLen; i++) 
+    for(size_t i = 0; i < Slpeptron.mgWeightLen; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += perceptron.mBias;
-    out_checksum = perceptron.mAct(out_checksum);
+    out_checksum += Slpeptron.mBias;
+    out_checksum = Slpeptron.mAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -107,6 +107,6 @@ int main() {
     if(queue) clReleaseCommandQueue(queue);
     if(outbuff) clReleaseMemObject(outbuff);
     if(inbuff) clReleaseMemObject(inbuff);
-    if(!perceptron.mgWeight) ae2fCL_AnnPercDel(&perceptron);
+    if(!Slpeptron.mgWeight) ae2fCL_AnnSlpDel(&Slpeptron);
     return err;
 }

@@ -1,7 +1,8 @@
 #include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2fCL/Ann/Slp.h>
+#include <ae2fCL/Ann/Slp.hpp>
 #include <stdio.h>
+#include <memory>
 
 #define gLearningRate 0.1
 #define gEpochs 10
@@ -17,6 +18,23 @@ int main() {
     cl_device_id device = 0;
     cl_context context = 0;
     ae2f_err_t err2 = 0;
+    ae2f_float_t diff_got[1];
+    ae2f_float_t outbuff[1] = {  5 };
+    cl_mem inbuff;
+    cl_command_queue queue;
+
+    // [1, 1], [1, 0], [0, 1], [0, 0]
+    ae2f_float_t ins[] = {
+        1, 1, 1, 0, 0, 1, 0, 0
+    };
+
+    union __Slp {
+        uint64_t r[sizeof(ae2fCL::Ann::cSlp)];
+        ae2fCL::Ann::cSlp Class;
+
+        inline __Slp() : r{0, } {}
+        inline ~__Slp() { Class.~cSlp(); }
+    } Slpeptron;
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -26,15 +44,14 @@ int main() {
 
     context = clCreateContext(0, 1, &device, 0, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
-    cl_command_queue queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
+    queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    ae2fCL_AnnSlp Slpeptron;
-    err2 = ae2fCL_AnnSlpMk(
-        &Slpeptron, 0, 2,
+    new (Slpeptron.r) ae2fCL::Ann::cSlp(
+        &err2, 0, 2,
         Step, 0,
         context, queue, CL_TRUE, 0, 0, 0 
     );
@@ -42,22 +59,17 @@ int main() {
         err = err2; goto __failure;
     }
 
+
     // [1, 1], [1, 0], [0, 1], [0, 0]
-    ae2f_float_t ins[] = {
-        1, 1, 1, 0, 0, 1, 0, 0
-    };
-    // [1, 1], [1, 0], [0, 1], [0, 0]
-    cl_mem inbuff = clCreateBuffer(
+    inbuff = clCreateBuffer(
         context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
         sizeof(ins), ins, &err
     );
     if(err) goto __failure;
-    ae2f_float_t diff_got[1];
+    
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2fCL_AnnSlpTrain(
-            &Slpeptron, inbuff,
-            0, 0,
-            0, 1, gLearningRate, (void*)diff_got,
+        err2 = Slpeptron.Class.Train(
+            inbuff, 0, 1.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -65,10 +77,8 @@ int main() {
         }
         printf("Diff from 1, 1: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
-            &Slpeptron, inbuff,
-            0, 2,
-            0, 0, gLearningRate, (void*)diff_got,
+        err2 = Slpeptron.Class.Train(
+            inbuff, 2, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -76,10 +86,8 @@ int main() {
         }
         printf("Diff from 0, 0: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
-            &Slpeptron, inbuff,
-            0, 4,
-            0, 0, gLearningRate, (void*)diff_got,
+        err2 = Slpeptron.Class.Train(
+            inbuff, 4, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -87,10 +95,8 @@ int main() {
         }
         printf("Diff from 0, 1: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
-            &Slpeptron, inbuff,
-            0, 6,
-            0, 0, gLearningRate, (void*)diff_got,
+        err2 = Slpeptron.Class.Train(
+            inbuff, 6, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -98,10 +104,10 @@ int main() {
         }
         printf("Diff from 1, 0: %f\n\n", diff_got[0]);
     }
-    ae2f_float_t outbuff[1] = {  5 };
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
-        &Slpeptron, ins + 6, outbuff,
+
+    err2 = Slpeptron.Class.Predict(
+        ins + 6, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -111,8 +117,8 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
-        &Slpeptron, ins + 4, outbuff,
+    err2 = Slpeptron.Class.Predict(
+        ins + 4, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -122,8 +128,8 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
-        &Slpeptron, ins + 2, outbuff,
+    err2 = Slpeptron.Class.Predict(
+        ins + 2, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -134,8 +140,8 @@ int main() {
     }
 
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
-        &Slpeptron, ins, outbuff,
+    err2 = Slpeptron.Class.Predict(
+        ins, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -151,6 +157,8 @@ int main() {
     if(inbuff) clReleaseMemObject(inbuff);
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
-    if(!Slpeptron.mgWeight) ae2fCL_AnnSlpDel(&Slpeptron); 
+
+
+
     return err;
 }

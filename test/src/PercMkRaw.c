@@ -17,7 +17,7 @@ int main() {
 
 
     const char *kernelSource = 
-    #include "../../src/CLCode/Perc.clh"
+    #include "../../src/CLCode/Slp.clh"
     "";
 
     cl_program program = clCreateProgramWithSource(context, 1, &kernelSource, NULL, NULL);
@@ -32,7 +32,7 @@ int main() {
     printf("Build log:\n%s\n", log);
     free(log);
 
-    cl_kernel kernel = clCreateKernel(program, "ae2fCL_eAnnKernsPercMkRand", NULL);
+    cl_kernel kernel = clCreateKernel(program, "ae2fCL_eAnnKernsSlpMkRand", NULL);
 
     const size_t numElements = 5;
     ae2f_float_t *output = (ae2f_float_t*)malloc(numElements * sizeof(ae2f_float_t));
