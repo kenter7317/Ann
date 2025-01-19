@@ -4,35 +4,21 @@
 #include "Slp.h"
 
 namespace ae2fCL { namespace Ann {
-    using rSlp = ae2fCL_AnnSlp; 
-    struct cSlp : public rSlp {
-        inline ~cSlp() {
-            ae2fCL_AnnSlpDel(this);
-        }
+    using rSlp = ae2fCL_AnnSlp;
 
-        inline cSlp(
-            ae2f_err_t* err_optional,
-            const ae2f_float_t* inputs_optional,
-            size_t inputsCount,
-            ae2fCL_fpAnnAct_t mAct,
-            ae2fCL_fpAnnSlpGetLoss_t fpGetLoss,
-            cl_context ctx,
-            cl_command_queue queue,
-            cl_bool blocking_read,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event
-        ) {
-            ae2f_err_t err = 0;
-            if(!err_optional) err_optional = &err;
+    struct cSlp;
+    class cSlpRefer : public rSlp {
+        friend cSlp;
+        constexpr cSlpRefer() : rSlp() {}
+        
+        public:
+        constexpr cSlpRefer(const rSlp& slp) : rSlp(slp) {}
+        constexpr cSlpRefer(const rSlp&& slp) : rSlp(slp) {}
 
-            *err_optional |= ae2fCL_AnnSlpMk(
-                this, inputs_optional, inputsCount, 
-                mAct, fpGetLoss, ctx, queue, 
-                blocking_read, num_events_in_wait_list, 
-                event_wait_list, event
-            );
-        }
+        constexpr cSlpRefer(const rSlp& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSlpGetLoss_t loss) 
+            : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
+        constexpr cSlpRefer(const rSlp&& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSlpGetLoss_t loss) 
+            : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
 
         inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const {
             return ae2fCL_AnnSlpWeightCheck(this, buff, queue);
@@ -140,6 +126,53 @@ namespace ae2fCL { namespace Ann {
                 event, context
             );
         }
+    };
+
+    struct cSlp : public cSlpRefer {
+        inline ~cSlp() {
+            ae2fCL_AnnSlpDel(this);
+        }
+
+        inline cSlp(
+            ae2f_err_t* err_optional,
+            const ae2f_float_t* inputs_optional,
+            size_t inputsCount,
+            ae2fCL_fpAnnAct_t mAct,
+            ae2fCL_fpAnnSlpGetLoss_t fpGetLoss,
+            cl_context ctx,
+            cl_command_queue queue,
+            cl_bool blocking_read,
+            cl_uint num_events_in_wait_list,
+            const cl_event *event_wait_list,
+            cl_event *event
+        ) {
+            ae2f_err_t err = 0;
+            if(!err_optional) err_optional = &err;
+
+            *err_optional |= ae2fCL_AnnSlpMk(
+                this, inputs_optional, inputsCount, 
+                mAct, fpGetLoss, ctx, queue, 
+                blocking_read, num_events_in_wait_list, 
+                event_wait_list, event
+            );
+        }
+
+        inline cSlp(
+            ae2f_err_t* err_optional,
+            size_t WeightsCount,
+            ae2fCL_fpAnnAct_t mAct,
+            ae2fCL_fpAnnSlpGetLoss_t fpGetLoss,
+            cl_context ctx,
+            cl_command_queue queue,
+            cl_bool blocking_read,
+            cl_uint num_events_in_wait_list,
+            const cl_event* event_wait_list,
+            cl_event* event
+        ) : cSlp(
+            err_optional, 0, WeightsCount, mAct, 
+            fpGetLoss, ctx, queue, blocking_read, 
+            num_events_in_wait_list, event_wait_list, event
+        ) {}
     };
 }}
 
