@@ -4,6 +4,8 @@
 #include <ae2f/Call.h>
 #include <ae2f/Cast.h>
 
+/// @brief 
+/// 
 enum ae2fCL_eAnnKerns {
     ae2fCL_eAnnKernsPercMkRand,
     ae2fCL_eAnnKernsPercPredict,
@@ -13,17 +15,25 @@ enum ae2fCL_eAnnKerns {
     ae2fCL_eAnnKerns_LEN
 };
 
+/// @brief 
 ae2f_extern ae2f_SHAREDCALL 
 cl_kernel ae2fCL_AnnKerns[
     ae2fCL_eAnnKerns_LEN
 ];
 
+/// @brief 
+/// @param ctx 
+/// @param devCount 
+/// @param[in] devs  
+/// @return 
 ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_AnnMk(
     cl_context ctx,
     cl_uint devCount,
     const cl_device_id* devs
 );
 
+/// @brief 
+/// @return 
 ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_AnnDel();
 
 #endif

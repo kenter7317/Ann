@@ -86,7 +86,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
         &_this->mgWeight
     );
     if(err) return ae2f_errGlob_NFOUND;
-
+    
     #if cl_mem_SIZE == 8
         err = clSetKernelArg(
             K, 1,
@@ -129,7 +129,7 @@ ae2f_err_t ae2fCL_AnnPercMk(
 
 ae2f_SHAREDEXPORT 
 ae2f_err_t ae2fCL_AnnPercPredict(
-    ae2fCL_AnnPerc* _this,
+    const ae2fCL_AnnPerc* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -424,7 +424,7 @@ ae2f_err_t ae2fCL_AnnPercTrain(
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
-    ae2fCL_AnnPerc* _this,
+    const ae2fCL_AnnPerc* _this,
     const ae2f_float_t* in,
     ae2f_float_t* out,
 

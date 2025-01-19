@@ -101,24 +101,13 @@ int main() {
     ae2f_float_t outbuff[1] = {  5 };
 
     err2 = ae2fCL_AnnPercPredictBuffAuto(
-        &perceptron, ins, outbuff,
-        queue, CL_TRUE, 0, 0, 0, context
-    ); if(err2) {
-        err = err2; goto __failure;
-    } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] < 0.5) {
-        printf("AND 1, 1 no good\n");
-        err = ae2f_errGlob_IMP_NOT_FOUND;
-    }
-
-    err2 = ae2fCL_AnnPercPredictBuffAuto(
-        &perceptron, ins + 2, outbuff,
+        &perceptron, ins + 6, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        printf("AND 0, 0 no good\n");
+        printf("AND 1, 0 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
@@ -134,13 +123,25 @@ int main() {
     }
 
     err2 = ae2fCL_AnnPercPredictBuffAuto(
-        &perceptron, ins + 6, outbuff,
+        &perceptron, ins + 2, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        printf("AND 1, 0 no good\n");
+        printf("AND 0, 0 no good\n");
+        err = ae2f_errGlob_IMP_NOT_FOUND;
+    }
+
+
+    err2 = ae2fCL_AnnPercPredictBuffAuto(
+        &perceptron, ins, outbuff,
+        queue, CL_TRUE, 0, 0, 0, context
+    ); if(err2) {
+        err = err2; goto __failure;
+    } printf("Checking the value: %f\n", outbuff[0]);
+    if(outbuff[0] < 0.5) {
+        printf("AND 1, 1 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 

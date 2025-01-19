@@ -1,6 +1,7 @@
 # CL-Ann
-- Rel-v0.0.0
-> Template project under https://github.com/ae2f/Core.
+> Rel-v0.0.0
+
+A simple ann project with opencl written in C.
 
 # See Also
 - ae2f::Core-Template

@@ -53,14 +53,6 @@ __kernel void ae2fCL_eAnnKernsPercPredict(
 
     *__got = in[globalid + in_idx] * field[globalid];
 
-    
-    #pragma region Switch
-    #define __Case(name) \
-    case ae2fCL_mAnnActEnumDef(name): \
-    outbuff = ae2fCL_mAnnActFuncDef(name)(outbuff); \
-    break;
-    #pragma endregion
-
     ae2fCL_whenCL(barrier(CLK_LOCAL_MEM_FENCE));
 
     size_t blockSize = get_local_size(0);

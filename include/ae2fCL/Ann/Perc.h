@@ -11,6 +11,13 @@
 #include "Act.h"
 
 #include <ae2f/Pack/Beg.h>
+
+/// @brief
+/// @param out
+/// @param goal
+///
+/// @return
+/// 
 typedef ae2f_float_t(*ae2fCL_fpAnnPercGetLoss_t)
     ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
 
@@ -27,7 +34,7 @@ typedef struct ae2fCL_AnnPerc {
 #ifndef ae2fCL_LocAsCL
 ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnPercMk(
     ae2f_struct ae2fCL_AnnPerc* _this,
-    const ae2f_float_t* inputs,
+    const ae2f_float_t* inputs_optional,
     size_t inputsCount,
     ae2fCL_fpAnnAct_t mAct,
     ae2fCL_fpAnnPercGetLoss_t fpGetLoss,
@@ -57,7 +64,7 @@ clEnqueueReadBuffer( \
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnPercPredict(
-    ae2fCL_AnnPerc* _this,
+    const ae2fCL_AnnPerc* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -85,7 +92,7 @@ ae2fCL_AnnPercPredict( \
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnPercPredictBuffAuto(
-    ae2fCL_AnnPerc* _this,
+    const ae2fCL_AnnPerc* _this,
     const ae2f_float_t* in,
     ae2f_float_t* out,
     cl_command_queue queue,
