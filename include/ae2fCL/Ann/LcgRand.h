@@ -43,7 +43,12 @@ typedef union ae2fCL_ui32_64 {
     uint64_t u64;
 } ae2fCL_ui32_64;
 
-/// @brief Pre-defined global seed. 
+/// @brief 
+/// Pre-defined global seed. \n
+/// Simply change this would change the global seed for lcgG.
+///
+/// @see ae2fCL_AnnLcgRandG
+/// @see ae2fCL_AnnLcgRandRealG
 ae2f_extern ae2f_SHAREDCALL ae2fCL_ui32_64 
 ae2fCL_AnnLcgRandSeed;
 
