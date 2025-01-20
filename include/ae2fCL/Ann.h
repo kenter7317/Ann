@@ -1,3 +1,5 @@
+/// @file Ann.h
+
 #ifndef ae2fCL_Ann_h
 #define ae2fCL_Ann_h
 #include <CL/cl.h>
@@ -16,7 +18,7 @@ enum ae2fCL_eAnnKerns {
 };
 
 /// @brief 
-/// 
+/// The vector where kernels are located.
 ae2f_extern ae2f_SHAREDCALL 
 cl_kernel ae2fCL_AnnKerns[
     ae2fCL_eAnnKerns_LEN

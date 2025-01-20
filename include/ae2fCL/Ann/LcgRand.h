@@ -1,3 +1,5 @@
+/// @file LcgRand.h
+
 #ifndef ae2fCL_Ann_LcgRand_h
 #define ae2fCL_Ann_LcgRand_h
 
@@ -27,8 +29,9 @@
 /// @param seed [uint64_t] 
 /// @return [ae2f_float_t] Generated number from 0 to 1.
 /// 
-/// @see ae2fCL_AnnLcgRand
-/// @see ae2fCL_AnnLcgRandDistribute
+/// See
+/// @ref ae2fCL_AnnLcgRand
+/// @ref ae2fCL_AnnLcgRandDistribute
 #define ae2fCL_AnnLcgRandReal(seed) ae2fCL_AnnLcgRandDistribute(ae2fCL_AnnLcgRand(seed))
 
 #include <ae2f/Call.h>

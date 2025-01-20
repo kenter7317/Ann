@@ -19,7 +19,11 @@ if(NOT TARGET CL-Ann)
         "src/LcgRand.c"
         
         "include/ae2fCL/Ann/Slp.h"
+        "include/ae2fCL/Ann/Slp.hpp"
         "src/Slp.c"
+
+        "include/ae2fCL/Ann/SlpMultiple.h"
+        "src/SlpMultiple.c"
     )
     
     target_link_libraries(CL-Ann PUBLIC CL-Core)

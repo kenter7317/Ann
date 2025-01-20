@@ -1,4 +1,4 @@
-/// @file Single layered perceptron.
+/// @file Slp.h
 
 #ifndef ae2fCL_Ann_Slp_h
 #define ae2fCL_Ann_Slp_h
@@ -10,7 +10,6 @@
 #include <ae2f/errGlob.h>
 
 #include "Act.h"
-
 #include <ae2f/Pack/Beg.h>
 
 /// @brief
@@ -20,8 +19,7 @@
 /// and that value will be added to each weights field and bias.
 /// @param out Predicted value
 /// @param goal Expected value (wanted)
-/// @return
-/// Calculated loss.
+/// @return Calculated loss.
 typedef ae2f_float_t(*ae2fCL_fpAnnSlpGetLoss_t)
     ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
 
@@ -66,6 +64,7 @@ typedef struct ae2fCL_AnnSlp {
 
 #ifndef ae2fCL_LocAsCL
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// Initialises the class. \n
 /// The perceptron made by this must pass [ae2fCL_AnnSlpDel] for releasing the resources.
@@ -102,6 +101,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnSlpMk(
     cl_event *event
 );
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// Release the resource for [_this].
 /// @param[in, out] _this 
@@ -110,8 +110,9 @@ ae2f_err_t ae2fCL_AnnSlpDel(
     ae2fCL_AnnSlp* _this
 );
 
+/// @memberof ae2fCL_AnnSlp
 /// @warning 
-/// Parameter buffer [_out]'s byte length must be over `_this->mgWeightLen * sizeof(ae2f_float_T)`.
+/// Parameter buffer [_out]'s byte length must be over `_this->mgWeightLen * sizeof(ae2f_float_t)`.
 /// @brief
 /// Copies all weights to [_out].
 /// @param[in] _this [const ae2fCL_AnnSlp*] The handler for Weights.
@@ -127,6 +128,7 @@ clEnqueueReadBuffer( \
       0, 0, 0 \
 )
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Predict the output.
 /// 
@@ -136,6 +138,7 @@ clEnqueueReadBuffer( \
 /// That value with a bias of the model will pass an activasion function, and that will be considered as an output.
 /// 
 /// # There are options laballed.
+/// 
 /// It means when if you see the arguments. \n
 /// Some of the paramaters may be ignored since past parameter fulfilled the particular condition.
 /// 
@@ -184,6 +187,7 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     cl_context context_optionalB
 );
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Predict the output.
 /// 
@@ -224,12 +228,14 @@ ae2fCL_AnnSlpPredict( \
     queue, blocking_event, num_events_in_wait_list, event_wait_list, event, 0\
 )
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Predict the output.
 /// 
 /// See [ae2fCL_AnnSlpPredict]
 /// 
 /// # Option B
+/// 
 /// This option allocates new OpenCL Memory Object, so you don't need to manually handle.
 /// 
 /// @param[in] _this 
@@ -256,6 +262,7 @@ ae2fCL_AnnSlpPredict( \
     queue, blocking_event, num_events_in_wait_list, event_wait_list, event, context\
 )
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Predict the output.
 /// 
@@ -291,6 +298,7 @@ ae2f_err_t ae2fCL_AnnSlpPredictBuffAuto(
     cl_context context
 );
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Manages to correct the weight and bias for expected output value [goal].
 /// 
@@ -343,6 +351,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     cl_context context_optionalB
 );
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Manages to correct the weight and bias for expected output value [goal].
 /// 
@@ -376,6 +385,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 #define ae2fCL_AnnSlpTrainA(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event) \
 ae2fCL_AnnSlpTrain(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, (cl_context)0)
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// # Manages to correct the weight and bias for expected output value [goal].
 /// 

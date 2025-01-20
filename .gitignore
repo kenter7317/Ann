@@ -10,3 +10,6 @@ clinclude/*
 
 submod
 include/ae2fCL/Ann/Sizes/*
+
+Doxyfile
+html
