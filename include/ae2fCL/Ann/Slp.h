@@ -99,7 +99,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnSlpMk(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
@@ -108,7 +108,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnSlpMk(
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpDel(
     ae2fCL_AnnSlp* _this
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @warning 
@@ -185,7 +185,7 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     const cl_event *event_wait_list,
     cl_event *event,
     cl_context context_optionalB
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
@@ -296,7 +296,7 @@ ae2f_err_t ae2fCL_AnnSlpPredictBuffAuto(
     const cl_event *event_wait_list,
     cl_event *event,
     cl_context context
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
@@ -349,7 +349,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     cl_event *event,
 
     cl_context context_optionalB
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 

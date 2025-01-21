@@ -4,8 +4,8 @@
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnSlpMultipleMk(
     ae2fCL_AnnSlpMultiple* _this,
-    size_t* inputsCount,
-    size_t* padCount,
+    const size_t* inputsCount,
+    const size_t* padCount,
     size_t inputsCountGlobal,
     size_t outputCount,
     ae2fCL_fpAnnAct_t mAct,
@@ -18,22 +18,29 @@ ae2f_err_t ae2fCL_AnnSlpMultipleMk(
     cl_event *event
 ) {
     ae2f_err_t _ = 0;
+    #define return(code) {_ |= code; goto END;}
+    cl_event* Events = event;
+
     size_t i = 0, maxbuff;
-    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    _this->List = calloc(sizeof(ae2fCL_AnnSlpMultipleEl), sizeof(outputCount));
-    if(!_this->List) return ae2f_errGlob_ALLOC_FAILED;
+    if(!_this) return(ae2f_errGlob_PTR_IS_NULL);
+    _this->List = calloc(sizeof(ae2fCL_AnnSlpMultipleEl), outputCount);
+    if(!_this->List) return(ae2f_errGlob_ALLOC_FAILED);
+    if(!Events && !(Events = malloc(sizeof(cl_event) * outputCount)));
+
     _this->OutCount = outputCount;
     _this->MaxInCount = inputsCountGlobal;
+    if(event_wait_list)
+    clWaitForEvents(num_events_in_wait_list, event_wait_list);
 
     __OutputCountIsProvided:
-    for(i = 0; i < outputCount - 1; i++) {
+    for(i = 0; i < outputCount; i++) {
         _ |= ae2fCL_AnnSlpMk(
             _this->List[i].Perceptron,
             0, 
             inputsCount ? inputsCount[i] : inputsCountGlobal, 
             mAct,
             fpGetLoss, ctx,
-            queue, CL_TRUE, 0, 0, 0
+            queue, CL_FALSE, 0, 0, Events + i
         );
 
         if(padCount)
@@ -43,25 +50,13 @@ ae2f_err_t ae2fCL_AnnSlpMultipleMk(
             _this->MaxInCount = maxbuff;
         }
     }
-
-    _ |= ae2fCL_AnnSlpMk(
-        _this->List[i].Perceptron,
-        0, 
-        inputsCount ? inputsCount[i] : inputsCountGlobal, 
-        mAct,
-        fpGetLoss, ctx,
-        queue, blocking_read, 
-        num_events_in_wait_list, 
-        event_wait_list, event
-    );
-
-    if(padCount)
-    _this->List[i].InputIdxPad = maxbuff = padCount[i];
-
-    if(_this->MaxInCount < (maxbuff += _this->List[i].Perceptron->mgWeightLen)) {
-        _this->MaxInCount = maxbuff;
-    }
     
+    if(blocking_read || !event)
+    clWaitForEvents(outputCount, Events);
+
+    END:
+    if(Events && Events != event) free(Events);
+    #undef return
     return _;
 }
 
@@ -72,6 +67,8 @@ ae2f_err_t ae2fCL_AnnSlpMultipleDel(
     ae2f_err_t _ = 0;
 
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+    if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
+
     for(size_t i = 0; i < _this->OutCount; i++) {
         _ |= ae2fCL_AnnSlpDel(_this->List[i].Perceptron);
     } free(_this->List);
@@ -82,7 +79,7 @@ ae2f_err_t ae2fCL_AnnSlpMultipleDel(
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnSlpMultiplePredict(
-    ae2fCL_AnnSlpMultiple* _this,
+    const ae2fCL_AnnSlpMultiple* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -99,8 +96,11 @@ ae2f_err_t ae2fCL_AnnSlpMultiplePredict(
     cl_event* Events = event;
     #define return(code) {ret |= code; goto END;}
 
-    clWaitForEvents(num_events_in_wait_list, event_wait_list);
+    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+    if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
 
+    clWaitForEvents(num_events_in_wait_list, event_wait_list);
+    
     if(
         !event && 
         !(Events = malloc(sizeof(cl_event) * _this->OutCount))
@@ -156,6 +156,10 @@ ae2f_err_t ae2fCL_AnnSlpMultipleTrain(
     ae2f_err_t ret = 0;
     cl_event* Events = event;
     #define return(code) {ret |= code; goto END;}
+
+    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+    if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
+
     clWaitForEvents(num_events_in_wait_list, event_wait_list);
 
     if(

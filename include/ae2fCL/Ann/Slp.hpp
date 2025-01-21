@@ -10,18 +10,18 @@ namespace ae2fCL { namespace Ann {
     struct cSlp;
     class cSlpRefer : public rSlp {
         friend cSlp;
-        constexpr cSlpRefer() : rSlp() {}
+        constexpr cSlpRefer() noexcept : rSlp() {}
         
         public:
-        constexpr cSlpRefer(const rSlp& slp) : rSlp(slp) {}
-        constexpr cSlpRefer(const rSlp&& slp) : rSlp(slp) {}
+        constexpr cSlpRefer(const rSlp& slp) noexcept : rSlp(slp) {}
+        constexpr cSlpRefer(const rSlp&& slp) noexcept : rSlp(slp) {}
 
         constexpr cSlpRefer(const rSlp& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSlpGetLoss_t loss) 
-            : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
+            noexcept : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
         constexpr cSlpRefer(const rSlp&& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSlpGetLoss_t loss) 
-            : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
+            noexcept : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
 
-        inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const {
+        inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const noexcept {
             return ae2fCL_AnnSlpWeightCheck(this, buff, queue);
         }
 
@@ -36,7 +36,7 @@ namespace ae2fCL { namespace Ann {
             cl_uint num_events_in_wait_list,
             const cl_event *event_wait_list,
             cl_event *event
-        ) const {
+        ) const noexcept {
             return ae2fCL_AnnSlpPredictA(
                 this, in, out, in_idx, out_idx, 
                 outbuff_optional, queue, blocking_event, 
@@ -54,7 +54,7 @@ namespace ae2fCL { namespace Ann {
             const cl_event *event_wait_list,
             cl_event *event,
             cl_context context
-        ) const {
+        ) const noexcept {
             return ae2fCL_AnnSlpPredictB(
                 this, in, in_idx,
                 outbuff_optional, context,
@@ -72,7 +72,7 @@ namespace ae2fCL { namespace Ann {
             const cl_event *event_wait_list,
             cl_event *event,
             cl_context context
-        ) const {
+        ) const noexcept {
             return ae2fCL_AnnSlpPredictBuffAuto(
                 this, in, out, queue,
                 blocking_read, num_events_in_wait_list,
@@ -95,7 +95,7 @@ namespace ae2fCL { namespace Ann {
             cl_uint num_events_in_wait_list,
             const cl_event *event_wait_list,
             cl_event *event
-        ) {
+        ) noexcept {
             return ae2fCL_AnnSlpTrainA(
                 this, in, out, in_idx, out_idx,
                 goal, learning_rate, diff_ret_optional,
@@ -119,7 +119,7 @@ namespace ae2fCL { namespace Ann {
             cl_event *event,
 
             cl_context context
-        ) {
+        ) noexcept {
             return ae2fCL_AnnSlpTrainB(
                 this, in, in_idx, goal, learning_rate,
                 diff_ret_optional, queue, blocking_read,
@@ -130,7 +130,7 @@ namespace ae2fCL { namespace Ann {
     };
 
     struct cSlp : public cSlpRefer {
-        inline ~cSlp() {
+        inline ~cSlp() noexcept {
             ae2fCL_AnnSlpDel(this);
         }
 
@@ -146,7 +146,7 @@ namespace ae2fCL { namespace Ann {
             cl_uint num_events_in_wait_list,
             const cl_event *event_wait_list,
             cl_event *event
-        ) {
+        ) noexcept {
             ae2f_err_t err = 0;
             if(!err_optional) err_optional = &err;
 
@@ -169,7 +169,7 @@ namespace ae2fCL { namespace Ann {
             cl_uint num_events_in_wait_list,
             const cl_event* event_wait_list,
             cl_event* event
-        ) : cSlp(
+        ) noexcept : cSlp(
             err_optional, 0, WeightsCount, mAct, 
             fpGetLoss, ctx, queue, blocking_read, 
             num_events_in_wait_list, event_wait_list, event

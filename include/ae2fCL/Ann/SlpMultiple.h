@@ -15,11 +15,14 @@ typedef struct ae2fCL_AnnSlpMultiple {
     size_t OutCount, MaxInCount;
 } ae2fCL_AnnSlpMultiple;
 
+#define ae2fCL_AnnSlpMultipleGetAct(_this, i) (ae2f_const_cast(ae2fCL_AnnSlpMultiple*, _this)->List[i].Perceptron->mAct)
+#define ae2fCL_AnnSlpMultipleGetLoss(_this, i) (ae2f_const_cast(ae2fCL_AnnSlpMultiple*, _this)->List[i].Perceptron->mpGetLoss)
+
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMultipleMk(
     ae2fCL_AnnSlpMultiple* _this,
-    size_t* inputsCount_optionalA,
-    size_t* padCount_optional,
+    const size_t* inputsCount_optionalA,
+    const size_t* padCount_optional,
     size_t inputsCountGlobal_optionalB,
     size_t outputCount,
     ae2fCL_fpAnnAct_t mAct,
@@ -30,16 +33,16 @@ ae2f_err_t ae2fCL_AnnSlpMultipleMk(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-);
+) noexcept;
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMultipleDel(
     ae2fCL_AnnSlpMultiple* _this
-);
+) noexcept;
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMultiplePredict(
-    ae2fCL_AnnSlpMultiple* _this,
+    const ae2fCL_AnnSlpMultiple* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -51,7 +54,7 @@ ae2f_err_t ae2fCL_AnnSlpMultiplePredict(
     const cl_event *event_wait_list,
     cl_event *event,
     cl_context context_optionalB
-);
+) noexcept;
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMultipleTrain(
@@ -73,6 +76,6 @@ ae2f_err_t ae2fCL_AnnSlpMultipleTrain(
     cl_event *event,
 
     cl_context context_optionalB
-);
+) noexcept;
 
 #endif
