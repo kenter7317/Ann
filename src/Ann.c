@@ -1,7 +1,7 @@
 #include <ae2fCL/Ann.h>
 #include <ae2fCL/Loc.h>
 static const char* __clsrc =
-#include "CLCode/Slp.clh"
+#include "CLCode/Sp.clh"
 "";
 
 #include <stdio.h>
@@ -34,9 +34,9 @@ cl_int ae2fCL_AnnMk(
         clCreateKernel(LIB, #name, &_err); \
         if(_err != CL_SUCCESS) return _err; \
     }
-    LocCreateKernel(ae2fCL_eAnnKernsSlpMkRand);
-    LocCreateKernel(ae2fCL_eAnnKernsSlpPredict);
-    LocCreateKernel(ae2fCL_eAnnKernsSlpTrain);
+    LocCreateKernel(ae2fCL_eAnnKernsSpMkRand);
+    LocCreateKernel(ae2fCL_eAnnKernsSpPredict);
+    LocCreateKernel(ae2fCL_eAnnKernsSpTrain);
 
     #undef LocCreateKernel
     return _err;

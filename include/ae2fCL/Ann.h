@@ -9,9 +9,9 @@
 /// @brief 
 /// 
 enum ae2fCL_eAnnKerns {
-    ae2fCL_eAnnKernsSlpMkRand,
-    ae2fCL_eAnnKernsSlpPredict,
-    ae2fCL_eAnnKernsSlpTrain,
+    ae2fCL_eAnnKernsSpMkRand,
+    ae2fCL_eAnnKernsSpPredict,
+    ae2fCL_eAnnKernsSpTrain,
 
     /// @brief Count refers to @see ae2fCL_AnnKerns.
     ae2fCL_eAnnKerns_LEN

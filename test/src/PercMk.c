@@ -1,6 +1,6 @@
 #include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2fCL/Ann/Slp.h>
+#include <ae2fCL/Ann/Sp.h>
 #include <stdio.h>
 
 
@@ -18,7 +18,7 @@ int main() {
     ae2f_float_t Buff[] = {
         -1, -1, -1, -1, -1
     };
-    ae2fCL_AnnSlp Slpeptron;
+    ae2fCL_AnnSp Slpeptron;
     cl_command_queue queue = 0;
     cl_mem inbuff = 0;
     cl_mem outbuff = 0;
@@ -38,7 +38,7 @@ int main() {
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnSlpMk(
+    err = ae2fCL_AnnSpMk(
         &Slpeptron,
         0, sizeof(Buff)/sizeof(ae2f_float_t), 
         Sigmoid, 0, context, 
@@ -47,7 +47,7 @@ int main() {
     #if 1
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnSlpWeightCheck(&Slpeptron, Buff, queue);
+    err = ae2fCL_AnnSpWeightCheck(&Slpeptron, Buff, queue);
     CHECK_ERR(err, CL_SUCCESS, __failure);
     
     for(size_t i = 0; i < sizeof(Buff) / sizeof(ae2f_float_t); i++) {
@@ -74,7 +74,7 @@ int main() {
     if(!outbuff) goto __failure;
     if(err) goto __failure;
 
-    err = ae2fCL_AnnSlpPredictA(
+    err = ae2fCL_AnnSpPredictA(
         &Slpeptron, inbuff, outbuff, 0, 0, &outfloat,
         queue, CL_TRUE, 0, 0, 0
     );
@@ -107,6 +107,6 @@ int main() {
     if(queue) clReleaseCommandQueue(queue);
     if(outbuff) clReleaseMemObject(outbuff);
     if(inbuff) clReleaseMemObject(inbuff);
-    if(!Slpeptron.mgWeight) ae2fCL_AnnSlpDel(&Slpeptron);
+    if(!Slpeptron.mgWeight) ae2fCL_AnnSpDel(&Slpeptron);
     return err;
 }

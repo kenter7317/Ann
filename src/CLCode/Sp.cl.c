@@ -1,6 +1,6 @@
-#include "Slp.cl.h"
+#include "Sp.cl.h"
 
-__kernel void ae2fCL_eAnnKernsSlpMkRand(
+__kernel void ae2fCL_eAnnKernsSpMkRand(
     __global ae2f_float_t* _out,
     #if cl_mem_SIZE == 8
     uint32_t seedA,
@@ -18,8 +18,8 @@ __kernel void ae2fCL_eAnnKernsSlpMkRand(
     _out[i] = __randReal;
 }
 
-__kernel void ae2fCL_eAnnKernsSlpPredict(
-    __global const ae2fCL_AnnSlp* _this,
+__kernel void ae2fCL_eAnnKernsSpPredict(
+    __global const ae2fCL_AnnSp* _this,
     __global ae2f_float_t* out,
     const __global ae2f_float_t* field,
     const __global ae2f_float_t* in,
@@ -90,7 +90,7 @@ typedef union UF_t {
 } UF_t;
 #endif
 
-__kernel void ae2fCL_eAnnKernsSlpTrain(
+__kernel void ae2fCL_eAnnKernsSpTrain(
     __global const ae2f_float_t* _in,
     __global ae2f_float_t* field,
 

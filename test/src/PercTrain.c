@@ -1,6 +1,6 @@
 #include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2fCL/Ann/Slp.h>
+#include <ae2fCL/Ann/Sp.h>
 #include <stdio.h>
 
 #define gLearningRate 0.1
@@ -32,8 +32,8 @@ int main() {
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    ae2fCL_AnnSlp Slpeptron;
-    err2 = ae2fCL_AnnSlpMk(
+    ae2fCL_AnnSp Slpeptron;
+    err2 = ae2fCL_AnnSpMk(
         &Slpeptron, 0, 2,
         Step, 0,
         context, queue, CL_TRUE, 0, 0, 0 
@@ -54,7 +54,7 @@ int main() {
     if(err) goto __failure;
     ae2f_float_t diff_got[1];
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_AnnSpTrain(
             &Slpeptron, inbuff,
             0, 0,
             0, 1, gLearningRate, (void*)diff_got,
@@ -65,7 +65,7 @@ int main() {
         }
         printf("Diff from 1, 1: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_AnnSpTrain(
             &Slpeptron, inbuff,
             0, 2,
             0, 0, gLearningRate, (void*)diff_got,
@@ -76,7 +76,7 @@ int main() {
         }
         printf("Diff from 0, 0: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_AnnSpTrain(
             &Slpeptron, inbuff,
             0, 4,
             0, 0, gLearningRate, (void*)diff_got,
@@ -87,7 +87,7 @@ int main() {
         }
         printf("Diff from 0, 1: %f\n", diff_got[0]);
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_AnnSpTrain(
             &Slpeptron, inbuff,
             0, 6,
             0, 0, gLearningRate, (void*)diff_got,
@@ -100,7 +100,7 @@ int main() {
     }
     ae2f_float_t outbuff[1] = {  5 };
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
+    err2 = ae2fCL_AnnSpPredictBuffAuto(
         &Slpeptron, ins + 6, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -111,7 +111,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
+    err2 = ae2fCL_AnnSpPredictBuffAuto(
         &Slpeptron, ins + 4, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -122,7 +122,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
+    err2 = ae2fCL_AnnSpPredictBuffAuto(
         &Slpeptron, ins + 2, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -134,7 +134,7 @@ int main() {
     }
 
 
-    err2 = ae2fCL_AnnSlpPredictBuffAuto(
+    err2 = ae2fCL_AnnSpPredictBuffAuto(
         &Slpeptron, ins, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -151,6 +151,6 @@ int main() {
     if(inbuff) clReleaseMemObject(inbuff);
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
-    if(!Slpeptron.mgWeight) ae2fCL_AnnSlpDel(&Slpeptron); 
+    if(!Slpeptron.mgWeight) ae2fCL_AnnSpDel(&Slpeptron); 
     return err;
 }

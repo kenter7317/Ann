@@ -1,6 +1,6 @@
 #include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2fCL/Ann/Slp.hpp>
+#include <ae2fCL/Ann/Sp.hpp>
 #include <stdio.h>
 #include <memory>
 

@@ -1,16 +1,16 @@
-/// @file Slp.cl.h
+/// @file Sp.cl.h
 
 #include <ae2f/Float.h>
 #include <ae2fCL/Loc.h>
 #include <ae2fCL/Ann/Sizes/cl_mem.h>
-#include <ae2fCL/Ann/Slp.h>
+#include <ae2fCL/Ann/Sp.h>
 #include <ae2fCL/Ann/LcgRand.h>
 
 /// @brief 
 /// @param _out 
 /// @param seedTent 
 /// @return 
-__kernel void ae2fCL_eAnnKernsSlpMkRand(
+__kernel void ae2fCL_eAnnKernsSpMkRand(
     __global ae2f_float_t* _out,
     #if cl_mem_SIZE == 8
     uint32_t seedA,
@@ -36,8 +36,8 @@ __kernel void ae2fCL_eAnnKernsSlpMkRand(
 /// @param in_idx
 /// @endif 
 /// @return 
-__kernel void ae2fCL_eAnnKernsSlpPredict(
-    __global const ae2fCL_AnnSlp* _this,
+__kernel void ae2fCL_eAnnKernsSpPredict(
+    __global const ae2fCL_AnnSp* _this,
     __global ae2f_float_t* out,
     const __global ae2f_float_t* field,
     const __global ae2f_float_t* in,
@@ -60,7 +60,7 @@ __kernel void ae2fCL_eAnnKernsSlpPredict(
 /// @param LrErr 
 /// @param in_idx 
 /// @return 
-__kernel void ae2fCL_eAnnKernsSlpTrain(
+__kernel void ae2fCL_eAnnKernsSpTrain(
     __global const ae2f_float_t* _in,
     __global ae2f_float_t* field,
 
