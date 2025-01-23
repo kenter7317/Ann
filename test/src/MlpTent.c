@@ -56,6 +56,15 @@ int main() {
 
     // sandbox code here...
 
+    printf("%llu, %llu\n", Mlp.Count, Mlp.MaxBuffCount);
+    for(size_t i = 0; i < Mlp.Count; i++) {
+        printf("\t%llu\n", Mlp.List[i].MaxInCount);
+        printf("\t%llu\n----\n", Mlp.List[i].OutCount);
+    }
+
+    if(!Mlp.List->List)
+    return 1;
+
     __failure:
     ae2fCL_AnnDel();
     if(context) clReleaseContext(context);

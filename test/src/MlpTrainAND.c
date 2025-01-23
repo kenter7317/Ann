@@ -5,7 +5,7 @@
 #include <math.h>
 
 #define gLearningRate 0.1
-#define gEpochs 10
+#define gEpochs 100
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -50,6 +50,12 @@ int main() {
         &Mlp, layerlength, 0, 0, sizeof(layerlength) / sizeof(layerlength[0]),
         Forward, Backward, context, queue, CL_TRUE, 0, 0, 0 
     );
+
+    printf("%llu, %llu\n", Mlp.Count, Mlp.MaxBuffCount);
+    for(size_t i = 0; i < Mlp.Count; i++) {
+        printf("\t%llu\n", Mlp.List[i].MaxInCount);
+        printf("\t%llu\n----\n", Mlp.List[i].OutCount);
+    }
     if(err2) {
         err = err2; goto __failure;
     }
@@ -59,19 +65,19 @@ int main() {
     ins[] = {
         1, 1, 1, 0, 0, 1, 0, 0
     },
-    goals[] = {0, 1, 1, 0};
+    goals[] = {1, 0, 0, 0};
     // [1, 1], [1, 0], [0, 1], [0, 0]
     cl_mem inbuff = clCreateBuffer(
         context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
         sizeof(ins), ins, &err
     );
     if(err) goto __failure;
-    ae2f_float_t diff_got[1];
+    ae2f_float_t diff_got[1] = { 5};
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            0, 1, 0, diff_got, 0, 
+            0, 0, 0, diff_got, 0, 
             goals + 0,
             gLearningRate,
             queue, context
@@ -80,7 +86,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        printf("Diff from 1, 1: %f\n", diff_got[0]);
+        // printf("Diff from 1, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -94,7 +100,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        printf("Diff from 1, 0: %f\n", diff_got[0]);
+        // printf("Diff from 1, 0: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -108,7 +114,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        printf("Diff from 0, 1: %f\n", diff_got[0]);
+        // printf("Diff from 0, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -122,14 +128,14 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        printf("Diff from 0, 0: %f\n\n", diff_got[0]);
+        // printf("Diff from 0, 0: %f\n\n", diff_got[0]);
     }
     ae2f_float_t outbuff[1] = {  5 };
 
-    #if 0
-    err2 = ae2fCL_AnnSpPredictBuffAuto(
-        &Mlp, ins + 6, outbuff,
-        queue, CL_TRUE, 0, 0, 0, context
+    #if 1
+    err2 = ae2fCL_AnnMlpPredict(
+        &Mlp, inbuff, 0, 6, 0, outbuff, 0, 
+        queue, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
@@ -138,45 +144,47 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSpPredictBuffAuto(
-        &Mlp, ins + 4, outbuff,
-        queue, CL_TRUE, 0, 0, 0, context
+    err2 = ae2fCL_AnnMlpPredict(
+        &Mlp, inbuff, 0, 4, 0, outbuff, 0, 
+        queue, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] < 0.5) {
+    if(outbuff[0] > 0.5) {
         printf("AND 0, 1 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSpPredictBuffAuto(
-        &Mlp, ins + 2, outbuff,
-        queue, CL_TRUE, 0, 0, 0, context
+    err2 = ae2fCL_AnnMlpPredict(
+        &Mlp, inbuff, 0, 2, 0, outbuff, 0, 
+        queue, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] < 0.5) {
+    if(outbuff[0] > 0.5) {
         printf("AND 1, 0 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
 
-    err2 = ae2fCL_AnnSpPredictBuffAuto(
-        &Mlp, ins, outbuff,
-        queue, CL_TRUE, 0, 0, 0, context
+    err2 = ae2fCL_AnnMlpPredict(
+        &Mlp, inbuff, 0, 0, 0, outbuff, 0, 
+        queue, context
     ); if(err2) {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] > 0.5) {
+    if(outbuff[0] < 0.5) {
         printf("AND 1, 1 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
     #endif
 
+    puts("Value checking done");
+
     __failure:
     ae2fCL_AnnDel();
     if(context) clReleaseContext(context);
-    // if(inbuff) clReleaseMemObject(inbuff);
+    if(inbuff) clReleaseMemObject(inbuff);
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
     if(!Mlp.List) ae2fCL_AnnMlpDel(&Mlp); 

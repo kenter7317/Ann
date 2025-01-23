@@ -21,7 +21,7 @@ ae2f_err_t ae2fCL_AnnSlpMk(
     #define return(code) {_ |= code; goto END;}
     cl_event* Events = event;
 
-    size_t i = 0, maxbuff;
+    size_t i = 0, maxbuff = 0;
     if(!_this) return(ae2f_errGlob_PTR_IS_NULL);
     _this->List = calloc(sizeof(ae2fCL_AnnSlpEl), outputCount);
     if(!_this->List) return(ae2f_errGlob_ALLOC_FAILED);
@@ -43,11 +43,12 @@ ae2f_err_t ae2fCL_AnnSlpMk(
             queue, CL_FALSE, 0, 0, Events + i
         );
 
+        size_t pad = 0;
         if(padCount)
-        _this->List[i].InputIdxPad = maxbuff = padCount[i];
+        _this->List[i].InputIdxPad = pad = padCount[i];
 
-        if(_this->MaxInCount < (maxbuff += _this->List[i].Perceptron->mgWeightLen)) {
-            _this->MaxInCount = maxbuff;
+        if(_this->MaxInCount < pad + (maxbuff = _this->List[i].Perceptron->mgWeightLen)) {
+            _this->MaxInCount = maxbuff + pad;
         }
     }
     
@@ -103,7 +104,7 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     
     if(
         !event && 
-        !(Events = malloc(sizeof(cl_event) * _this->OutCount))
+        !(Events = calloc(sizeof(cl_event), _this->OutCount))
     ) return(ae2f_errGlob_ALLOC_FAILED);
 
     for(size_t i = 0; i < _this->OutCount; i++) {
