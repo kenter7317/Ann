@@ -84,7 +84,7 @@ int main() {
         if(err2) {
             err = err2; goto __failure;
         }
-        printf("Diff from 0, 0: %f\n", diff_got[0]);
+        printf("Diff from 1, 0: %f\n", diff_got[0]);
 
         err2 = Slpeptron.Class.Train(
             inbuff, 4, 0.0, gLearningRate, diff_got,
@@ -102,7 +102,7 @@ int main() {
         if(err2) {
             err = err2; goto __failure;
         }
-        printf("Diff from 1, 0: %f\n\n", diff_got[0]);
+        printf("Diff from 0, 0: %f\n\n", diff_got[0]);
     }
 
 
@@ -113,7 +113,7 @@ int main() {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        printf("AND 1, 0 no good\n");
+        printf("AND 0, 0 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
@@ -135,7 +135,7 @@ int main() {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        printf("AND 0, 0 no good\n");
+        printf("AND 1, 0 no good\n");
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 

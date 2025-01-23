@@ -25,8 +25,8 @@ if(NOT TARGET CL-Ann)
         "include/ae2fCL/Ann/Slp.h"
         "src/Slp.c"
 
-        # "include/ae2fCL/Ann/Mlp.h"
-        # "src/Mlp.c"
+        "include/ae2fCL/Ann/Mlp.h"
+        "src/Mlp.c"
     )
     
     target_link_libraries(CL-Ann PUBLIC CL-Core)

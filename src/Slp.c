@@ -25,7 +25,7 @@ ae2f_err_t ae2fCL_AnnSlpMk(
     if(!_this) return(ae2f_errGlob_PTR_IS_NULL);
     _this->List = calloc(sizeof(ae2fCL_AnnSlpEl), outputCount);
     if(!_this->List) return(ae2f_errGlob_ALLOC_FAILED);
-    if(!Events && !(Events = malloc(sizeof(cl_event) * outputCount)));
+    if(!Events && !(Events = calloc(sizeof(cl_event), outputCount)));
 
     _this->OutCount = outputCount;
     _this->MaxInCount = inputsCountGlobal;
