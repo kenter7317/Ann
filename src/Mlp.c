@@ -1,8 +1,5 @@
 #include <ae2fCL/Ann/Mlp.h>
 #include <memory.h>
-
-
-#include <stdio.h>
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMlpMk(
     ae2fCL_AnnMlp* _this,
@@ -43,6 +40,7 @@ ae2f_err_t ae2fCL_AnnMlpMk(
 
     if(event_wait_list)
     clWaitForEvents(num_events_in_wait_list, event_wait_list);
+
 
     for(size_t i = 0; i < layerCount; i++) {
         #if 1
@@ -86,9 +84,11 @@ ae2f_err_t ae2fCL_AnnMlpDel(
     ae2f_err_t _ = 0;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
+
     for(size_t i = 0; i < _this->Count; i++) {
         _ |= ae2fCL_AnnSlpDel(_this->List + i);
     }
+
     free(_this->List);
     return _;
 }
@@ -133,8 +133,10 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     if(!cache && !(cache = calloc(sizeof(ae2f_float_t), SkipInput)))
     return(ae2f_errGlob_ALLOC_FAILED);
 
-    size_t i = 0;
-    for(; i < _this->Count; i++) {
+    size_t i;
+    #pragma omp parallel for
+    for(i = 0; i < _this->Count; i++) {
+        #pragma omp atomic
         ret |= ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
@@ -146,13 +148,14 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
             context_optionalB
         );
 
-        stateunderhood = clEnqueueWriteBuffer(
+        cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
             0, sizeof(ae2f_float_t) * _this->List[i].OutCount,
             cache, 0, 0, 0
         );
 
         if(stateunderhood != CL_SUCCESS)
+        #pragma omp atomic
         ret |= ae2f_errGlob_NFOUND;
     }
 
@@ -182,6 +185,8 @@ static ae2f_float_t MlpTrain_HidErr(
     cl_command_queue queue
 ) {
     ae2f_float_t ret = 0;
+
+    #pragma omp parallel for
     for(size_t i = 0; i < layerNxt->OutCount; i++) {
         ae2f_float_t V;
         clEnqueueReadBuffer(
@@ -192,6 +197,7 @@ static ae2f_float_t MlpTrain_HidErr(
             &V, 0, 0, 0
         );
 
+        #pragma omp atomic
         ret += V * deltasNxt[i];
     }
     return ret;
@@ -206,6 +212,7 @@ static void MlpTrain_HidCompute(
     const ae2f_float_t* outThen,
     cl_command_queue queue
 ) {
+    #pragma omp parallel for
     for(size_t i = 0; i < layerThen->OutCount; i++) {
         const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i, queue);
         retDeltaThen[i] = layerThen->List[i].Perceptron->mpGetLoss(
@@ -221,6 +228,7 @@ static void MlpTrain_OutCompute(
     const ae2f_float_t* out,
     ae2f_float_t* retDeltaOut
 ) {
+    #pragma omp parallel for
     for(size_t i = 0; i < layerOut->OutCount; i++) {
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
@@ -252,9 +260,9 @@ static ae2f_err_t MlpTrain_Predict(
 
     const size_t SkipInput = _this->MaxBuffCount * _this->Count;
 
-    size_t i = 0;
-    for(; i < _this->Count; i++) {
-        ret |= ae2fCL_AnnSlpPredict(
+    #pragma omp parallel for
+    for(size_t i = 0; i < _this->Count; i++) {
+        ae2f_err_t _ret = ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             buffobj,
@@ -265,21 +273,26 @@ static ae2f_err_t MlpTrain_Predict(
             context_optionalB
         );
 
-        stateunderhood = clEnqueueWriteBuffer(
+        cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
             (_this->MaxBuffCount * (i + 1)) * sizeof(ae2f_float_t) + buffobj_idx_optionalA, 
             sizeof(ae2f_float_t) * _this->List[i].OutCount,
-            cache, 0, 0, 0
+            cache + i * _this->MaxBuffCount, 0, 0, 0
         );
 
         if(stateunderhood != CL_SUCCESS)
-        ret |= ae2f_errGlob_NFOUND;
+        _ret |= ae2f_errGlob_NFOUND;
+
+        if(_ret) {
+            #pragma omp atomic
+            ret |= _ret;
+        }
     }
 
     if(outret_optional) {
         memcpy(
             outret_optional, 
-            cache, _this->List[i - 1].OutCount * sizeof(ae2f_float_t)
+            cache, _this->List[_this->Count - 1].OutCount * sizeof(ae2f_float_t)
         );
     }
 
@@ -354,9 +367,10 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
 
             ae2fCL_AnnSlpTrain(
                 _this->List + i,
-                buffobj, 0, 
-                _this->MaxBuffCount * i * sizeof(ae2f_float_t),
-                0, goal, LearningRate, 0, 0, queue, CL_TRUE,
+                i ? buffobj : in, 0, 
+                _this->MaxBuffCount * i,
+                0, goal, LearningRate, 0, 0, queue, 
+                CL_TRUE,
                 0, 0, 0, context_optionalB
             );
         } else {
@@ -372,8 +386,8 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
 
             ae2fCL_AnnSlpTrain(
                 _this->List + i,
-                buffobj, 0,
-                i ? _this->MaxBuffCount + i * sizeof(ae2f_float_t) : in_idx,
+                i ? buffobj : in, 0,
+                i ? _this->MaxBuffCount + i : in_idx,
                 0, cache_Goals + i * _this->MaxBuffCount,
                 LearningRate, 0, 0,
                 queue, CL_TRUE, 0, 0, 0,

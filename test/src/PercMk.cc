@@ -18,7 +18,7 @@ int main() {
     ae2f_float_t Buff[] = {
         -1, -1, -1, -1, -1
     };
-    ae2fCL_AnnSp Slpeptron;
+    ae2fCL_AnnSp Perc;
     cl_command_queue queue = 0;
     cl_mem inbuff = 0;
     cl_mem outbuff = 0;
@@ -39,7 +39,7 @@ int main() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     err = ae2fCL_AnnSpMk(
-        &Slpeptron,
+        &Perc,
         0, sizeof(Buff)/sizeof(ae2f_float_t), 
         Sigmoid, 0, context, 
         queue, CL_TRUE, 0, 0, 0
@@ -47,7 +47,7 @@ int main() {
     #if 1
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = ae2fCL_AnnSpWeightCheck(&Slpeptron, Buff, queue);
+    err = ae2fCL_AnnSpWeightCheck(&Perc, Buff, queue);
     CHECK_ERR(err, CL_SUCCESS, __failure);
     
     for(size_t i = 0; i < sizeof(Buff) / sizeof(ae2f_float_t); i++) {
@@ -75,25 +75,25 @@ int main() {
     if(err) goto __failure;
 
     err = ae2fCL_AnnSpPredictA(
-        &Slpeptron, inbuff, outbuff, 0, 0, &outfloat,
+        &Perc, inbuff, outbuff, 0, 0, &outfloat,
         queue, CL_TRUE, 0, 0, 0
     );
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        Slpeptron.mBias, 
-        Slpeptron.mBias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        Perc.mBias, 
+        Perc.mBias * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < Slpeptron.mgWeightLen; i++) 
+    for(size_t i = 0; i < Perc.mgWeightLen; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += Slpeptron.mBias;
-    out_checksum = Slpeptron.mAct(out_checksum);
+    out_checksum += Perc.mBias;
+    out_checksum = Perc.mAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -107,6 +107,6 @@ int main() {
     if(queue) clReleaseCommandQueue(queue);
     if(outbuff) clReleaseMemObject(outbuff);
     if(inbuff) clReleaseMemObject(inbuff);
-    if(!Slpeptron.mgWeight) ae2fCL_AnnSpDel(&Slpeptron);
+    if(!Perc.mgWeight) ae2fCL_AnnSpDel(&Perc);
     return err;
 }

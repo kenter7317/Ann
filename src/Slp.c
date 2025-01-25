@@ -1,5 +1,6 @@
 #include <ae2fCL/Ann/Slp.h>
 #include <stdlib.h>
+#include <omp.h>
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnSlpMk(
@@ -72,6 +73,7 @@ ae2f_err_t ae2fCL_AnnSlpDel(
 
     for(size_t i = 0; i < _this->OutCount; i++) {
         _ |= ae2fCL_AnnSpDel(_this->List[i].Perceptron);
+        _this->List[i].InputIdxPad = 0;
     } free(_this->List);
 
     _this->OutCount = 0;
@@ -96,7 +98,6 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     ae2f_err_t ret = 0;
     cl_event* Events = event;
     #define return(code) {ret |= code; goto END;}
-
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
 
@@ -104,27 +105,32 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     
     if(
         !event && 
-        !(Events = calloc(sizeof(cl_event), _this->OutCount))
+        !(Events = calloc(_this->OutCount, sizeof(cl_event)))
     ) return(ae2f_errGlob_ALLOC_FAILED);
 
+    #pragma omp parallel for
     for(size_t i = 0; i < _this->OutCount; i++) {
-        if(_this->MaxInCount >= _this->List[i].InputIdxPad + _this->List[i].Perceptron->mgWeightLen)
+        if(_this->MaxInCount > _this->List[i].InputIdxPad + _this->List[i].Perceptron->mgWeightLen)
         continue;
 
-        ret |= ae2fCL_AnnSpPredict(
+        ae2f_err_t _ret = ae2fCL_AnnSpPredict(
             _this->List[i].Perceptron, 
             in, out_optionalA, 
-            _this->List[i].InputIdxPad + in_idx, out_idx_optionalA,
-            outbuff_optional_, queue, CL_FALSE, 0, 0, 
+            _this->List[i].InputIdxPad + in_idx, 
+            out_idx_optionalA,
+            outbuff_optional_ ? outbuff_optional_ + i : 0, 
+            queue, CL_TRUE, 0, 0, 
             Events + i, context_optionalB
         );
 
-        outbuff_optional_ && outbuff_optional_++;
-
-        if(ret) goto END;
+        if(_ret) {
+            #pragma omp atomic
+            ret |= _ret;
+        }
     }
-
-    if(blocking_event || !event) clWaitForEvents(_this->OutCount, Events);
+    
+    if(blocking_event || !event) 
+    clWaitForEvents(_this->OutCount, Events);
 
     END:
     #undef return
@@ -166,21 +172,26 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 
     if(
         !event && 
-        !(Events = malloc(sizeof(cl_event) * _this->OutCount))
+        !(Events = calloc(sizeof(cl_event), _this->OutCount))
     ) return(ae2f_errGlob_ALLOC_FAILED);
 
+    #pragma omp parallel for
     for(size_t i = 0; i < _this->OutCount; i++) {
-        ret |= ae2fCL_AnnSpTrain(
+        ae2f_err_t _ret = ae2fCL_AnnSpTrain(
             _this->List[i].Perceptron,
             in, out_optionalA, 
-            in_idx + _this->List->InputIdxPad,
+            in_idx + _this->List[i].InputIdxPad,
             out_idx_optionalA, goal[i],
             LearningRateArr_optional_B ? LearningRateArr_optional_B[i] : LearningRateGlobal_optional_A,
-            diff_ret_optional, queue, CL_FALSE,
+            diff_ret_optional ? diff_ret_optional + i : 0, 
+            queue, CL_FALSE,
             0, 0, Events + i, context_optionalB
         );
 
-        (diff_ret_optional) && diff_ret_optional++;
+        if(_ret) {
+            #pragma omp atomic
+            ret |= _ret;
+        }
     }
 
     if(blocking_read || !event)

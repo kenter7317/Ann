@@ -34,7 +34,7 @@ int main() {
 
         inline __Slp() : r{0, } {}
         inline ~__Slp() { Class.~cSlp(); }
-    } Slpeptron;
+    } Perc;
 
     err = clGetPlatformIDs(1, &platform, 0);
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -50,7 +50,7 @@ int main() {
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    new (Slpeptron.r) ae2fCL::Ann::cSlp(
+    new (Perc.r) ae2fCL::Ann::cSlp(
         &err2, 0, 2,
         Step, 0,
         context, queue, CL_TRUE, 0, 0, 0 
@@ -68,7 +68,7 @@ int main() {
     if(err) goto __failure;
     
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = Slpeptron.Class.Train(
+        err2 = Perc.Class.Train(
             inbuff, 0, 1.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
@@ -77,7 +77,7 @@ int main() {
         }
         printf("Diff from 1, 1: %f\n", diff_got[0]);
 
-        err2 = Slpeptron.Class.Train(
+        err2 = Perc.Class.Train(
             inbuff, 2, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
@@ -86,7 +86,7 @@ int main() {
         }
         printf("Diff from 1, 0: %f\n", diff_got[0]);
 
-        err2 = Slpeptron.Class.Train(
+        err2 = Perc.Class.Train(
             inbuff, 4, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
@@ -95,7 +95,7 @@ int main() {
         }
         printf("Diff from 0, 1: %f\n", diff_got[0]);
 
-        err2 = Slpeptron.Class.Train(
+        err2 = Perc.Class.Train(
             inbuff, 6, 0.0, gLearningRate, diff_got,
             queue, CL_TRUE, 0, 0, 0, context
         );
@@ -106,7 +106,7 @@ int main() {
     }
 
 
-    err2 = Slpeptron.Class.Predict(
+    err2 = Perc.Class.Predict(
         ins + 6, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -117,7 +117,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = Slpeptron.Class.Predict(
+    err2 = Perc.Class.Predict(
         ins + 4, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -128,7 +128,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = Slpeptron.Class.Predict(
+    err2 = Perc.Class.Predict(
         ins + 2, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -140,7 +140,7 @@ int main() {
     }
 
 
-    err2 = Slpeptron.Class.Predict(
+    err2 = Perc.Class.Predict(
         ins, outbuff,
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {

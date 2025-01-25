@@ -271,7 +271,7 @@ ae2fCL_AnnSpPredict( \
 /// # Memory Object Auto Allocate
 ///
 /// It will allocate a memory object automatically for [in]. 
-/// @param _this 
+/// @param[out] _this 
 /// @param[in] in 
 /// The input vector in a length of [_this->mgWeightLen].
 /// @param[out] out
@@ -302,7 +302,7 @@ ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
 /// @brief 
 /// # Manages to correct the weight and bias for expected output value [goal].
 /// 
-/// @param[in] _this 
+/// @param[in, out] _this 
 /// @param[in] in 
 /// The input value binded with an OpenCL memory object. \n
 /// If you don't want to make a memory object manually, see [ae2fCL_AnnSpPredictBuffAuto].

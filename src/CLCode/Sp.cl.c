@@ -43,9 +43,12 @@ __kernel void ae2fCL_eAnnKernsSpPredict(
     out_idxtent();
     in_idxtent();
 
+    
+
     ae2f_float_t outbuff = 0;
     const size_t globalid = get_global_id(0);
     const size_t localid = get_local_id(0);
+
     #undef out_idxtent
     ae2fCL_whenCL(__local) ae2f_float_t* __got
         = loc + globalid;

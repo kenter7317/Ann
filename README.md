@@ -15,3 +15,4 @@ A simple ann project with opencl written in C.
 - cmake
 - opencl
 - python
+- OpenMP

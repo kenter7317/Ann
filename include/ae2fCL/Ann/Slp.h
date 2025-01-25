@@ -4,30 +4,69 @@
 
 #include "Sp.h"
 
-/// @brief 
+/// @brief
+/// An element type of @ref ae2fCL_AnnSlp. \n
+/// @ref ae2fCL_AnnSlp has its responsibility for memory.
 typedef struct ae2fCL_AnnSlpEl {
+    /// @brief 
+    /// Local padding index for input memory object.
     size_t InputIdxPad;
+
+    /// @see @ref ae2fCL_AnnSp
     ae2fCL_AnnSp Perceptron[1];
 } ae2fCL_AnnSlpEl;
 
 /// @brief 
+/// # Single Layered Perceptron
+///
+/// Expecting the implementation of single perceptron,
+/// this structure is able to predict multiple output by stacking the perceptron.
 typedef struct ae2fCL_AnnSlp {
+    /// @brief 
+    /// The layer.
     ae2fCL_AnnSlpEl* List;
-    size_t OutCount, MaxInCount;
+    
+    size_t
+    /// @brief
+    /// The expected count of prediction, which also means the length of the @ref ae2fCL_AnnSlp::List.
+    OutCount,
+
+    /// @brief
+    /// The expected count of input as @ref ae2f_float_t. 
+    MaxInCount;
 } ae2fCL_AnnSlp;
 
+/// @warning
+/// Notice that the macro will not perform check for index and null pointer.
 /// @memberof ae2fCL_AnnSlp
+/// @param[in] _this [ae2fCL_AnnSlp*]
+/// @param i [size_t] index for List. Must not be greater than @ref ae2fCL_AnnSlp::OutCount.
+/// @return [ae2fCL_fpAnnAct_t&]
+/// Returns the activation function from [i]th element of @ref ae2fCL_AnnSlp::List.
 #define ae2fCL_AnnSlpGetAct(_this, i) (ae2f_const_cast(ae2fCL_AnnSlp*, _this)->List[i].Perceptron->mAct)
 
+/// @warning
+/// Notice that the macro will not perform check for index and null pointer.
 /// @memberof ae2fCL_AnnSlp
+/// @param[in] _this [ae2fCL_AnnSlp*]
+/// @param i [size_t] index for List. Must not be greater than @ref ae2fCL_AnnSlp::OutCount.
+/// @return [ae2fCL_fpAnnSpGetLoss_t&]
+/// Returns the loss function from [i]th element of @ref ae2fCL_AnnSlp::List
 #define ae2fCL_AnnSlpGetLoss(_this, i) (ae2f_const_cast(ae2fCL_AnnSlp*, _this)->List[i].Perceptron->mpGetLoss)
 
+/// @warning
+/// It will not check whether the structure is initialised. \n
+/// Notice that initialised class must pass the function @ref ae2fCL_AnnSlpDel.
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
-/// @param _this 
-/// @param inputsCount_optionalA 
-/// @param padCount_optional 
-/// @param inputsCountGlobal_optionalB 
+/// Initialise the class.
+/// 
+/// @param[out] _this 
+/// @param inputsCount_optionalA
+/// 
+/// @param padCount_optional
+///  
+/// @param[in] inputsCountGlobal_optionalB 
 /// @param outputCount 
 /// @param mAct 
 /// @param fpGetLoss 
@@ -35,8 +74,8 @@ typedef struct ae2fCL_AnnSlp {
 /// @param queue 
 /// @param blocking_read 
 /// @param num_events_in_wait_list 
-/// @param event_wait_list 
-/// @param event 
+/// @param[in] event_wait_list 
+/// @param[out] event 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMk(
@@ -57,7 +96,7 @@ ae2f_err_t ae2fCL_AnnSlpMk(
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
-/// @param _this 
+/// @param[in, out] _this 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpDel(
@@ -66,7 +105,7 @@ ae2f_err_t ae2fCL_AnnSlpDel(
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
-/// @param _this 
+/// @param[in] _this 
 /// @param ae2f_float_t 
 /// @param ae2f_float_t 
 /// @param in_idx 

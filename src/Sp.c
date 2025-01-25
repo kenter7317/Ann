@@ -6,8 +6,6 @@
 #include <ae2fCL/Ann/Sizes/cl_mem.h>
 #include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
 
-#include <stdio.h>
-
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnSpDel(
     ae2fCL_AnnSp* _this
@@ -238,14 +236,16 @@ ae2f_err_t ae2fCL_AnnSpPredict(
     Throw(ae2f_errGlob_WRONG_OPERATION);
     #endif
 
+    cl_event Event__;
     err = clEnqueueNDRangeKernel(
         queue, K,
         1, 0, 
         &_this->mgWeightLen,
         &_this->mgWeightLen,
-        0, 0, 0
+        0, 0, &Event__
     );
     if(err) Throw(ae2f_errGlob_NFOUND);
+    clWaitForEvents(1, &Event__);
 
     err = clEnqueueReadBuffer(
         queue, out, blocking_event, 0, ae2f_float_t_SIZE, &outbuff, 
@@ -259,7 +259,7 @@ ae2f_err_t ae2fCL_AnnSpPredict(
     }
 
     if(outbuff_optional_) {
-        outbuff_optional_[0] = outbuff;
+        *outbuff_optional_ = outbuff;
     }
 
     __RET:
@@ -298,7 +298,7 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     cl_mem out = out_optionalA;
     cl_int err = CL_SUCCESS;
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsSpTrain];
-    
+
     if(!diff_ret_optional) diff_ret_optional = &outF;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;

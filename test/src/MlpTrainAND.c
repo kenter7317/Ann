@@ -86,7 +86,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 1, 1: %f\n", diff_got[0]);
+        printf("Diff from 1, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -100,7 +100,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 1, 0: %f\n", diff_got[0]);
+        printf("Diff from 1, 0: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -114,7 +114,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 0, 1: %f\n", diff_got[0]);
+        printf("Diff from 0, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
@@ -128,7 +128,7 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 0, 0: %f\n\n", diff_got[0]);
+        printf("Diff from 0, 0: %f\n\n", diff_got[0]);
     }
     ae2f_float_t outbuff[1] = {  5 };
 
