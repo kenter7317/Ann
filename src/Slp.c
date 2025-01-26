@@ -75,6 +75,7 @@ ae2f_err_t ae2fCL_AnnSlpDel(
         _ |= ae2fCL_AnnSpDel(_this->List[i].Perceptron);
         _this->List[i].InputIdxPad = 0;
     } free(_this->List);
+    _this->List = 0;
 
     _this->OutCount = 0;
     return _;
@@ -175,7 +176,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
         !(Events = calloc(sizeof(cl_event), _this->OutCount))
     ) return(ae2f_errGlob_ALLOC_FAILED);
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(size_t i = 0; i < _this->OutCount; i++) {
         ae2f_err_t _ret = ae2fCL_AnnSpTrain(
             _this->List[i].Perceptron,
@@ -184,7 +185,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
             out_idx_optionalA, goal[i],
             LearningRateArr_optional_B ? LearningRateArr_optional_B[i] : LearningRateGlobal_optional_A,
             diff_ret_optional ? diff_ret_optional + i : 0, 
-            queue, CL_FALSE,
+            queue, CL_TRUE,
             0, 0, Events + i, context_optionalB
         );
 

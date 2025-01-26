@@ -1,5 +1,8 @@
 #include <ae2fCL/Ann/Mlp.h>
 #include <memory.h>
+
+#include <stdio.h>
+
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMlpMk(
     ae2fCL_AnnMlp* _this,
@@ -65,6 +68,7 @@ ae2f_err_t ae2fCL_AnnMlpMk(
         inputCounts_optional && (inputCounts_optional += layerLengths[i]);
         padCount_optional && (padCount_optional += layerLengths[i]);
 
+        
         Events_For += layerLengths[i];
     }
 
@@ -90,6 +94,7 @@ ae2f_err_t ae2fCL_AnnMlpDel(
     }
 
     free(_this->List);
+    _this->List = 0;
     return _;
 }
 
@@ -124,7 +129,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
         buffobj = clCreateBuffer(
             context_optionalB, 
             CL_MEM_READ_WRITE, 
-            sizeof(ae2f_float_t) * (SkipInput + 1), 
+            sizeof(ae2f_float_t) * (SkipInput), 
             NULL, &stateunderhood
         );
         if(stateunderhood != CL_SUCCESS) return(ae2f_errGlob_ALLOC_FAILED);
@@ -134,15 +139,13 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     return(ae2f_errGlob_ALLOC_FAILED);
 
     size_t i;
-    #pragma omp parallel for
     for(i = 0; i < _this->Count; i++) {
-        #pragma omp atomic
         ret |= ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             buffobj,
             i ? 0 : in_idx,
-            SkipInput,
+            buffobj_idx_optionalA, /*out_idx_optionalA*/
             cache,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
@@ -166,7 +169,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     RET:
     if(buffobj && !buffobj_optionalA) 
     clReleaseMemObject(buffobj);
-    if(cache) free(cache);
+    if(cache && !outcache_optional) free(cache);
 
     #undef return
     return ret;
@@ -186,7 +189,7 @@ static ae2f_float_t MlpTrain_HidErr(
 ) {
     ae2f_float_t ret = 0;
 
-    #pragma omp parallel for
+    
     for(size_t i = 0; i < layerNxt->OutCount; i++) {
         ae2f_float_t V;
         clEnqueueReadBuffer(
@@ -197,7 +200,7 @@ static ae2f_float_t MlpTrain_HidErr(
             &V, 0, 0, 0
         );
 
-        #pragma omp atomic
+        
         ret += V * deltasNxt[i];
     }
     return ret;
@@ -212,7 +215,6 @@ static void MlpTrain_HidCompute(
     const ae2f_float_t* outThen,
     cl_command_queue queue
 ) {
-    #pragma omp parallel for
     for(size_t i = 0; i < layerThen->OutCount; i++) {
         const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i, queue);
         retDeltaThen[i] = layerThen->List[i].Perceptron->mpGetLoss(
@@ -228,7 +230,7 @@ static void MlpTrain_OutCompute(
     const ae2f_float_t* out,
     ae2f_float_t* retDeltaOut
 ) {
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(size_t i = 0; i < layerOut->OutCount; i++) {
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
@@ -260,18 +262,17 @@ static ae2f_err_t MlpTrain_Predict(
 
     const size_t SkipInput = _this->MaxBuffCount * _this->Count;
 
-    #pragma omp parallel for
     for(size_t i = 0; i < _this->Count; i++) {
-        ae2f_err_t _ret = ae2fCL_AnnSlpPredict(
+        ae2f_err_t _ret = 0 ? ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             buffobj,
-            i ? _this->MaxBuffCount * i : in_idx,
-            SkipInput + buffobj_idx_optionalA,
+            i ? _this->MaxBuffCount * i : in_idx, /*in_idx*/
+            SkipInput + buffobj_idx_optionalA, /*out_idx*/
             cache + i * _this->MaxBuffCount,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
-        );
+        ) : 0;
 
         cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
@@ -284,7 +285,6 @@ static ae2f_err_t MlpTrain_Predict(
         _ret |= ae2f_errGlob_NFOUND;
 
         if(_ret) {
-            #pragma omp atomic
             ret |= _ret;
         }
     }
@@ -358,10 +358,12 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
     ); if(ret) goto RET;
 
     for(size_t i = _this->Count - 1; i != ((size_t)-1); i--) {
+#if 1
         if(i == _this->Count - 1) {
             MlpTrain_OutCompute(
                 _this->List + i,
-                goal, _cache + i * _this->MaxBuffCount,
+                goal, 
+                _cache + i * _this->MaxBuffCount,
                 cache_Deltas + i * _this->MaxBuffCount
             );
 
@@ -394,6 +396,7 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 context_optionalB
             );
         }
+#endif
     }
 
     RET:

@@ -91,7 +91,7 @@ int main() {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            2/*in_idx*/, 1, 0, diff_got, 0, 
+            2/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 1,
             gLearningRate,
             queue, context
@@ -105,7 +105,7 @@ int main() {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            4/*in_idx*/, 1, 0, diff_got, 0, 
+            4/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 2,
             gLearningRate,
             queue, context
@@ -119,7 +119,7 @@ int main() {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            6/*in_idx*/, 1, 0, diff_got, 0, 
+            6/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 3,
             gLearningRate,
             queue, context
