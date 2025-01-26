@@ -77,7 +77,7 @@ int main() {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            0, 0, 0, diff_got, 0, 
+            0/*in_idx*/, 0/*out-idx*/, 0, diff_got, 0, 
             goals + 0,
             gLearningRate,
             queue, context
@@ -86,12 +86,12 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 1, 1: %f\n", diff_got[0]);
+        printf("Diff from 1, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            2/*in_idx*/, 1, 0, diff_got, 0, 
+            2/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 1,
             gLearningRate,
             queue, context
@@ -100,12 +100,12 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 1, 0: %f\n", diff_got[0]);
+        printf("Diff from 1, 0: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            4/*in_idx*/, 1, 0, diff_got, 0, 
+            4/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 2,
             gLearningRate,
             queue, context
@@ -114,12 +114,12 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 0, 1: %f\n", diff_got[0]);
+        printf("Diff from 0, 1: %f\n", diff_got[0]);
 
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            6/*in_idx*/, 1, 0, diff_got, 0, 
+            6/*in_idx*/, 0, 0, diff_got, 0, 
             goals + 3,
             gLearningRate,
             queue, context
@@ -128,13 +128,16 @@ int main() {
             printf("Failed Training: %d\n", err2);
             err = err2; goto __failure;
         }
-        // printf("Diff from 0, 0: %f\n\n", diff_got[0]);
+        printf("Diff from 0, 0: %f\n\n", diff_got[0]);
     }
     ae2f_float_t outbuff[1] = {  5 };
 
     #if 1
     err2 = ae2fCL_AnnMlpPredict(
-        &Mlp, inbuff, 0, 6, 0, outbuff, 0, 
+        &Mlp, 
+        inbuff, 0, 
+        6, 0, 
+        outbuff, 0, 
         queue, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -145,7 +148,9 @@ int main() {
     }
 
     err2 = ae2fCL_AnnMlpPredict(
-        &Mlp, inbuff, 0, 4, 0, outbuff, 0, 
+        &Mlp, inbuff, 0, 
+        4, 0, 
+        outbuff, 0, 
         queue, context
     ); if(err2) {
         err = err2; goto __failure;

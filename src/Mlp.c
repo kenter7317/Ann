@@ -129,7 +129,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
         buffobj = clCreateBuffer(
             context_optionalB, 
             CL_MEM_READ_WRITE, 
-            sizeof(ae2f_float_t) * (SkipInput), 
+            sizeof(ae2f_float_t) * (SkipInput << 1), 
             NULL, &stateunderhood
         );
         if(stateunderhood != CL_SUCCESS) return(ae2f_errGlob_ALLOC_FAILED);
@@ -144,8 +144,8 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             buffobj,
-            i ? 0 : in_idx,
-            buffobj_idx_optionalA, /*out_idx_optionalA*/
+            i ? buffobj_idx_optionalA : in_idx,
+            buffobj_idx_optionalA + SkipInput, /*out_idx_optionalA*/
             cache,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
@@ -153,7 +153,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 
         cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
-            0, sizeof(ae2f_float_t) * _this->List[i].OutCount,
+            buffobj_idx_optionalA, sizeof(ae2f_float_t) * _this->List[i].OutCount,
             cache, 0, 0, 0
         );
 
@@ -163,12 +163,11 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     }
 
     if(outret_optional) {
-        memcpy(outret_optional, cache, _this->List[i - 1].OutCount * sizeof(ae2f_float_t));
+        // memcpy(outret_optional, cache, _this->List[_this->Count - 1].OutCount * sizeof(ae2f_float_t));
     }
 
     RET:
-    if(buffobj && !buffobj_optionalA) 
-    clReleaseMemObject(buffobj);
+    if(buffobj && !buffobj_optionalA) clReleaseMemObject(buffobj);
     if(cache && !outcache_optional) free(cache);
 
     #undef return
@@ -249,6 +248,7 @@ static ae2f_err_t MlpTrain_Predict(
     cl_command_queue queue,
     cl_context context_optionalB
 ) {
+    return 0;
     ae2f_err_t ret = 0;
     cl_int stateunderhood = CL_SUCCESS;
     cl_mem buffobj = buffobj_optionalA;
@@ -329,6 +329,7 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
     MAXBUFFCOUNT_FOR_LAYER = _this->MaxBuffCount;
     const size_t SkipInput = _this->MaxBuffCount * _this->Count;
 
+    #define return { ret = ae2f_errGlob_ALLOC_FAILED; goto RET; }
     if(!buffobj) {
         buffobj_idx_optionalA = 0;
         if(!context_optionalB) return ae2f_errGlob_PTR_IS_NULL;
@@ -339,6 +340,7 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
             NULL, &stateunderhood
         );
         if(stateunderhood != CL_SUCCESS) return(ae2f_errGlob_ALLOC_FAILED);
+        if(!buffobj) return(ae2f_errGlob_ALLOC_FAILED);
     }
 
     #define _cache_ALLOCCOUNT SkipInput * 3

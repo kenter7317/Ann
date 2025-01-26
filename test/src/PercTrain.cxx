@@ -29,11 +29,11 @@ int main() {
     };
 
     union __Slp {
-        uint64_t r[sizeof(ae2fCL::Ann::cSlp)];
-        ae2fCL::Ann::cSlp Class;
+        uint64_t r[sizeof(ae2fCL::Ann::cSp)];
+        ae2fCL::Ann::cSp Class;
 
         inline __Slp() : r{0, } {}
-        inline ~__Slp() { Class.~cSlp(); }
+        inline ~__Slp() { Class.~cSp(); }
     } Perc;
 
     err = clGetPlatformIDs(1, &platform, 0);
@@ -50,7 +50,7 @@ int main() {
     err = ae2fCL_AnnMk(context, 1, &device);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    new (Perc.r) ae2fCL::Ann::cSlp(
+    new (Perc.r) ae2fCL::Ann::cSp(
         &err2, 0, 2,
         Step, 0,
         context, queue, CL_TRUE, 0, 0, 0 

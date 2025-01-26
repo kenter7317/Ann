@@ -5,21 +5,21 @@
 #include "Sp.h"
 
 namespace ae2fCL { namespace Ann {
-    using rSlp = ae2fCL_AnnSp;
+    using Sp = ae2fCL_AnnSp;
 
-    struct cSlp;
-    class cSlpRefer : public rSlp {
-        friend cSlp;
-        constexpr cSlpRefer() noexcept : rSlp() {}
+    struct cSp;
+    class cSpRefer : public Sp {
+        friend cSp;
+        constexpr cSpRefer() noexcept : Sp() {}
         
         public:
-        constexpr cSlpRefer(const rSlp& slp) noexcept : rSlp(slp) {}
-        constexpr cSlpRefer(const rSlp&& slp) noexcept : rSlp(slp) {}
+        constexpr cSpRefer(const Sp& slp) noexcept : Sp(slp) {}
+        constexpr cSpRefer(const Sp&& slp) noexcept : Sp(slp) {}
 
-        constexpr cSlpRefer(const rSlp& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSpGetLoss_t loss) 
-            noexcept : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
-        constexpr cSlpRefer(const rSlp&& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSpGetLoss_t loss) 
-            noexcept : rSlp(slp) { this->mAct = act; this->mpGetLoss = loss; }
+        constexpr cSpRefer(const Sp& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSpGetLoss_t loss) 
+            noexcept : Sp(slp) { this->mAct = act; this->mpGetLoss = loss; }
+        constexpr cSpRefer(const Sp&& slp, const ae2fCL_fpAnnAct_t act, const ae2fCL_fpAnnSpGetLoss_t loss) 
+            noexcept : Sp(slp) { this->mAct = act; this->mpGetLoss = loss; }
 
         inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const noexcept {
             return ae2fCL_AnnSpWeightCheck(this, buff, queue);
@@ -129,12 +129,12 @@ namespace ae2fCL { namespace Ann {
         }
     };
 
-    struct cSlp : public cSlpRefer {
-        inline ~cSlp() noexcept {
+    struct cSp : public cSpRefer {
+        inline ~cSp() noexcept {
             ae2fCL_AnnSpDel(this);
         }
 
-        inline cSlp(
+        inline cSp(
             ae2f_err_t* err_optional,
             const ae2f_float_t* inputs_optional,
             size_t inputsCount,
@@ -158,7 +158,7 @@ namespace ae2fCL { namespace Ann {
             );
         }
 
-        inline cSlp(
+        inline cSp(
             ae2f_err_t* err_optional,
             size_t WeightsCount,
             ae2fCL_fpAnnAct_t mAct,
@@ -169,7 +169,7 @@ namespace ae2fCL { namespace Ann {
             cl_uint num_events_in_wait_list,
             const cl_event* event_wait_list,
             cl_event* event
-        ) noexcept : cSlp(
+        ) noexcept : cSp(
             err_optional, 0, WeightsCount, mAct, 
             fpGetLoss, ctx, queue, blocking_read, 
             num_events_in_wait_list, event_wait_list, event

@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#define gLearningRate 0.1
-#define gEpochs 100
+#define gLearningRate 0.01
+#define gEpochs 1000
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -45,7 +45,7 @@ int main() {
 
     ae2fCL_AnnMlp Mlp;
 
-    size_t layerlength[] = {2, 18, 1};
+    size_t layerlength[] = {2, 1};
     err2 = ae2fCL_AnnMlpMk(
         &Mlp, layerlength, 0, 0, sizeof(layerlength) / sizeof(layerlength[0]),
         Forward, Backward, context, queue, CL_TRUE, 0, 0, 0 
