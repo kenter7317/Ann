@@ -5,11 +5,8 @@
 
 #include "Slp.h"
 
-typedef ae2fCL_AnnSlp ae2fCL_AnnMlpEl;
-
-
 typedef struct ae2fCL_AnnMlp {
-    ae2fCL_AnnMlpEl* List;
+    ae2fCL_AnnSlp* List;
     size_t Count, MaxBuffCount;
 } ae2fCL_AnnMlp;
 

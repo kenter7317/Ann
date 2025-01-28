@@ -4,8 +4,13 @@
 #include <stdio.h>
 #include <math.h>
 
-#define gLearningRate 0.1
-#define gEpochs 100
+#define gLearningRate 0.01
+#define gEpochs 1000
+
+static ae2f_float_t
+StepForward(ae2f_float_t x) {
+    return x >= 0;
+}
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -45,10 +50,10 @@ int main() {
 
     ae2fCL_AnnMlp Mlp;
 
-    size_t layerlength[] = {2, 18, 1};
+    size_t layerlength[] = {2, 1};
     err2 = ae2fCL_AnnMlpMk(
         &Mlp, layerlength, 0, 0, sizeof(layerlength) / sizeof(layerlength[0]),
-        Forward, Backward, context, queue, CL_TRUE, 0, 0, 0 
+        StepForward, 0, context, queue, CL_TRUE, 0, 0, 0 
     );
 
     printf("%llu, %llu\n", Mlp.Count, Mlp.MaxBuffCount);
@@ -77,7 +82,7 @@ int main() {
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0, 0,
-            0/*in_idx*/, 0/*out-idx*/, 0, diff_got, 0, 
+            0, 0, 0, diff_got, 0, 
             goals + 0,
             gLearningRate,
             queue, context
@@ -134,10 +139,7 @@ int main() {
 
     #if 1
     err2 = ae2fCL_AnnMlpPredict(
-        &Mlp, 
-        inbuff, 0, 
-        6, 0, 
-        outbuff, 0, 
+        &Mlp, inbuff, 0, 6, 0, outbuff, 0, 
         queue, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -148,9 +150,7 @@ int main() {
     }
 
     err2 = ae2fCL_AnnMlpPredict(
-        &Mlp, inbuff, 0, 
-        4, 0, 
-        outbuff, 0, 
+        &Mlp, inbuff, 0, 4, 0, outbuff, 0, 
         queue, context
     ); if(err2) {
         err = err2; goto __failure;
@@ -192,6 +192,6 @@ int main() {
     if(inbuff) clReleaseMemObject(inbuff);
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
-    if(!Mlp.List) ae2fCL_AnnMlpDel(&Mlp); 
+    if(Mlp.List) ae2fCL_AnnMlpDel(&Mlp);
     return err;
 }

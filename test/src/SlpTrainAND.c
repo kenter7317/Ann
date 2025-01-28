@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define gLearningRate 0.1
-#define gEpochs 10
+#define gEpochs 100
 
 static ae2f_float_t
 Step(ae2f_float_t x) {

@@ -162,7 +162,6 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     cl_context context_optionalB
 ) {
     ae2f_err_t ret = 0;
-    cl_event* Events = event;
     #define return(code) {ret |= code; goto END;}
 
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
@@ -171,12 +170,6 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 
     clWaitForEvents(num_events_in_wait_list, event_wait_list);
 
-    if(
-        !event && 
-        !(Events = calloc(sizeof(cl_event), _this->OutCount))
-    ) return(ae2f_errGlob_ALLOC_FAILED);
-
-    // #pragma omp parallel for
     for(size_t i = 0; i < _this->OutCount; i++) {
         ae2f_err_t _ret = ae2fCL_AnnSpTrain(
             _this->List[i].Perceptron,
@@ -186,20 +179,15 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
             LearningRateArr_optional_B ? LearningRateArr_optional_B[i] : LearningRateGlobal_optional_A,
             diff_ret_optional ? diff_ret_optional + i : 0, 
             queue, CL_TRUE,
-            0, 0, Events + i, context_optionalB
+            0, 0, 0, context_optionalB
         );
 
         if(_ret) {
-            #pragma omp atomic
             ret |= _ret;
         }
     }
 
-    if(blocking_read || !event)
-    clWaitForEvents(_this->OutCount, Events);
-
     END:
     #undef return
-    if(Events && Events != event) free(Events);
     return ret;
 }

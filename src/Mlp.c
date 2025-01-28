@@ -29,21 +29,14 @@ ae2f_err_t ae2fCL_AnnMlpMk(
     _this->Count = --layerCount;
     _this->MaxBuffCount = 0;
 
-    for(size_t i = 0; i < layerCount; i++) {
-        evcount *= layerLengths[i];
-    }
-
-    if(!Events && !(Events_For = Events = calloc(evcount, sizeof(cl_event))))
-    return ae2f_errGlob_ALLOC_FAILED;
     #define return(code) {_ = code; goto END;} 
 
     
-    if(!(_this->List = calloc(layerCount, sizeof(ae2fCL_AnnMlpEl))))
+    if(!(_this->List = calloc(layerCount, sizeof(ae2fCL_AnnSlp))))
     return(ae2f_errGlob_ALLOC_FAILED);
 
     if(event_wait_list)
     clWaitForEvents(num_events_in_wait_list, event_wait_list);
-
 
     for(size_t i = 0; i < layerCount; i++) {
         #if 1
@@ -54,8 +47,8 @@ ae2f_err_t ae2fCL_AnnMlpMk(
             layerLengths[i],
             layerLengths[i + 1],
             mAct, fpGetLoss, ctx, queue, 
-            CL_FALSE,
-            0, 0, Events_For
+            CL_TRUE,
+            0, 0, 0
         );
 
         if(_this->MaxBuffCount < (maxbuff = _this->List[i].MaxInCount))
@@ -67,17 +60,10 @@ ae2f_err_t ae2fCL_AnnMlpMk(
 
         inputCounts_optional && (inputCounts_optional += layerLengths[i]);
         padCount_optional && (padCount_optional += layerLengths[i]);
-
-        
-        Events_For += layerLengths[i];
     }
-
-    if(blocking_read || !event)
-    clWaitForEvents(evcount, Events);
 
     END:
     #undef return
-    if(Events && Events != event) free(Events);
     return _;
 }
 
@@ -153,17 +139,18 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 
         cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
-            buffobj_idx_optionalA, sizeof(ae2f_float_t) * _this->List[i].OutCount,
+            (buffobj_idx_optionalA + SkipInput) * sizeof(ae2f_float_t),  
+            sizeof(ae2f_float_t) * _this->List[i].OutCount,
             cache, 0, 0, 0
         );
 
         if(stateunderhood != CL_SUCCESS)
-        #pragma omp atomic
         ret |= ae2f_errGlob_NFOUND;
     }
 
     if(outret_optional) {
-        // memcpy(outret_optional, cache, _this->List[_this->Count - 1].OutCount * sizeof(ae2f_float_t));
+        printf("Predict out: %f\n", cache[0]);
+        memcpy(outret_optional, cache, _this->List[_this->Count - 1].OutCount * sizeof(ae2f_float_t));
     }
 
     RET:
@@ -218,7 +205,7 @@ static void MlpTrain_HidCompute(
         const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i, queue);
         retDeltaThen[i] = layerThen->List[i].Perceptron->mpGetLoss(
             outThen[i], 
-            retGoalThen[i] = err + outThen[i]
+            (retGoalThen[i] = err + outThen[i])
         );
     }
 }
@@ -248,7 +235,6 @@ static ae2f_err_t MlpTrain_Predict(
     cl_command_queue queue,
     cl_context context_optionalB
 ) {
-    return 0;
     ae2f_err_t ret = 0;
     cl_int stateunderhood = CL_SUCCESS;
     cl_mem buffobj = buffobj_optionalA;
@@ -263,20 +249,20 @@ static ae2f_err_t MlpTrain_Predict(
     const size_t SkipInput = _this->MaxBuffCount * _this->Count;
 
     for(size_t i = 0; i < _this->Count; i++) {
-        ae2f_err_t _ret = 0 ? ae2fCL_AnnSlpPredict(
+        ae2f_err_t _ret = ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             buffobj,
-            i ? _this->MaxBuffCount * i : in_idx, /*in_idx*/
-            SkipInput + buffobj_idx_optionalA, /*out_idx*/
+            i ? _this->MaxBuffCount * (i - 1) + buffobj_idx_optionalA : in_idx, /*in_idx*/
+            _this->MaxBuffCount * (i) + buffobj_idx_optionalA, /*out_idx*/
             cache + i * _this->MaxBuffCount,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
-        ) : 0;
+        );
 
         cl_int stateunderhood = clEnqueueWriteBuffer(
             queue, buffobj, CL_TRUE,
-            (_this->MaxBuffCount * (i + 1)) * sizeof(ae2f_float_t) + buffobj_idx_optionalA, 
+            (_this->MaxBuffCount * (i) + buffobj_idx_optionalA) * sizeof(ae2f_float_t), 
             sizeof(ae2f_float_t) * _this->List[i].OutCount,
             cache + i * _this->MaxBuffCount, 0, 0, 0
         );
@@ -298,6 +284,7 @@ static ae2f_err_t MlpTrain_Predict(
 
     RET:
     #undef return
+    puts("Predict is okay");
     return ret;
 }
 
@@ -347,6 +334,7 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
     #define _cache_SIZE sizeof(ae2f_float_t)
     if(!_cache) {
         _cache = calloc(_cache_SIZE, _cache_ALLOCCOUNT);
+        if(!_cache) return(ae2f_errGlob_ALLOC_FAILED);
     }
 
     ae2f_float_t* const cache_Deltas = _cache + SkipInput;
@@ -360,7 +348,6 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
     ); if(ret) goto RET;
 
     for(size_t i = _this->Count - 1; i != ((size_t)-1); i--) {
-#if 1
         if(i == _this->Count - 1) {
             MlpTrain_OutCompute(
                 _this->List + i,
@@ -368,15 +355,20 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 _cache + i * _this->MaxBuffCount,
                 cache_Deltas + i * _this->MaxBuffCount
             );
+            puts("Outcompute done");
 
-            ae2fCL_AnnSlpTrain(
+            ret |= ae2fCL_AnnSlpTrain(
                 _this->List + i,
-                i ? buffobj : in, 0, 
-                _this->MaxBuffCount * i,
-                0, goal, LearningRate, 0, 0, queue, 
+                i ? buffobj : in, 0,
+                i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
+                0, goal, LearningRate, 0, 0, 
+                queue, 
                 CL_TRUE,
-                0, 0, 0, context_optionalB
+                0, 0, 0, 
+                context_optionalB
             );
+
+            puts("Train on out is done");
         } else {
             MlpTrain_HidCompute(
                 _this->List + i,
@@ -384,21 +376,23 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 cache_Deltas + i * _this->MaxBuffCount,
                 cache_Goals + i * _this->MaxBuffCount,
                 cache_Deltas + (i + 1) * _this->MaxBuffCount,
-                _cache + i * _this->MaxBuffCount,
+                _cache + (i) * _this->MaxBuffCount,
                 queue
             );
 
-            ae2fCL_AnnSlpTrain(
+            ret |=ae2fCL_AnnSlpTrain(
                 _this->List + i,
                 i ? buffobj : in, 0,
-                i ? _this->MaxBuffCount + i : in_idx,
+                i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
                 0, cache_Goals + i * _this->MaxBuffCount,
                 LearningRate, 0, 0,
-                queue, CL_TRUE, 0, 0, 0,
+                queue, CL_TRUE, 
+                0, 0, 0,
                 context_optionalB
             );
+
+            puts("Train on hid is done");
         }
-#endif
     }
 
     RET:

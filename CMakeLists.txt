@@ -4,6 +4,7 @@ include(cmake/Core.cmake)
 
 project(CL-Ann VERSION 0.1.5 LANGUAGES C CXX)
 if(NOT TARGET CL-Ann)
+
     ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.9.14)
     ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.4)
 
