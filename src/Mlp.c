@@ -1,6 +1,5 @@
 #include <ae2fCL/Ann/Mlp.h>
 #include <memory.h>
-
 #include <stdio.h>
 
 ae2f_SHAREDEXPORT
@@ -126,6 +125,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 
     size_t i;
     for(i = 0; i < _this->Count; i++) {
+#if 0
         ret |= ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
@@ -137,19 +137,33 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
             context_optionalB
         );
 
-        cl_int stateunderhood = clEnqueueWriteBuffer(
-            queue, buffobj, CL_TRUE,
-            (buffobj_idx_optionalA + SkipInput) * sizeof(ae2f_float_t),  
-            sizeof(ae2f_float_t) * _this->List[i].OutCount,
-            cache, 0, 0, 0
+#else
+        ret |= ae2fCL_AnnSlpPredict(
+            _this->List + i, 
+            i ? buffobj : in,
+            0/*This is the one doing hack.*/,
+            i ? buffobj_idx_optionalA : in_idx,
+            buffobj_idx_optionalA + SkipInput, /*out_idx_optionalA*/
+            cache,
+            queue, CL_TRUE, 0, 0, 0,
+            context_optionalB
         );
+#endif
 
-        if(stateunderhood != CL_SUCCESS)
-        ret |= ae2f_errGlob_NFOUND;
+        if(i + 1 == _this->Count) {
+            cl_int stateunderhood = clEnqueueWriteBuffer(
+                queue, buffobj, CL_TRUE,
+                (buffobj_idx_optionalA + SkipInput) * sizeof(ae2f_float_t),  
+                sizeof(ae2f_float_t) * _this->List[i].OutCount,
+                cache, 0, 0, 0
+            );
+
+            if(stateunderhood != CL_SUCCESS)
+            ret |= ae2f_errGlob_NFOUND;
+        }
     }
 
     if(outret_optional) {
-        printf("Predict out: %f\n", cache[0]);
         memcpy(outret_optional, cache, _this->List[_this->Count - 1].OutCount * sizeof(ae2f_float_t));
     }
 
@@ -185,7 +199,6 @@ static ae2f_float_t MlpTrain_HidErr(
             sizeof(ae2f_float_t), 
             &V, 0, 0, 0
         );
-
         
         ret += V * deltasNxt[i];
     }
@@ -216,7 +229,6 @@ static void MlpTrain_OutCompute(
     const ae2f_float_t* out,
     ae2f_float_t* retDeltaOut
 ) {
-    // #pragma omp parallel for
     for(size_t i = 0; i < layerOut->OutCount; i++) {
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
@@ -284,7 +296,6 @@ static ae2f_err_t MlpTrain_Predict(
 
     RET:
     #undef return
-    puts("Predict is okay");
     return ret;
 }
 
@@ -355,20 +366,29 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 _cache + i * _this->MaxBuffCount,
                 cache_Deltas + i * _this->MaxBuffCount
             );
-            puts("Outcompute done");
 
+            #if 1
             ret |= ae2fCL_AnnSlpTrain(
-                _this->List + i,
-                i ? buffobj : in, 0,
-                i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
-                0, goal, LearningRate, 0, 0, 
-                queue, 
-                CL_TRUE,
-                0, 0, 0, 
-                context_optionalB
+                _this->List + i, 
+                i ? buffobj : in, 
+                0, i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
+                0, goal, LearningRate, 
+                0, 0, 
+                queue, CL_TRUE,
+                0, 0, 0, context_optionalB
             );
-
-            puts("Train on out is done");
+            #else
+            ret |= ae2fCL_AnnSlpTrain(
+                _this->List, 
+                in, 
+                0, in_idx,
+                0, goal, LearningRate, 
+                0, 0, 
+                queue, CL_TRUE,
+                0, 0, 0, context_optionalB
+            );
+            break;
+            #endif
         } else {
             MlpTrain_HidCompute(
                 _this->List + i,
@@ -380,7 +400,7 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 queue
             );
 
-            ret |=ae2fCL_AnnSlpTrain(
+            ret |= ae2fCL_AnnSlpTrain(
                 _this->List + i,
                 i ? buffobj : in, 0,
                 i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
@@ -390,14 +410,12 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 0, 0, 0,
                 context_optionalB
             );
-
-            puts("Train on hid is done");
         }
     }
 
     RET:
     #undef return
-    if(_cache && _cache != outcache_optional) 
+    if(_cache && !outcache_optional) 
     free(_cache);
     if(buffobj && !buffobj_optionalA) 
     clReleaseMemObject(buffobj);

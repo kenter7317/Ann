@@ -57,7 +57,7 @@ int main() {
         sizeof(ins), ins, &err
     );
     if(err) goto __failure;
-    ae2f_float_t diff_got[1];
+    ae2f_float_t diff_got[2];
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2fCL_AnnSlpTrain(
             &Slp, inbuff,

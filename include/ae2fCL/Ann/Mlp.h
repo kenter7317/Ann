@@ -55,6 +55,11 @@ ae2f_err_t ae2fCL_AnnMlpDel(
     ae2fCL_AnnMlp* _this
 );
 
+/// @todo
+/// Don't know why though Predict with pre-allocated OpenCL Memory Object is casting us an exception. \n
+/// Perhaps using same memory object for input and output was a problem?
+/// 
+/// See related problem on @ref ae2fCL_AnnSlpPredict
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
 /// @param _this 

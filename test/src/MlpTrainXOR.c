@@ -50,10 +50,10 @@ int main() {
 
     ae2fCL_AnnMlp Mlp;
 
-    size_t layerlength[] = {2, 1};
+    size_t layerlength[] = {2, 2, 1};
     err2 = ae2fCL_AnnMlpMk(
         &Mlp, layerlength, 0, 0, sizeof(layerlength) / sizeof(layerlength[0]),
-        StepForward, 0, context, queue, CL_TRUE, 0, 0, 0 
+        Forward, Backward, context, queue, CL_TRUE, 0, 0, 0 
     );
 
     printf("%llu, %llu\n", Mlp.Count, Mlp.MaxBuffCount);
