@@ -127,6 +127,27 @@ namespace ae2fCL { namespace Ann {
                 event, context
             );
         }
+
+        inline ae2f_err_t Train(
+            ae2fCL_HostPtr(__global, ae2f_float_t) in,
+            uint32_t in_idx,
+
+            ae2f_float_t learning_rate,
+            ae2f_float_t* diff_ret_optional,
+            const ae2f_float_t* delta_precalculated,
+
+            cl_command_queue queue,
+            cl_bool blocking_read,
+            cl_uint num_events_in_wait_list,
+            const cl_event *event_wait_list,
+            cl_event *event
+        ) {
+            return ae2fCL_AnnSpTrainC(
+                this, in, in_idx, learning_rate, diff_ret_optional,
+                delta_precalculated, queue, blocking_read, 
+                num_events_in_wait_list, event_wait_list, event
+            );
+        }
     };
 
     struct cSp : public cSpRefer {

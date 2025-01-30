@@ -140,6 +140,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     ae2f_float_t LearningRateGlobal_optional_A,
     ae2f_float_t* LearningRateArr_optional_B,
     ae2f_float_t* diff_ret_optional,
+    const ae2f_float_t* delta_precalculated,
 
     cl_command_queue queue,
     cl_bool blocking_read,
@@ -154,6 +155,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!_this->List) return ae2f_errGlob_PTR_IS_NULL;
+    if(delta_precalculated) goto __DELTA_PRECALCULATED;
     if(!goal) return ae2f_errGlob_PTR_IS_NULL;
 
     if(event_wait_list)
@@ -167,6 +169,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
             out_idx_optionalA, goal[i],
             LearningRateArr_optional_B ? LearningRateArr_optional_B[i] : LearningRateGlobal_optional_A,
             diff_ret_optional ? diff_ret_optional + i : 0, 
+            delta_precalculated ? delta_precalculated + i : 0,
             queue, CL_TRUE,
             0, 0, 0, context_optionalB
         );
@@ -179,4 +182,20 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     END:
     #undef return
     return ret;
+
+    __DELTA_PRECALCULATED:
+    if(event_wait_list)
+    clWaitForEvents(num_events_in_wait_list, event_wait_list);
+
+    for(size_t i = 0; i < _this->OutCount; i++) {
+        ret |= ae2fCL_AnnSpTrainC(
+            _this->List[i].Perceptron, in, in_idx,
+            LearningRateArr_optional_B ? LearningRateArr_optional_B[i] : LearningRateGlobal_optional_A,
+            diff_ret_optional ? diff_ret_optional + i : 0,
+            delta_precalculated ? delta_precalculated + i : 0,
+            queue, blocking_read, 0, 0, 0
+        );
+    }
+
+    goto END;
 }

@@ -53,7 +53,7 @@ int main() {
     ae2fCL_AnnMlp Mlp;
     err2 = ae2fCL_AnnMlpMk(
         &Mlp, sizes, 0,
-        0, sizeof(sizes) / sizeof(size_t), Step, 0,
+        0, sizeof(sizes) / sizeof(size_t), Forward, Backward,
         context, queue, CL_TRUE, 0, 0, 0 
     );
     if(err2) {
@@ -76,6 +76,19 @@ int main() {
     );
     if(err) goto __failure;
     ae2f_float_t diff_got[2];
+    #define __TRAIN(in, out) \
+        err2 = ae2fCL_AnnMlpTrain( \
+            &Mlp, inbuff, \
+            0,0, 0/*in_idx*/, \
+            0, 0, diff_got, 0, \
+            goals + 0, gLearningRate, \
+            queue, context \
+        ); \
+        if(err2) { \
+            err = err2; goto __failure; \
+        }
+        
+
     for(size_t _ = 0; _ < gEpochs; _++) {
         #if 1
         err2 = ae2fCL_AnnMlpTrain(

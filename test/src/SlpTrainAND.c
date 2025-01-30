@@ -63,7 +63,7 @@ int main() {
             &Slp, inbuff,
             0, 0/*in_idx*/,
             0, goals + 0, gLearningRate, 
-            0, (void*)diff_got,
+            0, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -75,7 +75,7 @@ int main() {
             &Slp, inbuff,
             0, 2/*in_idx*/,
             0, goals + 2, gLearningRate, 
-            0, (void*)diff_got,
+            0, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -87,7 +87,7 @@ int main() {
             &Slp, inbuff,
             0, 4/*in_idx*/,
             0, goals + 2, gLearningRate, 
-            0, (void*)diff_got,
+            0, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -99,7 +99,7 @@ int main() {
             &Slp, inbuff,
             0, 6/*in_idx*/,
             0, goals + 2, gLearningRate, 
-            0, diff_got,
+            0, diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {

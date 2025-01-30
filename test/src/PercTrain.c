@@ -57,7 +57,7 @@ int main() {
         err2 = ae2fCL_AnnSpTrain(
             &Perc, inbuff,
             0, 0,
-            0, 1, gLearningRate, (void*)diff_got,
+            0, 1, gLearningRate, diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -68,7 +68,7 @@ int main() {
         err2 = ae2fCL_AnnSpTrain(
             &Perc, inbuff,
             0, 2,
-            0, 0, gLearningRate, (void*)diff_got,
+            0, 0, gLearningRate, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -79,7 +79,7 @@ int main() {
         err2 = ae2fCL_AnnSpTrain(
             &Perc, inbuff,
             0, 4,
-            0, 0, gLearningRate, (void*)diff_got,
+            0, 0, gLearningRate, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {
@@ -90,7 +90,7 @@ int main() {
         err2 = ae2fCL_AnnSpTrain(
             &Perc, inbuff,
             0, 6,
-            0, 0, gLearningRate, (void*)diff_got,
+            0, 0, gLearningRate, (void*)diff_got, 0,
             queue, CL_TRUE, 0, 0, 0, context
         );
         if(err2) {

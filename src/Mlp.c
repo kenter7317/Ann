@@ -114,7 +114,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
         buffobj = clCreateBuffer(
             context_optionalB, 
             CL_MEM_READ_WRITE, 
-            sizeof(ae2f_float_t) * (SkipInput << 1), 
+            sizeof(ae2f_float_t) * (SkipInput), 
             NULL, &stateunderhood
         );
         if(stateunderhood != CL_SUCCESS) return(ae2f_errGlob_ALLOC_FAILED);
@@ -125,42 +125,26 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 
     size_t i;
     for(i = 0; i < _this->Count; i++) {
-#if 0
-        ret |= ae2fCL_AnnSlpPredict(
-            _this->List + i, 
-            i ? buffobj : in,
-            buffobj,
-            i ? buffobj_idx_optionalA : in_idx,
-            buffobj_idx_optionalA + SkipInput, /*out_idx_optionalA*/
-            cache,
-            queue, CL_TRUE, 0, 0, 0,
-            context_optionalB
-        );
-
-#else
         ret |= ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
             0/*This is the one doing hack.*/,
             i ? buffobj_idx_optionalA : in_idx,
-            buffobj_idx_optionalA + SkipInput, /*out_idx_optionalA*/
+            0, /*out_idx_optionalA*/
             cache,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
         );
-#endif
 
-        if(i + 1 == _this->Count) {
-            cl_int stateunderhood = clEnqueueWriteBuffer(
-                queue, buffobj, CL_TRUE,
-                (buffobj_idx_optionalA + SkipInput) * sizeof(ae2f_float_t),  
-                sizeof(ae2f_float_t) * _this->List[i].OutCount,
-                cache, 0, 0, 0
-            );
+        cl_int stateunderhood = clEnqueueWriteBuffer(
+            queue, buffobj, CL_TRUE,
+            (buffobj_idx_optionalA) * sizeof(ae2f_float_t),  
+            sizeof(ae2f_float_t) * _this->List[i].OutCount,
+            cache, 0, 0, 0
+        );
 
-            if(stateunderhood != CL_SUCCESS)
-            ret |= ae2f_errGlob_NFOUND;
-        }
+        if(stateunderhood != CL_SUCCESS)
+        ret |= ae2f_errGlob_NFOUND;
     }
 
     if(outret_optional) {
@@ -188,17 +172,18 @@ static ae2f_float_t MlpTrain_HidErr(
     cl_command_queue queue
 ) {
     ae2f_float_t ret = 0;
-
     
     for(size_t i = 0; i < layerNxt->OutCount; i++) {
         ae2f_float_t V;
-        clEnqueueReadBuffer(
+        cl_int __err = clEnqueueReadBuffer(
             queue, 
             layerNxt->List[i].Perceptron->mgWeight, 
-            CL_TRUE, sizeof(ae2f_float_t) * idxThen, 
+            CL_TRUE, 
+            sizeof(ae2f_float_t) * idxThen, 
             sizeof(ae2f_float_t), 
             &V, 0, 0, 0
         );
+        if(__err) exit(__err);
         
         ret += V * deltasNxt[i];
     }
@@ -209,7 +194,6 @@ static void MlpTrain_HidCompute(
     const ae2fCL_AnnSlp* layerThen,
     const ae2fCL_AnnSlp* layerNxt,
     ae2f_float_t* retDeltaThen,
-    ae2f_float_t* retGoalThen,
     const ae2f_float_t* deltasNxt,
     const ae2f_float_t* outThen,
     cl_command_queue queue
@@ -217,8 +201,8 @@ static void MlpTrain_HidCompute(
     for(size_t i = 0; i < layerThen->OutCount; i++) {
         const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i, queue);
         retDeltaThen[i] = layerThen->List[i].Perceptron->mpGetLoss(
-            outThen[i], 
-            (retGoalThen[i] = err + outThen[i])
+            outThen[i],
+            err + outThen[i]
         );
     }
 }
@@ -233,7 +217,9 @@ static void MlpTrain_OutCompute(
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
         );
+        printf("Out got %f\n", out[i]);
     }
+
 }
 
 static ae2f_err_t MlpTrain_Predict(
@@ -264,9 +250,9 @@ static ae2f_err_t MlpTrain_Predict(
         ae2f_err_t _ret = ae2fCL_AnnSlpPredict(
             _this->List + i, 
             i ? buffobj : in,
-            buffobj,
+            0/*Another null passing hack*/,
             i ? _this->MaxBuffCount * (i - 1) + buffobj_idx_optionalA : in_idx, /*in_idx*/
-            _this->MaxBuffCount * (i) + buffobj_idx_optionalA, /*out_idx*/
+            0, /*out_idx*/
             cache + i * _this->MaxBuffCount,
             queue, CL_TRUE, 0, 0, 0,
             context_optionalB
@@ -367,34 +353,20 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
                 cache_Deltas + i * _this->MaxBuffCount
             );
 
-            #if 1
             ret |= ae2fCL_AnnSlpTrain(
                 _this->List + i, 
                 i ? buffobj : in, 
-                0, i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
-                0, goal, LearningRate, 
-                0, 0, 
+                0, i ? _this->MaxBuffCount * (i - 1) + buffobj_idx_optionalA : in_idx,
+                0, goal, LearningRate,
+                0, 0, cache_Deltas + i * _this->MaxBuffCount,
                 queue, CL_TRUE,
-                0, 0, 0, context_optionalB
+                0, 0, 0, 0
             );
-            #else
-            ret |= ae2fCL_AnnSlpTrain(
-                _this->List, 
-                in, 
-                0, in_idx,
-                0, goal, LearningRate, 
-                0, 0, 
-                queue, CL_TRUE,
-                0, 0, 0, context_optionalB
-            );
-            break;
-            #endif
         } else {
             MlpTrain_HidCompute(
                 _this->List + i,
                 _this->List + i + 1,
                 cache_Deltas + i * _this->MaxBuffCount,
-                cache_Goals + i * _this->MaxBuffCount,
                 cache_Deltas + (i + 1) * _this->MaxBuffCount,
                 _cache + (i) * _this->MaxBuffCount,
                 queue
@@ -403,9 +375,10 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
             ret |= ae2fCL_AnnSlpTrain(
                 _this->List + i,
                 i ? buffobj : in, 0,
-                i ? _this->MaxBuffCount * i + buffobj_idx_optionalA : in_idx,
-                0, cache_Goals + i * _this->MaxBuffCount,
-                LearningRate, 0, 0,
+                i ? _this->MaxBuffCount * (i - 1) + buffobj_idx_optionalA : in_idx,
+                0, 0,
+                LearningRate, 0, 0, 
+                cache_Deltas + i * _this->MaxBuffCount,
                 queue, CL_TRUE, 
                 0, 0, 0,
                 context_optionalB

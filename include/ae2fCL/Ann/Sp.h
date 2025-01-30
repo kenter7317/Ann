@@ -323,6 +323,11 @@ ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
 /// The final output for this operation would be stored here. \n 
 /// Passing it zero will not cause undefined behaviour, but this operation's result is going nowhere.
 ///
+/// @param delta_precalculated_optionalC
+/// When Delta has been pre-calculated somehow, you can utilise it via a pointer. \n
+/// When not set to zero, it will try to read as an element of [ae2f_float_t], 
+/// and skip the part of calculating the delta.
+/// 
 /// @param queue 
 /// @param blocking_read 
 /// @param num_events_in_wait_list 
@@ -341,6 +346,7 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     ae2f_float_t goal,
     ae2f_float_t learning_rate,
     ae2f_float_t* diff_ret_optional,
+    const ae2f_float_t* delta_precalculated_optionalC,
 
     cl_command_queue queue,
     cl_bool blocking_read,
@@ -383,7 +389,7 @@ ae2f_err_t ae2fCL_AnnSpTrain(
 /// @param[in] event_wait_list 
 /// @param[out] event
 #define ae2fCL_AnnSpTrainA(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event) \
-ae2fCL_AnnSpTrain(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, (cl_context)0)
+ae2fCL_AnnSpTrain(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret_optional, 0, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, (cl_context)0)
 
 /// @memberof ae2fCL_AnnSp
 /// @brief 
@@ -413,9 +419,42 @@ ae2fCL_AnnSpTrain(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret
 /// @param context
 /// The OpenCL Context in order to allocate the new buffer when needed. 
 #define ae2fCL_AnnSpTrainB(_this, in, in_idx, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, context) \
-ae2fCL_AnnSpTrain(_this, in, (cl_mem)0, in_idx, 0, goal, learning_rate, diff_ret_optional, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, context)
+ae2fCL_AnnSpTrain(_this, in, (cl_mem)0, in_idx, 0, goal, learning_rate, diff_ret_optional, 0, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, context)
 
-
+/// @memberof ae2fCL_AnnSp
+/// @brief 
+/// # Manages to correct the weight and bias for expected output value [goal].
+/// 
+/// See [ae2fCL_AnnSpTrain]
+/// 
+/// Since goal and output(from @ref ae2fCL_AnnSpPredict) is for calculating the delta_precalculated,
+/// so with given delta we could skip it all.
+/// 
+/// @param[in] _this 
+/// @param[in] in 
+/// The input value binded with an OpenCL memory object. \n
+/// If you don't want to make a memory object manually, see [ae2fCL_AnnSpPredictBuffAuto].
+/// 
+/// @param in_idx Padding for [in].
+/// @param learning_rate 
+/// Learning rate. Will be multiplied with Loss.
+/// @param[out] diff_ret_optional 
+/// The final output for this operation would be stored here. \n 
+/// Passing it zero will not cause undefined behaviour, but this operation's result is going nowhere.
+///
+/// @param delta_precalculated
+/// When Delta has been pre-calculated somehow, you can utilise it via a pointer. \n
+/// When not set to zero, it will try to read as an element of [ae2f_float_t], 
+/// and skip the part of calculating the delta.
+/// @param queue 
+/// @param blocking_read 
+/// @param num_events_in_wait_list 
+/// @param[in] event_wait_list 
+/// @param[out] event
+/// @param context
+/// The OpenCL Context in order to allocate the new buffer when needed. 
+#define ae2fCL_AnnSpTrainC(_this, in, in_idx, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list,  event) \
+ae2fCL_AnnSpTrain(_this, in, 0, in_idx, 0, 0, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, 0)
 
 #endif
 #endif

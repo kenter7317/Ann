@@ -104,21 +104,6 @@ ae2f_err_t ae2fCL_AnnSlpDel(
     ae2fCL_AnnSlp* _this
 ) noexcept;
 
-/// @memberof ae2fCL_AnnSlp
-/// @brief 
-/// @param[in] _this 
-/// @param ae2f_float_t 
-/// @param ae2f_float_t 
-/// @param in_idx 
-/// @param out_idx_optionalA 
-/// @param outbuff_optional_ 
-/// @param queue 
-/// @param blocking_event 
-/// @param num_events_in_wait_list 
-/// @param event_wait_list 
-/// @param event 
-/// @param context_optionalB 
-/// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpPredict(
     const ae2fCL_AnnSlp* _this,
@@ -135,24 +120,6 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     cl_context context_optionalB
 ) noexcept;
 
-/// @memberof ae2fCL_AnnSlp
-/// @brief 
-/// @param _this 
-/// @param ae2f_float_t 
-/// @param ae2f_float_t 
-/// @param in_idx 
-/// @param out_idx_optionalA 
-/// @param goal 
-/// @param LearningRateGlobal_optional_A 
-/// @param LearningRateArr_optional_B 
-/// @param diff_ret_optional 
-/// @param queue 
-/// @param blocking_read 
-/// @param num_events_in_wait_list 
-/// @param event_wait_list 
-/// @param event 
-/// @param context_optionalB 
-/// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpTrain(
     ae2fCL_AnnSlp* _this,
@@ -165,6 +132,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     ae2f_float_t LearningRateGlobal_optional_A,
     ae2f_float_t* LearningRateArr_optional_B,
     ae2f_float_t* diff_ret_optional,
+    const ae2f_float_t* delta_precalculated,
 
     cl_command_queue queue,
     cl_bool blocking_read,

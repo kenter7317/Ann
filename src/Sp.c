@@ -283,6 +283,7 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     ae2f_float_t goal,
     ae2f_float_t learning_rate,
     ae2f_float_t* diff_ret_optional,
+    const ae2f_float_t* delta_precalcualted_optionalC,
 
     cl_command_queue queue,
     cl_bool blocking_read,
@@ -300,6 +301,12 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsSpTrain];
 
     if(!diff_ret_optional) diff_ret_optional = &outF;
+    if(delta_precalcualted_optionalC) {
+        *diff_ret_optional = *delta_precalcualted_optionalC;
+        diff_ret_optional = (ae2f_float_t*)delta_precalcualted_optionalC;
+        goto LBL_DIFF_HAS_BEEN_CALCULATED;
+    }
+
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!out) {
@@ -326,6 +333,8 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     if(err2) goto END;
 
     *diff_ret_optional = _this->mpGetLoss(outF, goal) * learning_rate;
+
+    LBL_DIFF_HAS_BEEN_CALCULATED:
     _this->mBias += (*diff_ret_optional);
 
     err = clSetKernelArg(K, 0, cl_mem_SIZE, &in);
