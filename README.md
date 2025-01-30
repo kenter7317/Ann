@@ -14,4 +14,3 @@ A simple ann project with opencl written in C.
 - make
 - cmake
 - opencl
-- python

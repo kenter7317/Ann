@@ -401,6 +401,7 @@ ae2fCL_AnnSpTrain(_this, in, out, in_idx, out_idx, goal, learning_rate, diff_ret
 /// The input value binded with an OpenCL memory object. \n
 /// If you don't want to make a memory object manually, see [ae2fCL_AnnSpPredictBuffAuto].
 /// 
+/// The readable byte size must be greater or same as ( [in_idx] + @ref ae2fCL_AnnSp::mgWeightLen ) * sizeof( @ref ae2f_float_t ).
 /// @param in_idx Padding for [in].
 /// 
 /// @param goal 

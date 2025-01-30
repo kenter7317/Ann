@@ -62,15 +62,26 @@ typedef struct ae2fCL_AnnSlp {
 /// Initialise the class.
 /// 
 /// @param[out] _this 
-/// @param inputsCount_optionalA
+/// @param[in] inputsCount_optionalA
+/// A list that contains each perceptron's suppossed input length. \n
+/// Its readable length must be same or more as [outputCount].
 /// 
+/// @param[in] padCount_optional
+/// A list that contains each perceptron's supposed input pad index. \n
+/// Its readable length must be same or more as [outputCount].
 /// 
-/// @param padCount_optional
-///  
-/// @param[in] inputsCountGlobal_optionalB 
+/// @param[in] inputsCountGlobal
+/// Suggested input size for this model.
+/// 
 /// @param outputCount 
-/// @param mAct 
+/// Suggested output size for this model.
+/// 
+/// @param mAct
+/// Activation function.
+///  
 /// @param fpGetLoss 
+/// Delta calculation function.
+///
 /// @param ctx 
 /// @param queue 
 /// @param blocking_read 
@@ -83,7 +94,7 @@ ae2f_err_t ae2fCL_AnnSlpMk(
     ae2fCL_AnnSlp* _this,
     const size_t* inputsCount_optionalA,
     const size_t* padCount_optional,
-    size_t inputsCountGlobal_optionalB,
+    size_t inputsCountGlobal,
     size_t outputCount,
     ae2fCL_fpAnnAct_t mAct,
     ae2fCL_fpAnnSpGetLoss_t fpGetLoss,
@@ -97,13 +108,33 @@ ae2f_err_t ae2fCL_AnnSlpMk(
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
+/// Release the allocated resource of [_this].
 /// @param[in, out] _this 
+/// Its resources will be freed.
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpDel(
     ae2fCL_AnnSlp* _this
 ) noexcept;
 
+/// @memberof ae2fCL_AnnSlp
+/// @brief 
+/// # Predict the multiple value from multiple input.
+/// 
+/// @param _this 
+/// @param in 
+/// The 
+/// @param out_optionalA 
+/// @param in_idx 
+/// @param out_idx_optionalA 
+/// @param outbuff_optional_ 
+/// @param queue 
+/// @param blocking_event 
+/// @param num_events_in_wait_list 
+/// @param event_wait_list 
+/// @param event 
+/// @param context_optionalB 
+/// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpPredict(
     const ae2fCL_AnnSlp* _this,
@@ -120,6 +151,24 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     cl_context context_optionalB
 ) noexcept;
 
+/// @brief 
+/// @param _this 
+/// @param in 
+/// @param out_optionalA 
+/// @param in_idx 
+/// @param out_idx_optionalA 
+/// @param goal 
+/// @param LearningRateGlobal_optional_A 
+/// @param LearningRateArr_optional_B 
+/// @param diff_ret_optional 
+/// @param delta_precalculated 
+/// @param queue 
+/// @param blocking_read 
+/// @param num_events_in_wait_list 
+/// @param event_wait_list 
+/// @param event 
+/// @param context_optionalB 
+/// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpTrain(
     ae2fCL_AnnSlp* _this,

@@ -44,7 +44,7 @@ ae2f_err_t ae2fCL_AnnMlpMk(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-);
+) noexcept;
 
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
@@ -83,7 +83,7 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     ae2f_float_t* outcache_optional,
     cl_command_queue queue,
     cl_context context_optionalB
-);
+) noexcept;
 
 /// @todo
 /// Allocation is failing.
@@ -118,6 +118,6 @@ ae2f_err_t ae2fCL_AnnMlpTrain(
     ae2f_float_t LearningRate,
     cl_command_queue queue,
     cl_context context_optionalB
-);
+) noexcept;
 
 #endif
