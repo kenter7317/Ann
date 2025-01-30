@@ -35,11 +35,6 @@ if(NOT TARGET CL-Ann)
         target_link_libraries(CL-Ann PUBLIC m)
     endif()
 
-    find_package(OpenMP REQUIRED)
-    if(OpenMP_C_FOUND)
-        target_link_libraries(CL-Ann PUBLIC OpenMP::OpenMP_C)
-    endif()
-
     ae2fCL_CoreAppendInclude(
         ${PROJECT_SOURCE_DIR}/include
         ${ae2f_ProjRoot}/submod/ae2f/Core/include
