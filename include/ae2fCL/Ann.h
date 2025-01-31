@@ -7,7 +7,9 @@
 #include <ae2f/Cast.h>
 
 /// @brief 
+/// The list of OpenCL device functions that is able to run after the load of library.
 /// 
+/// Every element of this enum has a same name as device function. (kernel)
 enum ae2fCL_eAnnKerns {
     ae2fCL_eAnnKernsSpMkRand,
     ae2fCL_eAnnKernsSpPredict,
