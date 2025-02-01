@@ -1,4 +1,15 @@
-#ifndef ae2fCL_Ann_Sp_C_hpp
+/**
+ * @file C.hpp
+ * @author ae2f
+ * @brief 
+ * @date 2025-02-01
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * It contains the implementations of @ref ae2fCL_AnnSp.
+ */
+
+#if !defined(ae2fCL_Ann_Sp_C_hpp) && defined(__cplusplus)
 #define ae2fCL_Ann_Sp_C_hpp
 
 #include "../Sp.h"

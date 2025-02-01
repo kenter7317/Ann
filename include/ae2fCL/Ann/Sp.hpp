@@ -3,7 +3,6 @@
 #define ae2fCL_Ann_Slp_hpp
 
 #include "Sp.h"
-#include "Sp/C.hpp"
 
 namespace ae2fCL { namespace Ann {
     using Sp = ae2fCL_AnnSp;
@@ -23,7 +22,7 @@ namespace ae2fCL { namespace Ann {
             noexcept : Sp(slp) { this->mAct = act; this->mpGetLoss = loss; }
     };
 
-    struct cSp : public cSpRefer {
+    struct cSp : public Sp {
         inline ~cSp() noexcept {
             ae2fCL_AnnSpDel(this);
         }
