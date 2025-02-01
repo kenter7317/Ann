@@ -158,7 +158,5 @@ int main() {
     if(device) clReleaseDevice(device);
     if(queue) clReleaseCommandQueue(queue);
 
-
-
     return err;
 }
