@@ -4,24 +4,35 @@
 
 #include "Sp.h"
 
+typedef struct ae2fCL_AnnSlpEl ae2fCL_AnnSlpEl;
+typedef struct ae2fCL_AnnSlp ae2fCL_AnnSlp;
+
 /// @brief
 /// An element type of @ref ae2fCL_AnnSlp. \n
 /// @ref ae2fCL_AnnSlp has its responsibility for memory.
-typedef struct ae2fCL_AnnSlpEl {
+struct ae2fCL_AnnSlpEl {
     /// @brief 
     /// Local padding index for input memory object.
     size_t InputIdxPad;
 
     /// @see @ref ae2fCL_AnnSp
     ae2fCL_AnnSp Perceptron[1];
-} ae2fCL_AnnSlpEl;
+
+    #if ae2f_WhenCXX(1) + 0
+    #include "Slp/SlpEl.hpp"
+    #endif
+};
+
+/// @brief
+/// @param _this
+#define ae2fCL_AnnSlpElInLengthReq(_this) (_this->InputIdxPad + _this->Perceptron->mgWeightLen)
 
 /// @brief 
 /// # Single Layered Perceptron
 ///
 /// Expecting the implementation of single perceptron,
 /// this structure is able to predict multiple output by stacking the perceptron.
-typedef struct ae2fCL_AnnSlp {
+struct ae2fCL_AnnSlp {
     /// @brief 
     /// The layer.
     ae2fCL_AnnSlpEl* List;
@@ -34,7 +45,7 @@ typedef struct ae2fCL_AnnSlp {
     /// @brief
     /// The expected count of input as @ref ae2f_float_t. 
     MaxInCount;
-} ae2fCL_AnnSlp;
+};
 
 /// @warning
 /// Notice that the macro will not perform check for index and null pointer.
@@ -122,11 +133,20 @@ ae2f_err_t ae2fCL_AnnSlpDel(
 /// # Predict the multiple value from multiple input.
 /// 
 /// @param _this 
+/// 
 /// @param in 
-/// The 
+/// The input memory object. \n
+/// Must be longer or same as @code in_idx + _this->MaxInCount
+/// 
 /// @param out_optionalA 
+/// The output memory object (optional)
+/// 
 /// @param in_idx 
+/// The padding index for [in]. \n
+/// 
 /// @param out_idx_optionalA 
+/// 
+/// 
 /// @param outbuff_optional_ 
 /// @param queue 
 /// @param blocking_event 
@@ -151,6 +171,7 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
     cl_context context_optionalB
 ) noexcept;
 
+/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// @param _this 
 /// @param in 
@@ -191,5 +212,9 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 
     cl_context context_optionalB
 ) noexcept;
+
+#if ae2f_WhenCXX(1) + 0
+#include "Slp/imp.hpp"
+#endif
 
 #endif

@@ -1,5 +1,12 @@
-/// @file Sp.h
-
+/**
+ * @file Sp.h
+ * @author ae2f
+ * @brief 
+ * @date 2025-02-02
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef ae2fCL_Ann_Slp_h
 #define ae2fCL_Ann_Slp_h
 
@@ -30,134 +37,7 @@ typedef ae2fCL_HostPtr(__global, ae2f_float_t) ae2fCL_memobj_float_t;
 /// # Single Perceptron.
 /// 
 /// This will read multiple inputs, generate one output.
-typedef struct ae2fCL_AnnSp {
-
-    /// @brief Bias.
-    ae2f_float_t mBias;
-
-    /// @brief Activasion function customisable.
-    ae2fCL_fpAnnAct_t mAct;
-
-    /// @brief
-    /// It is a OpenCL Memory Object using a structure itself as a host memory. \n 
-    /// Since ae2fCL_AnnSp is not completely defined yet, the type will be undefined.
-    ae2fCL_memobj_void_t mSelf;
-
-    /// @warning
-    /// The length of the weight will be considered as same as the input's length for all cases.
-    /// @brief
-    /// It is a OpenCL Memory Object allocated alone as 
-    ae2fCL_memobj_float_t mgWeight;
-
-    /// @brief Specifies the way of calculating loss on training.
-    /// @see ae2fCL_AnnSpTrain
-    ae2fCL_fpAnnSpGetLoss_t mpGetLoss;
-
-    /// @brief
-    /// Possible count of weights, which means possible count of inputs on prediction.
-    /// 
-    /// @see ae2fCL_AnnSpPredict
-    size_t mgWeightLen;
-
-    ae2f_WhenCXX(inline cl_int WeightCheck(ae2f_float_t* buff, cl_command_queue queue) const noexcept);
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Predict(
-            ae2fCL_HostPtr(__global, ae2f_float_t) in,
-            ae2fCL_HostPtr(__global, ae2f_float_t) out,
-            uint32_t in_idx,
-            uint32_t out_idx,
-            ae2f_float_t* outbuff_optional,
-            cl_command_queue queue,
-            cl_bool blocking_event,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event
-        ) const noexcept
-    );
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Predict(
-            ae2fCL_HostPtr(__global, ae2f_float_t) in,
-            uint32_t in_idx,
-            ae2f_float_t* outbuff_optional,
-            cl_command_queue queue,
-            cl_bool blocking_event,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event,
-            cl_context context
-        ) const noexcept
-    );
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Predict(
-            const ae2f_float_t* in,
-            ae2f_float_t* out,
-            cl_command_queue queue,
-            cl_bool blocking_read,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event,
-            cl_context context
-        ) const noexcept
-    );
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Train(
-            ae2fCL_HostPtr(__global, ae2f_float_t) in,
-            ae2fCL_HostPtr(__global, ae2f_float_t) out,
-            uint32_t in_idx,
-            uint32_t out_idx,
-
-            ae2f_float_t goal,
-            ae2f_float_t learning_rate,
-            ae2f_float_t* diff_ret_optional,
-
-            cl_command_queue queue,
-            cl_bool blocking_read,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event
-        ) noexcept
-    );
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Train(
-            ae2fCL_HostPtr(__global, ae2f_float_t) in,
-            uint32_t in_idx,
-
-            ae2f_float_t goal,
-            ae2f_float_t learning_rate,
-            ae2f_float_t* diff_ret_optional,
-
-            cl_command_queue queue,
-            cl_bool blocking_read,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event,
-
-            cl_context context
-        ) noexcept
-    );
-
-    ae2f_WhenCXX(
-        inline ae2f_err_t Train(
-            ae2fCL_HostPtr(__global, ae2f_float_t) in,
-            uint32_t in_idx,
-
-            ae2f_float_t learning_rate,
-            ae2f_float_t* diff_ret_optional,
-            const ae2f_float_t* delta_precalculated,
-
-            cl_command_queue queue,
-            cl_bool blocking_read,
-            cl_uint num_events_in_wait_list,
-            const cl_event *event_wait_list,
-            cl_event *event
-        ) noexcept
-    );
-} ae2fCL_AnnSp;
+typedef struct ae2fCL_AnnSp ae2fCL_AnnSp;
 
 #include <ae2f/Pack/End.h>
 
@@ -556,8 +436,49 @@ ae2fCL_AnnSpTrain(_this, in, (cl_mem)0, in_idx, 0, goal, learning_rate, diff_ret
 #define ae2fCL_AnnSpTrainC(_this, in, in_idx, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list,  event) \
 ae2fCL_AnnSpTrain(_this, in, 0, in_idx, 0, 0, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, 0)
 
+#define ae2fCL_AnnSp_NEED
+#define ae2f_TMP
 
-#include "Sp/C.hpp"
+struct ae2fCL_AnnSp {
+
+    /// @brief Bias.
+    ae2f_float_t mBias;
+
+    /// @brief Activasion function customisable.
+    ae2fCL_fpAnnAct_t mAct;
+
+    /// @brief
+    /// It is a OpenCL Memory Object using a structure itself as a host memory. \n 
+    /// Since ae2fCL_AnnSp is not completely defined yet, the type will be undefined.
+    ae2fCL_memobj_void_t mSelf;
+
+    /// @warning
+    /// The length of the weight will be considered as same as the input's length for all cases.
+    /// @brief
+    /// It is a OpenCL Memory Object allocated alone as 
+    ae2fCL_memobj_float_t mgWeight;
+
+    /// @brief Specifies the way of calculating loss on training.
+    /// @see ae2fCL_AnnSpTrain
+    ae2fCL_fpAnnSpGetLoss_t mpGetLoss;
+
+    /// @brief
+    /// Possible count of weights, which means possible count of inputs on prediction.
+    /// 
+    /// @see ae2fCL_AnnSpPredict
+    size_t mgWeightLen;
+
+
+    #if ae2f_WhenCXX(1) + 0
+    #include "Sp/Sp.hpp"
+    #endif
+};
+
+
+#if ae2f_WhenCXX(1) + 0
+#include "Sp/imp.hpp"
+#endif
+
 
 #endif
 #endif

@@ -1,20 +1,27 @@
 /**
- * @file C.hpp
+ * @file Sp.hpp
  * @author ae2f
  * @brief 
- * @date 2025-02-01
+ * CXX Style Abstraction for @ref ae2fCL_AnnSp
+ * 
+ * @date 2025-02-02
  * 
  * @copyright Copyright (c) 2025
  * 
- * It contains the implementations of @ref ae2fCL_AnnSp.
+ * @warning
+ * This header is a utility for structure methods defining. \n
+ * Being included outside a header is not predicted.
+ * 
+ * 
  */
 
-#if !defined(ae2fCL_Ann_Sp_C_hpp) && defined(__cplusplus)
-#define ae2fCL_Ann_Sp_C_hpp
+#if !defined(ae2fCL_Ann_Sp_Sp_h)
+#define ae2fCL_Ann_Sp_Sp_h
 
 #include "../Sp.h"
+#define ae2f_TMP
 
-inline ae2f_err_t ae2fCL_AnnSp::Predict(
+inline ae2f_err_t ae2f_TMP Predict(
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out,
     uint32_t in_idx,
@@ -25,15 +32,9 @@ inline ae2f_err_t ae2fCL_AnnSp::Predict(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-) const noexcept {
-    return ae2fCL_AnnSpPredictA(
-        this, in, out, in_idx, out_idx, 
-        outbuff_optional, queue, blocking_event, 
-        num_events_in_wait_list, event_wait_list, event
-    );
-}
+) const noexcept;
 
-inline ae2f_err_t ae2fCL_AnnSp::Predict(
+inline ae2f_err_t ae2f_TMP Predict(
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     uint32_t in_idx,
     ae2f_float_t* outbuff_optional,
@@ -43,16 +44,9 @@ inline ae2f_err_t ae2fCL_AnnSp::Predict(
     const cl_event *event_wait_list,
     cl_event *event,
     cl_context context
-) const noexcept {
-    return ae2fCL_AnnSpPredictB(
-        this, in, in_idx,
-        outbuff_optional, context,
-        queue, blocking_event, num_events_in_wait_list,
-        event_wait_list, event  
-    );
-}
+) const noexcept;
 
-inline ae2f_err_t ae2fCL_AnnSp::Predict(
+inline ae2f_err_t ae2f_TMP Predict(
     const ae2f_float_t* in,
     ae2f_float_t* out,
     cl_command_queue queue,
@@ -61,15 +55,9 @@ inline ae2f_err_t ae2fCL_AnnSp::Predict(
     const cl_event *event_wait_list,
     cl_event *event,
     cl_context context
-) const noexcept {
-    return ae2fCL_AnnSpPredictBuffAuto(
-        this, in, out, queue,
-        blocking_read, num_events_in_wait_list,
-        event_wait_list, event, context
-    );
-}
+) const noexcept;
 
-inline ae2f_err_t ae2fCL_AnnSp::Train(
+inline ae2f_err_t ae2f_TMP Train(
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out,
     uint32_t in_idx,
@@ -84,16 +72,9 @@ inline ae2f_err_t ae2fCL_AnnSp::Train(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-) noexcept {
-    return ae2fCL_AnnSpTrainA(
-        this, in, out, in_idx, out_idx,
-        goal, learning_rate, diff_ret_optional,
-        queue, blocking_read, num_events_in_wait_list,
-        event_wait_list, event
-    );
-}
+) noexcept;
 
-inline ae2f_err_t ae2fCL_AnnSp::Train(
+inline ae2f_err_t ae2f_TMP Train(
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     uint32_t in_idx,
 
@@ -108,16 +89,9 @@ inline ae2f_err_t ae2fCL_AnnSp::Train(
     cl_event *event,
 
     cl_context context
-) noexcept {
-    return ae2fCL_AnnSpTrainB(
-        this, in, in_idx, goal, learning_rate,
-        diff_ret_optional, queue, blocking_read,
-        num_events_in_wait_list, event_wait_list,
-        event, context
-    );
-}
+) noexcept;
 
-inline ae2f_err_t ae2fCL_AnnSp::Train(
+inline ae2f_err_t ae2f_TMP Train(
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     uint32_t in_idx,
 
@@ -130,19 +104,12 @@ inline ae2f_err_t ae2fCL_AnnSp::Train(
     cl_uint num_events_in_wait_list,
     const cl_event *event_wait_list,
     cl_event *event
-) noexcept {
-    return ae2fCL_AnnSpTrainC(
-        this, in, in_idx, learning_rate, diff_ret_optional,
-        delta_precalculated, queue, blocking_read, 
-        num_events_in_wait_list, event_wait_list, event
-    );
-}
+) noexcept;
 
-inline cl_int ae2fCL_AnnSp::WeightCheck(
+inline cl_int ae2f_TMP WeightCheck(
     ae2f_float_t* buff, 
     cl_command_queue queue
-) const noexcept {
-    return ae2fCL_AnnSpWeightCheck(this, buff, queue);
-}
+) const noexcept;
 
 #endif
+#undef ae2f_TMP

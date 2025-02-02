@@ -2,7 +2,6 @@
 #include "../test.h"
 #include <ae2fCL/Ann/Mlp.h>
 #include <stdio.h>
-
 #include <math.h>
 
 #define gLearningRate 0.1
@@ -34,31 +33,12 @@ int main() {
     cl_device_id device = 0;
     cl_context context = 0;
     ae2f_err_t err2 = 0;
-
-    err = clGetPlatformIDs(1, &platform, 0);
-    CHECK_ERR(err, CL_SUCCESS, __failure);
-    
-    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, 0);
-    CHECK_ERR(err, CL_SUCCESS, __failure);
-
-    context = clCreateContext(0, 1, &device, 0, 0, &err);
-    CHECK_ERR(err, CL_SUCCESS, __failure);
-    cl_command_queue queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
-    CHECK_ERR(err, CL_SUCCESS, __failure);
-
-    err = ae2fCL_AnnMk(context, 1, &device);
-    CHECK_ERR(err, CL_SUCCESS, __failure);
+    ae2f_float_t diff_got[2];
+    ae2f_float_t outbuff[2] = {  5 };
 
     size_t sizes[] = {2, 1};
     ae2fCL_AnnMlp Mlp;
-    err2 = ae2fCL_AnnMlpMk(
-        &Mlp, sizes, 0,
-        0, sizeof(sizes) / sizeof(size_t), Forward, Backward,
-        context, queue, CL_TRUE, 0, 0, 0 
-    );
-    if(err2) {
-        err = err2; goto __failure;
-    }
+    cl_command_queue queue;
 
     // [1, 1], [1, 0], [0, 1], [0, 0]
     ae2f_float_t ins[] = {
@@ -69,13 +49,40 @@ int main() {
     const ae2f_float_t goals[] = {
         1, 1, 0, 0
     };
+
+    cl_mem inbuff;
+
+    err = clGetPlatformIDs(1, &platform, 0);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+    
+    err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &device, 0);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    context = clCreateContext(0, 1, &device, 0, 0, &err);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+    queue = clCreateCommandQueueWithProperties(context, device, 0, &err);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    err = ae2fCL_AnnMk(context, 1, &device);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+
+    err2 = ae2fCL_AnnMlpMk(
+        &Mlp, sizes, 0,
+        0, sizeof(sizes) / sizeof(size_t), Forward, Backward,
+        context, queue, CL_TRUE, 0, 0, 0 
+    );
+    if(err2) {
+        err = err2; goto __failure;
+    }
+
     // [1, 1], [1, 0], [0, 1], [0, 0]
-    cl_mem inbuff = clCreateBuffer(
+    inbuff = clCreateBuffer(
         context, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
         sizeof(ins), ins, &err
     );
     if(err) goto __failure;
-    ae2f_float_t diff_got[2];
+    
     #define __TRAIN(in, out) \
         err2 = ae2fCL_AnnMlpTrain( \
             &Mlp, inbuff, \
@@ -138,7 +145,7 @@ int main() {
         }
         printf("Diff from 0, 0: %f\n\n", diff_got[0]);
     }
-    ae2f_float_t outbuff[2] = {  5 };
+    
 
     puts("Predict time");
 
