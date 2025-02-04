@@ -435,8 +435,9 @@ ae2fCL_AnnSpTrain(_this, in, (cl_mem)0, in_idx, 0, goal, learning_rate, diff_ret
 #define ae2fCL_AnnSpTrainC(_this, in, in_idx, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list,  event) \
 ae2fCL_AnnSpTrain(_this, in, 0, in_idx, 0, 0, learning_rate, diff_ret_optional, delta_precalculated, queue, blocking_read, num_events_in_wait_list, event_wait_list, event, 0)
 
-#define ae2fCL_AnnSp_NEED
-#define ae2f_TMP
+
+
+#endif
 
 /// @brief 
 /// # Single Perceptron.
@@ -482,6 +483,4 @@ typedef struct ae2fCL_AnnSp {
 #include "Sp/imp.hpp"
 #endif
 
-
-#endif
 #endif
