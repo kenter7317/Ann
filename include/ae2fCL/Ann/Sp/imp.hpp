@@ -147,5 +147,5 @@ inline cl_int ae2f_TMP WeightCheck(
 }
 
 
-#endif
 #undef ae2f_TMP
+#endif

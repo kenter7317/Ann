@@ -111,5 +111,5 @@ inline cl_int ae2f_TMP WeightCheck(
     cl_command_queue queue
 ) const noexcept;
 
-#endif
 #undef ae2f_TMP
+#endif

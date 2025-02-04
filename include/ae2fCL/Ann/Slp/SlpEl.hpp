@@ -23,5 +23,5 @@
 constexprfun size_t ae2f_TMP InLengthReq();
 
 
-#endif
 #undef ae2f_TMP
+#endif

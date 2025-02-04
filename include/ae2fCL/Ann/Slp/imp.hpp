@@ -25,4 +25,11 @@ constexprfun size_t ae2f_TMP InLengthReq() {
 #undef ae2f_TMP
 #pragma endregion
 
+#pragma region Slp
+#define ae2f_TMP ae2fCL_AnnSlp::
+
+
+#undef ae2f_TMP
+#pragma endregion
+
 #endif

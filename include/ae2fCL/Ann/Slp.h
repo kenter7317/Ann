@@ -4,13 +4,10 @@
 
 #include "Sp.h"
 
-typedef struct ae2fCL_AnnSlpEl ae2fCL_AnnSlpEl;
-typedef struct ae2fCL_AnnSlp ae2fCL_AnnSlp;
-
 /// @brief
 /// An element type of @ref ae2fCL_AnnSlp. \n
 /// @ref ae2fCL_AnnSlp has its responsibility for memory.
-struct ae2fCL_AnnSlpEl {
+typedef struct ae2fCL_AnnSlpEl {
     /// @brief 
     /// Local padding index for input memory object.
     size_t InputIdxPad;
@@ -21,18 +18,14 @@ struct ae2fCL_AnnSlpEl {
     #if ae2f_WhenCXX(1) + 0
     #include "Slp/SlpEl.hpp"
     #endif
-};
-
-/// @brief
-/// @param _this
-#define ae2fCL_AnnSlpElInLengthReq(_this) (_this->InputIdxPad + _this->Perceptron->mgWeightLen)
+} ae2fCL_AnnSlpEl;
 
 /// @brief 
 /// # Single Layered Perceptron
 ///
 /// Expecting the implementation of single perceptron,
 /// this structure is able to predict multiple output by stacking the perceptron.
-struct ae2fCL_AnnSlp {
+typedef struct ae2fCL_AnnSlp {
     /// @brief 
     /// The layer.
     ae2fCL_AnnSlpEl* List;
@@ -45,30 +38,37 @@ struct ae2fCL_AnnSlp {
     /// @brief
     /// The expected count of input as @ref ae2f_float_t. 
     MaxInCount;
-};
+} ae2fCL_AnnSlp;
 
+
+/// @memberof ae2fCL_AnnSlpEl
+/// @brief
+/// @param _this
+#define ae2fCL_AnnSlpElInLengthReq(_this) (_this->InputIdxPad + _this->Perceptron->mgWeightLen)
+
+
+/// @memberof ae2fCL_AnnSlp
 /// @warning
 /// Notice that the macro will not perform check for index and null pointer.
-/// @memberof ae2fCL_AnnSlp
 /// @param[in] _this [ae2fCL_AnnSlp*]
 /// @param i [size_t] index for List. Must not be greater than @ref ae2fCL_AnnSlp::OutCount.
 /// @return [ae2fCL_fpAnnAct_t&]
 /// Returns the activation function from [i]th element of @ref ae2fCL_AnnSlp::List.
 #define ae2fCL_AnnSlpGetAct(_this, i) (ae2f_const_cast(ae2fCL_AnnSlp*, _this)->List[i].Perceptron->mAct)
 
+/// @memberof ae2fCL_AnnSlp
 /// @warning
 /// Notice that the macro will not perform check for index and null pointer.
-/// @memberof ae2fCL_AnnSlp
 /// @param[in] _this [ae2fCL_AnnSlp*]
 /// @param i [size_t] index for List. Must not be greater than @ref ae2fCL_AnnSlp::OutCount.
 /// @return [ae2fCL_fpAnnSpGetLoss_t&]
 /// Returns the loss function from [i]th element of @ref ae2fCL_AnnSlp::List
 #define ae2fCL_AnnSlpGetLoss(_this, i) (ae2f_const_cast(ae2fCL_AnnSlp*, _this)->List[i].Perceptron->mpGetLoss)
 
+/// @memberof ae2fCL_AnnSlp
 /// @warning
 /// It will not check whether the structure is initialised. \n
 /// Notice that initialised class must pass the function @ref ae2fCL_AnnSlpDel.
-/// @memberof ae2fCL_AnnSlp
 /// @brief 
 /// Initialise the class.
 /// 
@@ -102,7 +102,7 @@ struct ae2fCL_AnnSlp {
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpMk(
-    ae2fCL_AnnSlp* _this,
+    ae2f_struct ae2fCL_AnnSlp* _this,
     const size_t* inputsCount_optionalA,
     const size_t* padCount_optional,
     size_t inputsCountGlobal,
@@ -125,29 +125,35 @@ ae2f_err_t ae2fCL_AnnSlpMk(
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpDel(
-    ae2fCL_AnnSlp* _this
+    ae2f_struct ae2fCL_AnnSlp* _this
 ) noexcept;
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
-/// # Predict the multiple value from multiple input.
+/// # Predicts the multiple value from multiple input.
 /// 
-/// @param _this 
+/// @param[in] _this 
 /// 
-/// @param in 
+/// @param[in] in 
 /// The input memory object. \n
-/// Must be longer or same as @code in_idx + _this->MaxInCount
+/// The buffer's length will be considered as @code in_idx + _this->MaxInCount
 /// 
 /// @param out_optionalA 
-/// The output memory object (optional)
+/// The output memory object (optional) \n
+/// Setting it null will let this function dynamically allocate a temporaral buffer. 
+/// 
+/// The buffer's length will be considered as @code out_idx_optionalA + _this->OutCount
 /// 
 /// @param in_idx 
 /// The padding index for [in]. \n
 /// 
 /// @param out_idx_optionalA 
+/// The padding index for [out_optionalA].
 /// 
+/// @param[out] outbuff_optional_ 
+/// A pointer where output will be passed. \n
+/// Its length is considered as [OutCount]
 /// 
-/// @param outbuff_optional_ 
 /// @param queue 
 /// @param blocking_event 
 /// @param num_events_in_wait_list 
@@ -157,7 +163,7 @@ ae2f_err_t ae2fCL_AnnSlpDel(
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpPredict(
-    const ae2fCL_AnnSlp* _this,
+    const ae2f_struct ae2fCL_AnnSlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -173,26 +179,51 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
 
 /// @memberof ae2fCL_AnnSlp
 /// @brief 
-/// @param _this 
-/// @param in 
-/// @param out_optionalA 
+/// Fits this layer for given goal. \n
+/// It will roughly think for given input [in] the output have to be [goal].
+/// 
+/// @param[in, out] _this 
+/// @param[in] in 
+/// Given Input for this class. \n
+/// It's length is considered as @code in_idx + _this->MaxInCount
+/// 
+/// @param[out] out_optionalA
+/// 
+/// Output where its output will be located. \n
+/// This is needed when this class is trying to calculate a Loss from Prediction.
+///
+/// Setting it null would cause OpenCL Memory object allocation and freeing. \n
+/// See [context_optionalB].
+///
+/// This behaviour will not be necessary given pre-calculated loss(delta).
+/// See [delta_precalculated_optC].
+///  
 /// @param in_idx 
-/// @param out_idx_optionalA 
-/// @param goal 
+/// Padding index for [in].
+/// @param out_idx_optionalA
+/// Padding index for [out]. 
+/// @param[in] goal 
+/// Wanted output for [in]. \n
+/// It is no necessary when [delta_precalculated_optC] is provided.
+/// 
 /// @param LearningRateGlobal_optional_A 
-/// @param LearningRateArr_optional_B 
-/// @param diff_ret_optional 
-/// @param delta_precalculated 
+/// 
+/// @param[in] LearningRateArr_optional_B
+///  
+/// @param[out] diff_ret_optional
+/// 
+/// @param[in] delta_precalculated_optC
+/// 
 /// @param queue 
 /// @param blocking_read 
 /// @param num_events_in_wait_list 
-/// @param event_wait_list 
+/// @param[in] event_wait_list 
 /// @param event 
 /// @param context_optionalB 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpTrain(
-    ae2fCL_AnnSlp* _this,
+    ae2f_struct ae2fCL_AnnSlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -202,7 +233,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
     ae2f_float_t LearningRateGlobal_optional_A,
     ae2f_float_t* LearningRateArr_optional_B,
     ae2f_float_t* diff_ret_optional,
-    const ae2f_float_t* delta_precalculated,
+    const ae2f_float_t* delta_precalculated_optC,
 
     cl_command_queue queue,
     cl_bool blocking_read,

@@ -33,11 +33,7 @@ typedef ae2f_float_t(*ae2fCL_fpAnnSpGetLoss_t)
 typedef ae2fCL_HostPtr(__global, void) ae2fCL_memobj_void_t;
 typedef ae2fCL_HostPtr(__global, ae2f_float_t) ae2fCL_memobj_float_t;
 
-/// @brief 
-/// # Single Perceptron.
-/// 
-/// This will read multiple inputs, generate one output.
-typedef struct ae2fCL_AnnSp ae2fCL_AnnSp;
+struct ae2fCL_AnnSp;
 
 #include <ae2f/Pack/End.h>
 
@@ -86,7 +82,7 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t ae2fCL_AnnSpMk(
 /// @param[in, out] _this 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSpDel(
-    ae2fCL_AnnSp* _this
+    ae2f_struct ae2fCL_AnnSp* _this
 ) noexcept;
 
 /// @memberof ae2fCL_AnnSp
@@ -152,7 +148,7 @@ clEnqueueReadBuffer( \
 /// The OpenCL Context in order to allocate the new buffer when needed. 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSpPredict(
-    const ae2fCL_AnnSp* _this,
+    const ae2f_struct ae2fCL_AnnSp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -266,7 +262,7 @@ ae2fCL_AnnSpPredict( \
 /// Passing zero here will cause undefined behaviour. 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
-    const ae2fCL_AnnSp* _this,
+    const ae2f_struct ae2fCL_AnnSp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* out,
     cl_command_queue queue,
@@ -281,6 +277,8 @@ ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
 /// @brief 
 /// # Manages to correct the weight and bias for expected output value [goal].
 /// 
+/// This function will call @ref ae2fCL_AnnSpPredict in order to get the output.
+///
 /// @param[in, out] _this 
 /// @param[in] in 
 /// The input value binded with an OpenCL memory object. \n
@@ -304,9 +302,10 @@ ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
 ///
 /// @param delta_precalculated_optionalC
 /// When Delta has been pre-calculated somehow, you can utilise it via a pointer. \n
-/// When not set to zero, it will try to read as an element of [ae2f_float_t], 
-/// and skip the part of calculating the delta.
+/// When not set to zero, it will try to read as an element of [ae2f_float_t].
 /// 
+/// Passing this argue non-null pointer could skip Prediction and skip the part of calculating the delta.
+///
 /// @param queue 
 /// @param blocking_read 
 /// @param num_events_in_wait_list 
@@ -316,7 +315,7 @@ ae2f_err_t ae2fCL_AnnSpPredictBuffAuto(
 /// The OpenCL Context in order to allocate the new buffer when needed. 
 ae2f_extern ae2f_SHAREDCALL 
 ae2f_err_t ae2fCL_AnnSpTrain(
-    ae2fCL_AnnSp* _this,
+    ae2f_struct ae2fCL_AnnSp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t) in,
     ae2fCL_HostPtr(__global, ae2f_float_t) out_optionalA,
     uint32_t in_idx,
@@ -419,7 +418,7 @@ ae2fCL_AnnSpTrain(_this, in, (cl_mem)0, in_idx, 0, goal, learning_rate, diff_ret
 /// @param learning_rate 
 /// Learning rate. Will be multiplied with Loss.
 /// @param[out] diff_ret_optional 
-/// The final output for this operation would be stored here. \n 
+/// The final delta(loss) calculated for this operation would be stored here. \n 
 /// Passing it zero will not cause undefined behaviour, but this operation's result is going nowhere.
 ///
 /// @param delta_precalculated
@@ -439,7 +438,11 @@ ae2fCL_AnnSpTrain(_this, in, 0, in_idx, 0, 0, learning_rate, diff_ret_optional, 
 #define ae2fCL_AnnSp_NEED
 #define ae2f_TMP
 
-struct ae2fCL_AnnSp {
+/// @brief 
+/// # Single Perceptron.
+/// 
+/// This will read multiple inputs, generate one output.
+typedef struct ae2fCL_AnnSp {
 
     /// @brief Bias.
     ae2f_float_t mBias;
@@ -472,7 +475,7 @@ struct ae2fCL_AnnSp {
     #if ae2f_WhenCXX(1) + 0
     #include "Sp/Sp.hpp"
     #endif
-};
+} ae2fCL_AnnSp;
 
 
 #if ae2f_WhenCXX(1) + 0
