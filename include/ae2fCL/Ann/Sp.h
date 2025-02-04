@@ -474,13 +474,13 @@ typedef struct ae2fCL_AnnSp {
 
 
     #if ae2f_WhenCXX(1) + 0
-    #include "Sp/Sp.hpp"
+    #include "Sp.h.cxx/Sp.hpp"
     #endif
 } ae2fCL_AnnSp;
 
 
 #if ae2f_WhenCXX(1) + 0
-#include "Sp/imp.hpp"
+#include "Sp.h.cxx/imp.hpp"
 #endif
 
 #endif

@@ -1,7 +1,16 @@
-/// @file Ann.h
-
+/**
+ * @file Ann.h
+ * @author ae2f
+ * @brief 
+ * @version 0.1
+ * @date 2025-02-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef ae2fCL_Ann_h
 #define ae2fCL_Ann_h
+
 #include <CL/cl.h>
 #include <ae2f/Call.h>
 #include <ae2f/Cast.h>

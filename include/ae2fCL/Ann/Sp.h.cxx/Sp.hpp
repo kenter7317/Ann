@@ -19,6 +19,7 @@
 #define ae2fCL_Ann_Sp_Sp_h
 
 #include "../Sp.h"
+
 #define ae2f_TMP
 
 inline ae2f_err_t ae2f_TMP Predict(

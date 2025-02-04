@@ -5,9 +5,18 @@
 
 #include "Slp.h"
 
+/// @brief 
+/// 
 typedef struct ae2fCL_AnnMlp {
+    /// @brief 
     ae2fCL_AnnSlp* List;
-    size_t Count, MaxBuffCount;
+    
+    size_t 
+    /// @brief
+    Count, 
+
+    /// @brief
+    MaxBuffCount;
 } ae2fCL_AnnMlp;
 
 #define ae2fCL_AnnMlpGetAct(_this, i, j) (_this)->List[i].List[j].Perceptron->mAct
@@ -15,10 +24,12 @@ typedef struct ae2fCL_AnnMlp {
 
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// @param _this 
-/// @param layerLengths 
-/// @param inputCounts_optional 
-/// @param padCount_optional 
+/// Initialise this class. \n
+/// 
+/// @param[out] _this 
+/// @param[in] layerLengths 
+/// @param[in] inputCounts_optional 
+/// @param[in] padCount_optional 
 /// @param layerCount 
 /// @param mAct 
 /// @param fpGetLoss 
@@ -26,7 +37,7 @@ typedef struct ae2fCL_AnnMlp {
 /// @param queue 
 /// @param blocking_read 
 /// @param num_events_in_wait_list 
-/// @param event_wait_list 
+/// @param[in] event_wait_list 
 /// @param event 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
@@ -53,7 +64,7 @@ ae2f_err_t ae2fCL_AnnMlpMk(
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnMlpDel(
     ae2fCL_AnnMlp* _this
-);
+) noexcept;
 
 /// @todo
 /// Don't know why though Predict with pre-allocated OpenCL Memory Object is casting us an exception. \n

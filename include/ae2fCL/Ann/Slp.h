@@ -1,4 +1,14 @@
-/// @file Slp.h
+/**
+ * @file Slp.h
+ * @author ae2f
+ * @brief 
+ * @version 0.1
+ * @date 2025-02-04
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #ifndef ae2fCL_AnnSlp_h
 #define ae2fCL_AnnSlp_h
 
@@ -16,18 +26,23 @@ typedef struct ae2fCL_AnnSlpEl {
     ae2fCL_AnnSp Perceptron[1];
 
     #if ae2f_WhenCXX(1) + 0
-    #include "Slp/SlpEl.hpp"
+    #include "Slp.h.cxx/SlpEl.hpp"
     #endif
 } ae2fCL_AnnSlpEl;
 
+/// @memberof ae2fCL_AnnSlpEl
+/// @brief
+/// @param _this
+#define ae2fCL_AnnSlpElInLengthReq(_this) (_this->InputIdxPad + _this->Perceptron->mgWeightLen)
+
 /// @brief 
 /// # Single Layered Perceptron
-///
+/// 
 /// Expecting the implementation of single perceptron,
 /// this structure is able to predict multiple output by stacking the perceptron.
 typedef struct ae2fCL_AnnSlp {
     /// @brief 
-    /// The layer.
+    /// The layer (aka list).
     ae2fCL_AnnSlpEl* List;
     
     size_t
@@ -38,13 +53,11 @@ typedef struct ae2fCL_AnnSlp {
     /// @brief
     /// The expected count of input as @ref ae2f_float_t. 
     MaxInCount;
+
+    #if ae2f_WhenCXX(1) + 0
+    #include "Slp.h.cxx/Slp.hpp"
+    #endif
 } ae2fCL_AnnSlp;
-
-
-/// @memberof ae2fCL_AnnSlpEl
-/// @brief
-/// @param _this
-#define ae2fCL_AnnSlpElInLengthReq(_this) (_this->InputIdxPad + _this->Perceptron->mgWeightLen)
 
 
 /// @memberof ae2fCL_AnnSlp
@@ -160,6 +173,7 @@ ae2f_err_t ae2fCL_AnnSlpDel(
 /// @param event_wait_list 
 /// @param event 
 /// @param context_optionalB 
+/// OpenCL Context in a case that OpenCL Memory Object allocation is needed.
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpPredict(
@@ -206,13 +220,20 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
 /// Wanted output for [in]. \n
 /// It is no necessary when [delta_precalculated_optC] is provided.
 /// 
-/// @param LearningRateGlobal_optional_A 
+/// @param LearningRateGlobal_optional_A
+/// When LearningRateArr_optional_B is null, 
+/// you could pass this argument as 
 /// 
 /// @param[in] LearningRateArr_optional_B
-///  
+/// In a case you want to specify every learning rate for each perceptron. \n
+/// Its length is expected as a count of @code _this->OutCount.
+/// 
 /// @param[out] diff_ret_optional
+/// Calculated delta will be stored here
 /// 
 /// @param[in] delta_precalculated_optC
+/// In a case you want to specify deltas for each perceptron, you could pass here. \n
+/// Its length is expected as a count of @code _this->OutCount.
 /// 
 /// @param queue 
 /// @param blocking_read 
@@ -220,6 +241,7 @@ ae2f_err_t ae2fCL_AnnSlpPredict(
 /// @param[in] event_wait_list 
 /// @param event 
 /// @param context_optionalB 
+/// OpenCL Context in a case that OpenCL Memory Object allocation is needed.
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnSlpTrain(
@@ -245,7 +267,7 @@ ae2f_err_t ae2fCL_AnnSlpTrain(
 ) noexcept;
 
 #if ae2f_WhenCXX(1) + 0
-#include "Slp/imp.hpp"
+#include "Slp.h.cxx/imp.hpp"
 #endif
 
 #endif

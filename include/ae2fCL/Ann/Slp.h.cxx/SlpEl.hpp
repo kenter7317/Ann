@@ -20,7 +20,7 @@
 
 #include "../Slp.h"
 
-constexprfun size_t ae2f_TMP InLengthReq();
+constexprfun size_t ae2f_TMP InLengthReq() const noexcept;
 
 
 #undef ae2f_TMP
