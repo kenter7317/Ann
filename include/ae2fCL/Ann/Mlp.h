@@ -10,6 +10,9 @@
 ///
 /// It has a list of @ref ae2fCL_AnnSlp 
 /// with some parameters for automation.
+/// 
+/// With calculating the delta with no goal,
+/// so we don't need actual goal for hidden layers.
 typedef struct ae2fCL_AnnMlp {
     /// @brief 
     /// List of single layer perceptron.
@@ -94,21 +97,33 @@ ae2f_err_t ae2fCL_AnnMlpDel(
 /// See related problem on @ref ae2fCL_AnnSlpPredict
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// 
+/// Predict the output for [in]. \n
+/// Results will be stored at [outret_optional]
 /// 
 /// @param[in] _this 
-/// @param in 
-/// 
-/// 
-/// @param buffobj_optionalA 
-/// 
+/// @param[in] in 
+/// OpenCL Memory Ojbect for input. \n
+/// Its lenght is considered as @code _this->List[0].MaxInCount + in_idx
+/// @param[out] buffobj_optionalA 
+/// A buffer to store the temporary input. \n
+/// Its length will be considered as @code _this->MaxBuffCount + buffobj_idx_optionalA
 /// 
 /// @param in_idx 
+/// Padding index for [in].
+/// 
 /// @param buffobj_idx_optionalA 
-/// @param outret_optional 
-/// @param outcache_optional 
+/// Padding index for [buffobj_idx_optionalA].
+/// @param[out] outret_optional 
+/// Where the output data will be stored. \n
+/// Its length will be considered as @code _this->List[_this->Count - 1].OutCount
+/// 
+/// @param[out] outcache_optional 
+/// The cache to store the temporary output. \n
+/// Its length will be @code _this->MaxBuffCount
+/// 
 /// @param queue 
 /// @param context_optionalB 
+/// OpenCL Context in a case of allocating the OpenCL Memory Object.
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnMlpPredict(
@@ -125,16 +140,20 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// @param _this 
-/// @param in 
-/// @param buffobj_optionalA 
-/// @param out_optionalA 
+/// Train for output [goal] for given input of [in].
+/// @param[in, out] _this 
+/// @param[in] in 
+/// OpenCL Memory Ojbect for input. \n
+/// Its count is considered as @code _this->List[0].MaxInCount + in_idx
+/// @param[out] buffobj_optionalA 
+/// Its count is considered as @code _this->MaxBuffCount * _this->Count
+/// 
 /// @param in_idx 
 /// @param buffobj_idx_optionalA 
 /// @param out_idx_optionalA 
-/// @param outret_optional 
-/// @param outcache_optional 
-/// @param goal 
+/// @param[out] outret_optional 
+/// @param[out] outcache_optional 
+/// @param[in] goal 
 /// @param LearningRate 
 /// @param queue 
 /// @param context_optionalB 
