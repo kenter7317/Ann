@@ -90,7 +90,6 @@ int main() {
         
 
     for(size_t _ = 0; _ < gEpochs; _++) {
-        #if 1
         err2 = ae2fCL_AnnMlpTrain(
             &Mlp, inbuff,
             0,0, 0/*in_idx*/,
@@ -138,51 +137,6 @@ int main() {
             err = err2; goto __failure;
         }
         printf("Diff from 0, 0: %f\n\n", diff_got[0]);
-        #else
-        err2 = ae2fCL_AnnSlpTrain(
-            Mlp.List, inbuff,
-            0,0/*in_idx*/, 0,
-            goals/*goal*/, gLearningRate, 0, diff_got,
-            queue, CL_TRUE, 0, 0, 0, context
-        );
-        if(err2) {
-            err = err2; goto __failure;
-        }
-        printf("Diff from 1, 1: %f\n", diff_got[0]);
-
-        err2 = ae2fCL_AnnSlpTrain(
-            Mlp.List, inbuff,
-            0,2/*in_idx*/, 0,
-            goals + 2/*goal*/, gLearningRate, 0, diff_got,
-            queue, CL_TRUE, 0, 0, 0, context
-        );
-        if(err2) {
-            err = err2; goto __failure;
-        }
-        printf("Diff from 1, 0: %f\n", diff_got[0]);
-
-        err2 = ae2fCL_AnnSlpTrain(
-            Mlp.List, inbuff,
-            0,4/*in_idx*/, 0,
-            goals + 2/*goal*/, gLearningRate, 0, diff_got,
-            queue, CL_TRUE, 0, 0, 0, context
-        );
-        if(err2) {
-            err = err2; goto __failure;
-        }
-        printf("Diff from 0, 1: %f\n", diff_got[0]);
-
-        err2 = ae2fCL_AnnSlpTrain(
-            Mlp.List, inbuff,
-            0,6/*in_idx*/, 0,
-            goals + 2/*goal*/, gLearningRate, 0, diff_got,
-            queue, CL_TRUE, 0, 0, 0, context
-        );
-        if(err2) {
-            err = err2; goto __failure;
-        }
-        printf("Diff from 0, 0: %f\n\n", diff_got[0]);
-        #endif
     }
     ae2f_float_t outbuff[2] = {  5 };
 

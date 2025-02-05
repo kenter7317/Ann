@@ -299,6 +299,9 @@ ae2f_err_t ae2fCL_AnnSpTrain(
     cl_mem out = out_optionalA;
     cl_int err = CL_SUCCESS;
     cl_kernel K = ae2fCL_AnnKerns[ae2fCL_eAnnKernsSpTrain];
+    
+    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+    if(!in) return ae2f_errGlob_PTR_IS_NULL;
 
     if(!diff_ret_optional) diff_ret_optional = &outF;
     if(delta_precalcualted_optionalC) {
@@ -307,8 +310,6 @@ ae2f_err_t ae2fCL_AnnSpTrain(
         goto LBL_DIFF_HAS_BEEN_CALCULATED;
     }
 
-    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!out) {
         if(!context_optionalB)
         return ae2f_errGlob_PTR_IS_NULL;

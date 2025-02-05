@@ -1,6 +1,5 @@
 #include <ae2fCL/Ann/Mlp.h>
 #include <memory.h>
-#include <stdio.h>
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMlpMk(
@@ -85,7 +84,7 @@ ae2f_err_t ae2fCL_AnnMlpDel(
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMlpPredict(
-    ae2fCL_AnnMlp* _this,
+    const ae2fCL_AnnMlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t*) in,
     ae2fCL_HostPtr(__global, ae2f_float_t*) buffobj_optionalA,
     size_t in_idx,
@@ -217,7 +216,6 @@ static void MlpTrain_OutCompute(
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
         );
-        printf("Out got %f\n", out[i]);
     }
 
 }
