@@ -138,6 +138,9 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     cl_context context_optionalB
 ) noexcept;
 
+/// @todo
+/// Add a logic of handling [out_optionalA]. \n
+/// Add a lerning rate vector for fine tuning.
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
 /// Train for output [goal] for given input of [in].
@@ -147,16 +150,26 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
 /// Its count is considered as @code _this->List[0].MaxInCount + in_idx
 /// @param[out] buffobj_optionalA 
 /// Its count is considered as @code _this->MaxBuffCount * _this->Count
-/// 
+/// @param[out] out_optionalA
+/// Unused for now.
 /// @param in_idx 
+/// Padding index for [in].
 /// @param buffobj_idx_optionalA 
+/// Padding index for [buffobj_optionalA].
 /// @param out_idx_optionalA 
+/// Padding index for [out_optionalA].
 /// @param[out] outret_optional 
+/// 
 /// @param[out] outcache_optional 
+/// 
 /// @param[in] goal 
+/// Expected output. \n
+/// Its length will be considered as @code _this->List[_this->Count - 1].OutCount.
 /// @param LearningRate 
+/// Global learning rate.
 /// @param queue 
 /// @param context_optionalB 
+/// OpenCL Context in order to allocate an OpenCL Memory Object.
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnMlpTrain(
