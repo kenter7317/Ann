@@ -1,6 +1,5 @@
 #include <ae2fCL/Ann/Mlp.h>
 #include <memory.h>
-#include <stdio.h>
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMlpMk(
@@ -217,7 +216,6 @@ static void MlpTrain_OutCompute(
         retDeltaOut[i] = layerOut->List[i].Perceptron->mpGetLoss(
             out[i], goal[i]
         );
-        printf("Out got %f\n", out[i]);
     }
 
 }
