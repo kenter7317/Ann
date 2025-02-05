@@ -6,16 +6,22 @@
 #include "Slp.h"
 
 /// @brief 
-/// 
+/// # Multi-Layered Perceptron
+///
+/// It has a list of @ref ae2fCL_AnnSlp 
+/// with some parameters for automation.
 typedef struct ae2fCL_AnnMlp {
     /// @brief 
+    /// List of single layer perceptron.
     ae2fCL_AnnSlp* List;
     
     size_t 
     /// @brief
+    /// Count of the @ref ae2fCL_AnnMlp::List
     Count, 
 
     /// @brief
+    /// Maximum count for buffer. (input & hidden).
     MaxBuffCount;
 } ae2fCL_AnnMlp;
 
@@ -24,15 +30,29 @@ typedef struct ae2fCL_AnnMlp {
 
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// Initialise this class. \n
-/// 
+/// Initialise [_this] class. \n
+/// Initialised class must pass @ref ae2fCL_AnnMlpDel in order to release the resources.
 /// @param[out] _this 
 /// @param[in] layerLengths 
+/// Every layer's length. \n
+/// Length of input and output are included.
+/// 
 /// @param[in] inputCounts_optional 
+/// Counts of detailed input for every perceptron layer.
+/// Its length will be a sum of [layerLengths].
+/// 
 /// @param[in] padCount_optional 
+/// Padding count detailed for every perceptron.
+/// 
 /// @param layerCount 
+/// Given count of the layer. \n
+/// @ref ae2fCL_AnnMlp::Count will be set as this.
+/// 
 /// @param mAct 
+/// Activasion function.
+/// 
 /// @param fpGetLoss 
+/// Loss-calculation function.
 /// @param ctx 
 /// @param queue 
 /// @param blocking_read 
@@ -59,7 +79,8 @@ ae2f_err_t ae2fCL_AnnMlpMk(
 
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// @param _this 
+/// Clear this class and any all members related.
+/// @param[in, out] _this 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnMlpDel(
@@ -73,9 +94,15 @@ ae2f_err_t ae2fCL_AnnMlpDel(
 /// See related problem on @ref ae2fCL_AnnSlpPredict
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
-/// @param _this 
-/// @param ae2f_float_t 
-/// @param ae2f_float_t 
+/// 
+/// 
+/// @param[in] _this 
+/// @param in 
+/// 
+/// 
+/// @param buffobj_optionalA 
+/// 
+/// 
 /// @param in_idx 
 /// @param buffobj_idx_optionalA 
 /// @param outret_optional 
@@ -85,7 +112,7 @@ ae2f_err_t ae2fCL_AnnMlpDel(
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_err_t ae2fCL_AnnMlpPredict(
-    ae2fCL_AnnMlp* _this,
+    const ae2fCL_AnnMlp* _this,
     ae2fCL_HostPtr(__global, ae2f_float_t*) in,
     ae2fCL_HostPtr(__global, ae2f_float_t*) buffobj_optionalA,
     size_t in_idx,
@@ -96,14 +123,12 @@ ae2f_err_t ae2fCL_AnnMlpPredict(
     cl_context context_optionalB
 ) noexcept;
 
-/// @todo
-/// Allocation is failing.
 /// @memberof ae2fCL_AnnMlp
 /// @brief 
 /// @param _this 
-/// @param ae2f_float_t 
-/// @param ae2f_float_t 
-/// @param ae2f_float_t 
+/// @param in 
+/// @param buffobj_optionalA 
+/// @param out_optionalA 
 /// @param in_idx 
 /// @param buffobj_idx_optionalA 
 /// @param out_idx_optionalA 
