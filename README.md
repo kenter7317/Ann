@@ -1,5 +1,5 @@
 # CL-Ann
-> Rel-v0.1.0
+> Rel-v1.1.0
 
 A simple ann project with opencl written in C.
 
