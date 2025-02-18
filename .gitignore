@@ -15,3 +15,5 @@ Doxyfile
 html
 
 *.py
+
+test/none

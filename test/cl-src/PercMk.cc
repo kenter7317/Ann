@@ -1,5 +1,6 @@
+#include <ae2fCL/Ann.h>
 #include "../test.h"
-#include <ae2f/Ann/Sp.h>
+#include <ae2fCL/Ann/Sp.h>
 #include <stdio.h>
 
 
@@ -16,77 +17,31 @@ ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
 
 int mainc() {
     ae2f_err_t err = 0;
+    cl_int errcl[1] = {0};
     ae2f_float_t outfloat = 0;
     ae2f_float_t Buff[] = {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
-    ae2f_AnnSp* Perc;
+    ae2fCL_AnnSp* Perc;
     ae2f_float_t out_checksum = 0;
-
-    Perc = ae2f_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, 0
-    );
-    CHECK_ERR(err, 0, __failure);
-
-    err = ae2f_AnnSpPredict(
-        Perc, Buff, &outfloat
-    );
     
+    err = ae2fCL_AnnMkEasy(errcl);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    Perc = ae2fCL_AnnSpMk(
+        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
+        Sigmoid, Sub, &err, errcl, 0
+    );
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+    err = Perc->Predict(Buff, &outfloat);
+
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
         *ae2f_AnnSpB(Perc), 
         (*ae2f_AnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
-    );
-
-    for(size_t i = 0; i < Perc->inc; i++) 
-    {
-        ae2f_float_t got = Buff[i] * Buff[i];
-        out_checksum += got;
-        printf("Check-got: %f\n", got);
-    }
-    out_checksum += *ae2f_AnnSpB(Perc);
-    out_checksum = Perc->Act(out_checksum);
-    printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
-    if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
-        printf("Check failed\n");
-        return ae2f_errGlob_WRONG_OPERATION;
-    }
-
-    __failure:
-    ae2f_AnnSpDel(Perc);
-    return err;
-}
-
-int maincc() {
-    ae2f_err_t err = 0;
-    ae2f_float_t outfloat = 0;
-    ae2f_float_t Buff[] = {
-        0.3, 0.2, 0.4, 0.6, 0.1
-    };
-
-    ae2f_AnnSp* Perc;
-    ae2f_float_t out_checksum = 0;
-
-    Perc = ae2f_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, 0
-    );
-    CHECK_ERR(err, 0, __failure);
-
-    err = Perc->Predict(
-        Buff, &outfloat
-    );
-    
-    if(err) goto __failure;
-    printf("out: %f\n", outfloat);
-    printf(
-        "Bias global: %f, with bias: %f\n", 
-        *Perc->B(), 
-        (*Perc->B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
     for(size_t i = 0; i < Perc->inc; i++) 
@@ -104,6 +59,62 @@ int maincc() {
     }
 
     __failure:
+    if(Perc) ae2fCL_AnnSpDel(Perc);
+    ae2fCL_AnnDel();
+    if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
+    if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
+    return err;
+}
+
+int maincc() {
+    ae2f_err_t err = 0;
+    cl_int errcl[1] = {0};
+    ae2f_float_t outfloat = 0;
+    ae2f_float_t Buff[] = {
+        0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
+    ae2fCL_AnnSp* Perc;
+    ae2f_float_t out_checksum = 0;
+    
+    err = ae2fCL_AnnMkEasy(errcl);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    Perc = ae2fCL_AnnSpMk(
+        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
+        Sigmoid, Sub, &err, errcl, 0
+    );
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    err = Perc->Predict(
+        Buff, &outfloat
+    );
+    if(err) goto __failure;
+    printf("out: %f\n", outfloat);
+    printf(
+        "Bias global: %f, with bias: %f\n", 
+        *Perc->B(), 
+        (*Perc->B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+    );
+
+    for(size_t i = 0; i < Perc->inc; i++) 
+    {
+        ae2f_float_t got = Buff[i] * Buff[i];
+        out_checksum += got;
+        printf("Check-got: %f\n", got);
+    }
+    out_checksum += *ae2f_AnnSpB(Perc);
+    out_checksum = Perc->Act(out_checksum);
+    printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
+    if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
+        printf("Check failed\n");
+        return ae2f_errGlob_WRONG_OPERATION;
+    }
+
+    __failure:
+    ae2fCL_AnnDel();
+    if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
+    if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
     if(Perc) delete (Perc);
     return err;
 }

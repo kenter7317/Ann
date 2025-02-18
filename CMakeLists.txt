@@ -2,51 +2,105 @@ cmake_minimum_required(VERSION 3.20)
 enable_testing()
 include(cmake/Core.cmake)
 
-project(CL-Ann VERSION 1.1.0 LANGUAGES C CXX)
-option(ae2f_CXX "" ON)
-if(NOT TARGET CL-Ann)
-    ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.12.14)
-    ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.5)
+project(Ann VERSION 0.0.0 LANGUAGES C CXX)
+if(NOT TARGET ${PROJECT_NAME})
+    ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.15.18)
 
-    ae2f_CoreLibTent(
-        CL-Ann ${ae2f_LIBPREFIX}
-        include ae2fCL
-        "include/ae2fCL/Ann/Sizes/cl_mem.h"
-
-        "include/ae2fCL/Ann.h"
-        "src/Ann.c"
+    ae2f_CoreLibTentConfigCustom(
+        Ann-H INTERFACE
+        include ae2f
+        ${PROJECT_SOURCE_DIR}/Config/Ann-H.cmake.in 
+        "include/ae2f/Ann/Act.h"
+        "include/ae2f/Ann/LcgRand.h"
         
-        "include/ae2fCL/Ann/LcgRand.h"
-        "src/LcgRand.c"
-        
-        "include/ae2fCL/Ann/Sp.h"
-        "include/ae2fCL/Ann/Sp.hpp"
-        "src/Sp.c"
+        "include/ae2f/Ann/Sp.h"
+        "include/ae2f/Ann/Sp.h.c/clean.script.h"
+        "include/ae2f/Ann/Sp.h.c/cleandef.h"
+        "include/ae2f/Ann/Sp.h.cxx/Sp.hh"
+        "include/ae2f/Ann/Sp.h.cxx/imp.hh"
 
-        "include/ae2fCL/Ann/Slp.h"
-        "src/Slp.c"
+        "include/ae2f/Ann/Slp.h"
+        "include/ae2f/Ann/Slp.h.cxx/Slp.hh"
+        "include/ae2f/Ann/Slp.h.cxx/imp.hh"
 
-        "include/ae2fCL/Ann/Mlp.h"
-        "src/Mlp.c"
+        "include/ae2f/Ann/Mlp.h"
+        "include/ae2f/Ann/Mlp.h.cxx/Mlp.hh"
+        "include/ae2f/Ann/Mlp.h.cxx/imp.hh"
     )
-    
-    target_link_libraries(CL-Ann PUBLIC CL-Core)
+
+    ae2f_CoreLibTentConfigCustom(
+        Ann ${ae2f_LIBPREFIX}
+        include ae2f 
+        ${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in
+        "src/ann/LcgRand.c"
+
+        "src/ann/Sp.h"
+
+        "src/ann/Sp.c"
+        "src/ann/Slp.c"
+
+        "src/ann/Mlp/HidErr.h"
+        "src/ann/Mlp/HidCompute.h"
+        "src/ann/Mlp/OutCompute.h"
+        "src/ann/Mlp/Predict.h"
+        "src/ann/Mlp.c"
+    )
+
+    target_link_libraries(Ann-H INTERFACE CL-Core)
+    target_link_libraries(Ann PUBLIC Ann-H)
+
     if(NOT WIN32)
-        target_link_libraries(CL-Ann PUBLIC m)
+        target_link_libraries(Ann PUBLIC m)
     endif()
 
-    ae2fCL_CoreAppendInclude(
-        ${PROJECT_SOURCE_DIR}/include
-        ${ae2f_ProjRoot}/submod/ae2f/Core/include
-        ${ae2f_ProjRoot}/submod/ae2f/CL-Core/include
-    )
-    message(${OpenCL_INCLUDE_DIR}/CL/cl.h)
-    
-    ae2fCL_CoreAddConfProjTarDep(
-        CL-Ann
-        "${PROJECT_SOURCE_DIR}/src"
-    )
-    ae2f_CoreTestTent(CL-Ann test/src)
-    ae2f_RulerMeasure(cl_mem ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/cl_mem.h -I${OpenCL_INCLUDE_DIR} CL/cl.h)
-    ae2f_RulerMeasure(ae2f_float_t ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/ae2f_float_t.h -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f Float.h)
+    ae2fCL_CoreTestTent(Ann test/src)
+endif()
+
+if(ae2fCL_needed)
+    project(CL-Ann VERSION 2.1.0 LANGUAGES C CXX)
+    if(NOT TARGET ${PROJECT_NAME})
+        ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.5)
+
+        ae2f_CoreLibTentConfigCustom(
+            CL-Ann-H INTERFACE
+            include ae2fCL
+            ${PROJECT_SOURCE_DIR}/Config/CL-Ann-H.cmake.in
+            "include/ae2fCL/Ann/Sizes/cl_mem.h"
+            "include/ae2fCL/Ann.h"
+
+            "include/ae2fCL/Ann/Sp.h.cxx/Sp.hh"
+            "include/ae2fCL/Ann/Sp.h.cxx/imp.hh"
+            "include/ae2fCL/Ann/Sp.h"
+        )
+
+        ae2f_CoreLibTentConfigCustom(
+            CL-Ann ${ae2f_LIBPREFIX}
+            include ae2fCL
+            ${PROJECT_SOURCE_DIR}/Config/CL-Ann.cmake.in
+            "src/cl/Ann.c"
+            "src/cl/Sp.c"
+        )
+        target_link_libraries(CL-Ann-H INTERFACE Ann-H)
+        
+        target_link_libraries(CL-Ann PUBLIC Ann)
+        target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
+
+        ae2fCL_CoreAppendInclude(
+            ${PROJECT_SOURCE_DIR}/include
+            ${ae2f_ProjRoot}/submod/ae2f/Core/include
+            ${ae2f_ProjRoot}/submod/ae2f/CL-Core/include
+        )
+        message(${OpenCL_INCLUDE_DIR}/CL/cl.h)
+        
+        ae2fCL_CoreAddConfProjTarDep(
+            CL-Ann
+            "${PROJECT_SOURCE_DIR}/src/cl/CLCode"
+        )
+        ae2fCL_CheckNeeded()
+
+        ae2fCL_CoreTestTent(CL-Ann "test/cl-src")
+        ae2f_RulerMeasure(cl_mem ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/cl_mem.h -I${OpenCL_INCLUDE_DIR} CL/cl.h)
+        ae2f_RulerMeasure(ae2f_float_t ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/ae2f_float_t.h -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f Float.h)
+
+    endif()
 endif()
