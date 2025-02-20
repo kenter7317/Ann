@@ -43,11 +43,13 @@ struct ae2fCL_Ann_t {
     ];
 
     /// @brief 
-    /// Command queue
+    /// Command queue \n
+    /// You need to manually clean it.
     cl_command_queue Q;
 
     /// @brief
-    /// OpenCL Context for allocating buffers or so.
+    /// OpenCL Context for allocating buffers or so. \n
+    /// You need to manually clean it.
     cl_context Ctx;
 
     /// @brief 
@@ -108,6 +110,7 @@ static ae2f_err_t ae2fCL_AnnMkEasy(
     cl_int er[1];
     cl_platform_id platform;
     cl_device_id device;
+    ae2fCL_Ann.LErr = 0;
 
     #define return(n) { err = n; goto END; }
 
@@ -125,6 +128,7 @@ static ae2f_err_t ae2fCL_AnnMkEasy(
     END:
     #undef return
     if(reterr) *reterr = *er;
+    if(device) clReleaseDevice(device);
     return err | ae2fCL_AnnMk(ae2fCL_Ann.Q, ae2fCL_Ann.Ctx, 1, &device, reterr);
 } 
 

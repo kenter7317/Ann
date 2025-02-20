@@ -28,6 +28,7 @@ struct ae2f_AnnMlp : ae2f_AnnSlp {
 #else
 
 /// @class ae2f_AnnMlp
+/// @extends ae2f_AnnSlp
 /// @brief 
 /// # Multi Layered Perceptron
 /// 
@@ -36,6 +37,7 @@ typedef ae2f_AnnSlp ae2f_AnnMlp;
 
 #endif
 /// @memberof ae2f_AnnMlp
+/// @details ae2f_AnnSlpPerVPad
 #define ae2f_AnnMlpLayerVPad ae2f_AnnSlpPerVPad
 
 /// @memberof ae2f_AnnMlp
@@ -56,11 +58,15 @@ typedef ae2f_AnnSlpPredict_t ae2f_AnnMlpPredict_t;
 /// For details see @ref ae2f_AnnMlpTrain_t
 typedef ae2f_AnnSlpTrain_t ae2f_AnnMlpTrain_t;
 
+/// @brief 
+/// Cleaning function api.
+typedef ae2f_AnnSlpClean_t ae2f_AnnMlpClean_t;
+
 /// @memberof ae2f_AnnMlp
 /// @brief
 /// The predicted max buffer count among all perceptron's possible length of I/O.
 #define ae2f_AnnMlpLayerBuffCount(mlp, ...) \
-ae2f_AnnSlpX(mlp, size_t*, __VA_ARGS__)
+ae2f_AnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
 
 /// @memberof ae2f_AnnMlp
 /// @brief
@@ -104,6 +110,19 @@ ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_AnnMlpCache(mlp, __VA_ARGS__) + 1)
 #define ae2f_AnnMlpDel      ae2f_AnnSlpDel
 
 /// @memberof ae2f_AnnMlp
+/// @brief 
+/// d
+/// @param _this 
+/// @param layerc 
+/// @param add_opt 
+/// @param layerlenv 
+/// @param layerpadv_opt 
+/// @param inpadv_opt 
+/// @param actglob_opt 
+/// @param deltaglob_opt 
+/// @param weights_opt 
+/// @param errret_opt 
+/// @return 
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2f_AnnMlpInit(
     ae2f_AnnMlp* _this,

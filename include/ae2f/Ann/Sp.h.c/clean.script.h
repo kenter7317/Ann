@@ -11,7 +11,6 @@
  */
 
 #if ae2fCL_whenCL(!) 1
-#include <stdlib.h>
 
 if(!_this) return ae2f_errGlob_PTR_IS_NULL;
 ae2f_err_t er = 0;

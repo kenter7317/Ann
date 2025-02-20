@@ -22,8 +22,8 @@ __kernel void ae2fCL_eAnnKernsSpTrain(
     __global ae2f_float_t* field,
 
     #if cl_mem_SIZE == ae2f_float_t_SIZE
-        cl_mem_half_t LrErrA,
-        cl_mem_half_t LrErrB
+        ae2f_float_half_t LrErrA,
+        ae2f_float_half_t LrErrB
     #else
         ae2f_float_t LrErr
     #endif

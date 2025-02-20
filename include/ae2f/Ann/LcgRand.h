@@ -50,10 +50,10 @@
 #ifndef ae2fCL_LocAsCL
 
 /// @brief Pre-generated 64-bits seed type for separation. (under the hood).
-typedef union ae2fCL_LcgRandSeed {
+typedef union ae2fCL_LcgRandSeed_t {
     uint32_t u32[2];
     uint64_t u64;
-} ae2fCL_LcgRandSeed;
+} ae2fCL_LcgRandSeed_t;
 
 /// @brief 
 /// Pre-defined global seed. \n
@@ -61,7 +61,7 @@ typedef union ae2fCL_LcgRandSeed {
 ///
 /// @see ae2f_AnnLcgRandG
 /// @see ae2f_AnnLcgRandRealG
-ae2f_extern ae2f_SHAREDCALL ae2fCL_LcgRandSeed 
+ae2f_extern ae2f_SHAREDCALL ae2fCL_LcgRandSeed_t 
 ae2f_AnnLcgRandSeed;
 
 /// @see ae2f_AnnLcgRand

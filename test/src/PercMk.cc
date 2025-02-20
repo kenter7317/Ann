@@ -14,7 +14,7 @@ ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
     return out - goal;
 }
 
-int mainc() {
+ae2f_extern int mainc() {
     ae2f_err_t err = 0;
     ae2f_float_t outfloat = 0;
     ae2f_float_t Buff[] = {

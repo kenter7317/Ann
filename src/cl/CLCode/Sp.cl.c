@@ -24,7 +24,7 @@ __kernel void ae2fCL_eAnnKernsSpPredict(
     while (halfBlockSize>0) {
         if (localid < halfBlockSize) {
             loc[localid] += loc[localid + halfBlockSize];
-            if ((halfBlockSize*2)<blockSize) {
+            if ((halfBlockSize<<1)<blockSize) {
                 if (localid==0) {
                     loc[localid] += loc[localid + (blockSize-1)];
                 }
@@ -47,8 +47,8 @@ __kernel void ae2fCL_eAnnKernsSpTrain(
     __global ae2f_float_t* field,
 
     #if cl_mem_SIZE == ae2f_float_t_SIZE
-        cl_mem_half_t LrErrA,
-        cl_mem_half_t LrErrB
+        ae2f_float_half_t LrErrA,
+        ae2f_float_half_t LrErrB
     #define LrErrTent() \
         const ae2f_float_t LrErr = \
         ((UF_t) { LrErrA, LrErrB }).F

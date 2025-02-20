@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 enable_testing()
+option(ae2f_CXX "" ON)
 include(cmake/Core.cmake)
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
@@ -27,33 +28,41 @@ if(NOT TARGET ${PROJECT_NAME})
         "include/ae2f/Ann/Mlp.h.cxx/Mlp.hh"
         "include/ae2f/Ann/Mlp.h.cxx/imp.hh"
     )
+    target_link_libraries(Ann-H INTERFACE CL-Core)
+
+    ae2f_CoreLibTentConfigCustom(
+        Ann-H-Private INTERFACE
+        src ae2f
+        ${PROJECT_SOURCE_DIR}/Config/Ann-H-Private.cmake.in
+
+        "src/ann-h/Sp.h"
+        "src/ann-h/Slp.h"
+        "src/ann-h/Mlp.h"
+        "src/ann-h/Mlp/Predict.h"
+        "src/ann-h/Mlp/OutCompute.h"
+        "src/ann-h/Mlp/HidErr.h"
+        "src/ann-h/Mlp/HidCompute.h"
+    )
+    target_link_libraries(Ann-H-Private INTERFACE Ann-H)
 
     ae2f_CoreLibTentConfigCustom(
         Ann ${ae2f_LIBPREFIX}
         include ae2f 
         ${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in
         "src/ann/LcgRand.c"
-
-        "src/ann/Sp.h"
-
         "src/ann/Sp.c"
         "src/ann/Slp.c"
-
-        "src/ann/Mlp/HidErr.h"
-        "src/ann/Mlp/HidCompute.h"
-        "src/ann/Mlp/OutCompute.h"
-        "src/ann/Mlp/Predict.h"
         "src/ann/Mlp.c"
     )
 
-    target_link_libraries(Ann-H INTERFACE CL-Core)
+    target_link_libraries(Ann PRIVATE Ann-H-Private)
     target_link_libraries(Ann PUBLIC Ann-H)
 
     if(NOT WIN32)
         target_link_libraries(Ann PUBLIC m)
     endif()
 
-    ae2fCL_CoreTestTent(Ann test/src)
+    ae2f_CoreTestTent(Ann "test/src")
 endif()
 
 if(ae2fCL_needed)
@@ -79,11 +88,14 @@ if(ae2fCL_needed)
             ${PROJECT_SOURCE_DIR}/Config/CL-Ann.cmake.in
             "src/cl/Ann.c"
             "src/cl/Sp.c"
+            "src/cl/Slp.c"
+            "src/cl/Mlp.c"
         )
         target_link_libraries(CL-Ann-H INTERFACE Ann-H)
         
         target_link_libraries(CL-Ann PUBLIC Ann)
         target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
+        target_link_libraries(CL-Ann PRIVATE Ann-H-Private)
 
         ae2fCL_CoreAppendInclude(
             ${PROJECT_SOURCE_DIR}/include

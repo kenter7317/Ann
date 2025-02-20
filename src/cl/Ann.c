@@ -65,6 +65,7 @@ cl_int ae2fCL_AnnDel() {
 
     if(LIB) err = clReleaseProgram(LIB);
     LIB = 0;
+    ae2fCL_Ann.LErr = 0;
 
     return err;
 }

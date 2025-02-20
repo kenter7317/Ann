@@ -21,18 +21,19 @@
 #include <ae2f/Ann/Sp.h>
 #include <CL/cl.h>
 
-typedef struct 
-ae2f_WhenC(ae2f_AnnSp) 
-ae2f_WhenCXX(ae2fCL_AnnSp : ae2f_AnnSp {)
-    #if ae2f_WhenCXX(!) 0
-    #include "Sp.h.cxx/Sp.hh"
-    #endif
-ae2f_WhenCXX(})
-ae2fCL_AnnSp;
+#if ae2f_WhenCXX(!) 0
+struct ae2fCL_AnnSp : ae2f_AnnSp {
+    #include "./Sp.h.cxx/Sp.hh"
+};
+#else
 
-/// @
+/// @class ae2fCL_AnnSp
+/// @extends ae2f_AnnSp
 /// @brief
-/// 
+/// Hello World
+typedef ae2f_AnnSp ae2fCL_AnnSp;
+#endif
+
 #define ae2fCL_AnnSpPredict         ae2f_AnnSpPredict
 #define ae2fCL_AnnSpTrain           ae2f_AnnSpTrain
 #define ae2fCL_AnnSpTrainA          ae2f_AnnSpTrainA

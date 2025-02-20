@@ -111,6 +111,7 @@ int maincc() {
         return ae2f_errGlob_WRONG_OPERATION;
     }
 
+    
     __failure:
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
@@ -120,5 +121,5 @@ int maincc() {
 }
 
 int main() {
-    return mainc() | maincc();
+    return ((maincc()) | (mainc()));
 }
