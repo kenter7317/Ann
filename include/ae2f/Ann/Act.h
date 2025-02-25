@@ -30,8 +30,7 @@ typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;
 /// @param out Predicted value
 /// @param goal Expected value (wanted)
 /// @return Calculated loss.
-typedef ae2f_float_t ae2f_AnnDelta_t
-    ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
+typedef ae2f_float_t ae2f_AnnDelta_t ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
 
 /// @brief
 /// Specify the way of calculating loss.

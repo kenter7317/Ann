@@ -43,12 +43,12 @@ inline ae2f_TMP ~ae2f_AnnSlp() {
 
 template<typename T>
 constexprfun const T* ae2f_TMP X() const {
-    return ae2f_AnnSlpX(slp, T*, const);
+    return ae2f_AnnSlpX(this, T*, const);
 }
  
 template<typename T>
 constexprfun T* ae2f_TMP X() {
-    return ae2f_AnnSlpX(slp, T*);
+    return ae2f_AnnSlpX(this, T*);
 }
 
 constexprfun ae2f_AnnSlpEl* ae2f_TMP PerV(size_t i) {

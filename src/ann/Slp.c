@@ -18,20 +18,24 @@ size_t ae2f_AnnSlpInit(
 
     if(!_this) return(ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_ALLOC_FAILED | ae2f_errGlob_DONE_HOWEV);
 
+    _this->expected = 1;
     _this->inc = 0;
     _this->outc = _this->layerc = outc;
     _this->vClean = Clean;
     _this->vPredict = Predict;
     _this->vTrain = Train;
 
-    for(size_t i = 0; i < _this->outc; i++) {
+    for(size_t i = 0; i < outc; i++) {
         size_t 
         _inc =  incs_optA ? incs_optA[i] : ginc_optB,
         _pad = inpads_opt ? inpads_opt[i] : 0;
-
-        ae2f_AnnSlpPerVPad(_this)[i]
-        = calloc(ae2f_AnnSpInitSz(sizeof(size_t), _inc), 1);
         
+        if(!(ae2f_AnnSlpPerVPad(_this)[i]
+        = calloc(ae2f_AnnSpInitSz(sizeof(size_t), _inc), 1))) {
+            er |= ae2f_errGlob_ALLOC_FAILED;
+            continue;
+        }
+
         ae2f_AnnSpInit(
             ae2f_AnnSlpPerV(_this, i),
             _inc, w_opt,
@@ -40,7 +44,7 @@ size_t ae2f_AnnSlpInit(
         );
 
         er |= ertmp;
-        *ae2f_AnnSlpPerVPad(_this)[i] = _pad;
+        *(ae2f_AnnSlpPerVPad(_this)[i]) = _pad;
 
         w_opt && (w_opt += _inc);
 
@@ -48,6 +52,7 @@ size_t ae2f_AnnSlpInit(
             _this->inc = _pad + _inc;
         }
     }
+
 
     #undef return
     DONE:
@@ -74,22 +79,3 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     return _this;
 }
 
-static ae2f_err_t Clean(
-    ae2f_AnnSlp* _this
-) noexcept {
-    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-
-    for(size_t i = 0; i < _this->outc; i++) {
-        ae2f_AnnSpDel(ae2f_AnnSlpPerV(_this, i));
-        ae2f_AnnSlpPerVPad(_this, )[i] = 0;
-    }
-
-    _this->inc = 0;
-    _this->outc = 0;
-    _this->layerc = 0;
-    _this->vClean = 0;
-    _this->vPredict = 0;
-    _this->vTrain = 0;
-
-    return ae2f_errGlob_OK;
-}

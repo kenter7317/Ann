@@ -11,10 +11,10 @@
 #ifndef ae2fCL_Ann_h
 #define ae2fCL_Ann_h
 
-#include <CL/cl.h>
 #include <ae2f/Call.h>
 #include <ae2f/Cast.h>
 #include <ae2f/errGlob.h>
+#include <CL/cl.h>
 
 /// @brief 
 /// The list of OpenCL device functions that is able to run after the load of library.

@@ -1,3 +1,16 @@
+/**
+ * @file LeakOnEasyInit.c
+ * @author ae2f
+ * @brief 
+ * @version 0.1
+ * @date 2025-02-20
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ * Yes, the library initiating function is leaking here.
+ * 
+ */
+
 #include <ae2fCL/Ann.h>
 
 int main() {

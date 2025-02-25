@@ -12,8 +12,13 @@ static ae2f_float_t MlpTrain_HidErr(
     size_t idxThen
 ) {
     ae2f_float_t ret = 0;
-    for(size_t i = 0; i < layerNxt->layerc; i++)
-        ret += *ae2f_AnnSpW(ae2f_AnnSlpPerV(layerNxt, i, const), const) * deltasNxt[i];
+    for(size_t i = 0; i < layerNxt->outc; i++) {
+        union {
+            const size_t* pad;
+            const ae2f_AnnSp* slp;
+        } perv = { .pad = ae2f_AnnSlpPerVPad(layerNxt)[i] + 1 };
+        ret += ae2f_AnnSpW(perv.slp, const)[idxThen] * deltasNxt[i];
+    }
 
     return ret;
 }

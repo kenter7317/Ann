@@ -12,8 +12,8 @@
  */
 
 #include "../Mlp.h"
-#define ae2f_AnnSlpEl ae2f_AnnMlpEl
-#define ae2f_AnnSlp ae2f_AnnMlp
-#include "../Slp.h.cxx/Slp.hh"
-#undef ae2f_AnnSlpEl
-#undef ae2f_AnnSlp
+
+#define ae2f_TMP
+constexprfun ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a);
+constexprfun const ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) const;
+#undef ae2f_TMP

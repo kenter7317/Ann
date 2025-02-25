@@ -47,12 +47,17 @@ size_t ae2f_AnnSpInit(
         uint64_t _ = ae2f_AnnLcgRandSeed.u64;
 
         for(size_t i = 0; i < _this->inc; i++) {
-            _ = ae2f_AnnLcgRandG();
+            _ = ae2f_AnnLcgRand(_);
             ae2f_float_t d = ae2f_AnnLcgRandDistribute(_);
             ae2f_AnnSpW(_this)[i] = d;
         }
-
         ae2f_AnnLcgRandSeed.u64 = _;
+    }
+
+    {
+        uint64_t _ = ae2f_AnnLcgRandG();
+        ae2f_AnnLcgRandSeed.u64 = _;
+        *ae2f_AnnSpB(_this) = ae2f_AnnLcgRandDistribute(_);
     }
 
     DONE:

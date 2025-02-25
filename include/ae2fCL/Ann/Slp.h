@@ -14,8 +14,8 @@
 #ifndef ae2fCL_Ann_Slp_h
 #define ae2fCL_Ann_Slp_h
 
-#include "./Sp.h"
 #include <ae2f/Ann/Slp.h>
+#include <CL/cl.h>
 
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2fCL_AnnSlpInit(
@@ -32,6 +32,12 @@ size_t ae2fCL_AnnSlpInit(
     cl_int* err_nfound_opt
 ) noexcept;
 
+#define ae2fCL_AnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+
+#define ae2fCL_AnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+
 ae2f_extern ae2f_SHAREDCALL
 ae2f_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
@@ -45,6 +51,12 @@ ae2f_AnnSlp* ae2fCL_AnnSlpMk(
     ae2f_err_t* err_opt,
     cl_int* err_nfound_opt
 ) noexcept;
+
+#define ae2fCL_AnnSlpMkA(incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+
+#define ae2fCL_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
 
 #define ae2fCL_AnnSlpInitSz ae2f_AnnSlpInitSz
 

@@ -11,13 +11,13 @@
  * 
  */
 
-#define ae2f_TMP ae2f_AnnMlp
+#define ae2f_TMP ae2f_AnnMlp::
 
 constexprfun ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) {
-    return ae2f_AnnMlpLayerV(this, i);
+    return ae2f_AnnMlpLayerV(this, a);
 }
 constexprfun const ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) const {
-    return ae2f_AnnMlpLayerV(this, i, const);
+    return ae2f_AnnMlpLayerV(this, a, const);
 }
 
 #undef ae2f_TMP

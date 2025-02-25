@@ -103,7 +103,7 @@ size_t ae2fCL_AnnSpInit(
     cl_int err2 = 0;
 
     ae2f_AnnSpInit(perc_opt, icount, w_opt, Act, CalDelta, &err, off_opt);
-    if(err) goto END;    
+    if(err) goto END;
 
     *ae2fCL_AnnSpWCl(perc_opt) = clCreateBuffer(
         ae2fCL_Ann.Ctx, 

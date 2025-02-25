@@ -56,6 +56,10 @@ typedef ae2f_err_t ae2f_AnnSlpTrain_t ae2fCL_whenC((
 )) noexcept;
 
 /// @brief 
+/// The element type for @ref ae2f_AnnSlp.
+typedef struct ae2f_AnnSp ae2f_AnnSlpEl;
+
+/// @brief 
 /// # Single Layered Perceptron
 /// 
 /// Multiple input, multiple output. \n
@@ -96,10 +100,6 @@ typedef struct ae2f_AnnSlp {
     #endif
 } ae2f_AnnSlp;
 
-/// @brief 
-/// The element type for @ref ae2f_AnnSlp.
-typedef struct ae2f_AnnSp ae2f_AnnSlpEl;
-
 /// @memberof ae2f_AnnSlp
 /// @brief
 /// Input padding for perceptron.
@@ -107,7 +107,9 @@ typedef struct ae2f_AnnSp ae2f_AnnSlpEl;
 /// Valid when @ref ae2f_AnnSp::expected is 1. \n
 /// When not, it is null.
 #define ae2f_AnnSlpPerVPad(slp, ...) \
-(ae2f_CmpGetMem(slp, expected, 0) ? ae2f_reinterpret_cast(__VA_ARGS__ size_t**, ae2f_static_cast(__VA_ARGS__ ae2f_AnnSlp*, slp) + 1) : 0)
+(ae2f_CmpGetMem(slp, expected, 0) ? \
+ae2f_reinterpret_cast(__VA_ARGS__ size_t**, ae2f_static_cast(__VA_ARGS__ ae2f_AnnSlp*, slp) + 1) : \
+0)
 
 /// @memberof ae2f_AnnSlp
 /// @brief
@@ -117,13 +119,13 @@ typedef struct ae2f_AnnSp ae2f_AnnSlpEl;
 /// Valid when @ref ae2f_AnnSlp::expected is 1. \n
 /// When not, it is null.
 #define ae2f_AnnSlpPerV(slp, i, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ ae2f_AnnSlpEl*, ae2f_AnnSlpPerVPad(slp, __VA_ARGS__)[i] + 1)
+ae2f_reinterpret_cast(__VA_ARGS__ ae2f_AnnSlpEl*, (ae2f_AnnSlpPerVPad(slp, __VA_ARGS__)[i] + 1))
 
 /// @memberof ae2f_AnnSlp
 /// @brief
 /// Additional buffer allocated.
 #define ae2f_AnnSlpX(slp, type, ...) \
-ae2f_reinterpret_cast(type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f_AnnSlpPerVPad(slp, __VA_ARGS__) + (slp)->layerc) : 0)
+ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f_AnnSlpPerVPad(slp, __VA_ARGS__) + (slp)->layerc) : 0)
 
 /// @memberof ae2f_AnnSlp
 /// @brief
@@ -282,7 +284,7 @@ ae2f_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_o
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_AnnSpDel after use.
 #define ae2f_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
-ae2f_AnnSlpMk(ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
+ae2f_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
 
 /// @fn ae2f_AnnSlpDel
 /// @memberof ae2f_AnnSlp
