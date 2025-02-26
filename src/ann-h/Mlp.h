@@ -84,11 +84,12 @@ static ae2f_err_t Train (
     ae2f_float_t* const cache_Deltas = _cache + SkipInput;
     ae2f_float_t* const cache_Out2 = cache_Deltas + SkipInput;
 
-    memcpy(cache_Out2, _cache_Out, sizeof(ae2f_float_t) * SkipInput);
-
     ret |= MlpTrain_Predict(
         _this, in, _cache_Out
     ); if(ret) goto RET;
+    
+    memcpy(cache_Out2, _cache_Out, sizeof(ae2f_float_t) * SkipInput);
+
 
     for(size_t i = _this->layerc - 1; i != ((size_t)-1); i--) {
         ae2f_AnnSlp
@@ -110,13 +111,6 @@ static ae2f_err_t Train (
                 cache_Deltas + i * MAXBUFFCOUNT_FOR_LAYER
             ); 
             else return(ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_WRONG_OPERATION);
-
-            ret |= ae2f_AnnSlpTrainA(
-                LAYER,
-                i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
-                cache_Deltas + i * MAXBUFFCOUNT_FOR_LAYER,
-                learningrate
-            );
         } else {
             MlpTrain_HidCompute(
                 LAYER,
@@ -125,14 +119,14 @@ static ae2f_err_t Train (
                 cache_Deltas + (i + 1) * MAXBUFFCOUNT_FOR_LAYER,
                 _cache_Out + (i) * MAXBUFFCOUNT_FOR_LAYER
             );
-
-            ret |= ae2f_AnnSlpTrainA(
-                LAYER,
-                i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
-                cache_Deltas + i * MAXBUFFCOUNT_FOR_LAYER,
-                learningrate
-            );
         }
+
+        ret |= ae2f_AnnSlpTrainA(
+            LAYER,
+            i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
+            cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER,
+            learningrate
+        );
     }
 
     RET:

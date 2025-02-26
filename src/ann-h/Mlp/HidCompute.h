@@ -5,7 +5,7 @@ static ae2f_float_t MlpTrain_HidErr(
     const ae2f_float_t* deltasNxt,
     size_t idxThen
 );
-#include <stdio.h>
+
 static void MlpTrain_HidCompute(
     const ae2f_AnnSlp* layerThen,
     const ae2f_AnnSlp* layerNxt,

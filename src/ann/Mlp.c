@@ -45,11 +45,23 @@ size_t ae2f_AnnMlpInit(
                 size_t* pad;
                 ae2f_AnnSlp* slp;
             }* u;
-        } perc = {ae2f_AnnMlpLayerVPad(_this) + i};
+        } perc = {
+            ae2f_AnnMlpLayerVPad(_this) + i
+        };
 
-        perc.u->pad = calloc(ae2f_AnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 1);
+        perc.u->pad = calloc(
+            ae2f_AnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 
+            1
+        );
+
         perc.u->pad++;
-        ae2f_AnnSlpInitB(perc.u->slp, LAYERSZ_L, 0, weights_opt, actglob_opt, deltaglob_opt, LAYERSZ_R, 0, &e);
+        ae2f_AnnSlpInitB(
+            perc.u->slp, LAYERSZ_L, 
+            0, weights_opt, 
+            actglob_opt, deltaglob_opt, 
+            LAYERSZ_R, 0, &e
+        );
+
         *(--perc.u->pad) = 0;
         if(weights_opt) weights_opt += LAYERSZ_L * LAYERSZ_R; 
 

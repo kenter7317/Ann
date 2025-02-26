@@ -70,13 +70,7 @@ static ae2f_err_t Train(
             learningrate
         );
 
-        ae2f_float_t d;
-
-        _er |= ae2f_AnnSpPredict(
-            layer.perc,
-            in + _pad,
-            &d
-        );
+        if(delta_optA) delta_optA++;
     }
     #else
     size_t i = 0;

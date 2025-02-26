@@ -5,7 +5,7 @@
 #include <math.h>
 
 #define gLearningRate 0.1
-#define gEpochs 1000
+#define gEpochs 25000
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -35,8 +35,8 @@ int main() {
     ae2f_err_t err2 = 0;
     ae2f_float_t diff_got[2] = {0, };
     ae2f_AnnMlp* Mlp = 0;
-    size_t sizes[] = {2, 1};
-    ae2f_float_t outbuff[1] = {  5 };
+    size_t sizes[] = {2, 3, 1};
+    ae2f_float_t outbuff[3] = {  5 };
 
     // [1, 1], [1, 0], [0, 1], [0, 0]
     ae2f_float_t ins[] = {
@@ -63,7 +63,7 @@ int main() {
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2f_AnnMlpTrainB(
             Mlp, ins, 
-            goals, gLearningRate
+            goals + 0, gLearningRate
         );
         if(err2) {
             err_ae2f = err2; goto __failure;
@@ -107,9 +107,15 @@ int main() {
     if(outbuff[0] < 0.5) {
         puts("AND 1, 1 no good");
 
+        ae2f_float_t tmp[3] = {};
         err2 = ae2f_AnnSlpPredict(
             ae2f_AnnMlpLayerV(Mlp, 0),
-            ins, outbuff
+            ins, tmp
+        );
+
+        err2 = ae2f_AnnSlpPredict(
+            ae2f_AnnMlpLayerV(Mlp, 1),
+            tmp, outbuff
         );
         printf("Checking the value(SLP): %f\n", outbuff[0]);
 

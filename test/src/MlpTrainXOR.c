@@ -8,13 +8,24 @@
 #define gEpochs 25000
 
 static ae2f_float_t
+Step(ae2f_float_t x) {
+    return x >= 0;
+}
+
+
+static ae2f_float_t
+Calculate(ae2f_float_t out, ae2f_float_t goal) {
+    return goal - out;
+}
+
+static ae2f_float_t
 Forward(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
 static ae2f_float_t
 ForwardPrime(ae2f_float_t output) {
-    return (output) * (1.0f - output);
+    return output * (1.0 - output);
 }
 
 static ae2f_float_t
@@ -22,17 +33,12 @@ Backward(ae2f_float_t output, ae2f_float_t target) {
     return (target - output) * ForwardPrime(output);
 }
 
-static ae2f_float_t
-Step(ae2f_float_t x) {
-    return x >= 0;
-}
-
 int main() {
     ae2f_err_t err_ae2f = 0;
     ae2f_err_t err2 = 0;
     ae2f_float_t diff_got[2] = {0, };
     ae2f_AnnMlp* Mlp = 0;
-    size_t sizes[] = {2, 7, 1};
+    size_t sizes[] = {2, 3, 1};
     ae2f_float_t outbuff[2] = {  0, 0 };
 
     // [1, 1], [1, 0], [0, 1], [0, 0]
@@ -50,23 +56,7 @@ int main() {
         0, 0, Forward, Backward, 0,
         &err_ae2f
     );
-    #if 0
-    puts("Hello");
-    if(!(Mlp->inc == 2 && Mlp->outc == 1 && Mlp->layerc == 3)) {
-        puts("ae2fCL_AnnM.lpMk has UB");
-        printf(
-            "INC: %u\n"
-            "OUTC: %u\n"
-            "LAYERC: %u\n\n",
-
-            Mlp->inc, Mlp->outc, Mlp->layerc
-        );
-
-        goto __failure;
-    } else {
-        puts("ae2fCL_AnnMlpMk was good");
-    }
-    #endif
+    
     #if 1
     if(err_ae2f) {
         goto __failure;
@@ -116,7 +106,7 @@ int main() {
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
         printf("AND 1, 1 no good\n");
-        err2 = ae2f_errGlob_IMP_NOT_FOUND;
+        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
     err2 = ae2f_AnnMlpPredict(
@@ -126,7 +116,7 @@ int main() {
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
         printf("AND 0, 0 no good\n");
-        err2 = ae2f_errGlob_IMP_NOT_FOUND;
+        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
     err2 = ae2f_AnnMlpPredict(
@@ -153,6 +143,6 @@ int main() {
 
     __failure:
     ae2f_AnnMlpDel(Mlp);
-    printf("Something is over, code: %d\n", err_ae2f);
+    printf("Something is over, code: %d\n", err_ae2f | err2);
     return err_ae2f | err2;
 }
