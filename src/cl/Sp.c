@@ -32,7 +32,14 @@ static ae2f_err_t Predict(
     ae2fCL_Ann.LErr = clSetKernelArg(K, 2, _this->inc * sizeof(ae2f_float_t), 0);
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
-    ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(ae2fCL_Ann.Q, K, 1, 0, &_this->inc, 0, 0, 0, 0);
+    const size_t _locworksize = _this->inc;
+
+    ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
+        ae2fCL_Ann.Q, K, 1, 0, 
+        &_this->inc, 
+        &_locworksize, 
+        0, 0, 0
+    );
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     ae2fCL_Ann.LErr = clEnqueueReadBuffer(ae2fCL_Ann.Q, _IO, CL_TRUE, _this->inc * ae2f_float_t_SIZE, ae2f_float_t_SIZE, &IBuffer, 0, 0, 0);
@@ -91,7 +98,7 @@ static ae2f_err_t Train(
 
     if(ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
         ae2fCL_Ann.Q, K, 1,
-        0, &_this->inc, 0, 
+        0, &_this->inc, &_this->inc, 
         0, 0, 0
     ) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
