@@ -59,11 +59,16 @@ static ae2f_err_t Train(
     ae2f_err_t er = 0;
 
     UF_t uf;
-    if(delta_optA) *uf.F = *delta_optA;
-    er = Predict(_this, in, uf.F);
+    if(delta_optA) 
+        *uf.F = *delta_optA;
+    else {
+        er = Predict(_this, in, uf.F);
+        *uf.F = _this->CalDelta(*uf.F, goal_optB);
+    }
     if(er) return er;
 
     *uf.F *= learningrate;
+    *ae2f_AnnSpB(_this) += *uf.F;
 
     cl_mem _W = *ae2fCL_AnnSpWCl(_this), _IO = *ae2fCL_AnnSpIOCl(_this);
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpTrain];
@@ -83,6 +88,20 @@ static ae2f_err_t Train(
     ae2fCL_Ann.LErr = clSetKernelArg(K, 2, sizeof(ae2f_float_t), uf.F);
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
     #endif
+
+    if(ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
+        ae2fCL_Ann.Q, K, 1,
+        0, &_this->inc, 0, 
+        0, 0, 0
+    ) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+
+    if(ae2fCL_Ann.LErr = clEnqueueReadBuffer(
+        ae2fCL_Ann.Q, _W, 
+        CL_TRUE, 0, 
+        _this->inc * sizeof(ae2f_float_t), 
+        ae2f_AnnSpW(_this), 
+        0, 0, 0
+    ) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     return er;
 }

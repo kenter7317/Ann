@@ -20,6 +20,7 @@
 #include <ae2fCL/Loc.h>
 #include <ae2f/Ann/Sp.h>
 #include <CL/cl.h>
+#include <ae2fCL/Ann/Sizes/cl_mem.h>
 
 #if ae2f_WhenCXX(!) 0
 struct ae2fCL_AnnSp : ae2f_AnnSp {

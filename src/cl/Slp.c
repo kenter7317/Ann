@@ -35,7 +35,7 @@ size_t ae2fCL_AnnSlpInit(
         _pad = inpads_opt ? inpads_opt[i] : 0;
 
         ae2f_AnnSlpPerVPad(_this)[i]
-        = calloc(ae2f_AnnSpInitSz(sizeof(size_t), _inc), 1);
+        = calloc(ae2fCL_AnnSpInitSz(sizeof(size_t), _inc), 1);
 
         ae2fCL_AnnSpInit(
             ae2f_AnnSlpPerV(_this, i),

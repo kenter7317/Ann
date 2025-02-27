@@ -14,5 +14,4 @@ typedef union UF_t {
     ae2f_float_t F[1];
 } UF_t;
 
-
 #endif
