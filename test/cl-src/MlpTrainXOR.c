@@ -1,5 +1,6 @@
 #include "../test.h"
-#include <ae2f/Ann/Mlp.h>
+#include <ae2fCL/Ann/Mlp.h>
+#include <ae2fCL/Ann.h>
 #include <stdio.h>
 
 #include <math.h>
@@ -8,24 +9,13 @@
 #define gEpochs 5000
 
 static ae2f_float_t
-Step(ae2f_float_t x) {
-    return x >= 0;
-}
-
-
-static ae2f_float_t
-Calculate(ae2f_float_t out, ae2f_float_t goal) {
-    return goal - out;
-}
-
-static ae2f_float_t
 Forward(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
 static ae2f_float_t
 ForwardPrime(ae2f_float_t output) {
-    return output * (1.0 - output);
+    return (output) * (1.0f - output);
 }
 
 static ae2f_float_t
@@ -35,7 +25,7 @@ Backward(ae2f_float_t output, ae2f_float_t target) {
 
 int main() {
     ae2f_err_t err_ae2f = 0;
-    ae2f_err_t err2 = 0;
+    cl_int err2 = 0;
     ae2f_float_t diff_got[2] = {0, };
     ae2f_AnnMlp* Mlp = 0;
     size_t sizes[] = {2, 3, 1};
@@ -51,12 +41,31 @@ int main() {
         1, 1, 0, 0
     };
 
-    Mlp = ae2f_AnnMlpMk(
+    err_ae2f = ae2fCL_AnnMkEasy(&err2);
+    CHECK_ERR(err_ae2f, CL_SUCCESS, __failure);
+
+    Mlp = ae2fCL_AnnMlpMk(
         sizeof(sizes) / sizeof(size_t), 0, sizes, 
         0, 0, Forward, Backward, 0,
-        &err_ae2f
+        &err_ae2f, 0
     );
-    
+    #if 0
+    puts("Hello");
+    if(!(Mlp->inc == 2 && Mlp->outc == 1 && Mlp->layerc == 3)) {
+        puts("ae2fCL_AnnM.lpMk has UB");
+        printf(
+            "INC: %u\n"
+            "OUTC: %u\n"
+            "LAYERC: %u\n\n",
+
+            Mlp->inc, Mlp->outc, Mlp->layerc
+        );
+
+        goto __failure;
+    } else {
+        puts("ae2fCL_AnnMlpMk was good");
+    }
+    #endif
     #if 1
     if(err_ae2f) {
         goto __failure;
@@ -143,6 +152,7 @@ int main() {
 
     __failure:
     ae2f_AnnMlpDel(Mlp);
+    ae2fCL_AnnDel();
     printf("Something is over, code: %d\n", err_ae2f | err2);
     return err_ae2f | err2;
 }

@@ -1,9 +1,10 @@
 #include "../test.h"
-#include <ae2f/Ann/Slp.h>
+#include <ae2fCL/Ann/Slp.h>
+#include <ae2fCL/Ann.h>
 #include <stdio.h>
 
 #define gLearningRate 0.1
-#define gEpochs 1000
+#define gEpochs 9000
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -24,6 +25,8 @@ Backward(ae2f_float_t o, ae2f_float_t T) {
 }
 
 int main() {
+    cl_int errcl;
+    ae2f_err_t err2, err;
     // [1, 1], [1, 0], [0, 1], [0, 0]
     ae2f_float_t ins[] = {
         1, 1, 1, 0, 0, 1, 0, 0
@@ -36,10 +39,12 @@ int main() {
 
     ae2f_float_t diff_got[2];
 
-    ae2f_err_t err2, err;
-    ae2f_AnnSlp* Slp = ae2f_AnnSlpMkB(
+    err = ae2fCL_AnnMkEasy(&errcl);
+    CHECK_ERR(err, CL_SUCCESS, __failure);
+
+    ae2f_AnnSlp* Slp = ae2fCL_AnnSlpMkB(
         2, 0, 0, Forward, Backward, 1, 
-        0, &err2 
+        0, &err2, &errcl
     );
     ae2f_float_t outbuff[2] = {  5 };
 
@@ -90,7 +95,10 @@ int main() {
             goals + 0, gLearningRate
         );
         if(err2) {
-            err = err2; goto __failure;
+            err = err2; 
+            puts("TRAIN DOOMED");
+            printf("%d\n", err2);
+            goto __failure;
         }
 
         err2 = ae2f_AnnSlpTrainB(
@@ -173,6 +181,7 @@ int main() {
 
     __failure:
     ae2f_AnnSlpDel(Slp);
+    ae2fCL_AnnDel();
     printf("ERR: %d\n", err);
     return err;
 }

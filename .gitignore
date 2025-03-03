@@ -15,3 +15,8 @@ Doxyfile
 html
 
 *.py
+
+test/none
+
+.*/
+*.auto.h
