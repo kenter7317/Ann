@@ -13,11 +13,10 @@
 #define ae2fCL_AnnAct_h
 
 #include <ae2f/Float.h>
-#include <ae2fCL/Loc.h>
 
 /// @brief Customisable activasion function pointer type.
 typedef ae2f_float_t ae2f_AnnAct_t 
-    ae2fCL_whenC((ae2f_float_t x));
+    (ae2f_float_t x);
 
 /// @brief Customisable activasion function pointer type.
 typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;
@@ -30,7 +29,7 @@ typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;
 /// @param out Predicted value
 /// @param goal Expected value (wanted)
 /// @return Calculated loss.
-typedef ae2f_float_t ae2f_AnnDelta_t ae2fCL_whenC((ae2f_float_t out, ae2f_float_t goal));
+typedef ae2f_float_t ae2f_AnnDelta_t (ae2f_float_t out, ae2f_float_t goal);
 
 /// @brief
 /// Specify the way of calculating loss.

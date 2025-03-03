@@ -18,7 +18,7 @@
 struct ae2f_AnnSlp;
 
 /// @brief cleaning function
-typedef ae2f_err_t ae2f_AnnSlpClean_t ae2fCL_whenC((ae2f_struct ae2f_AnnSlp*)) noexcept;
+typedef ae2f_err_t ae2f_AnnSlpClean_t (ae2f_struct ae2f_AnnSlp*) noexcept;
 
 /// @brief 
 /// Predict one output from multiple inputs.
@@ -29,11 +29,11 @@ typedef ae2f_err_t ae2f_AnnSlpClean_t ae2fCL_whenC((ae2f_struct ae2f_AnnSlp*)) n
 /// That one predicted. \n
 /// Its count is @ref ae2f_AnnSp::inc.
 /// @return  State
-typedef ae2f_err_t ae2f_AnnSlpPredict_t ae2fCL_whenC((
+typedef ae2f_err_t ae2f_AnnSlpPredict_t (
     const ae2f_struct ae2f_AnnSlp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* outret_opt
-)) noexcept;
+) noexcept;
 
 /// @brief 
 /// Training function, multiple input from multiple output.
@@ -47,13 +47,13 @@ typedef ae2f_err_t ae2f_AnnSlpPredict_t ae2fCL_whenC((
 /// Desired output.
 /// @param learningrate 
 /// Learning rate
-typedef ae2f_err_t ae2f_AnnSlpTrain_t ae2fCL_whenC((
+typedef ae2f_err_t ae2f_AnnSlpTrain_t (
     ae2f_struct ae2f_AnnSlp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     const ae2f_float_t* goal_optB,
     ae2f_float_t learningrate
-)) noexcept;
+) noexcept;
 
 /// @brief 
 /// The element type for @ref ae2f_AnnSlp.

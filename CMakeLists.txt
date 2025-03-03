@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
+option(ae2fCL_needed "" ON)
 include(cmake/Core.cmake)
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-    ae2f_CoreLibFetch(ae2f CL-Core Rel-v6.19.12)
+    ae2f_CoreLibFetch(ae2f Core Rel-v6.19.12)
 
     ae2f_CoreLibTentConfigCustom(
         Ann-H INTERFACE
@@ -28,7 +29,7 @@ if(NOT TARGET ${PROJECT_NAME})
         "include/ae2f/Ann/Mlp.h.cxx/Mlp.hh"
         "include/ae2f/Ann/Mlp.h.cxx/imp.hh"
     )
-    target_link_libraries(Ann-H INTERFACE CL-Core)
+    target_link_libraries(Ann-H INTERFACE Core)
 
     ae2f_CoreLibTentConfigCustom(
         Ann-H-Private INTERFACE
@@ -69,7 +70,7 @@ if(ae2fCL_needed)
     project(CL-Ann VERSION 2.1.0 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
         ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.5)
-        ae2f_CoreLibFetch(ae2f Core Rel-v4.15.20)
+        ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.15.21)
 
         ae2f_CoreLibTentConfigCustom(
             CL-Ann-H INTERFACE
@@ -107,6 +108,7 @@ if(ae2fCL_needed)
             "src/cl/CLCode/Size/cl_mem.auto.h"
         )
         target_link_libraries(CL-Ann-H INTERFACE Ann-H)
+        target_link_libraries(CL-Ann-H INTERFACE CL-Core)
         
         target_link_libraries(CL-Ann PUBLIC Ann)
         target_link_libraries(CL-Ann PUBLIC CL-Ann-H)

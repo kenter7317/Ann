@@ -10,7 +10,7 @@
  * Deleting function macro
  */
 
-#if ae2fCL_whenCL(!) 1
+#if  1
 
 if(!_this) return ae2f_errGlob_PTR_IS_NULL;
 ae2f_err_t er = 0;

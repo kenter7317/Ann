@@ -33,11 +33,11 @@ typedef struct ae2f_AnnSp ae2f_AnnSp;
 /// That one predicted. \n
 /// its count is 1.
 /// @return  State
-typedef ae2f_err_t ae2f_AnnSpPredict_t ae2fCL_whenC((
+typedef ae2f_err_t ae2f_AnnSpPredict_t (
     const ae2f_AnnSp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* outret_opt
-)) noexcept;
+) noexcept;
 
 /// @brief 
 /// Train for desired output: @ref goal.
@@ -51,17 +51,17 @@ typedef ae2f_err_t ae2f_AnnSpPredict_t ae2fCL_whenC((
 /// Desired output.
 /// @param learningrate 
 /// Learning rate
-typedef ae2f_err_t ae2f_AnnSpTrain_t ae2fCL_whenC((
+typedef ae2f_err_t ae2f_AnnSpTrain_t (
     ae2f_AnnSp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     ae2f_float_t goal_optB,   
     ae2f_float_t learningrate
-)) noexcept;
+) noexcept;
 
 /// @brief
 /// Clean the class.
-typedef ae2f_err_t ae2f_AnnSpClean_t ae2fCL_whenC((ae2f_AnnSp*)) noexcept;
+typedef ae2f_err_t ae2f_AnnSpClean_t (ae2f_AnnSp*) noexcept;
 
 #undef ae2f_AnnSp
 
