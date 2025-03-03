@@ -5,7 +5,7 @@ include(cmake/Core.cmake)
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-    ae2f_CoreLibFetch(ae2f CL-Core Rel-v4.15.18)
+    ae2f_CoreLibFetch(ae2f CL-Core Rel-v6.19.12)
 
     ae2f_CoreLibTentConfigCustom(
         Ann-H INTERFACE
@@ -69,17 +69,30 @@ if(ae2fCL_needed)
     project(CL-Ann VERSION 2.1.0 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
         ae2f_CoreLibFetch(ae2f Ruler Rel-v0.1.5)
+        ae2f_CoreLibFetch(ae2f Core Rel-v4.15.20)
 
         ae2f_CoreLibTentConfigCustom(
             CL-Ann-H INTERFACE
             include ae2fCL
             ${PROJECT_SOURCE_DIR}/Config/CL-Ann-H.cmake.in
-            "include/ae2fCL/Ann/Sizes/cl_mem.h"
             "include/ae2fCL/Ann.h"
-
             "include/ae2fCL/Ann/Sp.h.cxx/Sp.hh"
             "include/ae2fCL/Ann/Sp.h.cxx/imp.hh"
             "include/ae2fCL/Ann/Sp.h"
+        )
+
+        ae2f_RulerMeasure(
+            cl_mem 
+            ${PROJECT_SOURCE_DIR}/src/cl/CLCode/Size/cl_mem.auto.h 
+            -I${OpenCL_INCLUDE_DIR} 
+            CL/cl.h
+        )
+
+        ae2f_RulerMeasure(
+            ae2f_float_t 
+            ${PROJECT_SOURCE_DIR}/src/cl/CLCode/Size/ae2f_float_t.auto.h 
+            -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f 
+            Float.h
         )
 
         ae2f_CoreLibTentConfigCustom(
@@ -90,6 +103,8 @@ if(ae2fCL_needed)
             "src/cl/Sp.c"
             "src/cl/Slp.c"
             "src/cl/Mlp.c"
+            "src/cl/CLCode/Size/ae2f_float_t.auto.h"
+            "src/cl/CLCode/Size/cl_mem.auto.h"
         )
         target_link_libraries(CL-Ann-H INTERFACE Ann-H)
         
@@ -111,8 +126,6 @@ if(ae2fCL_needed)
         ae2fCL_CheckNeeded()
 
         ae2fCL_CoreTestTent(CL-Ann "test/cl-src")
-        ae2f_RulerMeasure(cl_mem ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/cl_mem.h -I${OpenCL_INCLUDE_DIR} CL/cl.h)
-        ae2f_RulerMeasure(ae2f_float_t ${PROJECT_SOURCE_DIR}/include/ae2fCL/Ann/Sizes/ae2f_float_t.h -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f Float.h)
 
     endif()
 endif()

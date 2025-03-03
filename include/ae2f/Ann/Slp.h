@@ -108,7 +108,7 @@ typedef struct ae2f_AnnSlp {
 /// When not, it is null.
 #define ae2f_AnnSlpPerVPad(slp, ...) \
 (ae2f_CmpGetMem(slp, expected, 0) ? \
-ae2f_reinterpret_cast(__VA_ARGS__ size_t**, ae2f_static_cast(__VA_ARGS__ ae2f_AnnSlp*, slp) + 1) : \
+ae2f_reinterpret_cast(__VA_ARGS__ size_t* __VA_ARGS__ *, ae2f_static_cast(__VA_ARGS__ ae2f_AnnSlp*, slp) + 1) : \
 0)
 
 /// @memberof ae2f_AnnSlp

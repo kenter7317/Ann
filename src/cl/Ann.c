@@ -1,8 +1,9 @@
 #include <ae2fCL/Ann.h>
 #include <ae2fCL/Loc.h>
-static const char* __clsrc =
-#include "CLCode/Sp.clh"
-"";
+static const char* __clsrc[] =
+{
+#include "CLCode/__PROCESSED.clh"
+};
 
 #include <stdio.h>
 
@@ -29,7 +30,7 @@ ae2f_err_t ae2fCL_AnnMk(
 
     if(!LIB) {
         LIB = clCreateProgramWithSource(
-            ctx, 1, &__clsrc, 0, &err2 
+            ctx, sizeof(__clsrc) / sizeof(__clsrc[0]), __clsrc, 0, &err2 
         );
         err2 = clBuildProgram(LIB, devCount, devs, 0, 0, 0);
     }
@@ -44,6 +45,8 @@ ae2f_err_t ae2fCL_AnnMk(
     }
     LocCreateKernel(ae2fCL_eAnnKernsSpPredict);
     LocCreateKernel(ae2fCL_eAnnKernsSpTrain);
+    LocCreateKernel(ae2fCL_eAnnKernsSlpPredict);
+    LocCreateKernel(ae2fCL_eAnnKernsSlpTrain);
 
     #undef LocCreateKernel
     RET:

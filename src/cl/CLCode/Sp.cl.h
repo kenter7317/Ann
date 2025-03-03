@@ -2,8 +2,8 @@
 
 #include <ae2f/Float.h>
 #include <ae2fCL/Loc.h>
-#include <ae2fCL/Ann/Sizes/cl_mem.h>
-#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
+#include "Size/cl_mem.auto.h"
+#include "Size/ae2f_float_t.auto.h"
 
 
 __kernel void ae2fCL_eAnnKernsSpPredict(
@@ -73,4 +73,4 @@ __kernel void ae2fCL_eAnnKernsSpTrain(
         	out = loc[0]; \
     	}
 
-#define ae2fCL_AnnDevSpTrain(_in, field, LrErr, i) (field[i] += LrErr * _in[i])
+#define ae2fCL_AnnDevSpTrain(_in, field, LrErr, i) ((field)[i] += (LrErr) * (_in)[i])

@@ -51,10 +51,10 @@ constexprfun T* ae2f_TMP X() {
     return ae2f_AnnSlpX(this, T*);
 }
 
-constexprfun ae2f_AnnSlpEl* ae2f_TMP PerV(size_t i) {
-    return ae2f_AnnSlpPerVPad(this, i);
+constexprfun ae2f_AnnSlpEl* ae2f_TMP Perc(size_t i) {
+    return ae2f_AnnSlpPerV(this, i);
 }
-constexprfun const ae2f_AnnSlpEl* ae2f_TMP PerV(size_t i) const {
+constexprfun const ae2f_AnnSlpEl* ae2f_TMP Perc(size_t i) const {
     return ae2f_AnnSlpPerV(this, i, const);
 }
 

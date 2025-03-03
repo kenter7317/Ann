@@ -12,7 +12,7 @@ static ae2f_err_t Predict(
     ae2f_float_t* out_opt
 ) noexcept {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    if(!out_opt) ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL;
+    if(!out_opt) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
 
     ae2f_err_t err = 0;

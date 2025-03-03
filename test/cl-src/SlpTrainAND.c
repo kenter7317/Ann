@@ -95,7 +95,10 @@ int main() {
             goals + 0, gLearningRate
         );
         if(err2) {
-            err = err2; goto __failure;
+            err = err2; 
+            puts("TRAIN DOOMED");
+            printf("%d\n", err2);
+            goto __failure;
         }
 
         err2 = ae2f_AnnSlpTrainB(

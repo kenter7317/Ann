@@ -1,7 +1,7 @@
 #include <ae2fCL/Ann.h>
 #include <ae2fCL/Ann/Sp.h>
-#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
-#include <ae2fCL/Ann/Sizes/cl_mem.h>
+#include "CLCode/Size/ae2f_float_t.auto.h"
+#include "CLCode/Size/cl_mem.auto.h"
 
 static ae2f_AnnSpPredict_t Predict;
 static ae2f_AnnSpTrain_t Train;
@@ -96,19 +96,19 @@ static ae2f_err_t Train(
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
     #endif
 
-    if(ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
+    if((ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
         ae2fCL_Ann.Q, K, 1,
         0, &_this->inc, &_this->inc, 
         0, 0, 0
-    ) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+    )) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
-    if(ae2fCL_Ann.LErr = clEnqueueReadBuffer(
+    if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _W, 
         CL_TRUE, 0, 
         _this->inc * sizeof(ae2f_float_t), 
         ae2f_AnnSpW(_this), 
         0, 0, 0
-    ) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+    )) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     return er;
 }

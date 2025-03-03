@@ -16,6 +16,7 @@
 
 #include <ae2f/Ann/Slp.h>
 #include <CL/cl.h>
+#include <ae2f/Pack/Beg.h>
 
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2fCL_AnnSlpInit(
@@ -42,7 +43,7 @@ ae2fCL_AnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset
 #if ae2f_WhenCXX(!) 0 
 struct ae2fCL_AnnSlp : ae2f_AnnSlp {
 #include "Slp.h.cxx/Slp.hh" 
-}
+};
 #else
 
 /**
@@ -75,6 +76,9 @@ ae2fCL_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err
 
 typedef struct ae2fCL_AnnSlpMemX {
 	cl_mem In;
+
+	/** @brief Has weights been changed */
+	bool Changed;
 } ae2fCL_AnnSlpMemX;
 
 /** 
@@ -82,13 +86,18 @@ typedef struct ae2fCL_AnnSlpMemX {
  * @param off 
  * */
 #define ae2fCL_AnnSlpInitSz(outc, off) \
-	ae2f_AnnSlpInitSz(outc, (off) + sizeof(ae2fCL_AnnSlpMemX))
+	ae2f_AnnSlpInitSz(outc, (off) + sizeof(ae2fCL_AnnSlpMemX) + (sizeof(ae2f_float_t) * outc))
 
 
 #define ae2fCL_AnnSlpAdd(slp, ...) \
 	ae2f_AnnSlpX(slp, ae2fCL_AnnSlpMemX*, __VA_ARGS__)
 
+#define ae2fCL_AnnSlpOutCache(slp, ...) \
+	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2fCL_AnnSlpAdd(slp, __VA_ARGS__) + 1)
+
 #define ae2fCL_AnnSlpX(slp, type, ...) \
- 	ae2f_reinterpret_cast(__VA_ARGS__ type*, ae2fCL_AnnSlpAdd(slp, __VA_ARGS__) + 1)
+ 	ae2f_reinterpret_cast(__VA_ARGS__ type*, ae2fCL_AnnSlpOutCache(slp, __VA_ARGS__) + (slp)->outc)
+
+#include <ae2f/Pack/End.h>
 
 #endif

@@ -3,8 +3,8 @@
 
 #include <ae2f/Float.h>
 #include <ae2fCL/Loc.h>
-#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
-#include <ae2fCL/Ann/Sizes/cl_mem.h>
+#include "Size/ae2f_float_t.auto.h"
+#include "Size/cl_mem.auto.h"
 
 #if ae2f_float_t_SIZE == 8
 typedef uint32_t ae2f_float_half_t;
