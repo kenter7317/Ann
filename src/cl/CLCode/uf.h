@@ -1,6 +1,11 @@
 #ifndef uf_t_h
 #define uf_t_h
 
+#include <ae2f/Float.h>
+#include <ae2fCL/Loc.h>
+#include <ae2fCL/Ann/Sizes/ae2f_float_t.h>
+#include <ae2fCL/Ann/Sizes/cl_mem.h>
+
 #if ae2f_float_t_SIZE == 8
 typedef uint32_t ae2f_float_half_t;
 #elif ae2f_float_t_SIZE == 4

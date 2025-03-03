@@ -2,6 +2,25 @@
 #include <ae2fCL/Ann/Sp.h>
 #include <ann-h/Slp.h>
 
+/**
+ * OpenCL Code for Predicting SLP.
+ * */
+ae2f_err_t PredictCL(
+	const ae2f_AnnSlp* _,
+	const ae2f_float_t* in,
+	ae2f_float_t* out
+) {
+	if(!(_ && in))
+		return ae2f_errGlob_PTR_IS_NULL;
+
+	if(!out)
+		return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_DONE_HOWEV;
+
+
+
+	return 0;
+}
+
 ae2f_SHAREDEXPORT
 size_t ae2fCL_AnnSlpInit(
     ae2f_AnnSlp* _this,
@@ -20,7 +39,12 @@ size_t ae2fCL_AnnSlpInit(
     cl_int V = 0, v2 = 0;
     #define return(c) { er = c; goto DONE; }
 
-    if(!_this) return(ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_ALLOC_FAILED | ae2f_errGlob_DONE_HOWEV);
+    if(!_this) 
+	    return(
+		    ae2f_errGlob_PTR_IS_NULL | 
+		    ae2f_errGlob_ALLOC_FAILED | 
+		    ae2f_errGlob_DONE_HOWEV
+    );
 
     _this->expected = 1;
     _this->inc = 0;
@@ -35,13 +59,17 @@ size_t ae2fCL_AnnSlpInit(
         _pad = inpads_opt ? inpads_opt[i] : 0;
 
         ae2f_AnnSlpPerVPad(_this)[i]
-        = calloc(ae2fCL_AnnSpInitSz(sizeof(size_t), _inc), 1);
+        = calloc(
+		ae2f_AnnSpInitSz(
+			sizeof(size_t), _inc
+		), 1
+	);
 
-        ae2fCL_AnnSpInit(
+        ae2f_AnnSpInit(
             ae2f_AnnSlpPerV(_this, i),
             _inc, w_opt,
             Act, CalDelta,
-            &ertmp, &v2, 0
+            &ertmp, 0
         );
 
         if(v2 != CL_SUCCESS) V = v2;

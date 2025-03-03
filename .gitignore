@@ -17,3 +17,5 @@ html
 *.py
 
 test/none
+
+.*/
