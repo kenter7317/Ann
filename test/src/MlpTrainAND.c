@@ -61,32 +61,32 @@ int main() {
         goto __failure;
     }
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnMlpTrainB(
-            Mlp, ins, 
+        err2 = ae2f_AnnSlpTrainB(
+            &Mlp->Slp, ins, 
             goals + 0, gLearningRate
         );
         if(err2) {
             err_ae2f = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnMlpTrainB(
-            Mlp, ins + 2, 
+        err2 = ae2f_AnnSlpTrainB(
+            &Mlp->Slp, ins + 2, 
             goals + 2, gLearningRate
         );
         if(err2) {
              goto __failure;
         }
 
-        err2 = ae2f_AnnMlpTrainB(
-            Mlp, ins + 4, 
+        err2 = ae2f_AnnSlpTrainB(
+            &Mlp->Slp, ins + 4, 
             goals + 2, gLearningRate
         );
         if(err2) {
              goto __failure;
         }
 
-        err2 = ae2f_AnnMlpTrainB(
-            Mlp, ins + 6, 
+        err2 = ae2f_AnnSlpTrainB(
+            &Mlp->Slp, ins + 6, 
             goals + 2, gLearningRate
         );
         if(err2) {
@@ -98,8 +98,8 @@ int main() {
     #if 1
     puts("Predict time");
 
-    err2 = ae2f_AnnMlpPredict(
-        Mlp, ins, outbuff
+    err2 = ae2f_AnnSlpPredict(
+        &Mlp->Mlp, ins, outbuff
     ); if(err2) {
         goto __failure;
     }
@@ -109,12 +109,12 @@ int main() {
 
         ae2f_float_t tmp[3] = {};
         err2 = ae2f_AnnSlpPredict(
-            ae2f_AnnMlpLayerV(Mlp, 0),
+            ae2f_mAnnMlpLayerV(&Mlp->Mlp, 0),
             ins, tmp
         );
 
         err2 = ae2f_AnnSlpPredict(
-            ae2f_AnnMlpLayerV(Mlp, 1),
+            ae2f_mAnnMlpLayerV(&Mlp->Mlp, 1),
             tmp, outbuff
         );
         printf("Checking the value(SLP): %f\n", outbuff[0]);
@@ -122,8 +122,8 @@ int main() {
         err2 = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnMlpPredict(
-        Mlp, ins + 6, outbuff
+    err2 = ae2f_AnnSlpPredict(
+        &Mlp->Slp, ins + 6, outbuff
     ); if(err2) {
         err2 = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
@@ -131,7 +131,7 @@ int main() {
         printf("AND 0, 0 no good\n");
 
         err2 = ae2f_AnnSlpPredict(
-            ae2f_AnnMlpLayerV(Mlp, 0),
+            ae2f_mAnnMlpLayerV(&Mlp->Mlp, 0),
             ins, outbuff
         );
         printf("Checking the value(SLP): %f\n", outbuff[0]);
@@ -139,30 +139,30 @@ int main() {
         err2 = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnMlpPredict(
-        Mlp, ins + 4, outbuff 
+    err2 = ae2f_AnnSlpPredict(
+        &Mlp->Slp, ins + 4, outbuff 
     ); if(err2) {
         err_ae2f = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
         printf("AND 0, 1 no good\n");
         err2 = ae2f_AnnSlpPredict(
-            ae2f_AnnMlpLayerV(Mlp, 0),
+            ae2f_mAnnMlpLayerV(&Mlp->Mlp, 0),
             ins, outbuff
         );
         printf("Checking the value(SLP): %f\n", outbuff[0]);
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnMlpPredict(
-        Mlp, ins + 2, outbuff
+    err2 = ae2f_AnnSlpPredict(
+        &Mlp->Mlp, ins + 2, outbuff
     ); if(err2) {
         err_ae2f = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
         printf("AND 1, 0 no good\n");
         err2 = ae2f_AnnSlpPredict(
-            ae2f_AnnMlpLayerV(Mlp, 0),
+            ae2f_mAnnMlpLayerV(&Mlp->Mlp, 0),
             ins, outbuff
         );
         printf("Checking the value(SLP): %f\n", outbuff[0]);
@@ -172,7 +172,7 @@ int main() {
     #endif
 
     __failure:
-    ae2f_AnnMlpDel(Mlp);
+    ae2f_AnnSlpDel(&Mlp->Slp);
     printf("Something is over, code: %d\n", err_ae2f);
     return err_ae2f | err2;
 }

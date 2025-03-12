@@ -95,7 +95,7 @@ typedef struct ae2f_AnnSlp {
     /// Training function
     ae2f_AnnSlpTrain_t* vTrain;
 
-    #if ae2f_WhenCXX(1) + 0
+    #if ae2f_WhenCXX(!)0
     #include "Slp.h.cxx/Slp.hh"
     #endif
 } ae2f_AnnSlp;
@@ -294,7 +294,7 @@ ae2f_AnnDelDef(ae2f_AnnSlp) noexcept {
     #include "Sp.h.c/clean.script.h"
 }
 
-#if ae2f_WhenCXX(1) + 0
+#if ae2f_WhenCXX(!)0
 #include "Slp.h.cxx/imp.hh"
 #endif
 

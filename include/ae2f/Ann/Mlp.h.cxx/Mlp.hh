@@ -7,13 +7,13 @@
  * 
  * @copyright Copyright (c) 2025
  * 
- * Additional definition for @ref ae2f_AnnMlp, @ref ae2f_AnnMlpEl
+ * Additional definition for @ref ae2f_mAnnMlp, @ref ae2f_mAnnMlpEl
  * 
  */
 
 #include "../Mlp.h"
 
 #define ae2f_TMP
-constexprfun ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a);
-constexprfun const ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) const;
+constexprfun ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a);
+constexprfun const ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) const;
 #undef ae2f_TMP

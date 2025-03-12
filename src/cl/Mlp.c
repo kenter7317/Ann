@@ -4,7 +4,7 @@
 
 ae2f_SHAREDEXPORT
 size_t ae2fCL_AnnMlpInit(
-    ae2f_AnnMlp* _this,
+    ae2f_mAnnMlp* _this,
     size_t layerc,
     size_t add_opt,
     const size_t* layerlenv,
@@ -51,7 +51,7 @@ size_t ae2fCL_AnnMlpInit(
                 size_t* pad;
                 ae2f_AnnSlp* slp;
             }* u;
-        } perc = {ae2f_AnnMlpLayerVPad(_this) + i};
+        } perc = {ae2f_mAnnMlpLayerVPad(_this) + i};
 
         perc.u->pad = calloc(ae2fCL_AnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 1);
         perc.u->pad++;
@@ -65,11 +65,11 @@ size_t ae2fCL_AnnMlpInit(
         err = err | e & ~ae2f_errGlob_DONE_HOWEV;
     }
 
-    ae2f_AnnMlpCache(_this,)[0] = calloc(
+    ae2f_mAnnMlpCache(_this,)[0] = calloc(
         (max * layerc) << 2,
         sizeof(ae2f_float_t)
     );
-    *ae2f_AnnMlpLayerBuffCount(_this) = max;
+    *ae2f_mAnnMlpLayerBuffCount(_this) = max;
 
     EXIT:
     #undef return
@@ -77,7 +77,7 @@ size_t ae2fCL_AnnMlpInit(
         *errret_opt = err | (err2 ? ae2f_errGlob_NFOUND : 0);
     }
     if(errnfound_opt) *errnfound_opt= err2;
-    return ae2f_AnnMlpInitSz(++layerc, add_opt);
+    return ae2f_mAnnMlpInitSz(++layerc, add_opt);
 }
 
 ae2f_extern ae2f_SHAREDCALL
@@ -95,10 +95,10 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
 ) noexcept {
     ae2f_err_t err = 0;
     cl_int err2 = 0;
-    ae2f_AnnMlp* obj = calloc(ae2f_AnnMlpInitSz(layerc, add_opt), 1);
+    ae2f_AnnMlp* obj = calloc(ae2f_mAnnMlpInitSz(layerc, add_opt), 1);
 
     ae2fCL_AnnMlpInit(
-        obj, layerc, add_opt, 
+        &obj->Mlp, layerc, add_opt, 
         layerlenv, layerpadv_opt, 
         inpadv_opt, actglob_opt, 
         deltaglob_opt, weights_opt, 
