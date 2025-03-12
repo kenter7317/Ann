@@ -21,7 +21,7 @@ inline ae2f_err_t ae2f_TMP Predict(
     return ae2f_AnnSlpPredict(this, in, out_opt);
 }
  
-inline ae2f_err_t ae2f_TMP Train(
+inline ae2f_err_t ae2f_TMP TrainA(
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     ae2f_float_t learningrate
@@ -29,9 +29,9 @@ inline ae2f_err_t ae2f_TMP Train(
     return ae2f_AnnSlpTrainA(this, in, delta_optA, learningrate);
 }
 
-inline ae2f_err_t ae2f_TMP Train(
+inline ae2f_err_t ae2f_TMP TrainB(
     const ae2f_float_t* in,
-    ae2f_float_t* goal_optB,
+    const ae2f_float_t* goal_optB,
     ae2f_float_t learningrate
 ) noexcept {
     return ae2f_AnnSlpTrainB(this, in, goal_optB, learningrate);

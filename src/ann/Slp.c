@@ -36,13 +36,13 @@ size_t ae2f_AnnSlpInit(
         	_pad = inpads_opt ? inpads_opt[i] : 0;
         
         	if(!(ae2f_AnnSlpPerVPad(_this)[i]
-        		= calloc(ae2f_AnnSpInitSz(sizeof(size_t), _inc), 1))) 
+        		= calloc(ae2f_mAnnSpInitSz(sizeof(size_t), _inc), 1))) 
 		{
             		er |= ae2f_errGlob_ALLOC_FAILED;
             		continue;
 		}
 
-        	ae2f_AnnSpInit(
+        	ae2f_mAnnSpInit(
 				ae2f_AnnSlpPerV(_this, i),
 				_inc, w_opt,
 				Act, CalDelta,

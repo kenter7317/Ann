@@ -90,9 +90,9 @@ ae2f_err_t TrainCL(
 					* _padv = ae2f_AnnSlpPerVPad(_this, const)[i],
 					pad = *_padv;
 
-					const ae2f_AnnSp* 
+					const ae2f_mAnnSp* 
 						perc = ae2f_reinterpret_cast(
-								const ae2f_AnnSp*, 
+								const ae2f_mAnnSp*, 
 								_padv + 1
 								);
 					
@@ -102,7 +102,7 @@ ae2f_err_t TrainCL(
 							,CL_TRUE
 							,((IC * (1 + i)) + pad)* sizeof(ae2f_float_t)
 							,perc->inc * sizeof(ae2f_float_t)
-							,ae2f_AnnSpW(perc, const)
+							,ae2f_mAnnSpW(perc, const)
 							, 0, NULL, 0
 							); if(err2) 
 					{
@@ -133,9 +133,9 @@ ae2f_err_t TrainCL(
 _BUFFSET:
 	for(size_t i = 0; i < OC; i++) {
 
-		ae2f_AnnSp* perc = ae2f_AnnSlpPerV(_this, i);
+		ae2f_mAnnSp* perc = ae2f_AnnSlpPerV(_this, i);
 
-		*ae2f_AnnSpB(perc) += PREDICTED_BUFF[i] = 
+		*ae2f_mAnnSpB(perc) += PREDICTED_BUFF[i] = 
 			delta_optA ?
 			PREDICTED_BUFF[i] * learningrate :
 			perc->CalDelta(PREDICTED_BUFF[i], goal_optB[i]) * learningrate;
@@ -193,7 +193,7 @@ _BUFFSET:
 			* padv = ae2f_AnnSlpPerVPad(_this)[i]
 			, pad = *padv;
 
-		ae2f_AnnSp* perc = ae2f_reinterpret_cast(ae2f_AnnSp*, padv + 1);
+		ae2f_mAnnSp* perc = ae2f_reinterpret_cast(ae2f_mAnnSp*, padv + 1);
 
 		if((err2 = clEnqueueReadBuffer(
 						ae2fCL_Ann.Q
@@ -201,7 +201,7 @@ _BUFFSET:
 						, CL_TRUE
 						, (IC) * (1 + i) * sizeof(ae2f_float_t)
 						, perc->inc * sizeof(ae2f_float_t)
-						, ae2f_AnnSpW(perc)
+						, ae2f_mAnnSpW(perc)
 						, 0, NULL, NULL
 						))) 
 		{
@@ -290,9 +290,9 @@ ae2f_err_t PredictCL(
 				* _padv = ae2f_AnnSlpPerVPad(_, const)[i],
 				pad = *_padv;
 
-			const ae2f_AnnSp* 
+			const ae2f_mAnnSp* 
 				perc = ae2f_reinterpret_cast(
-						const ae2f_AnnSp*, 
+						const ae2f_mAnnSp*, 
 						_padv + 1
 						);
 
@@ -302,7 +302,7 @@ ae2f_err_t PredictCL(
 					,CL_TRUE
 					,((IC * (1 + i)) + pad)* sizeof(ae2f_float_t)
 					,perc->inc * sizeof(ae2f_float_t)
-					,ae2f_AnnSpW(perc, const)
+					,ae2f_mAnnSpW(perc, const)
 					, 0, NULL, 0
 					); if(err2) 
 			{
@@ -368,13 +368,13 @@ ae2f_err_t PredictCL(
 
 	for(size_t i = 0; i < OC; i++)
 	{
-		const ae2f_AnnSp* 
+		const ae2f_mAnnSp* 
 			perc = ae2f_AnnSlpPerV(_,i);
 
 		if(!perc) return(ae2f_errGlob_IMP_NOT_FOUND);
 		if(!perc->Act) return(ae2f_errGlob_IMP_NOT_FOUND);
 
-		out[i] = perc->Act(out[i] + *ae2f_AnnSpB(perc));
+		out[i] = perc->Act(out[i] + *ae2f_mAnnSpB(perc));
 	}
 
 _DONE:
@@ -431,12 +431,12 @@ size_t ae2fCL_AnnSlpInit(
 
         ae2f_AnnSlpPerVPad(_this)[i]
         = calloc(
-		ae2f_AnnSpInitSz(
+		ae2f_mAnnSpInitSz(
 			sizeof(size_t), _inc
 		), 1
 	);
 
-        ae2f_AnnSpInit(
+        ae2f_mAnnSpInit(
             ae2f_AnnSlpPerV(_this, i),
             _inc, w_opt,
             Act, CalDelta,

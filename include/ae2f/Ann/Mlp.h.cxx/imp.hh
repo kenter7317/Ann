@@ -14,10 +14,17 @@
 #define ae2f_TMP ae2f_mAnnMlp::
 
 constexprfun ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) {
-    return ae2f_mAnnMlpLayerV(this, a);
+    return ae2f_mAnnMlpLayerV(this->_this, a);
 }
 constexprfun const ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) const {
-    return ae2f_mAnnMlpLayerV(this, a, const);
+    return ae2f_mAnnMlpLayerV(this->_this, a, const);
 }
 
+#undef ae2f_TMP
+
+
+#define ae2f_TMP ae2f_AnnMlp::
+inline ae2f_TMP ~ae2f_AnnMlp() {
+    ae2f_AnnSlpClean(&this->Slp);
+}
 #undef ae2f_TMP

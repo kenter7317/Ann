@@ -3,12 +3,12 @@
 #include "CLCode/Size/ae2f_float_t.auto.h"
 #include "CLCode/Size/cl_mem.auto.h"
 
-static ae2f_AnnSpPredict_t Predict;
-static ae2f_AnnSpTrain_t Train;
-static ae2f_AnnSpClean_t Clean;
+static ae2f_mAnnSpPredict_t Predict;
+static ae2f_mAnnSpTrain_t Train;
+static ae2f_mAnnSpClean_t Clean;
 
 static ae2f_err_t Predict(
-    const ae2f_AnnSp *_this, 
+    const ae2f_mAnnSp *_this, 
     const ae2f_float_t *in, 
     ae2f_float_t *outret_opt
 ) {
@@ -54,7 +54,7 @@ static ae2f_err_t Predict(
 #include "./CLCode/uf.h"
 
 static ae2f_err_t Train(
-    ae2f_AnnSp *_this, 
+    ae2f_mAnnSp *_this, 
     const ae2f_float_t *in, 
     const ae2f_float_t *delta_optA, 
     ae2f_float_t goal_optB, 
@@ -75,7 +75,7 @@ static ae2f_err_t Train(
     if(er) return er;
 
     *uf.F *= learningrate;
-    *ae2f_AnnSpB(_this) += *uf.F;
+    *ae2f_mAnnSpB(_this) += *uf.F;
 
     cl_mem _W = *ae2fCL_AnnSpWCl(_this), _IO = *ae2fCL_AnnSpIOCl(_this);
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpTrain];
@@ -106,7 +106,7 @@ static ae2f_err_t Train(
         ae2fCL_Ann.Q, _W, 
         CL_TRUE, 0, 
         _this->inc * sizeof(ae2f_float_t), 
-        ae2f_AnnSpW(_this), 
+        ae2f_mAnnSpW(_this), 
         0, 0, 0
     )) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
@@ -128,13 +128,13 @@ size_t ae2fCL_AnnSpInit(
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 
-    ae2f_AnnSpInit(perc_opt, icount, w_opt, Act, CalDelta, &err, off_opt);
+    ae2f_mAnnSpInit(perc_opt, icount, w_opt, Act, CalDelta, &err, off_opt);
     if(err) goto END;
 
     *ae2fCL_AnnSpWCl(perc_opt) = clCreateBuffer(
         ae2fCL_Ann.Ctx, 
         CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
-        ae2f_float_t_SIZE * icount, ae2f_AnnSpW(perc_opt),
+        ae2f_float_t_SIZE * icount, ae2f_mAnnSpW(perc_opt),
         &err2
     );
     if(err2 != CL_SUCCESS) 
@@ -169,13 +169,13 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     cl_int* erronnfound_opt,
     size_t off_opt
 ) noexcept {
-    ae2f_AnnSp* v;
+    ae2f_mAnnSp* v;
     v = calloc(ae2fCL_AnnSpInitSz(off_opt, icount), 1);
     ae2fCL_AnnSpInit(v, icount, w_opt, Act, CalDelta, errret_opt, erronnfound_opt, off_opt);
     return v;
 }
 
-static ae2f_err_t Clean(ae2f_AnnSp* a) {
+static ae2f_err_t Clean(ae2f_mAnnSp* a) {
     if(!a) return ae2f_errGlob_PTR_IS_NULL;
     cl_int er[2];
     er[0] = clReleaseMemObject(*ae2fCL_AnnSpIOCl(a));

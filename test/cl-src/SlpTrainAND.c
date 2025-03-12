@@ -148,7 +148,7 @@ int main() {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        err2 = ae2f_AnnSpPredict(ae2f_AnnSlpPerV(Slp, 0), ins + 6, outbuff);
+        err2 = ae2f_mAnnSpPredict(ae2f_AnnSlpPerV(Slp, 0), ins + 6, outbuff);
         printf("Checking the value (SP): %f\n", outbuff[0]);
 
         printf("AND 0, 0 no good\n");

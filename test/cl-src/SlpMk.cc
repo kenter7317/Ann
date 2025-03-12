@@ -23,7 +23,7 @@ int mainc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
-    ae2f_AnnSp* Perc = 0;
+    ae2f_mAnnSp* Perc = 0;
     ae2f_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
     
@@ -45,8 +45,8 @@ int mainc() {
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *ae2f_AnnSpB(Perc), 
-        (*ae2f_AnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *ae2f_mAnnSpB(Perc), 
+        (*ae2f_mAnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
     for(size_t i = 0; i < Perc->inc; i++) 
@@ -80,7 +80,7 @@ int maincc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
-    ae2f_AnnSp* Perc = 0;
+    ae2f_mAnnSp* Perc = 0;
     ae2f_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
     
@@ -102,8 +102,8 @@ int maincc() {
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *ae2f_AnnSpB(Perc), 
-        (*ae2f_AnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *ae2f_mAnnSpB(Perc), 
+        (*ae2f_mAnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
     for(size_t i = 0; i < Perc->inc; i++) 

@@ -40,8 +40,8 @@ int mainc() {
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *ae2f_AnnSpB(Perc), 
-        (*ae2f_AnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *ae2f_mAnnSpB(Perc), 
+        (*ae2f_mAnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
     for(size_t i = 0; i < Perc->inc; i++) 
@@ -103,7 +103,7 @@ int maincc() {
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += *ae2f_AnnSpB(Perc);
+    out_checksum += *ae2f_mAnnSpB(Perc);
     out_checksum = Perc->Act(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {

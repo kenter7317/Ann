@@ -21,8 +21,11 @@ typedef ae2f_AnnSlp ae2f_mAnnMlpEl;
 
 #if ae2f_WhenCXX(!) 0
 
-struct ae2f_mAnnMlp : private ae2f_AnnSlp {
-#include "Mlp.h.cxx/Mlp.hh"
+struct ae2f_mAnnMlp {
+#include "Mlp.h.cxx/mMlp.hh"
+
+private:
+ae2f_AnnSlp _this[1];
 };
 
 #else
@@ -40,6 +43,10 @@ typedef ae2f_AnnSlp ae2f_mAnnMlp;
 typedef union ae2f_AnnMlp {
     ae2f_AnnSlp Slp;
     ae2f_mAnnMlp Mlp;
+
+    #if ae2f_WhenCXX(!)0
+    #include "Mlp.h.cxx/Mlp.hh"
+    #endif
 } ae2f_AnnMlp;
 
 /// @memberof ae2f_mAnnMlp

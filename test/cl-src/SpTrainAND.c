@@ -48,18 +48,18 @@ int main() {
     ae2fCL_AnnMkEasy(0);
 
     ae2f_err_t err2, err;
-    ae2f_AnnSp* Slp = ae2fCL_AnnSpMk(
+    ae2f_mAnnSp* Slp = ae2fCL_AnnSpMk(
         2, 0, Forward, Backward, &err2, 0, 0
     );
 
     if(err2) {
         err = err2; goto __failure;
     }
-    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_AnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
+    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
 
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnSpTrainB(
+        err2 = ae2f_mAnnSpTrainB(
             Slp, ins,
             *goals + 0, gLearningRate
         );
@@ -103,7 +103,7 @@ int main() {
     ae2f_float_t outbuff[2] = {  5 };
 
     #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
-    ae2f_AnnSpPredict(obj, inb + in_idx, (out))
+    ae2f_mAnnSpPredict(obj, inb + in_idx, (out))
 
     err2 = ae2fCL_AnnSlpPredict(
         Slp, ins, 0,
@@ -154,7 +154,7 @@ int main() {
     }
 
     __failure:
-    ae2f_AnnSpDel(Slp);
+    ae2f_mAnnSpDel(Slp);
     ae2fCL_AnnDel();
     return err | err2;
 }

@@ -20,14 +20,14 @@ static ae2f_err_t Predict(
     for(size_t i = 0; i < _this->outc; i++) {
         union {
             const size_t* pad;
-            const ae2f_AnnSp* perc;
+            const ae2f_mAnnSp* perc;
         }  layer = {ae2f_AnnSlpPerVPad(_this, const)[i]};
 
         size_t _pad = *layer.pad;
         layer.pad++;
 
         ae2f_err_t er = 
-        ae2f_AnnSpPredict(
+        ae2f_mAnnSpPredict(
             layer.perc,
             in + _pad,
             out_opt + i
@@ -57,13 +57,13 @@ static ae2f_err_t Train(
         ae2f_float_t G = goal_optB ? goal_optB[i] : 0;
         union {
             size_t* pad;
-            ae2f_AnnSp* perc;
+            ae2f_mAnnSp* perc;
         }  layer = {ae2f_AnnSlpPerVPad(_this)[i]};
 
         size_t _pad = *layer.pad;
         layer.pad++;
 
-        _er |= ae2f_AnnSpTrain(
+        _er |= ae2f_mAnnSpTrain(
             layer.perc, 
             in + _pad, 
             delta_optA, G, 
@@ -77,13 +77,13 @@ static ae2f_err_t Train(
     ae2f_float_t G = goal_optB ? goal_optB[i] : 0;
     union {
         size_t* pad;
-        ae2f_AnnSp* perc;
+        ae2f_mAnnSp* perc;
     }  layer = {ae2f_AnnSlpPerVPad(_this)[i]};
 
     size_t _pad = *layer.pad;
     layer.pad++;
 
-    _er |= ae2f_AnnSpTrain(
+    _er |= ae2f_mAnnSpTrain(
         layer.perc, 
         in + _pad, 
         delta_optA, G, 
@@ -101,10 +101,10 @@ static ae2f_err_t Clean(
 
     for(size_t i = 0; i < _this->layerc; i++) {
         const union {
-            ae2f_AnnSp* v;
+            ae2f_mAnnSp* v;
             size_t* S;
         } per = { .v = ae2f_AnnSlpPerV(_this, i)};
-        ae2f_AnnSpClean(per.v);
+        ae2f_mAnnSpClean(per.v);
         free(per.S - 1);
         
         ae2f_AnnSlpPerVPad(_this, )[i] = 0;

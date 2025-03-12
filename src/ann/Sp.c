@@ -14,8 +14,8 @@
 #include <ae2f/Ann/LcgRand.h>
 
 ae2f_SHAREDEXPORT
-size_t ae2f_AnnSpInit(
-    ae2f_AnnSp* _this,
+size_t ae2f_mAnnSpInit(
+    ae2f_mAnnSp* _this,
     size_t inc,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
@@ -42,14 +42,14 @@ size_t ae2f_AnnSpInit(
     _this->vClean = 0;
 
     if(W_opt) {
-        memcpy(ae2f_AnnSpW(_this), W_opt, sizeof(ae2f_float_t) * inc);
+        memcpy(ae2f_mAnnSpW(_this), W_opt, sizeof(ae2f_float_t) * inc);
     } else {
         uint64_t _ = ae2f_AnnLcgRandSeed.u64;
 
         for(size_t i = 0; i < _this->inc; i++) {
             _ = ae2f_AnnLcgRand(_);
             ae2f_float_t d = ae2f_AnnLcgRandDistribute(_);
-            ae2f_AnnSpW(_this)[i] = d;
+            ae2f_mAnnSpW(_this)[i] = d;
         }
         ae2f_AnnLcgRandSeed.u64 = _;
     }
@@ -57,16 +57,16 @@ size_t ae2f_AnnSpInit(
     {
         uint64_t _ = ae2f_AnnLcgRandG();
         ae2f_AnnLcgRandSeed.u64 = _;
-        *ae2f_AnnSpB(_this) = ae2f_AnnLcgRandDistribute(_);
+        *ae2f_mAnnSpB(_this) = ae2f_AnnLcgRandDistribute(_);
     }
 
     DONE:
     if(erret) *erret = er;
-    return ae2f_AnnSpInitSz(offset_opt, inc);
+    return ae2f_mAnnSpInitSz(offset_opt, inc);
 }
 
 ae2f_SHAREDEXPORT
-ae2f_AnnSp* ae2f_AnnSpMk(
+ae2f_AnnSp* ae2f_mAnnSpMk(
     size_t inc,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
@@ -76,8 +76,8 @@ ae2f_AnnSp* ae2f_AnnSpMk(
 ) {
     ae2f_AnnSp* _this = 0;
 
-    _this = calloc(ae2f_AnnSpInitSz(additional, inc), 1);
-    ae2f_AnnSpInit(_this, inc, W_opt, Act, CalDelta, erret, additional);
+    _this = calloc(ae2f_mAnnSpInitSz(additional, inc), 1);
+    ae2f_mAnnSpInit(&_this->Sp, inc, W_opt, Act, CalDelta, erret, additional);
 
     rtn:
     if(erret) *erret &= ~ae2f_errGlob_DONE_HOWEV;
