@@ -48,7 +48,7 @@ int main() {
     ae2fCL_AnnMkEasy(0);
 
     ae2f_err_t err2, err;
-    ae2f_mAnnSp* Slp = ae2fCL_AnnSpMk(
+    ae2fCL_AnnSp* Perc = ae2fCL_AnnSpMk(
         2, 0, Forward, Backward, &err2, 0, 0
     );
 
@@ -60,7 +60,7 @@ int main() {
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2f_mAnnSpTrainB(
-            Slp, ins,
+            &Perc->Sp, ins,
             *goals + 0, gLearningRate
         );
         if(err2) {
@@ -68,7 +68,7 @@ int main() {
         }
 
         err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+            &Perc->Sp, ins,
             0, 2/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, (void*)diff_got, 0,
@@ -79,7 +79,7 @@ int main() {
         }
 
         err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+            &Perc->Sp, ins,
             0, 4/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, (void*)diff_got, 0,
@@ -90,7 +90,7 @@ int main() {
         }
 
         err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+            &Perc->Sp, ins,
             0, 6/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, diff_got, 0,
@@ -106,7 +106,7 @@ int main() {
     ae2f_mAnnSpPredict(obj, inb + in_idx, (out))
 
     err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+        &Perc->Sp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -118,7 +118,7 @@ int main() {
     }
 
     err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+        &Perc->Sp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -130,7 +130,7 @@ int main() {
     }
 
     err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+        &Perc->Sp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -142,7 +142,7 @@ int main() {
     }
 
     err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+        &Perc->Sp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -154,7 +154,7 @@ int main() {
     }
 
     __failure:
-    ae2f_mAnnSpDel(Slp);
+    ae2fCL_AnnSpDel(Perc);
     ae2fCL_AnnDel();
     return err | err2;
 }

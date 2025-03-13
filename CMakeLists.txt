@@ -19,14 +19,17 @@ if(NOT TARGET ${PROJECT_NAME})
         "include/ae2f/Ann/Sp.h.c/clean.script.h"
         "include/ae2f/Ann/Sp.h.c/cleandef.h"
         "include/ae2f/Ann/Sp.h.cxx/Sp.hh"
+        "include/ae2f/Ann/Sp.h.cxx/mSp.hh"
         "include/ae2f/Ann/Sp.h.cxx/imp.hh"
 
         "include/ae2f/Ann/Slp.h"
         "include/ae2f/Ann/Slp.h.cxx/Slp.hh"
+        "include/ae2f/Ann/Slp.h.cxx/mSlp.hh"
         "include/ae2f/Ann/Slp.h.cxx/imp.hh"
 
         "include/ae2f/Ann/Mlp.h"
         "include/ae2f/Ann/Mlp.h.cxx/Mlp.hh"
+        "include/ae2f/Ann/Mlp.h.cxx/mMlp.hh"
         "include/ae2f/Ann/Mlp.h.cxx/imp.hh"
     )
     target_link_libraries(Ann-H INTERFACE Core)
@@ -78,6 +81,7 @@ if(ae2fCL_needed)
             ${PROJECT_SOURCE_DIR}/Config/CL-Ann-H.cmake.in
             "include/ae2fCL/Ann.h"
             "include/ae2fCL/Ann/Sp.h.cxx/Sp.hh"
+            "include/ae2fCL/Ann/Sp.h.cxx/mSp.hh"
             "include/ae2fCL/Ann/Sp.h.cxx/imp.hh"
             "include/ae2fCL/Ann/Sp.h"
         )

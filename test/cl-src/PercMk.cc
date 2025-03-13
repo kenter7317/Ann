@@ -34,24 +34,27 @@ int mainc() {
         Sigmoid, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
-    err = Perc->Predict(Buff, &outfloat);
+    
+    err = ae2f_mAnnSpPredict(
+        &Perc->Sp, Buff, &outfloat
+    );
 
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *ae2f_mAnnSpB(Perc), 
-        (*ae2f_mAnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *ae2f_mAnnSpB(&Perc->Sp), 
+        (*ae2f_mAnnSpB(&Perc->Sp)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < Perc->inc; i++) 
+    for(size_t i = 0; i < Perc->Sp.inc; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += *Perc->B();
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum += *ae2f_mAnnSpB(&Perc->Sp);
+    out_checksum = Perc->Sp.Act(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -86,25 +89,25 @@ int maincc() {
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    err = Perc->Predict(
+    err = Perc->Sp.Predict(
         Buff, &outfloat
     );
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *Perc->B(), 
-        (*Perc->B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *Perc->Sp.B(), 
+        (*Perc->Sp.B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < Perc->inc; i++) 
+    for(size_t i = 0; i < Perc->Sp.inc; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += *ae2f_mAnnSpB(Perc);
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum += *Perc->Sp.B();
+    out_checksum = Perc->Sp.Act(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -113,10 +116,10 @@ int maincc() {
 
     
     __failure:
+    if(Perc) delete (Perc);
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
     if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
-    if(Perc) delete (Perc);
     return err;
 }
 

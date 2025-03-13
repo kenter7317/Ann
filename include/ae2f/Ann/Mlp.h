@@ -23,9 +23,6 @@ typedef ae2f_mAnnSlp ae2f_mAnnMlpEl;
 
 struct ae2f_mAnnMlp {
 #include "Mlp.h.cxx/mMlp.hh"
-
-private:
-ae2f_mAnnSlp _this[1];
 };
 
 #else

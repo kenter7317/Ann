@@ -2,16 +2,12 @@
 
 #define ae2f_TMP
 
-constexprfun cl_mem* ae2f_TMP WCl();
-constexprfun const cl_mem* ae2f_TMP WCl() const;
+inline ae2f_TMP ~ae2fCL_AnnSp();
 
-constexprfun cl_mem* ae2f_TMP IOCl();
-constexprfun const cl_mem* ae2f_TMP IOCl() const;
+private:
 
-template<typename T>
-constexprfun const T* ae2f_TMP X() const;
- 
-template<typename T>
-constexprfun T* ae2f_TMP X();
+uint8_t _;
+constexprfun ae2fCL_AnnSp() : _(0) {}
+
 
 #undef ae2f_TMP
