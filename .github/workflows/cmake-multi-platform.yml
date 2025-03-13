@@ -14,10 +14,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ocl-icd-opencl-dev pocl-opencl-icd
 
-      - name: Verify OpenCL installation
-        run: |
-          clinfo  # Lists available OpenCL platforms and devices
-
       - name: Build project
         run: |
           # Placeholder: Replace with your build commands (e.g., make, cmake)
@@ -50,12 +46,6 @@ jobs:
           # Install silently
           Start-Process msiexec -ArgumentList "/i $output /quiet /norestart" -Wait -NoNewWindow
           Write-Host "OpenCL runtime installed"
-
-      - name: Verify OpenCL setup
-        shell: pwsh
-        run: |
-          # Placeholder: Add a verification step if you have a tool/test program
-          Write-Host "OpenCL runtime should be available (no clinfo on Windows by default)"
 
       - name: Build project
         shell: cmd
