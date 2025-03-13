@@ -46,10 +46,10 @@ int mainc() {
     );
     ae2f_float_t outbuff[2] = {  5 };
 
-    #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
+    #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     ae2f_mAnnSlpPredict(&obj->Slp, inb + in_idx, out)
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -57,7 +57,7 @@ int mainc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (1, 1)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -65,7 +65,7 @@ int mainc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (0, 0)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -73,7 +73,7 @@ int mainc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (0, 1)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -124,7 +124,7 @@ int mainc() {
 
     puts("we are going for predict");
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -136,7 +136,7 @@ int mainc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -151,7 +151,7 @@ int mainc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -163,7 +163,7 @@ int mainc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -203,11 +203,11 @@ int maincc() {
     );
     ae2f_float_t outbuff[2] = {  5 };
 
-    #undef ae2fCL_AnnSlpPredict
-    #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
+    #undef ae2fCL_mAnnSlpPredict
+    #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     (obj)->Slp.Predict(inb + in_idx, out) // ae2f_mAnnSlpPredict(obj, inb + in_idx, out)
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -215,7 +215,7 @@ int maincc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (1, 1)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -223,7 +223,7 @@ int maincc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (0, 0)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -231,7 +231,7 @@ int maincc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f (0, 1)\n", outbuff[0]);
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -243,8 +243,8 @@ int maincc() {
         err = err2; goto __failure;
     }
 
-    #undef ae2fCL_AnnSlpTrain
-    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) \
+    #undef ae2fCL_mAnnSlpTrain
+    #define ae2fCL_mAnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) \
     (obs)->Slp.TrainB(ins + in_idx, goal, learnrate) // ae2f_mAnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
 
     if(err) goto __failure;
@@ -283,7 +283,7 @@ int maincc() {
 
     puts("we are going for predict");
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -295,7 +295,7 @@ int maincc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -310,7 +310,7 @@ int maincc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -322,7 +322,7 @@ int maincc() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         Slp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context

@@ -53,9 +53,9 @@ size_t ae2fCL_AnnMlpInit(
             }* u;
         } perc = {ae2f_mAnnMlpLayerVPad(_this) + i};
 
-        perc.u->pad = calloc(ae2fCL_AnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 1);
+        perc.u->pad = calloc(ae2fCL_mAnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 1);
         perc.u->pad++;
-        ae2fCL_AnnSlpInitB(perc.u->slp, LAYERSZ_L, 0, weights_opt, actglob_opt, deltaglob_opt, LAYERSZ_R, 0, &e, &er_cl);
+        ae2fCL_mAnnSlpInitB(perc.u->slp, LAYERSZ_L, 0, weights_opt, actglob_opt, deltaglob_opt, LAYERSZ_R, 0, &e, &er_cl);
         if(er_cl) err2 = er_cl;
 
         *(--perc.u->pad) = 0;

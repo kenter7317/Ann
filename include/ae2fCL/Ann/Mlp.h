@@ -33,8 +33,6 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
     cl_int* errnfound_opt
 ) noexcept;
 
-#define ae2fCL_AnnMlpInitSz ae2f_mAnnMlpInitSz
-#define ae2fCL_AnnMlpDel    ae2f_mAnnMlpDel
-#define ae2fCL_AnnMlpClean  ae2f_mAnnMlpClean
+#define ae2fCL_mAnnMlpInitSz ae2f_mAnnMlpInitSz
 
 #endif

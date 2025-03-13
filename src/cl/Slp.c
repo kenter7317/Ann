@@ -39,7 +39,7 @@ ae2f_err_t TrainCL(
 
 	cl_int err = 0, err2 = 0;
 
-	ae2fCL_AnnSlpMemX* memx = ae2fCL_AnnSlpAdd(_this);
+	ae2fCL_mAnnSlpMemX* memx = ae2fCL_mAnnSlpAdd(_this);
 
 	const size_t 
 		WORKSZ[2] = { _this->inc, _this->outc },
@@ -48,10 +48,12 @@ ae2f_err_t TrainCL(
 #define IC WORKSZ[0]
 #define OC WORKSZ[1]
 
-	ae2f_float_t* PREDICTED_BUFF = ae2fCL_AnnSlpOutCache(_this);
+	ae2f_float_t* PREDICTED_BUFF = ae2fCL_mAnnSlpOutCache(_this);
 
+	#if 0
 	if(!(PREDICTED_BUFF = calloc(OC, sizeof(ae2f_float_t))))
 		return(ae2f_errGlob_ALLOC_FAILED);
+	#endif
 
 
 	if(delta_optA) {
@@ -248,7 +250,7 @@ ae2f_err_t PredictCL(
 
 	cl_int err = 0, err2 = 0;
 	ae2f_err_t code = 0;
-	ae2fCL_AnnSlpMemX* __X = ae2fCL_AnnSlpAdd(_);
+	ae2fCL_mAnnSlpMemX* __X = ae2fCL_mAnnSlpAdd(_);
 	const cl_kernel KERNEL = ae2fCL_AnnKerns[ae2fCL_eAnnKernsSlpPredict];
 
 	if(!__X->In) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_ALLOC_FAILED;
@@ -393,7 +395,7 @@ _DONE:
 static ae2f_mAnnSlpClean_t CleanCL;
 
 ae2f_SHAREDEXPORT
-size_t ae2fCL_AnnSlpInit(
+size_t ae2fCL_mAnnSlpInit(
     ae2f_mAnnSlp* _this,
     const size_t* incs_optA,
     size_t ginc_optB,
@@ -455,7 +457,7 @@ size_t ae2fCL_AnnSlpInit(
         }
     }
 
-    ae2fCL_AnnSlpAdd(_this)->In = 
+    ae2fCL_mAnnSlpAdd(_this)->In = 
 	    	clCreateBuffer(
 				ae2fCL_Ann.Ctx, 
 				CL_MEM_READ_WRITE, 
@@ -463,7 +465,7 @@ size_t ae2fCL_AnnSlpInit(
 				NULL, &v2
 		);
 
-    ae2fCL_AnnSlpAdd(_this)->Changed = 1;
+    ae2fCL_mAnnSlpAdd(_this)->Changed = 1;
 
     if(CL_SUCCESS != v2) V = v2;
 
@@ -471,14 +473,14 @@ size_t ae2fCL_AnnSlpInit(
     DONE:
     if(err_opt) *err_opt = er;
     if(errnfound_opt) *errnfound_opt = V;
-    return ae2fCL_AnnSlpInitSz(outc, offset_opt);
+    return ae2fCL_mAnnSlpInitSz(outc, offset_opt);
 }
 
 static ae2f_err_t CleanCL(ae2f_mAnnSlp* _) {
 	ae2f_err_t e = 0;
-	if(_ && ae2fCL_AnnSlpAdd(_)->In) {
+	if(_ && ae2fCL_mAnnSlpAdd(_)->In) {
 		if((ae2fCL_Ann.LErr = clReleaseMemObject(
-				ae2fCL_AnnSlpAdd(_)->In
+				ae2fCL_mAnnSlpAdd(_)->In
 				)))
 		{
 			e = 
@@ -491,7 +493,7 @@ static ae2f_err_t CleanCL(ae2f_mAnnSlp* _) {
 }
 
 ae2f_SHAREDEXPORT
-ae2f_mAnnSlp* ae2fCL_AnnSlpMk(
+ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -503,11 +505,11 @@ ae2f_mAnnSlp* ae2fCL_AnnSlpMk(
     ae2f_err_t* err_opt,
     cl_int* err_nfound_opt
 ) noexcept {
-    ae2f_mAnnSlp* rtn = calloc(ae2fCL_AnnSlpInitSz(outc, offset_opt), 1);
+    ae2fCL_AnnSlp* rtn = calloc(ae2fCL_mAnnSlpInitSz(outc, offset_opt), 1);
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 
-    ae2fCL_AnnSlpInit(rtn, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, 0, &err, &err2);
+    ae2fCL_mAnnSlpInit(&rtn->CL_Slp, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, 0, &err, &err2);
 
     if(err_opt) *err_opt = err;
     if(err_nfound_opt) *err_nfound_opt = err2;

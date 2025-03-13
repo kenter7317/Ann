@@ -80,10 +80,16 @@ if(ae2fCL_needed)
             include ae2fCL
             ${PROJECT_SOURCE_DIR}/Config/CL-Ann-H.cmake.in
             "include/ae2fCL/Ann.h"
+            
             "include/ae2fCL/Ann/Sp.h.cxx/Sp.hh"
             "include/ae2fCL/Ann/Sp.h.cxx/mSp.hh"
             "include/ae2fCL/Ann/Sp.h.cxx/imp.hh"
             "include/ae2fCL/Ann/Sp.h"
+
+            "include/ae2fCL/Ann/Slp.h.cxx/Slp.hh"
+            "include/ae2fCL/Ann/Slp.h.cxx/mSlp.hh"
+            "include/ae2fCL/Ann/Slp.h.cxx/imp.hh"
+            "include/ae2fCL/Ann/Slp.h"
         )
 
         ae2f_RulerMeasure(

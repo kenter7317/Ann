@@ -24,7 +24,7 @@ int mainc() {
     };
 
     ae2f_mAnnSp* Perc = 0;
-    ae2f_mAnnSlp* SLP;
+    ae2fCL_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
     
     err = ae2fCL_AnnMkEasy(errcl);
@@ -36,10 +36,10 @@ int mainc() {
         &err, errcl
     );
 
-    Perc = ae2f_mAnnSlpPerV(SLP, 0);
+    Perc = ae2f_mAnnSlpPerV(&SLP->Slp, 0);
 
     CHECK_ERR(err, CL_SUCCESS, __failure);
-    err = SLP->Predict(Buff, &outfloat);
+    err = ae2f_mAnnSlpPredict(&SLP->Slp, Buff, &outfloat);
 
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
@@ -65,7 +65,7 @@ int mainc() {
     }
 
     __failure:
-    if(SLP) ae2f_mAnnSlpDel(SLP);
+    if(SLP) ae2fCL_AnnSlpDel(SLP);
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
     if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
@@ -81,7 +81,7 @@ int maincc() {
     };
 
     ae2f_mAnnSp* Perc = 0;
-    ae2f_mAnnSlp* SLP;
+    ae2fCL_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
     
     err = ae2fCL_AnnMkEasy(errcl);
@@ -93,10 +93,10 @@ int maincc() {
         &err, errcl
     );
 
-    Perc = ae2f_mAnnSlpPerV(SLP, 0);
+    Perc = SLP->Slp.Perc(0);
 
     CHECK_ERR(err, CL_SUCCESS, __failure);
-    err = SLP->Predict(Buff, &outfloat);
+    err = SLP->Slp.Predict(Buff, &outfloat);
 
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
@@ -122,7 +122,7 @@ int maincc() {
     }
 
     __failure:
-    if(SLP) ae2f_mAnnSlpDel(SLP);
+    if(SLP) delete SLP;
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
     if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);

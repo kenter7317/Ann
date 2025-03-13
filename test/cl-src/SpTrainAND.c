@@ -55,7 +55,7 @@ int main() {
     if(err2) {
         err = err2; goto __failure;
     }
-    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
+    #define ae2fCL_mAnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
 
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
@@ -67,7 +67,7 @@ int main() {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_mAnnSlpTrain(
             &Perc->Sp, ins,
             0, 2/*in_idx*/,
             0, goals + 2, gLearningRate, 
@@ -78,7 +78,7 @@ int main() {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_mAnnSlpTrain(
             &Perc->Sp, ins,
             0, 4/*in_idx*/,
             0, goals + 2, gLearningRate, 
@@ -89,7 +89,7 @@ int main() {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
+        err2 = ae2fCL_mAnnSlpTrain(
             &Perc->Sp, ins,
             0, 6/*in_idx*/,
             0, goals + 2, gLearningRate, 
@@ -102,10 +102,10 @@ int main() {
     }
     ae2f_float_t outbuff[2] = {  5 };
 
-    #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
+    #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     ae2f_mAnnSpPredict(obj, inb + in_idx, (out))
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         &Perc->Sp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -117,7 +117,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         &Perc->Sp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -129,7 +129,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         &Perc->Sp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
@@ -141,7 +141,7 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
+    err2 = ae2fCL_mAnnSlpPredict(
         &Perc->Sp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
