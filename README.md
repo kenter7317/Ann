@@ -1,5 +1,5 @@
 # Ann
-> Rel-v0.0.0
+> Rel-v1.0.0
 
 ANN interfaces with basic implementation for example.
 
@@ -14,7 +14,7 @@ ANN interfaces with basic implementation for example.
 - cmake
 
 # CL-Ann
-> Rel-v2.1.0
+> Rel-v3.1.0
 
 A simple ann project with opencl written in C.
 

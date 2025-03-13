@@ -6,7 +6,7 @@
 
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2fCL_AnnMlpInit(
-    ae2f_AnnMlp* _this,
+    ae2f_mAnnMlp* _this,
     size_t layerc,
     size_t add_opt,
     const size_t* layerlenv,
@@ -33,8 +33,6 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
     cl_int* errnfound_opt
 ) noexcept;
 
-#define ae2fCL_AnnMlpInitSz ae2f_AnnMlpInitSz
-#define ae2fCL_AnnMlpDel    ae2f_AnnMlpDel
-#define ae2fCL_AnnMlpClean  ae2f_AnnMlpClean
+#define ae2fCL_mAnnMlpInitSz ae2f_mAnnMlpInitSz
 
 #endif

@@ -7,7 +7,7 @@
 /// 
 /// Sum for multiplying Delta and Weight 
 static ae2f_float_t MlpTrain_HidErr(
-    const ae2f_AnnSlp* layerNxt,
+    const ae2f_mAnnSlp* layerNxt,
     const ae2f_float_t* deltasNxt,
     size_t idxThen
 ) {
@@ -15,9 +15,9 @@ static ae2f_float_t MlpTrain_HidErr(
     for(size_t i = 0; i < layerNxt->outc; i++) {
         union {
             const size_t* pad;
-            const ae2f_AnnSp* slp;
-        } perv = { .pad = ae2f_AnnSlpPerVPad(layerNxt)[i] + 1 };
-        ret += ae2f_AnnSpW(perv.slp, const)[idxThen] * deltasNxt[i];
+            const ae2f_mAnnSp* slp;
+        } perv = { .pad = ae2f_mAnnSlpPerVPad(layerNxt)[i] + 1 };
+        ret += ae2f_mAnnSpW(perv.slp, const)[idxThen] * deltasNxt[i];
     }
 
     return ret;

@@ -1,8 +1,8 @@
 #include <ann-h/Slp.h>
 
 ae2f_SHAREDEXPORT
-size_t ae2f_AnnSlpInit(
-    ae2f_AnnSlp* _this,
+size_t ae2f_mAnnSlpInit(
+    ae2f_mAnnSlp* _this,
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -35,22 +35,22 @@ size_t ae2f_AnnSlpInit(
 		_inc =  incs_optA ? incs_optA[i] : ginc_optB,
         	_pad = inpads_opt ? inpads_opt[i] : 0;
         
-        	if(!(ae2f_AnnSlpPerVPad(_this)[i]
-        		= calloc(ae2f_AnnSpInitSz(sizeof(size_t), _inc), 1))) 
+        	if(!(ae2f_mAnnSlpPerVPad(_this)[i]
+        		= calloc(ae2f_mAnnSpInitSz(sizeof(size_t), _inc), 1))) 
 		{
             		er |= ae2f_errGlob_ALLOC_FAILED;
             		continue;
 		}
 
-        	ae2f_AnnSpInit(
-				ae2f_AnnSlpPerV(_this, i),
+        	ae2f_mAnnSpInit(
+				ae2f_mAnnSlpPerV(_this, i),
 				_inc, w_opt,
 				Act, CalDelta,
 				&ertmp, 0
 		);
 
         	er |= ertmp;
-        	*(ae2f_AnnSlpPerVPad(_this)[i]) = _pad;
+        	*(ae2f_mAnnSlpPerVPad(_this)[i]) = _pad;
 
         	w_opt && (w_opt += _inc);
 
@@ -65,7 +65,7 @@ size_t ae2f_AnnSlpInit(
 #undef return
 DONE:
 	if(err) *err = er;
-	return ae2f_AnnSlpInitSz(outc, offset_opt);
+	return ae2f_mAnnSlpInitSz(outc, offset_opt);
 }
 
 ae2f_SHAREDEXPORT
@@ -81,8 +81,8 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     ae2f_err_t* err
 ) noexcept {
     ae2f_AnnSlp* _this = 0;
-    _this = calloc(ae2f_AnnSlpInitSz(outc, offset_opt), 1);
-    ae2f_AnnSlpInit(_this, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err);
+    _this = calloc(ae2f_mAnnSlpInitSz(outc, offset_opt), 1);
+    ae2f_mAnnSlpInit(&_this->Slp, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err);
     if(err) *err &= ~ae2f_errGlob_DONE_HOWEV;
     return _this;
 }
