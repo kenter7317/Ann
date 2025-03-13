@@ -63,7 +63,7 @@ int mainc() {
         goto __failure;
     }
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnSlpTrainB(
+        err2 = ae2f_mAnnSlpTrainB(
             &Mlp->Slp,
             ins, goals + 2, gLearningRate
         );
@@ -71,7 +71,7 @@ int mainc() {
             err_ae2f = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
+        err2 = ae2f_mAnnSlpTrainB(
             &Mlp->Slp, ins + 2, 
             goals, gLearningRate
         );
@@ -79,7 +79,7 @@ int mainc() {
              goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
+        err2 = ae2f_mAnnSlpTrainB(
             &Mlp->Slp, ins + 4, 
             goals, gLearningRate
         );
@@ -87,7 +87,7 @@ int mainc() {
              goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
+        err2 = ae2f_mAnnSlpTrainB(
             &Mlp->Slp, ins + 6, 
             goals + 2, gLearningRate
         );
@@ -100,7 +100,7 @@ int mainc() {
     #if 1
     puts("Predict time");
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins, outbuff
     ); if(err2) {
         goto __failure;
@@ -110,7 +110,7 @@ int mainc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 6, outbuff
     ); if(err2) {
         err2 = err2; goto __failure;
@@ -120,7 +120,7 @@ int mainc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 4, outbuff 
     ); if(err2) {
         err_ae2f = err2; goto __failure;
@@ -130,7 +130,7 @@ int mainc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 2, outbuff
     ); if(err2) {
         err_ae2f = err2; goto __failure;
@@ -143,7 +143,7 @@ int mainc() {
     #endif
 
     __failure:
-    ae2f_AnnSlpDel(&Mlp->Slp);
+    ae2f_mAnnSlpDel(&Mlp->Slp);
     printf("Something is over, code: %d\n", err_ae2f | err2);
     return err_ae2f | err2;
 }
@@ -211,7 +211,7 @@ int maincc() {
     #if 1
     puts("Predict time");
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins, outbuff
     ); if(err2) {
         goto __failure;
@@ -221,7 +221,7 @@ int maincc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 6, outbuff
     ); if(err2) {
         err2 = err2; goto __failure;
@@ -231,7 +231,7 @@ int maincc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 4, outbuff 
     ); if(err2) {
         err_ae2f = err2; goto __failure;
@@ -241,7 +241,7 @@ int maincc() {
         err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2f_AnnSlpPredict(
+    err2 = ae2f_mAnnSlpPredict(
         &Mlp->Slp, ins + 2, outbuff
     ); if(err2) {
         err_ae2f = err2; goto __failure;

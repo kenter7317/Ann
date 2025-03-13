@@ -47,7 +47,7 @@ int mainc() {
     ae2f_float_t outbuff[2] = {  5 };
 
     #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
-    ae2f_AnnSlpPredict(obj, inb + in_idx, out)
+    ae2f_mAnnSlpPredict(&obj->Slp, inb + in_idx, out)
 
     err2 = ae2fCL_AnnSlpPredict(
         Slp, ins, 0,
@@ -84,36 +84,37 @@ int mainc() {
     if(err2) {
         err = err2; goto __failure;
     }
-    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_AnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
+
+    Slp->Slp.vPredict;
 
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins,
+        err2 = ae2f_mAnnSlpTrainB(
+            &Slp->Slp, ins,
             goals + 0, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 2/*in_idx*/,
+        err2 = ae2f_mAnnSlpTrainB(
+            &Slp->Slp, ins + 2/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 4/*in_idx*/,
+        err2 = ae2f_mAnnSlpTrainB(
+            &Slp->Slp, ins + 4/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 6/*in_idx*/,
+        err2 = ae2f_mAnnSlpTrainB(
+            &Slp->Slp, ins + 6/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
@@ -143,7 +144,7 @@ int mainc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        err2 = ae2f_mAnnSpPredict(ae2f_AnnSlpPerV(Slp, 0), ins + 6, outbuff);
+        err2 = ae2f_mAnnSpPredict(ae2f_mAnnSlpPerV(&Slp->Slp, 0), ins + 6, outbuff);
         printf("Checking the value (SP): %f\n", outbuff[0]);
 
         printf("AND 0, 0 no good\n");
@@ -204,7 +205,7 @@ int maincc() {
 
     #undef ae2fCL_AnnSlpPredict
     #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
-    (obj)->Predict(inb + in_idx, out) // ae2f_AnnSlpPredict(obj, inb + in_idx, out)
+    (obj)->Slp.Predict(inb + in_idx, out) // ae2f_mAnnSlpPredict(obj, inb + in_idx, out)
 
     err2 = ae2fCL_AnnSlpPredict(
         Slp, ins, 0,
@@ -244,36 +245,35 @@ int maincc() {
 
     #undef ae2fCL_AnnSlpTrain
     #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) \
-    (obs)->TrainB(ins + in_idx, goal, learnrate) // ae2f_AnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
+    (obs)->Slp.TrainB(ins + in_idx, goal, learnrate) // ae2f_mAnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
 
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins,
-            goals + 0, gLearningRate
+        err2 = Slp->Slp.TrainB(
+            ins, goals + 0, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 2/*in_idx*/,
+        err2 = Slp->Slp.TrainB(
+            ins + 2/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 4/*in_idx*/,
+        err2 = Slp->Slp.TrainB(
+            ins + 4/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2f_AnnSlpTrainB(
-            Slp, ins + 6/*in_idx*/,
+        err2 = Slp->Slp.TrainB(
+            ins + 6/*in_idx*/,
             goals + 2, gLearningRate
         );
         if(err2) {
@@ -303,7 +303,7 @@ int maincc() {
         err = err2; goto __failure;
     } printf("Checking the value: %f\n", outbuff[0]);
     if(outbuff[0] > 0.5) {
-        err2 = ae2f_mAnnSpPredict(ae2f_AnnSlpPerV(Slp, 0), ins + 6, outbuff);
+        err2 = Slp->Slp.Perc(0)->Predict(ins + 6, outbuff);
         printf("Checking the value (SP): %f\n", outbuff[0]);
 
         printf("AND 0, 0 no good\n");

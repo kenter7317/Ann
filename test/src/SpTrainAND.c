@@ -45,7 +45,7 @@ int main() {
     ae2f_float_t diff_got[2];
 
     ae2f_err_t err2, err;
-    ae2f_mAnnSp* Slp = (ae2f_mAnnSp*)ae2f_mAnnSpMk(
+    ae2f_mAnnSp* Slp = (ae2f_mAnnSp*)ae2f_AnnSpMk(
         2, 0, Forward, Backward, &err2, 0 
     );
 

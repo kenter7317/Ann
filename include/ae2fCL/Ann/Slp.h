@@ -20,7 +20,7 @@
 
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2fCL_AnnSlpInit(
-    ae2f_AnnSlp* _this,
+    ae2f_mAnnSlp* _this,
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -41,7 +41,7 @@ ae2fCL_AnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset
 
 
 #if ae2f_WhenCXX(!) 0 
-struct ae2fCL_AnnSlp : ae2f_AnnSlp {
+struct ae2fCL_AnnSlp : ae2f_mAnnSlp {
 #include "Slp.h.cxx/Slp.hh" 
 };
 #else
@@ -51,11 +51,11 @@ struct ae2fCL_AnnSlp : ae2f_AnnSlp {
  * @brief 
  * SLP with OpenCL acceleration.
  */
-typedef ae2f_AnnSlp ae2fCL_AnnSlp;
+typedef ae2f_mAnnSlp ae2fCL_AnnSlp;
 #endif
 
 ae2f_extern ae2f_SHAREDCALL
-ae2f_AnnSlp* ae2fCL_AnnSlpMk(
+ae2f_mAnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -86,11 +86,11 @@ typedef struct ae2fCL_AnnSlpMemX {
  * @param off 
  * */
 #define ae2fCL_AnnSlpInitSz(outc, off) \
-	ae2f_AnnSlpInitSz(outc, (off) + sizeof(ae2fCL_AnnSlpMemX) + (sizeof(ae2f_float_t) * outc))
+	ae2f_mAnnSlpInitSz(outc, (off) + sizeof(ae2fCL_AnnSlpMemX) + (sizeof(ae2f_float_t) * outc))
 
 
 #define ae2fCL_AnnSlpAdd(slp, ...) \
-	ae2f_AnnSlpX(slp, ae2fCL_AnnSlpMemX*, __VA_ARGS__)
+	ae2f_mAnnSlpX(slp, ae2fCL_AnnSlpMemX*, __VA_ARGS__)
 
 #define ae2fCL_AnnSlpOutCache(slp, ...) \
 	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2fCL_AnnSlpAdd(slp, __VA_ARGS__) + 1)

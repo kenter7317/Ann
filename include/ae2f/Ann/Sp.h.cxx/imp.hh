@@ -60,10 +60,6 @@ constexprfun T* ae2f_TMP X() {
     return ae2f_mAnnSpX(this, T*, );
 }
 
-inline ae2f_TMP ~ae2f_mAnnSp() {
-    ae2f_mAnnSpClean(this);
-}
-
 constexprfun size_t ae2f_TMP sz(size_t off, size_t inc) {
     return ae2f_mAnnSpInitSz(off, inc);
 }

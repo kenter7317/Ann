@@ -24,7 +24,7 @@ ae2f_extern int mainc() {
     ae2f_mAnnSp* Perc;
     ae2f_float_t out_checksum = 0;
 
-    Perc = (ae2f_mAnnSp*)ae2f_mAnnSpMk(
+    Perc = (ae2f_mAnnSp*)ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
         Sigmoid, Sub, &err, 0
     );
@@ -71,7 +71,7 @@ int maincc() {
     ae2f_AnnSp* Perc;
     ae2f_float_t out_checksum = 0;
 
-    Perc = ae2f_mAnnSpMk(
+    Perc = ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
         Sigmoid, Sub, &err, 0
     );

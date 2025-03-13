@@ -17,7 +17,7 @@
 
 /// @brief 
 /// Element of @ref ae2f_mAnnMlp
-typedef ae2f_AnnSlp ae2f_mAnnMlpEl;
+typedef ae2f_mAnnSlp ae2f_mAnnMlpEl;
 
 #if ae2f_WhenCXX(!) 0
 
@@ -25,23 +25,23 @@ struct ae2f_mAnnMlp {
 #include "Mlp.h.cxx/mMlp.hh"
 
 private:
-ae2f_AnnSlp _this[1];
+ae2f_mAnnSlp _this[1];
 };
 
 #else
 
 /// @class ae2f_mAnnMlp
-/// @extends ae2f_AnnSlp
+/// @extends ae2f_mAnnSlp
 /// @brief 
 /// # Multi Layered Perceptron
 /// 
 /// 
-typedef ae2f_AnnSlp ae2f_mAnnMlp;
+typedef ae2f_mAnnSlp ae2f_mAnnMlp;
 
 #endif
 
 typedef union ae2f_AnnMlp {
-    ae2f_AnnSlp Slp;
+    ae2f_mAnnSlp Slp;
     ae2f_mAnnMlp Mlp;
 
     #if ae2f_WhenCXX(!)0
@@ -50,8 +50,8 @@ typedef union ae2f_AnnMlp {
 } ae2f_AnnMlp;
 
 /// @memberof ae2f_mAnnMlp
-/// @details ae2f_AnnSlpPerVPad
-#define ae2f_mAnnMlpLayerVPad ae2f_AnnSlpPerVPad
+/// @details ae2f_mAnnSlpPerVPad
+#define ae2f_mAnnMlpLayerVPad ae2f_mAnnSlpPerVPad
 
 /// @memberof ae2f_mAnnMlp
 #define ae2f_mAnnMlpLayerV(mlp, i, ...) \
@@ -64,22 +64,22 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnMlpEl*, ae2f_mAnnMlpLayerVPad(mlp, __
 /// @brief 
 /// Predict function api. \n
 /// For details see @ref ae2f_mAnnMlpPredict_t.
-typedef ae2f_AnnSlpPredict_t ae2f_mAnnMlpPredict_t;
+typedef ae2f_mAnnSlpPredict_t ae2f_mAnnMlpPredict_t;
 
 /// @brief
 /// Training function api. \n
 /// For details see @ref ae2f_mAnnMlpTrain_t
-typedef ae2f_AnnSlpTrain_t ae2f_mAnnMlpTrain_t;
+typedef ae2f_mAnnSlpTrain_t ae2f_mAnnMlpTrain_t;
 
 /// @brief 
 /// Cleaning function api.
-typedef ae2f_AnnSlpClean_t ae2f_mAnnMlpClean_t;
+typedef ae2f_mAnnSlpClean_t ae2f_mAnnMlpClean_t;
 
 /// @memberof ae2f_mAnnMlp
 /// @brief
 /// The predicted max buffer count among all perceptron's possible length of I/O.
 #define ae2f_mAnnMlpLayerBuffCount(mlp, ...) \
-ae2f_AnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
+ae2f_mAnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
 
 /// @memberof ae2f_mAnnMlp
 /// @brief
@@ -132,6 +132,10 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
     const ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;
+
+
+#define ae2f_AnnMlpClean ae2f_AnnSlpClean
+#define ae2f_AnnMlpDel ae2f_AnnSlpDel
 
 #if ae2f_WhenCXX(!) 0
 #include "Mlp.h.cxx/imp.hh"

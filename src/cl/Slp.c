@@ -13,7 +13,7 @@
 
 
 ae2f_err_t TrainCL(
-		ae2f_AnnSlp* _this,
+		ae2f_mAnnSlp* _this,
 		const ae2f_float_t* in,
 		const ae2f_float_t* delta_optA,
 		const ae2f_float_t* goal_optB,
@@ -87,7 +87,7 @@ ae2f_err_t TrainCL(
 		{
 			for(size_t i = 0; i < _this->outc; i++) {
 				const size_t 
-					* _padv = ae2f_AnnSlpPerVPad(_this, const)[i],
+					* _padv = ae2f_mAnnSlpPerVPad(_this, const)[i],
 					pad = *_padv;
 
 					const ae2f_mAnnSp* 
@@ -133,7 +133,7 @@ ae2f_err_t TrainCL(
 _BUFFSET:
 	for(size_t i = 0; i < OC; i++) {
 
-		ae2f_mAnnSp* perc = ae2f_AnnSlpPerV(_this, i);
+		ae2f_mAnnSp* perc = ae2f_mAnnSlpPerV(_this, i);
 
 		*ae2f_mAnnSpB(perc) += PREDICTED_BUFF[i] = 
 			delta_optA ?
@@ -190,7 +190,7 @@ _BUFFSET:
 #if 1
 	for(size_t i = 0; i < _this->outc; i++) {
 		size_t
-			* padv = ae2f_AnnSlpPerVPad(_this)[i]
+			* padv = ae2f_mAnnSlpPerVPad(_this)[i]
 			, pad = *padv;
 
 		ae2f_mAnnSp* perc = ae2f_reinterpret_cast(ae2f_mAnnSp*, padv + 1);
@@ -228,7 +228,7 @@ _OUT:
  * OpenCL Code for Predicting SLP.
  * */
 ae2f_err_t PredictCL(
-	const ae2f_AnnSlp* _
+	const ae2f_mAnnSlp* _
 	, const ae2f_float_t* in
 	, ae2f_float_t* out
 	) 
@@ -287,7 +287,7 @@ ae2f_err_t PredictCL(
 	{
 		for(size_t i = 0; i < _->outc; i++) {
 			const size_t 
-				* _padv = ae2f_AnnSlpPerVPad(_, const)[i],
+				* _padv = ae2f_mAnnSlpPerVPad(_, const)[i],
 				pad = *_padv;
 
 			const ae2f_mAnnSp* 
@@ -369,7 +369,7 @@ ae2f_err_t PredictCL(
 	for(size_t i = 0; i < OC; i++)
 	{
 		const ae2f_mAnnSp* 
-			perc = ae2f_AnnSlpPerV(_,i);
+			perc = ae2f_mAnnSlpPerV(_,i);
 
 		if(!perc) return(ae2f_errGlob_IMP_NOT_FOUND);
 		if(!perc->Act) return(ae2f_errGlob_IMP_NOT_FOUND);
@@ -390,11 +390,11 @@ _DONE:
 }
 
 
-static ae2f_AnnSlpClean_t CleanCL;
+static ae2f_mAnnSlpClean_t CleanCL;
 
 ae2f_SHAREDEXPORT
 size_t ae2fCL_AnnSlpInit(
-    ae2f_AnnSlp* _this,
+    ae2f_mAnnSlp* _this,
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -429,7 +429,7 @@ size_t ae2fCL_AnnSlpInit(
         _inc =  incs_optA ? incs_optA[i] : ginc_optB,
         _pad = inpads_opt ? inpads_opt[i] : 0;
 
-        ae2f_AnnSlpPerVPad(_this)[i]
+        ae2f_mAnnSlpPerVPad(_this)[i]
         = calloc(
 		ae2f_mAnnSpInitSz(
 			sizeof(size_t), _inc
@@ -437,7 +437,7 @@ size_t ae2fCL_AnnSlpInit(
 	);
 
         ae2f_mAnnSpInit(
-            ae2f_AnnSlpPerV(_this, i),
+            ae2f_mAnnSlpPerV(_this, i),
             _inc, w_opt,
             Act, CalDelta,
             &ertmp, 0
@@ -446,7 +446,7 @@ size_t ae2fCL_AnnSlpInit(
         if(v2 != CL_SUCCESS) V = v2;
 
         er |= ertmp;
-        *ae2f_AnnSlpPerVPad(_this)[i] = _pad;
+        *ae2f_mAnnSlpPerVPad(_this)[i] = _pad;
 
         w_opt && (w_opt += _inc);
 
@@ -474,7 +474,7 @@ size_t ae2fCL_AnnSlpInit(
     return ae2fCL_AnnSlpInitSz(outc, offset_opt);
 }
 
-static ae2f_err_t CleanCL(ae2f_AnnSlp* _) {
+static ae2f_err_t CleanCL(ae2f_mAnnSlp* _) {
 	ae2f_err_t e = 0;
 	if(_ && ae2fCL_AnnSlpAdd(_)->In) {
 		if((ae2fCL_Ann.LErr = clReleaseMemObject(
@@ -491,7 +491,7 @@ static ae2f_err_t CleanCL(ae2f_AnnSlp* _) {
 }
 
 ae2f_SHAREDEXPORT
-ae2f_AnnSlp* ae2fCL_AnnSlpMk(
+ae2f_mAnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -503,7 +503,7 @@ ae2f_AnnSlp* ae2fCL_AnnSlpMk(
     ae2f_err_t* err_opt,
     cl_int* err_nfound_opt
 ) noexcept {
-    ae2f_AnnSlp* rtn = calloc(ae2fCL_AnnSlpInitSz(outc, offset_opt), 1);
+    ae2f_mAnnSlp* rtn = calloc(ae2fCL_AnnSlpInitSz(outc, offset_opt), 1);
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 

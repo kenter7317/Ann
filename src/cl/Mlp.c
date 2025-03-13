@@ -49,7 +49,7 @@ size_t ae2fCL_AnnMlpInit(
 
             union {
                 size_t* pad;
-                ae2f_AnnSlp* slp;
+                ae2f_mAnnSlp* slp;
             }* u;
         } perc = {ae2f_mAnnMlpLayerVPad(_this) + i};
 

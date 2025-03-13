@@ -66,7 +66,7 @@ size_t ae2f_mAnnSpInit(
 }
 
 ae2f_SHAREDEXPORT
-ae2f_AnnSp* ae2f_mAnnSpMk(
+ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inc,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,

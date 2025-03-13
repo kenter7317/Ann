@@ -173,14 +173,14 @@ typedef union ae2f_AnnSp {
     #endif
 } ae2f_AnnSp;
 
-/// @memberof ae2f_mAnnSp
+/// @memberof ae2f_AnnSp
 /// @brief 
 /// Makes a typical( @ref ae2f_mAnnSp::expected ) perceptron.
 /// See @ref ae2f_mAnnSpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
 ae2f_extern ae2f_SHAREDCALL
-ae2f_AnnSp* ae2f_mAnnSpMk(
+ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inum,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
@@ -200,13 +200,16 @@ ae2f_AnnSp* ae2f_mAnnSpMk(
 /// Clean the class and it will try to free the pointer.
 /// @param[out] _this 
 /// Its memory will be freed.
-/// @name ae2f_AnnSlpDel
-/// @memberof ae2f_AnnSlp
+/// @name ae2f_mAnnSlpDel
+/// @memberof ae2f_mAnnSlp
 /// @param[out] _this 
 /// This memory will be freed.
 ae2f_AnnDelDef(ae2f_mAnnSp) noexcept {
     #include "Sp.h.c/clean.script.h"
 }
+
+#define ae2f_AnnSpClean(prm_Sp) ae2f_mAnnSpClean(&((prm_Sp)->Sp))
+#define ae2f_AnnSpDel(prm_Sp) ae2f_mAnnSpDel(&((prm_Sp)->Sp))
 
 /// @memberof ae2f_mAnnSp
 /// @brief 

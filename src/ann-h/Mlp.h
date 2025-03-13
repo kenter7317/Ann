@@ -23,7 +23,7 @@ static ae2f_mAnnMlpTrain_t Train;
 static ae2f_mAnnMlpClean_t Clean;
 
 static ae2f_err_t Predict (
-    const ae2f_AnnSlp* _this,
+    const ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* outret_opt
 ) noexcept {
@@ -46,11 +46,11 @@ static ae2f_err_t Predict (
     ae2f_err_t err = 0;
 
     for(size_t i = 0; i < _this->layerc; i++) {
-        const ae2f_AnnSlp* slp = ae2f_mAnnMlpLayerV(_this, i, const);
+        const ae2f_mAnnSlp* slp = ae2f_mAnnMlpLayerV(_this, i, const);
         if(i == _this->layerc - 1)
         tmpVo.F = outret_opt;
 
-        err |= ae2f_AnnSlpPredict(
+        err |= ae2f_mAnnSlpPredict(
             slp,
             tmpVi.CF, tmpVo.F
         );
@@ -62,7 +62,7 @@ static ae2f_err_t Predict (
 }
 
 static ae2f_err_t Train (
-    ae2f_AnnSlp* _this,
+    ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     const ae2f_float_t* goal_optB,
@@ -92,7 +92,7 @@ static ae2f_err_t Train (
 
 
     for(size_t i = _this->layerc - 1; i != ((size_t)-1); i--) {
-        ae2f_AnnSlp
+        ae2f_mAnnSlp
         * const LAYER = ae2f_mAnnMlpLayerV(_this, i),
         * const LAYERNXT = ae2f_mAnnMlpLayerV(_this, i + 1);
 
@@ -121,7 +121,7 @@ static ae2f_err_t Train (
             );
         }
 
-        ret |= ae2f_AnnSlpTrainA(
+        ret |= ae2f_mAnnSlpTrainA(
             LAYER,
             i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
             cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER,
@@ -146,11 +146,11 @@ static ae2f_err_t Clean(
 
             union {
                 size_t* pad;
-                ae2f_AnnSlp* slp;
+                ae2f_mAnnSlp* slp;
             }* u;
         } perc = { .unused = ae2f_mAnnMlpLayerVPad(_this) + i };
         perc.u->pad++;
-        ae2f_AnnSlpClean(perc.u->slp);
+        ae2f_mAnnSlpClean(perc.u->slp);
         free(--perc.u->pad);
         ae2f_mAnnMlpLayerVPad(_this, )[i] = 0;
     }

@@ -15,10 +15,10 @@
 #include "./Sp.h"
 #include <ae2f/Pack/Beg.h>
 
-struct ae2f_AnnSlp;
+struct ae2f_mAnnSlp;
 
 /// @brief cleaning function
-typedef ae2f_err_t ae2f_AnnSlpClean_t (ae2f_struct ae2f_AnnSlp*) noexcept;
+typedef ae2f_err_t ae2f_mAnnSlpClean_t (ae2f_struct ae2f_mAnnSlp*) noexcept;
 
 /// @brief 
 /// Predict one output from multiple inputs.
@@ -29,8 +29,8 @@ typedef ae2f_err_t ae2f_AnnSlpClean_t (ae2f_struct ae2f_AnnSlp*) noexcept;
 /// That one predicted. \n
 /// Its count is @ref ae2f_mAnnSp::inc.
 /// @return  State
-typedef ae2f_err_t ae2f_AnnSlpPredict_t (
-    const ae2f_struct ae2f_AnnSlp* _this,
+typedef ae2f_err_t ae2f_mAnnSlpPredict_t (
+    const ae2f_struct ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* outret_opt
 ) noexcept;
@@ -47,8 +47,8 @@ typedef ae2f_err_t ae2f_AnnSlpPredict_t (
 /// Desired output.
 /// @param learningrate 
 /// Learning rate
-typedef ae2f_err_t ae2f_AnnSlpTrain_t (
-    ae2f_struct ae2f_AnnSlp* _this,
+typedef ae2f_err_t ae2f_mAnnSlpTrain_t (
+    ae2f_struct ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     const ae2f_float_t* goal_optB,
@@ -56,15 +56,15 @@ typedef ae2f_err_t ae2f_AnnSlpTrain_t (
 ) noexcept;
 
 /// @brief 
-/// The element type for @ref ae2f_AnnSlp.
-typedef struct ae2f_mAnnSp ae2f_AnnSlpEl;
+/// The element type for @ref ae2f_mAnnSlp.
+typedef struct ae2f_mAnnSp ae2f_mAnnSlpEl;
 
 /// @brief 
 /// # Single Layered Perceptron
 /// 
 /// Multiple input, multiple output. \n
 /// For predicting & training operations are able to be parallel.
-typedef struct ae2f_AnnSlp {
+typedef struct ae2f_mAnnSlp {
 
     /// @brief 
     /// True when its shape is same as expected. \n
@@ -85,80 +85,80 @@ typedef struct ae2f_AnnSlp {
 
     /// @brief 
     /// Cleaning function
-    ae2f_AnnSlpClean_t* vClean;
+    ae2f_mAnnSlpClean_t* vClean;
 
     /// @brief
     /// Predict function
-    ae2f_AnnSlpPredict_t* vPredict;
+    ae2f_mAnnSlpPredict_t* vPredict;
 
     /// @brief
     /// Training function
-    ae2f_AnnSlpTrain_t* vTrain;
+    ae2f_mAnnSlpTrain_t* vTrain;
 
     #if ae2f_WhenCXX(!)0
-    #include "Slp.h.cxx/Slp.hh"
+    #include "Slp.h.cxx/mSlp.hh"
     #endif
-} ae2f_AnnSlp;
+} ae2f_mAnnSlp;
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
 /// Input padding for perceptron.
 /// 
 /// Valid when @ref ae2f_mAnnSp::expected is 1. \n
 /// When not, it is null.
-#define ae2f_AnnSlpPerVPad(slp, ...) \
+#define ae2f_mAnnSlpPerVPad(slp, ...) \
 (ae2f_CmpGetMem(slp, expected, 0) ? \
-ae2f_reinterpret_cast(__VA_ARGS__ size_t* __VA_ARGS__ *, ae2f_static_cast(__VA_ARGS__ ae2f_AnnSlp*, slp) + 1) : \
+ae2f_reinterpret_cast(__VA_ARGS__ size_t* __VA_ARGS__ *, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSlp*, slp) + 1) : \
 0)
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
 /// Perceptron vector. \n
-/// Its length is same as @ref ae2f_AnnSlp::outc.
+/// Its length is same as @ref ae2f_mAnnSlp::outc.
 ///
-/// Valid when @ref ae2f_AnnSlp::expected is 1. \n
+/// Valid when @ref ae2f_mAnnSlp::expected is 1. \n
 /// When not, it is null.
-#define ae2f_AnnSlpPerV(slp, i, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ ae2f_AnnSlpEl*, (ae2f_AnnSlpPerVPad(slp, __VA_ARGS__)[i] + 1))
+#define ae2f_mAnnSlpPerV(slp, i, ...) \
+ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnSlpEl*, (ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__)[i] + 1))
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
 /// Additional buffer allocated.
-#define ae2f_AnnSlpX(slp, type, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f_AnnSlpPerVPad(slp, __VA_ARGS__) + (slp)->layerc) : 0)
+#define ae2f_mAnnSlpX(slp, type, ...) \
+ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) + (slp)->layerc) : 0)
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
 /// Desired least byte size for initialising.
-#define ae2f_AnnSlpInitSz(outc, off) ((off) + sizeof(ae2f_AnnSlp) + (outc) * sizeof(void*))
+#define ae2f_mAnnSlpInitSz(outc, off) ((off) + sizeof(ae2f_mAnnSlp) + (outc) * sizeof(void*))
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
-/// Caller of @ref ae2f_AnnSlpPredict_t.
-#define ae2f_AnnSlpPredict ae2f_mAnnSpPredict
+/// Caller of @ref ae2f_mAnnSlpPredict_t.
+#define ae2f_mAnnSlpPredict ae2f_mAnnSpPredict
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief
-/// Caller of @ref ae2f_AnnSlpTrain_t.
-#define ae2f_AnnSlpTrain ae2f_mAnnSpTrain
+/// Caller of @ref ae2f_mAnnSlpTrain_t.
+#define ae2f_mAnnSlpTrain ae2f_mAnnSpTrain
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
-/// Caller of @ref ae2f_AnnSlpTrain_t \n
+/// Caller of @ref ae2f_mAnnSlpTrain_t \n
 /// Train with Pre-calculated delta.
-#define ae2f_AnnSlpTrainA ae2f_mAnnSpTrainA
+#define ae2f_mAnnSlpTrainA ae2f_mAnnSpTrainA
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
-/// Caller of @ref ae2f_AnnSlpTrain_t \n
+/// Caller of @ref ae2f_mAnnSlpTrain_t \n
 /// Train for desired output: goal.
-#define ae2f_AnnSlpTrainB ae2f_mAnnSpTrainB
+#define ae2f_mAnnSlpTrainB ae2f_mAnnSpTrainB
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief Cleaning function
-#define ae2f_AnnSlpClean ae2f_mAnnSpClean
+#define ae2f_mAnnSlpClean ae2f_mAnnSpClean
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
 /// @param[out] _this 
 /// Allocated raw vector.
@@ -182,10 +182,10 @@ ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f
 /// State number when needed
 /// @return 
 /// Its desired size
-/// @ref ae2f_AnnSlpInitSz(outc, offset_opt)
+/// @ref ae2f_mAnnSlpInitSz(outc, offset_opt)
 ae2f_extern ae2f_SHAREDCALL
-size_t ae2f_AnnSlpInit(
-    ae2f_AnnSlp* _this,
+size_t ae2f_mAnnSlpInit(
+    ae2f_mAnnSlp* _this,
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
@@ -197,7 +197,7 @@ size_t ae2f_AnnSlpInit(
     ae2f_err_t* err_opt
 ) noexcept;
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
 /// @param[out] _this 
 /// Allocated raw vector.
@@ -219,11 +219,11 @@ size_t ae2f_AnnSlpInit(
 /// State number when needed
 /// @return 
 /// Its desired size
-/// @ref ae2f_AnnSlpInitSz(outc, offset_opt)
-#define ae2f_AnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
-ae2f_AnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
+/// @ref ae2f_mAnnSlpInitSz(outc, offset_opt)
+#define ae2f_mAnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
+ae2f_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
 /// @param[out] _this 
 /// Allocated raw vector.
@@ -245,14 +245,21 @@ ae2f_AnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_o
 /// State number when needed
 /// @return 
 /// Its desired size
-/// @ref ae2f_AnnSlpInitSz(outc, offset_opt)
-#define ae2f_AnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
-ae2f_AnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
+/// @ref ae2f_mAnnSlpInitSz(outc, offset_opt)
+#define ae2f_mAnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
+ae2f_mAnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
+
+typedef union ae2f_AnnSlp {
+    ae2f_mAnnSlp Slp;
+    #if ae2f_WhenCXX(!) 0
+    #include "Slp.h.cxx/Slp.hh"
+    #endif 
+} ae2f_AnnSlp;
 
 /// @memberof ae2f_AnnSlp
 /// @brief 
 /// Makes a typical( @ref ae2f_mAnnSp::expected ) perceptron.
-/// See @ref ae2f_AnnSlpInit.
+/// See @ref ae2f_mAnnSlpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
 ae2f_extern ae2f_SHAREDCALL
@@ -268,34 +275,39 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     ae2f_err_t* err_opt
 ) noexcept;
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
 /// Makes a typical( @ref ae2f_mAnnSp::expected ) perceptron.
-/// See @ref ae2f_AnnSlpInit.
+/// See @ref ae2f_mAnnSlpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
 #define ae2f_AnnSlpMkA(incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
 ae2f_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
 
-/// @memberof ae2f_AnnSlp
+/// @memberof ae2f_mAnnSlp
 /// @brief 
 /// Makes a typical( @ref ae2f_mAnnSp::expected ) perceptron.
-/// See @ref ae2f_AnnSlpInit.
+/// See @ref ae2f_mAnnSlpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
 #define ae2f_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt) \
 ae2f_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt)
 
-/// @fn ae2f_AnnSlpDel
-/// @memberof ae2f_AnnSlp
+/// @fn ae2f_mAnnSlpDel
+/// @memberof ae2f_mAnnSlp
 /// @param[out] _this 
 /// This memory will be freed.
-ae2f_AnnDelDef(ae2f_AnnSlp) noexcept {
+ae2f_AnnDelDef(ae2f_mAnnSlp) noexcept {
     #include "Sp.h.c/clean.script.h"
 }
+
+#define ae2f_AnnSlpClean(prm_Slp) ae2f_mAnnSlpClean(&(prm_Slp)->Slp)
+#define ae2f_AnnSlpDel(prm_Slp) ae2f_mAnnSlpDel(&(prm_Slp)->Slp)
 
 #if ae2f_WhenCXX(!)0
 #include "Slp.h.cxx/imp.hh"
 #endif
+
+#include <ae2f/Pack/End.h>
 
 #endif

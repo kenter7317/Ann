@@ -16,4 +16,7 @@
 #define ae2f_TMP
 constexprfun ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a);
 constexprfun const ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) const;
+
+constexprfun size_t* ae2f_TMP PercPad(size_t);
+constexprfun const size_t* ae2f_TMP PercPad(size_t) const;
 #undef ae2f_TMP

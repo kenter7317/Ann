@@ -43,19 +43,19 @@ size_t ae2f_mAnnMlpInit(
 
             union {
                 size_t* pad;
-                ae2f_AnnSlp* slp;
+                ae2f_mAnnSlp* slp;
             }* u;
         } perc = {
             ae2f_mAnnMlpLayerVPad(_this) + i
         };
 
         perc.u->pad = calloc(
-            ae2f_AnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 
+            ae2f_mAnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 
             1
         );
 
         perc.u->pad++;
-        ae2f_AnnSlpInitB(
+        ae2f_mAnnSlpInitB(
             perc.u->slp, LAYERSZ_L, 
             0, weights_opt, 
             actglob_opt, deltaglob_opt, 

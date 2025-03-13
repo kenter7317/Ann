@@ -23,9 +23,9 @@ static ae2f_err_t MlpTrain_Predict(
     ae2f_err_t err = 0;
 
     for(size_t i = 0; i < _this->layerc; i++) {
-        const ae2f_AnnSlp* slp = ae2f_mAnnMlpLayerV(_this, i, const);
+        const ae2f_mAnnSlp* slp = ae2f_mAnnMlpLayerV(_this, i, const);
 
-        err |= ae2f_AnnSlpPredict(
+        err |= ae2f_mAnnSlpPredict(
             slp,
             tmpVi.CF, tmpVo.F
         );
