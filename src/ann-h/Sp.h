@@ -18,15 +18,15 @@
 #include <ae2f/Ann/Sp.h>
 #include <stdio.h>
 
-#define ae2f_AnnSpPredictI(_this, in, i, ...) (ae2f_AnnSpW(_this, __VA_ARGS__ const)[i] * (in)[i])
-#define ae2f_AnnSpTrainI(_this, in, i, ...) (ae2f_AnnSpW(_this, __VA_ARGS__)[i] += _delta * (in)[i])
+#define ae2f_mAnnSpPredictI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__ const)[i] * (in)[i])
+#define ae2f_mAnnSpTrainI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__)[i] += _delta * (in)[i])
 
-static ae2f_AnnSpPredict_t Predict;
-static ae2f_AnnSpTrain_t Train;
+static ae2f_mAnnSpPredict_t Predict;
+static ae2f_mAnnSpTrain_t Train;
 
 static
 ae2f_err_t Predict(
-    const ae2f_AnnSp* _this,
+    const ae2f_mAnnSp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* out_opt
 ) {
@@ -36,10 +36,10 @@ ae2f_err_t Predict(
 
     ae2f_float_t sum = 0;
     for(size_t i = 0; i < _this->inc; i++) {
-        sum += ae2f_AnnSpPredictI(_this, in, i);
+        sum += ae2f_mAnnSpPredictI(_this, in, i);
     }
 
-    sum += *ae2f_AnnSpB(_this);
+    sum += *ae2f_mAnnSpB(_this);
 
     if(_this->Act) sum = (_this)->Act(sum);
 
@@ -50,7 +50,7 @@ ae2f_err_t Predict(
 
 static
 ae2f_err_t Train(
-    ae2f_AnnSp* _this,
+    ae2f_mAnnSp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     ae2f_float_t goal_optB,
@@ -67,7 +67,7 @@ ae2f_err_t Train(
     if(delta_optA) 
         _delta = *delta_optA;
     else {
-        err = ae2f_AnnSpPredict(_this, in, &_delta);
+        err = ae2f_mAnnSpPredict(_this, in, &_delta);
         if(err) goto __DONE;
         _delta = _this->CalDelta(_delta, goal_optB);
     }
@@ -75,10 +75,10 @@ ae2f_err_t Train(
     _delta *= learningrate;
 
     for(size_t i = 0; i < _this->inc; i++) {
-        ae2f_AnnSpW(_this, )[i] += _delta * in[i];
+        ae2f_mAnnSpW(_this, )[i] += _delta * in[i];
     }
     
-    *ae2f_AnnSpB(_this) += _delta;
+    *ae2f_mAnnSpB(_this) += _delta;
 
     __DONE:
     return err;

@@ -11,13 +11,27 @@
  * 
  */
 
+#define ae2f_TMP ae2f_mAnnMlp::
+
+constexprfun ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) {
+    return ae2f_mAnnMlpLayerV(this->_this, a);
+}
+constexprfun const ae2f_mAnnMlpEl* ae2f_TMP Perc(size_t a) const {
+    return ae2f_mAnnMlpLayerV(this->_this, a, const);
+}
+
+constexprfun size_t* ae2f_TMP PercPad(size_t a) {
+    return ae2f_mAnnMlpLayerVPad(this->_this)[a];
+}
+constexprfun const size_t* ae2f_TMP PercPad(size_t a) const {
+    return ae2f_mAnnMlpLayerVPad(this->_this, const)[a];
+}
+
+#undef ae2f_TMP
+
+
 #define ae2f_TMP ae2f_AnnMlp::
-
-constexprfun ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) {
-    return ae2f_AnnMlpLayerV(this, a);
+inline ae2f_TMP ~ae2f_AnnMlp() {
+    ae2f_AnnMlpClean(this);
 }
-constexprfun const ae2f_AnnMlpEl* ae2f_TMP Perc(size_t a) const {
-    return ae2f_AnnMlpLayerV(this, a, const);
-}
-
 #undef ae2f_TMP

@@ -18,12 +18,12 @@
 #include "Mlp/Predict.h"
 #include <stdio.h>
 
-static ae2f_AnnMlpPredict_t Predict;
-static ae2f_AnnMlpTrain_t Train;
-static ae2f_AnnMlpClean_t Clean;
+static ae2f_mAnnMlpPredict_t Predict;
+static ae2f_mAnnMlpTrain_t Train;
+static ae2f_mAnnMlpClean_t Clean;
 
 static ae2f_err_t Predict (
-    const ae2f_AnnSlp* _this,
+    const ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     ae2f_float_t* outret_opt
 ) noexcept {
@@ -31,7 +31,7 @@ static ae2f_err_t Predict (
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!outret_opt) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL;
 
-    size_t A = *ae2f_AnnMlpLayerBuffCount(_this, const);
+    size_t A = *ae2f_mAnnMlpLayerBuffCount(_this, const);
 
     union {
         const ae2f_float_t* CF;
@@ -39,18 +39,18 @@ static ae2f_err_t Predict (
         uintptr_t P;
     }
     tmpVi = { in }, 
-    tmpVo = { *ae2f_AnnMlpCache(_this, const) };
+    tmpVo = { *ae2f_mAnnMlpCache(_this, const) };
 
     if(!tmpVo.P) return ae2f_errGlob_ALLOC_FAILED | ae2f_errGlob_PTR_IS_NULL;
 
     ae2f_err_t err = 0;
 
     for(size_t i = 0; i < _this->layerc; i++) {
-        const ae2f_AnnSlp* slp = ae2f_AnnMlpLayerV(_this, i, const);
+        const ae2f_mAnnSlp* slp = ae2f_mAnnMlpLayerV(_this, i, const);
         if(i == _this->layerc - 1)
         tmpVo.F = outret_opt;
 
-        err |= ae2f_AnnSlpPredict(
+        err |= ae2f_mAnnSlpPredict(
             slp,
             tmpVi.CF, tmpVo.F
         );
@@ -62,7 +62,7 @@ static ae2f_err_t Predict (
 }
 
 static ae2f_err_t Train (
-    ae2f_AnnSlp* _this,
+    ae2f_mAnnSlp* _this,
     const ae2f_float_t* in,
     const ae2f_float_t* delta_optA,
     const ae2f_float_t* goal_optB,
@@ -71,13 +71,13 @@ static ae2f_err_t Train (
     ae2f_err_t ret = 0;
     #define return(n) { ret |= n; goto RET; }
     const size_t
-    MAXBUFFCOUNT_FOR_LAYER = *ae2f_AnnMlpLayerBuffCount(_this),
+    MAXBUFFCOUNT_FOR_LAYER = *ae2f_mAnnMlpLayerBuffCount(_this),
     SkipInput = MAXBUFFCOUNT_FOR_LAYER * _this->layerc;
 
     #define _cache_ALLOCCOUNT SkipInput * 3
     #define _cache_SIZE sizeof(ae2f_float_t)
 
-    ae2f_float_t* const _cache = *ae2f_AnnMlpCache(_this);
+    ae2f_float_t* const _cache = *ae2f_mAnnMlpCache(_this);
     #define _cache_Out _cache
 
     if(!_cache) return(ae2f_errGlob_ALLOC_FAILED);
@@ -92,9 +92,9 @@ static ae2f_err_t Train (
 
 
     for(size_t i = _this->layerc - 1; i != ((size_t)-1); i--) {
-        ae2f_AnnSlp
-        * const LAYER = ae2f_AnnMlpLayerV(_this, i),
-        * const LAYERNXT = ae2f_AnnMlpLayerV(_this, i + 1);
+        ae2f_mAnnSlp
+        * const LAYER = ae2f_mAnnMlpLayerV(_this, i),
+        * const LAYERNXT = ae2f_mAnnMlpLayerV(_this, i + 1);
 
         if(i == _this->layerc - 1) {
             if (delta_optA)
@@ -121,7 +121,7 @@ static ae2f_err_t Train (
             );
         }
 
-        ret |= ae2f_AnnSlpTrainA(
+        ret |= ae2f_mAnnSlpTrainA(
             LAYER,
             i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
             cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER,
@@ -136,26 +136,27 @@ static ae2f_err_t Train (
 }
 
 static ae2f_err_t Clean(
-    ae2f_AnnMlp* _this
+    ae2f_mAnnMlp* _this
 ) noexcept {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
 
-    for(size_t i = 0; i < _this->layerc - 1; i++) {
+    for(size_t i = 0; i < _this->layerc; i++) {
         union {
             size_t** unused;
 
             union {
                 size_t* pad;
-                ae2f_AnnSlp* slp;
+                ae2f_mAnnSlp* slp;
             }* u;
-        } perc = { .unused = ae2f_AnnMlpLayerVPad(_this) + i };
+        } perc = { .unused = ae2f_mAnnMlpLayerVPad(_this) + i };
         perc.u->pad++;
-        ae2f_AnnSlpClean(perc.u->slp);
+        ae2f_mAnnSlpClean(perc.u->slp);
         free(--perc.u->pad);
-        ae2f_AnnMlpLayerVPad(_this, )[i] = 0;
+        ae2f_mAnnMlpLayerVPad(_this, )[i] = 0;
     }
 
-    if(*ae2f_AnnMlpCache(_this)) free(*ae2f_AnnMlpCache(_this));
+    if(*ae2f_mAnnMlpCache(_this)) 
+    free(*ae2f_mAnnMlpCache(_this));
 
     _this->inc = 0;
     _this->outc = 0;

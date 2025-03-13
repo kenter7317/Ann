@@ -21,16 +21,16 @@ ae2f_extern int mainc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
-    ae2f_AnnSp* Perc;
+    ae2f_mAnnSp* Perc;
     ae2f_float_t out_checksum = 0;
 
-    Perc = ae2f_AnnSpMk(
+    Perc = (ae2f_mAnnSp*)ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
         Sigmoid, Sub, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
 
-    err = ae2f_AnnSpPredict(
+    err = ae2f_mAnnSpPredict(
         Perc, Buff, &outfloat
     );
     
@@ -38,8 +38,8 @@ ae2f_extern int mainc() {
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *ae2f_AnnSpB(Perc), 
-        (*ae2f_AnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *ae2f_mAnnSpB(Perc), 
+        (*ae2f_mAnnSpB(Perc)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
     for(size_t i = 0; i < Perc->inc; i++) 
@@ -48,7 +48,7 @@ ae2f_extern int mainc() {
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += *ae2f_AnnSpB(Perc);
+    out_checksum += *ae2f_mAnnSpB(Perc);
     out_checksum = Perc->Act(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
@@ -57,7 +57,7 @@ ae2f_extern int mainc() {
     }
 
     __failure:
-    ae2f_AnnSpDel(Perc);
+    ae2f_mAnnSpDel(Perc);
     return err;
 }
 
@@ -77,7 +77,7 @@ int maincc() {
     );
     CHECK_ERR(err, 0, __failure);
 
-    err = Perc->Predict(
+    err = Perc->Sp.Predict(
         Buff, &outfloat
     );
     
@@ -85,18 +85,18 @@ int maincc() {
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
-        *Perc->B(), 
-        (*Perc->B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
+        *Perc->Sp.B(), 
+        (*Perc->Sp.B()) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
-    for(size_t i = 0; i < Perc->inc; i++) 
+    for(size_t i = 0; i < Perc->Sp.inc; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
     }
-    out_checksum += *Perc->B();
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum += *Perc->Sp.B();
+    out_checksum = Perc->Sp.Act(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");

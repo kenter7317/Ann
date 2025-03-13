@@ -48,27 +48,27 @@ int main() {
     ae2fCL_AnnMkEasy(0);
 
     ae2f_err_t err2, err;
-    ae2f_AnnSp* Slp = ae2fCL_AnnSpMk(
+    ae2fCL_AnnSp* Perc = ae2fCL_AnnSpMk(
         2, 0, Forward, Backward, &err2, 0, 0
     );
 
     if(err2) {
         err = err2; goto __failure;
     }
-    #define ae2fCL_AnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_AnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
+    #define ae2fCL_mAnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSpTrainB(obj, ins + in_idx, *(goal), learnrate)
 
     if(err) goto __failure;
     for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_AnnSpTrainB(
-            Slp, ins,
+        err2 = ae2f_mAnnSpTrainB(
+            &Perc->Sp, ins,
             *goals + 0, gLearningRate
         );
         if(err2) {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+        err2 = ae2fCL_mAnnSlpTrain(
+            &Perc->Sp, ins,
             0, 2/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, (void*)diff_got, 0,
@@ -78,8 +78,8 @@ int main() {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+        err2 = ae2fCL_mAnnSlpTrain(
+            &Perc->Sp, ins,
             0, 4/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, (void*)diff_got, 0,
@@ -89,8 +89,8 @@ int main() {
             err = err2; goto __failure;
         }
 
-        err2 = ae2fCL_AnnSlpTrain(
-            Slp, ins,
+        err2 = ae2fCL_mAnnSlpTrain(
+            &Perc->Sp, ins,
             0, 6/*in_idx*/,
             0, goals + 2, gLearningRate, 
             0, diff_got, 0,
@@ -102,11 +102,11 @@ int main() {
     }
     ae2f_float_t outbuff[2] = {  5 };
 
-    #define ae2fCL_AnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
-    ae2f_AnnSpPredict(obj, inb + in_idx, (out))
+    #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
+    ae2f_mAnnSpPredict(obj, inb + in_idx, (out))
 
-    err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+    err2 = ae2fCL_mAnnSlpPredict(
+        &Perc->Sp, ins, 0,
         0/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -117,8 +117,8 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+    err2 = ae2fCL_mAnnSlpPredict(
+        &Perc->Sp, ins, 0,
         6/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -129,8 +129,8 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+    err2 = ae2fCL_mAnnSlpPredict(
+        &Perc->Sp, ins, 0,
         4/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -141,8 +141,8 @@ int main() {
         err = ae2f_errGlob_IMP_NOT_FOUND;
     }
 
-    err2 = ae2fCL_AnnSlpPredict(
-        Slp, ins, 0,
+    err2 = ae2fCL_mAnnSlpPredict(
+        &Perc->Sp, ins, 0,
         2/*in_idx*/, 0, outbuff, 
         queue, CL_TRUE, 0, 0, 0, context
     ); if(err2) {
@@ -154,7 +154,7 @@ int main() {
     }
 
     __failure:
-    ae2f_AnnSpDel(Slp);
+    ae2fCL_AnnSpDel(Perc);
     ae2fCL_AnnDel();
     return err | err2;
 }

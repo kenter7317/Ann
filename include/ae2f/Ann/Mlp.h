@@ -16,101 +16,80 @@
 #include <ae2f/Pack/Beg.h>
 
 /// @brief 
-/// Element of @ref ae2f_AnnMlp
-typedef ae2f_AnnSlp ae2f_AnnMlpEl;
+/// Element of @ref ae2f_mAnnMlp
+typedef ae2f_mAnnSlp ae2f_mAnnMlpEl;
 
 #if ae2f_WhenCXX(!) 0
 
-struct ae2f_AnnMlp : ae2f_AnnSlp {
-#include "Mlp.h.cxx/Mlp.hh"
+struct ae2f_mAnnMlp {
+#include "Mlp.h.cxx/mMlp.hh"
 };
 
 #else
 
-/// @class ae2f_AnnMlp
-/// @extends ae2f_AnnSlp
+/// @class ae2f_mAnnMlp
+/// @extends ae2f_mAnnSlp
 /// @brief 
 /// # Multi Layered Perceptron
 /// 
 /// 
-typedef ae2f_AnnSlp ae2f_AnnMlp;
+typedef ae2f_mAnnSlp ae2f_mAnnMlp;
 
 #endif
-/// @memberof ae2f_AnnMlp
-/// @details ae2f_AnnSlpPerVPad
-#define ae2f_AnnMlpLayerVPad ae2f_AnnSlpPerVPad
 
-/// @memberof ae2f_AnnMlp
-#define ae2f_AnnMlpLayerV(mlp, i, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ ae2f_AnnMlpEl*, ae2f_AnnMlpLayerVPad(mlp, __VA_ARGS__)[i] + 1)
+typedef union ae2f_AnnMlp {
+    ae2f_mAnnSlp Slp;
+    ae2f_mAnnMlp Mlp;
 
-/// @memberof ae2f_AnnMlp
-#define ae2f_AnnMlpInitSz(layerc, add) \
-(sizeof(ae2f_AnnMlp) + (sizeof(void*) * ((layerc))) + (sizeof(size_t) * 1) + (add))
+    #if ae2f_WhenCXX(!)0
+    #include "Mlp.h.cxx/Mlp.hh"
+    #endif
+} ae2f_AnnMlp;
+
+/// @memberof ae2f_mAnnMlp
+/// @details ae2f_mAnnSlpPerVPad
+#define ae2f_mAnnMlpLayerVPad ae2f_mAnnSlpPerVPad
+
+/// @memberof ae2f_mAnnMlp
+#define ae2f_mAnnMlpLayerV(mlp, i, ...) \
+ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnMlpEl*, ae2f_mAnnMlpLayerVPad(mlp, __VA_ARGS__)[i] + 1)
+
+/// @memberof ae2f_mAnnMlp
+#define ae2f_mAnnMlpInitSz(layerc, add) \
+(sizeof(ae2f_mAnnMlp) + (sizeof(void*) * ((layerc))) + (sizeof(size_t) * 1) + (add))
 
 /// @brief 
 /// Predict function api. \n
-/// For details see @ref ae2f_AnnMlpPredict_t.
-typedef ae2f_AnnSlpPredict_t ae2f_AnnMlpPredict_t;
+/// For details see @ref ae2f_mAnnMlpPredict_t.
+typedef ae2f_mAnnSlpPredict_t ae2f_mAnnMlpPredict_t;
 
 /// @brief
 /// Training function api. \n
-/// For details see @ref ae2f_AnnMlpTrain_t
-typedef ae2f_AnnSlpTrain_t ae2f_AnnMlpTrain_t;
+/// For details see @ref ae2f_mAnnMlpTrain_t
+typedef ae2f_mAnnSlpTrain_t ae2f_mAnnMlpTrain_t;
 
 /// @brief 
 /// Cleaning function api.
-typedef ae2f_AnnSlpClean_t ae2f_AnnMlpClean_t;
+typedef ae2f_mAnnSlpClean_t ae2f_mAnnMlpClean_t;
 
-/// @memberof ae2f_AnnMlp
+/// @memberof ae2f_mAnnMlp
 /// @brief
 /// The predicted max buffer count among all perceptron's possible length of I/O.
-#define ae2f_AnnMlpLayerBuffCount(mlp, ...) \
-ae2f_AnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
+#define ae2f_mAnnMlpLayerBuffCount(mlp, ...) \
+ae2f_mAnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
 
-/// @memberof ae2f_AnnMlp
+/// @memberof ae2f_mAnnMlp
 /// @brief
-/// Its length is @ref (*ae2f_AnnMlpLayerBuffCount(mlp) * mlp->layerc, 3 * sizeof(ae2f_float_t)).
-#define ae2f_AnnMlpCache(mlp, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t**, ae2f_AnnMlpLayerBuffCount(mlp, __VA_ARGS__) + 1)
+/// Its length is @ref (*ae2f_mAnnMlpLayerBuffCount(mlp) * mlp->layerc, 3 * sizeof(ae2f_float_t)).
+#define ae2f_mAnnMlpCache(mlp, ...) \
+ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t**, ae2f_mAnnMlpLayerBuffCount(mlp, __VA_ARGS__) + 1)
 
-/// @memberof ae2f_AnnMlp
+/// @memberof ae2f_mAnnMlp
 /// @brief
-#define ae2f_AnnMlpX(mlp,type,...) \
-ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_AnnMlpCache(mlp, __VA_ARGS__) + 1)
+#define ae2f_mAnnMlpX(mlp,type,...) \
+ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_mAnnMlpCache(mlp, __VA_ARGS__) + 1)
 
-/// @memberof ae2f_AnnMlp
-/// @brief
-/// Predict function call. \n
-/// See @ref ae2f_AnnSlpPredict
-#define ae2f_AnnMlpPredict  ae2f_AnnSlpPredict
-
-/// @memberof ae2f_AnnMlp
-/// @brief
-/// Training function call. \n
-/// See @ref ae2f_AnnSlpTrain
-#define ae2f_AnnMlpTrain    ae2f_AnnSlpTrain
-
-/// @memberof ae2f_AnnMlp
-/// @brief
-/// See @ref ae2f_AnnSlpTrainA
-#define ae2f_AnnMlpTrainA   ae2f_AnnSlpTrainA
-
-/// @memberof ae2f_AnnMlp
-/// @brief
-/// See @ref ae2f_AnnSlpTrainB
-#define ae2f_AnnMlpTrainB   ae2f_AnnSlpTrainB
-
-/// @memberof ae2f_AnnMlp
-/// @brief
-/// Deleting function. \n
-/// We are reusing the previous definition since the process is literally saem.
-///
-/// See @ref ae2f_AnnSlpDel
-#define ae2f_AnnMlpDel      ae2f_AnnSlpDel
-#define ae2f_AnnMlpClean  ae2f_AnnSlpClean
-
-/// @memberof ae2f_AnnMlp
+/// @memberof ae2f_mAnnMlp
 /// @brief 
 /// d
 /// @param _this 
@@ -125,8 +104,8 @@ ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_AnnMlpCache(mlp, __VA_ARGS__) + 1)
 /// @param errret_opt 
 /// @return 
 ae2f_extern ae2f_SHAREDCALL
-size_t ae2f_AnnMlpInit(
-    ae2f_AnnMlp* _this,
+size_t ae2f_mAnnMlpInit(
+    ae2f_mAnnMlp* _this,
     size_t layerc,
     size_t add_opt,
     const size_t* layerlenv,
@@ -150,6 +129,10 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
     const ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;
+
+
+#define ae2f_AnnMlpClean ae2f_AnnSlpClean
+#define ae2f_AnnMlpDel ae2f_AnnSlpDel
 
 #if ae2f_WhenCXX(!) 0
 #include "Mlp.h.cxx/imp.hh"
