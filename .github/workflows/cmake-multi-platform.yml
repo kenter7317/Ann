@@ -21,6 +21,7 @@ jobs:
       - name: Build project
         run: |
           # Placeholder: Replace with your build commands (e.g., make, cmake)
+          chdir /home/runner/work/ae2f/CL-Ann
           rm -r -f build
           cd build
           cmake ..
@@ -29,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cd build
+          chdir /home/runner/work/ae2f/CL-Ann/build
           ctest
           cd ..
 
@@ -60,17 +61,18 @@ jobs:
         shell: cmd
         run: |
           # Placeholder: Replace with your build commands (e.g., MSBuild, cmake)
+          chdir C:/Users/runneradmin/work/ae2f/CL-Ann
           echo Building OpenCL project on Windows...
-          cd build
+          chdir build
           cmake ..
           cmake --build .
-          cd ..
+          chdir ..
 
       - name: Run tests
         shell: cmd
         run: |
           # Placeholder: Replace with your test commands
           echo Running tests on Windows...
-          cd build
+          chdir C:/Users/runneradmin/work/ae2f/CL-Ann/build
           ctest
-          cd ..
+          chdir ..
