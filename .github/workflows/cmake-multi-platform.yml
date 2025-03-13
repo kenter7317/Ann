@@ -17,7 +17,7 @@ jobs:
       - name: Build project
         run: |
           # Placeholder: Replace with your build commands (e.g., make, cmake)
-          chdir /home/runner/work/ae2f/CL-Ann
+          cd /home/runner/work/ae2f/CL-Ann
           rm -r -f build
           cd build
           cmake ..
@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests
         run: |
-          chdir /home/runner/work/ae2f/CL-Ann/build
+          cd /home/runner/work/ae2f/CL-Ann/build
           ctest
           cd ..
 
