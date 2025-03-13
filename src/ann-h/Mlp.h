@@ -140,7 +140,7 @@ static ae2f_err_t Clean(
 ) noexcept {
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
 
-    for(size_t i = 0; i < _this->layerc - 1; i++) {
+    for(size_t i = 0; i < _this->layerc; i++) {
         union {
             size_t** unused;
 
@@ -155,7 +155,8 @@ static ae2f_err_t Clean(
         ae2f_mAnnMlpLayerVPad(_this, )[i] = 0;
     }
 
-    if(*ae2f_mAnnMlpCache(_this)) free(*ae2f_mAnnMlpCache(_this));
+    if(*ae2f_mAnnMlpCache(_this)) 
+    free(*ae2f_mAnnMlpCache(_this));
 
     _this->inc = 0;
     _this->outc = 0;
