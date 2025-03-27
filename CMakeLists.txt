@@ -6,7 +6,7 @@ include(cmake/Core.cmake)
 
 project(MMap VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-	ae2f_CoreLibFetchX(ae2f Core Rel-v6.20.14)
+	ae2f_CoreLibFetchX(ae2f Core Rel-v6.22.15)
 
 	ae2f_CoreLibTentConfigCustom(
 		MMap-H INTERFACE
@@ -18,6 +18,7 @@ if(NOT TARGET ${PROJECT_NAME})
 		"include/ae2f/MMap/MMap.x/imp.hh"
 	)
 
+    message("LINKING: ${ae2f__Core__FETCHED}")
 	target_link_libraries(MMap-H INTERFACE ${ae2f__Core__FETCHED})
 
 	ae2f_CoreLibTentConfigCustom(
@@ -32,8 +33,8 @@ endif()
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-	ae2f_CoreLibFetchX(ae2f MMap	0.0.0)
-	ae2f_CoreLibFetchX(ae2f MMap-H	0.0.0)
+    ae2f_CoreLibFetchX(ae2f MMap-H 0.0.0)
+    ae2f_CoreLibFetchX(ae2f MMap 0.0.0)
 
     ae2f_CoreLibTentConfigCustom(
         Ann-H INTERFACE
@@ -42,7 +43,7 @@ if(NOT TARGET ${PROJECT_NAME})
         "include/ae2f/Ann/Act.h"
         "include/ae2f/Ann/LcgRand.h"
 
-	"include/ae2f/Ann/Conv.h"
+	    "include/ae2f/Ann/Conv.h"
         
         "include/ae2f/Ann/Sp.h"
         "include/ae2f/Ann/Sp.h.c/clean.script.h"
@@ -62,6 +63,8 @@ if(NOT TARGET ${PROJECT_NAME})
         "include/ae2f/Ann/Mlp.h.cxx/imp.hh"
     )
 
+    message("LINKING: ${ae2f__MMap-H__FETCHED}")
+    message("LINKING: ${ae2f__MMap__FETCHED}")
     target_link_libraries(Ann-H INTERFACE ${ae2f__MMap-H__FETCHED})
 
     ae2f_CoreLibTentConfigCustom(
@@ -81,18 +84,18 @@ if(NOT TARGET ${PROJECT_NAME})
 
     ae2f_CoreLibTentConfigCustom(
         Ann ${ae2f_LIBPREFIX}
-        include ae2f 
+        include ae2f
         ${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in
         "src/ann/LcgRand.c"
         "src/ann/Sp.c"
         "src/ann/Slp.c"
         "src/ann/Mlp.c"
-	"src/ann/Conv.c"
+	    "src/ann/Conv.c"
     )
 
     target_link_libraries(Ann PRIVATE Ann-H-Private)
     target_link_libraries(Ann PUBLIC Ann-H)
-    target_link_libraries(Ann PUBLIC ${ae2f__MMap-H__FETCHED})
+    target_link_libraries(Ann PUBLIC ${ae2f__MMap__FETCHED})
 
     if(NOT WIN32)
         target_link_libraries(Ann PUBLIC m)
@@ -104,15 +107,12 @@ endif()
 if(ae2fCL_needed)
     project(CL-Ann VERSION 3.3.0 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
-        ae2f_CoreLibFetchX(ae2f Ruler Rel-v0.1.5)
-        ae2f_CoreLibFetchX(ae2f CL-Core Rel-v4.15.21)
-        if(NOT TARGET Ann)
-	        ae2f_CoreLibFetchX(ae2f Ann 0.0.0)
-        endif()
+    ae2f_CoreLibFetchX(ae2f Ruler		Rel-v0.1.5)
+    ae2f_CoreLibFetchX(ae2f Ann 		None)
+    ae2f_CoreLibFetchX(ae2f Ann-H 		None)
+    ae2f_CoreLibFetchX(ae2f Ann-H-Private 	None)
 
-        if(NOT TARGET Ann-H)
-            ae2f_CoreLibFetchX(ae2f Ann-H 0.0.0)
-        endif()
+    ae2f_CoreLibFetchX_NS(ae2f ae2fCL CL-Core	Rel-v4.15.21)
 
         ae2f_CoreLibTentConfigCustom(
             CL-Ann-H INTERFACE
@@ -156,12 +156,12 @@ if(ae2fCL_needed)
             "src/cl/CLCode/Size/ae2f_float_t.auto.h"
             "src/cl/CLCode/Size/cl_mem.auto.h"
         )
-        target_link_libraries(CL-Ann-H INTERFACE Ann-H)
-        target_link_libraries(CL-Ann-H INTERFACE CL-Core)
+	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__Ann-H__FETCHED})
+	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__CL-Core__FETCHED})
         
-        target_link_libraries(CL-Ann PUBLIC Ann)
-        target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
-        target_link_libraries(CL-Ann PRIVATE Ann-H-Private)
+    target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
+	target_link_libraries(CL-Ann PUBLIC ${ae2f__Ann-H-Private__FETCHED})
+	target_link_libraries(CL-Ann PRIVATE ${ae2f__Ann__FETCHED})
 
         ae2fCL_CoreAppendInclude(
             ${PROJECT_SOURCE_DIR}/include

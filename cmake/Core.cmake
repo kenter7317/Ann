@@ -190,7 +190,6 @@ endfunction()
 # @param prm_TagName
 # Tag name
 function(ae2f_CoreLibFetch prm_AuthorName prm_TarName prm_TagName)
-    message("TARGET: ${prm_TarName}")
     if(NOT TARGET ${prm_TarName})
 	    if(NOT EXISTS ${ae2f_ProjRoot}/submod/${prm_AuthorName}/${prm_TarName}/CMakeLists.txt)
 	        execute_process(
@@ -214,13 +213,13 @@ function(ae2f_CoreLibFetch prm_AuthorName prm_TarName prm_TagName)
     endif()
 
     set(${prm_AuthorName}__${prm_TarName}__FETCHED ${prm_TarName} CACHE STRING ${prm_TarName})
-    message("SET: ${prm_AuthorName}__${prm_TarName}__FETCHED ${prm_TarName}")
 endfunction()
 
 
 # Fetched library will be in ${prm_AuthorName}__${prm_TarName}__FETCHED 
 function(ae2f_CoreLibFetchX prm_AuthorName prm_TarName prm_TagName)
 	find_package(${prm_TarName})
+
 	if(${prm_TarName}_FOUND)
 		set(${prm_AuthorName}__${prm_TarName}__FETCHED ${prm_AuthorName}::${prm_TarName} CACHE STRING ${prm_AuthorName}::${prm_TarName})
 	else()

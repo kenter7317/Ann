@@ -9,13 +9,20 @@
 #include <ae2f/Pack/Beg.h>
 
 typedef ae2f_err_t
-ae2f_AnnConvLayer_t(
-		const ae2f_struct ae2f_mMMap* in,
-		ae2f_struct ae2f_mMMap* out,
+ae2f_AnnConv_t(
+		const ae2f_mMMap* in,
+		ae2f_mMMap* out,
 		size_t kern,
 		size_t stride,
 		size_t pad
 		);
+
+ae2f_extern ae2f_SHAREDCALL
+ae2f_AnnConv_t 
+  ae2f_AnnConv1d
+, ae2f_AnnConv2d
+, ae2f_AnnConv3d
+, ae2f_AnnConv4d;
 
 typedef struct ae2f_mAnnConv {
 	size_t layerc;
