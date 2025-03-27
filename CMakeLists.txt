@@ -6,7 +6,7 @@ include(cmake/Core.cmake)
 
 project(MMap VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-	ae2f_CoreLibFetchX(ae2f Core Rel-v6.22.15)
+	ae2f_CoreLibFetchX(ae2f Core Rel-v6.22.17)
 
 	ae2f_CoreLibTentConfigCustom(
 		MMap-H INTERFACE
@@ -157,7 +157,7 @@ if(ae2fCL_needed)
             "src/cl/CLCode/Size/cl_mem.auto.h"
         )
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__Ann-H__FETCHED})
-	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__CL-Core__FETCHED})
+	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__ae2fCL__CL-Core__FETCHED})
         
     target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
 	target_link_libraries(CL-Ann PUBLIC ${ae2f__Ann-H-Private__FETCHED})
