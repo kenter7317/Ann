@@ -1,6 +1,5 @@
 #include <ae2f/Ann/Slp.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 static ae2f_mAnnSlpPredict_t Predict;
 static ae2f_mAnnSlpTrain_t Train;

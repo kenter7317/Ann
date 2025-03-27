@@ -16,7 +16,6 @@
 #include "Mlp/HidCompute.h"
 #include "Mlp/OutCompute.h"
 #include "Mlp/Predict.h"
-#include <stdio.h>
 
 static ae2f_mAnnMlpPredict_t Predict;
 static ae2f_mAnnMlpTrain_t Train;

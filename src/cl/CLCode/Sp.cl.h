@@ -1,6 +1,10 @@
 /// @file Sp.cl.h
 
-#include <ae2f/Float.h>
+// lowkey stdio lmao
+#define _STDIO_H
+#define ae2f_BInt_h
+
+#include <ae2f/Float.auto.h>
 #include <ae2fCL/Loc.h>
 #include "Size/cl_mem.auto.h"
 #include "Size/ae2f_float_t.auto.h"

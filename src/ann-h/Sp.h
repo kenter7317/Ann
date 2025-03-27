@@ -16,7 +16,6 @@
  * 
  */
 #include <ae2f/Ann/Sp.h>
-#include <stdio.h>
 
 #define ae2f_mAnnSpPredictI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__ const)[i] * (in)[i])
 #define ae2f_mAnnSpTrainI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__)[i] += _delta * (in)[i])

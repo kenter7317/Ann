@@ -30,7 +30,7 @@ typedef struct ae2f_mMMap {
 
 /** @breif Memory field. Indexer needed. */
 #define ae2f_mMMapField(mmap, ...) \
-	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_mMMapDimLen(mmap, __VA_ARGS__) + (mmap)->Depth)
+	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_mMMapDimLen(mmap, __VA_ARGS__) + (mmap)->dim)
 
 #include <assert.h>
 
@@ -45,10 +45,11 @@ typedef struct ae2f_mMMap {
  * Length vector.
  *
  * */
-constexprfun size_t ae2f_mMMapSz(
+ae2f_WhenC(inline static) ae2f_WhenCXX(constexpr)
+size_t ae2f_mMMapSz(
 		size_t dim, 
 		const size_t* lens
-		)
+		) noexcept
 {
 	size_t v = 1;
 
@@ -56,8 +57,8 @@ constexprfun size_t ae2f_mMMapSz(
 		return -1;
 	}
 
-	for(dim --;dim != -1; dim--) {
-		size_t L = lens[dim];
+	for(size_t _dim = dim - 1;_dim != -1; _dim--) {
+		size_t L = lens[_dim];
 
 		if(L)
 			v *= L;
@@ -67,10 +68,11 @@ constexprfun size_t ae2f_mMMapSz(
 
 	return 
 			v * sizeof(ae2f_float_t)
-		+	dim * sizeof(size_t);
+		+	(dim + 1) * sizeof(size_t);
 }
 
-constexprfun size_t ae2f_mMMapFieldIdx(
+ae2f_WhenC(inline static) ae2f_WhenCXX(constexpr)
+size_t ae2f_mMMapFieldIdx(
 		const ae2f_mMMap* mmap,
 		size_t dim,
 		const size_t* idxs
@@ -108,6 +110,7 @@ size_t ae2f_mMMapInit(
 		const size_t* lens,
 		ae2f_err_t* errret
 		) noexcept;
+
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_mMMap* ae2f_mMMapMk(

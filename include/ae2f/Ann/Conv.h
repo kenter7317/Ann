@@ -8,14 +8,16 @@
 
 #include <ae2f/Pack/Beg.h>
 
+
 typedef ae2f_err_t
 ae2f_AnnConv_t(
-		const ae2f_mMMap* in,
+		const ae2f_mMMap* in_f,
+		const ae2f_mMMap* in_g,
 		ae2f_mMMap* out,
-		size_t kern,
+		size_t* opt_retoutszrequired,
 		size_t stride,
 		size_t pad
-		);
+		) noexcept;
 
 ae2f_extern ae2f_SHAREDCALL
 ae2f_AnnConv_t 
