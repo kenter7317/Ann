@@ -8,27 +8,32 @@
 
 #include <ae2f/Pack/Beg.h>
 
-
 typedef ae2f_err_t
 ae2f_AnnConv_t(
 		const ae2f_mMMap* in_f,
 		const ae2f_mMMap* in_g,
 		ae2f_mMMap* out,
 		size_t* opt_retoutszrequired,
+		const size_t* stride,
+		const size_t* pad
+		) noexcept;
+
+ae2f_extern ae2f_SHAREDEXPORT
+ae2f_err_t
+ae2f_AnnConv1d(
+		const ae2f_float_t* infv,
+		size_t infc,
+		const ae2f_float_t* ingv,
+		size_t ingc,
+		ae2f_float_t* outv,
+		size_t* opt_outc,
 		size_t stride,
 		size_t pad
 		) noexcept;
 
-ae2f_extern ae2f_SHAREDCALL
-ae2f_AnnConv_t 
-  ae2f_AnnConv1d
-, ae2f_AnnConv2d
-, ae2f_AnnConv3d
-, ae2f_AnnConv4d;
-
 typedef struct ae2f_mAnnConv {
 	size_t layerc;
-} ae2f_AnnConv;
+} ae2f_mAnnConv;
 
 /** @brief For function pointer */
 #define ae2f_mAnnConvFpV(conv, ...) \

@@ -23,7 +23,15 @@ uint64_t Conv1dTestNoPad() {
 	ae2f_mMMapField(kernel)[1] = 0.3;
 	ae2f_mMMapField(kernel)[2] = 0.2;
 
-	ae2f_AnnConv1d(input, kernel, output, 0, stride, padding);
+	ae2f_AnnConv1d(
+			ae2f_mMMapField(input)
+			, input->dim
+
+			, ae2f_mMMapField(kernel)
+			, kernel->dim
+			, ae2f_mMMapField(output)
+			, NULL, stride, padding
+			);
 
 	ae2f_float_t 
 		matchbuff = 0
@@ -77,8 +85,17 @@ uint64_t Conv1dTestWithPad() {
 	ae2f_mMMapField(kernel)[1] = 0.3;
 	ae2f_mMMapField(kernel)[2] = 0.2;
 
+
 	// 0, 0, 1, 2, 3, 4, 5, 6, 0, 0
-	ae2f_AnnConv1d(input, kernel, output, 0, stride, padding);
+	ae2f_AnnConv1d(
+			ae2f_mMMapField(input)
+			, input->dim
+
+			, ae2f_mMMapField(kernel)
+			, kernel->dim
+			, ae2f_mMMapField(output)
+			, NULL, stride, padding
+			);
 
 	ae2f_float_t 
 		matchbuff = 0

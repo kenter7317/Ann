@@ -71,6 +71,7 @@ size_t ae2f_mMMapSz(
 		+	(dim + 1) * sizeof(size_t);
 }
 
+// 1, 2, ..... n
 ae2f_WhenC(inline static) ae2f_WhenCXX(constexpr)
 size_t ae2f_mMMapFieldIdx(
 		const ae2f_mMMap* mmap,
@@ -80,23 +81,24 @@ size_t ae2f_mMMapFieldIdx(
 {
 	if(!idxs) return -1;
 	if(!mmap) return -1;
-	if(dim >= mmap->dim) dim = mmap->dim;
+	if(dim > mmap->dim) dim = mmap->dim;
 
 	size_t i = 0, ret = 0;
 
 	const size_t *lens = ae2f_mMMapDimLen(mmap, const);
 
-	for(; i < dim; i++) {
-		const size_t L = lens[i], I = idxs[i] % L;
+	for(; i < dim - 1; i++) {
+		const size_t L = lens[dim - i - 1], I = idxs[dim - 1 - i] % L;
 		if(!L) return -1;
 		ret += I;
 		ret *= L;
 	}
 
+	ret += idxs[dim - 1 - i] % lens[dim - i - 1];
 	dim = mmap->dim;
 
-	for(; i < dim; i++) {
-		ret *= lens[i];
+	for(; i < dim - 1; i++) {
+		ret *= lens[dim - 1 - i];
 	}
 
 	return ret / lens[i - 1];

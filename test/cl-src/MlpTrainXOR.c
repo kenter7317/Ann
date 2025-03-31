@@ -6,7 +6,7 @@
 #include <math.h>
 
 #define gLearningRate 0.1
-#define gEpochs 5000
+#define gEpochs 100
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
