@@ -20,7 +20,7 @@ ae2f_AnnConv_t(
 
 ae2f_extern ae2f_SHAREDEXPORT
 ae2f_err_t
-ae2f_AnnConv1d(
+__ae2f_AnnConv1d(
 		const ae2f_float_t* infv,
 		size_t infc,
 		const ae2f_float_t* ingv,
@@ -29,6 +29,22 @@ ae2f_AnnConv1d(
 		size_t* opt_outc,
 		size_t stride,
 		size_t pad
+		) noexcept;
+
+ae2f_extern ae2f_SHAREDEXPORT
+ae2f_err_t
+__ae2f_AnnConv(
+		size_t dim, 
+		const ae2f_float_t* infv, 
+		const size_t* infc,
+		size_t infcc,
+		const ae2f_float_t* ingv, 
+		const size_t* ingc,
+		size_t ingcc,
+		ae2f_float_t* outv,
+		size_t* outc_opt,
+		const size_t* stride_opt,
+		const size_t* pad_opt
 		) noexcept;
 
 typedef struct ae2f_mAnnConv {
