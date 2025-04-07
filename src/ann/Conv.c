@@ -57,41 +57,6 @@ _return:
 	return err;
 }
 
-typedef struct ConvPtm {
-		size_t
-			dimi, // dim, current
-
-
-			i, j, k,	
-			outlen,
-			outstridestart,
-			gapneeded;	// you need to give this in handler.
-		const ae2f_float_t
-			* infv,
-			* ingv;
-		ae2f_float_t
-			* outv; // Zero-initiating guaranteed (Suggestion).
-} ConvPrm_t;
-
-
-struct {
-	size_t 
-		pad,
-		dim,
-		* opt_retoutszrequired; // size: dim
-
-	const size_t
-		* stride, // size: dim
-		* lpinfc,
-		* lpingc,
-		* lpoutc;
-	
-	ConvPrm_t* prmorig;
-	
-	// Down here is no parameters
-	ae2f_err_t err;
-}* ConvRet;
-
 /**
  * @todo
  * Indexing
@@ -105,76 +70,41 @@ struct {
  * Size... unknown.
  * */
 ae2f_SHAREDEXPORT
-void
-__ae2f_AnnConv(size_t prmi)
-#define prm (ConvRet->prmorig + prmi)
+ae2f_err_t
+__ae2f_AnnConv(
+		const ae2f_mMMap* inf, 
+		const ae2f_mMMap* ing, 
+		ae2f_mMMap* out,
+		size_t* opt_outc,
+		size_t* stride_opt,
+		size_t* pad_opt
+		)
 {
-	if(!ConvRet) return;
-	if(!ConvRet->prmorig) {
-		// no good, prm is null
-		ConvRet->err |= ae2f_errGlob_PTR_IS_NULL;
-		ConvRet = 0;
-		return;
-	}
+	ae2f_err_t e = 0;
+	if(!inf)	return ae2f_errGlob_PTR_IS_NULL;
+	if(!ing)	return ae2f_errGlob_PTR_IS_NULL;
+	if(!out)	return ae2f_errGlob_PTR_IS_NULL;
 
-	ConvRet->err = ae2f_errGlobNormalised(ConvRet->err);
-	if(ConvRet->err) return;
+	if(inf->dim != ing->dim || ing->dim != out->dim || out->dim != inf->dim)
+		return ae2f_errGlob_WRONG_OPERATION;
 
-#define return(e) { ConvRet->err |= e; return; }
+	const size_t 
+		stride = stride_opt ? stride_opt[ing->dim - 1] : 1
+		, pad = pad_opt ? pad_opt[ing->dim - 1] : 0
+		, opaddedlast = (
+				ae2f_mMMapDimLen(inf, const)[ing->dim - 1] 
+				+ (pad << 1) 
+				- ae2f_mMMapDimLen(ing, const)[ing->dim - 1]
+				) / (stride + 1);
 
-	if(!ConvRet->stride)		return(ae2f_errGlob_PTR_IS_NULL);
-	if(!ConvRet->lpinfc)		return(ae2f_errGlob_PTR_IS_NULL);
-	if(!ConvRet->lpingc)		return(ae2f_errGlob_PTR_IS_NULL);
-	if(!ConvRet->lpoutc)		return(ae2f_errGlob_PTR_IS_NULL);
-	if(!prm->infv)			return(ae2f_errGlob_PTR_IS_NULL);
-	if(!prm->ingv)			return(ae2f_errGlob_PTR_IS_NULL);
-	if(!prm->outv)			return(ae2f_errGlob_PTR_IS_NULL);
-	if(ConvRet->dim <= prm->dimi)	return(ae2f_errGlob_WRONG_OPERATION);
+	if(opt_outc) 
+		opt_outc[ing->dim - 1] = opaddedlast;
 
-	if(prm->dimi == 1)
-	{
-		// It is just single layer.
-		// Ending by calling 1d.
-		ConvRet->err |= 
-			ae2f_AnnConv1d(
-				prm->infv,		*ConvRet->lpinfc
-				, prm->ingv,		*ConvRet->lpingc
-				, prm->outv,		ConvRet->opt_retoutszrequired
-				, *ConvRet->stride,	ConvRet->pad
-				);
+	for(size_t i = 0; i < ae2f_mMMapDimLen(out, const)[inf->dim - 1]; i++) {
+		for(size_t j = 0; j < ae2f_mMMapDimLen(ing, const)[inf->dim - 1]; j++) {
 
-		// operation is over
-		ConvRet = 0;
-		return;
-	}
-
-	prm->outlen = (
-		 ConvRet->lpinfc[prm->dimi]
-		 + (ConvRet->pad << 1) 
-		 - ConvRet->lpingc[prm->dimi]
-		 )
-		/ (ConvRet->stride[prm->dimi]) 
-		+ 1
-		;
-
-	if(ConvRet->opt_retoutszrequired)
-		*ConvRet->opt_retoutszrequired = prm->outlen;
-
-	for(prm->i = 0; prm->i < prm->outlen; prm->i++)
-	{
-		prm->outstridestart = prm->i * ConvRet->stride[prm->dimi];
-
-		// This is zero-padded layer. Skip it thinking 
-		if(prm->outstridestart < ConvRet->pad || ConvRet->lpoutc[prm->dimi] - prm->outstridestart)
-			continue;
-
-		for(prm->j = 0; prm->j < ConvRet->lpingc[prm->dimi]; prm->j++)
-#define prmnxt ConvRet[prmi + (prm->j * prm->outlen + prm->i) * prm->gapneeded]
-		{
-
-			__ae2f_AnnConv(prm + 1);
-#undef prmnxt
 		}
 	}
-#undef return
+
+	return e;
 }
