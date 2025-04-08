@@ -101,7 +101,7 @@ size_t ae2f_mMMapFieldIdx(
 		ret *= lens[dim - 1 - i];
 	}
 
-	return ret / lens[i - 1];
+	return ret; // / lens[i - 1];
 }
 
 

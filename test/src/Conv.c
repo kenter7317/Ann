@@ -147,13 +147,16 @@ uint64_t Conv2DTest() {
 		, * kernel
 		, * output;
 
+	uint64_t e = 0;
+
 	size_t 
 		inputsz[2] = {4, 4},
 		kernelsz[2] = {3, 3}, 
 		outsz[2] = {2, 2}, 
 		stride[2] = { 1, 1 };
 
-	size_t idxbuff[2] = {0, 0}, kernelelbuff[3] = { 0, };
+	size_t idxbuff[2] = {0, 0};
+	ae2f_float_t kernelelbuff[3] = { 0, };
 
 	input = ae2f_mMMapMk(2, inputsz, 0);
 	kernel = ae2f_mMMapMk(2, kernelsz, 0);
@@ -178,13 +181,13 @@ uint64_t Conv2DTest() {
 	memcpy(
 			ae2f_mMMapField(kernel)
 			, kernelelbuff
-			, sizeof(size_t) * 3
+			, sizeof(ae2f_float_t) * 3
 			);
 
 	memcpy(
 			ae2f_mMMapField(kernel) + ae2f_mMMapFieldIdx(kernel, 2, idxbuff)
 			, kernelelbuff
-			, sizeof(size_t) * 3
+			, sizeof(ae2f_float_t) * 3
 			);
 
 	idxbuff[1] = 1;
@@ -195,24 +198,65 @@ uint64_t Conv2DTest() {
 	memcpy(
 			ae2f_mMMapField(kernel) + ae2f_mMMapFieldIdx(kernel, 2, idxbuff)
 			, kernelelbuff
-			, sizeof(size_t) * 3
+			, sizeof(ae2f_float_t) * 3
 			);
 
-	return 0;
 
+	for(size_t i = 0, el = 1; i < 3; i++) {
+		for(size_t j = 0; j < 3; j++) {
+			idxbuff[1] = i;
+			idxbuff[0] = j;
+
+
+			printf("%d "
+					, ae2f_mMMapFieldIdx(
+						kernel, 
+						2, 
+						idxbuff
+						)
+					);
+			printf(
+					"%f "
+					, ae2f_mMMapField(kernel)[ae2f_mMMapFieldIdx(
+						kernel, 
+						2, 
+						idxbuff
+						)]
+					);
+		}
+		printf("\n");
+	}
+
+	
+	puts("__ae2f_AnnConv");
 	__ae2f_AnnConv(
 			2
 			, ae2f_mMMapField(input), ae2f_mMMapDimLen(input), 0
 			, ae2f_mMMapField(kernel), ae2f_mMMapDimLen(kernel), 0
-			, ae2f_mMMapField(input), 0
+			, ae2f_mMMapField(output), 0
 			, stride, 0
 			);
+
+	ae2f_float_t target[2][2] = {
+		{-8., -8.}
+		, {-8., -8.}
+	};
+
+	for(size_t a = 0; a < sizeof(target) / sizeof(**target); a++) {
+		printf("Check: %f %f\n", ae2f_mMMapField(output)[a], target[0][a]); 
+		if( 
+				((ae2f_mMMapField(output)[a] - target[0][a]) 
+				 * (ae2f_mMMapField(output)[a] - target[0][a])) 
+				> EPSILON 
+				)
+		{ puts("Match None"); e = 4; }
+	}
 
 	ae2f_mMMapDel(input);
 	ae2f_mMMapDel(kernel);
 	ae2f_mMMapDel(output);
 
-	return 0;
+	return e;
 }
 
 int main() {
@@ -220,7 +264,7 @@ int main() {
 		a = 
 		Conv1dTestNoPad()
 		| Conv1dTestWithPad()
-		// | Conv2DTest()
+		| Conv2DTest()
 		| 0
 		;
 

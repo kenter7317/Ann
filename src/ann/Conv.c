@@ -29,12 +29,6 @@ __ae2f_AnnConv1d(
 	ae2f_err_t err = 0;
 
 	const size_t outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
-	printf("outc: %d\n", outc);
-	printf("stride: %d\n", stride);
-
-	printf("infc: %d\n", infc);
-	printf("ingc: %d\n", ingc);
-	printf("pad: %d\n", pad);
 #define return(n) { err = n; goto _return; }
 
 	if(!outv) return(ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL);
@@ -48,24 +42,31 @@ __ae2f_AnnConv1d(
 		for(size_t j = 0; j < ingc; j++)
 		{
 			const size_t infi = begi + j;
-			printf("infi: %d\n", infi);
 
 			/* If infv is padded so it went to zero. */
-			if(infi < pad || infi > infc - pad) {
-				puts("If infv is padded so it went to zero.");
+			if(infi < pad || infi >= infc + pad) {
 				continue;
 			}
 
 			/* If one of them are zero for nullptr reason */
 			if(!(infv && ingv)) {
-				puts("If one of them are zero for nullptr reason");
 				continue;
 			}
 
-			sum += infv[(infi + pad)] * ingv[j];
+			sum += 
+				infv[(infi - pad)] * ingv[j];
+
+			printf("\t%d %d\n", infi - pad, j);
+			printf(
+					"\t%f * %f %f\n"
+					, infv[(infi - pad)]
+					, ingv[j]
+					, infv[(infi - pad)] * ingv[j]
+					);
 		}
-		
+
 		outv[i] += sum;
+		printf("%f\n", outv[i]);
 	}
 
 _return:
@@ -115,16 +116,23 @@ __ae2f_AnnConv(
 	const size_t 
 		stride = stride_opt ? stride_opt[dim - 1] : 1
 		, pad = pad_opt ? pad_opt[dim - 1] : 0
-		, opaddedlast = (
-				ae2f_mMMapDimLen(infv, const)[dim - 1] 
+
+		/* 
+		 * outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
+		 * */
+		, opaddedlast = ((
+				infc[dim - 1]
 				+ (pad << 1) 
-				- ae2f_mMMapDimLen(ingv, const)[dim - 1]
-				) / (stride + 1);
+				- ingc[dim - 1]
+				) / (stride)) + 1;
 
 	/* When infcc or ingcc is zero, calculate both of them. */
 	if(!(infcc && ingcc) && (infcc = 1) && (ingcc = 1))
 		for(size_t i = 0; i < dim; i++)
 			infcc *= infc[i], ingcc *= ingc[i];
+
+	printf("%d\n", infcc);
+	printf("%d\n", ingcc);
 
 	/* When they went zero, the function is broken. */
 	if(!(infcc && ingcc))
@@ -147,22 +155,31 @@ __ae2f_AnnConv(
 			const size_t infi = begi + j;
 
 			/* If infv is padded so it went to zero. */
-			if(infi < pad && infi > infc[dim - 1] - pad)
+			if(infi < pad && infi >= infc[dim - 1] + pad)
 				continue;
 
 			/* If one of them are zero for nullptr reason */
 			if(!(infv && ingv))
 				continue;
 
+			printf(
+					"i(opaddedlast) %d/%d j(ingc[dim-1]) %d/%d infi %d\n"
+					, i, opaddedlast
+					, j, ingc[dim - 1]
+					, infi
+					);
+
 			/* 
 			 * Call it recursively, but dim must be shortened. 
 			 * sum += infv[infi + pad] * ingv[j]; 
+			 *
+			 *
 			 * */
 			e |= __ae2f_AnnConv(
 					dim - 1
-					, infv + (infi + pad) * infcc, infc, infcc
+					, infv + (infi) * infcc, infc, infcc
 					, ingv + j * ingcc, ingc, ingcc
-					, outv, outc_opt
+					, outv + i * opaddedlast, outc_opt
 					, stride_opt, pad_opt
 				      );
 
