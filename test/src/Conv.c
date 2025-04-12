@@ -210,7 +210,7 @@ uint64_t Conv2DTest() {
 
 			printf("%d "
 					, ae2f_mMMapFieldIdx(
-						kernel, 
+						kernel,
 						2, 
 						idxbuff
 						)
@@ -233,7 +233,7 @@ uint64_t Conv2DTest() {
 			2
 			, ae2f_mMMapField(input), ae2f_mMMapDimLen(input), 0
 			, ae2f_mMMapField(kernel), ae2f_mMMapDimLen(kernel), 0
-			, ae2f_mMMapField(output), 0
+			, ae2f_mMMapField(output), 0, 0
 			, stride, 0
 			);
 
