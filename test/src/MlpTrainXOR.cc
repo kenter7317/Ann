@@ -4,39 +4,41 @@
 
 #include <math.h>
 
-#define gLearningRate 0.1
-#define gEpochs 5000
+#define gLearningRate 0.0000001
+#define gEpochs 50
+#define gEpochsVerbose 10
 
 #define SOMETHINGSMALL 0.0000001
 
-// Activation and loss functions
-static ae2f_float_t relu(ae2f_float_t x) { return x > 0 ? x : 0; }
-static ae2f_float_t relu_deriv(ae2f_float_t x) { 
-    return ae2f_float_t(x > 0); 
+static ae2f_float_t relu(ae2f_float_t x) {
+    return x > 0 ? x : 0;
 }
-static ae2f_float_t sigmoid(ae2f_float_t x) { 
-    return 1 / (1 + exp(-x));
+
+static ae2f_float_t relu_deriv(ae2f_float_t x) {
+    return x >= 0 ? 1.0 : 0.0;
+}
+
+static ae2f_float_t sigmoid(ae2f_float_t x) {
+    return 1.0 / (1.0 + exp(-x));
 }
 
 static ae2f_float_t sigmoid_deriv(ae2f_float_t x) {
-    return x * (1 - x);
+    ae2f_float_t sig = sigmoid(x);
+    return sig * (1.0 - sig);
 }
 
 static ae2f_float_t ce_gradient(ae2f_float_t y_pred, ae2f_float_t y_true) {
-    ae2f_float_t grad = y_pred - y_true;
-    if (grad > 1.0) grad = 1.0;
-    if (grad < -1.0) grad = -1.0;
-    return grad;
+    static uint64_t counter = 0;
+
+    counter++;
+    return y_pred - y_true;
 }
 
-static ae2f_float_t
-Sub(ae2f_float_t output, ae2f_float_t target) {
-    return (target - output);
-}
 static ae2f_float_t ce_value(ae2f_float_t y_pred, ae2f_float_t y_true) {
-    y_pred = y_pred < 1e-7 ? 1e-7 : y_pred;
-    y_pred = y_pred > 1 - 1e-7 ? 1 - 1e-7 : y_pred;
-    return -y_true * log(y_pred) - (1 - y_true) * log(1 - y_pred);
+    ae2f_float_t clamped_pred = y_pred;
+    if (clamped_pred < 1e-7) clamped_pred = 1e-7;
+    if (clamped_pred > 1.0 - 1e-7) clamped_pred = 1.0 - 1e-7;
+    return -y_true * log(clamped_pred) - (1.0 - y_true) * log(1.0 - clamped_pred);
 }
 
 // XOR dataset
@@ -51,7 +53,7 @@ static ae2f_float_t
 _wv[12]
 , * wv[] { 0, _wv, _wv + 8 };
 
-static size_t wc[] = {2, 4, 1};
+static size_t wc[] = {2, 3, 1};
 
 void WeightMaker(ae2f_float_t** makerv, const size_t* makercv, const size_t makercc) {
     srand(0);
@@ -77,7 +79,7 @@ int main() {
     // Function pointers
     ae2f_fpAnnAct_t actv[] = {sigmoid, sigmoid}; // Output: no activation
     ae2f_fpAnnAct_t act_deriv_v[] = {sigmoid_deriv, sigmoid_deriv}; // Last unused
-    ae2f_fpAnnLoss_t loss_v[] = {Sub, Sub}; 
+    ae2f_fpAnnLoss_t loss_v[] = {ce_gradient, ce_gradient}; 
 
     WeightMaker(wv, layerlenv, layerc);
 
@@ -140,7 +142,7 @@ int main() {
             ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
             total_loss += ce_value(output[0], xor_targets[i][0]);
         }
-        if (epoch % 100 == 0) {
+        if (epoch % gEpochsVerbose == 0) {
             // Loss monitoring
             ae2f_float_t output[1];
             for(size_t i = 0; i < 4; i++) {
@@ -151,6 +153,8 @@ int main() {
                     , xor_inputs[i][1]
                     , output[0]
                 );
+
+                printf("CE_VALUE: %f\n", ce_value(output[0], xor_targets[i][0]));
             }
             printf("Epoch %d, Loss: %.4f\n", epoch, total_loss / 4);
         }

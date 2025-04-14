@@ -68,7 +68,7 @@ static ae2f_err_t Train (
     ae2f_float_t learningrate
 ) noexcept {
     ae2f_err_t ret = 0;
-    #define return(n) { ret |= n; goto RET; }
+    #define return(n) {  ret |= n; goto RET; }
     const size_t
     MAXBUFFCOUNT_FOR_LAYER = *ae2f_mAnnMlpLayerBuffCount(_this),
     SkipInput = MAXBUFFCOUNT_FOR_LAYER * _this->layerc;

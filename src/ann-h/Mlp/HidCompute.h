@@ -1,4 +1,5 @@
 #include <ae2f/Ann/Slp.h>
+#include <stdio.h>
 
 static ae2f_float_t MlpTrain_HidErr(
     const ae2f_mAnnSlp* layerNxt,
@@ -16,17 +17,15 @@ static void MlpTrain_HidCompute(
     for(size_t i = 0; i < layerThen->outc; i++) {
 	const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i);
     
-    const ae2f_fpAnnAct_t act_p = (ae2f_reinterpret_cast(
-        ae2f_fpAnnAct_t
-        , ae2f_mAnnSlpPerV(
-            layerThen
-            , i, const
-            )->Loss
-        ));
+    const ae2f_fpAnnAct_t act_p = ae2f_mAnnSlpPerV(
+        layerThen
+        , i, const
+        )->ActDeriv;
 
     if(act_p)
         retDeltaThen[i] = act_p(outThen[i]) * err;
-    else 
+    else  {
         retDeltaThen[i] = outThen[i] * err;
+    }
     } 
 }

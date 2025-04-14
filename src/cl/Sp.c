@@ -12,6 +12,7 @@ static ae2f_err_t Predict(
     const ae2f_float_t *in, 
     ae2f_float_t *outret_opt
 ) {
+    ae2f_err_t err=0;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!outret_opt) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_DONE_HOWEV;
@@ -20,7 +21,17 @@ static ae2f_err_t Predict(
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpPredict];
     ae2f_float_t IBuffer;
 
-    ae2fCL_Ann.LErr = clEnqueueWriteBuffer(ae2fCL_Ann.Q, _IO, CL_TRUE, 0, ae2f_float_t_SIZE * _this->inc, in, 0, 0, 0);
+    cl_event event[2] = {0, 0};
+
+    #define return(n) { err = n; goto END; }
+
+    ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
+        ae2fCL_Ann.Q, 
+        _IO, CL_TRUE, 
+        0, ae2f_float_t_SIZE * _this->inc, 
+        in, 0, 0, event
+    );
+
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     ae2fCL_Ann.LErr = clSetKernelArg(K, 0, sizeof(cl_mem), &_IO);
@@ -38,17 +49,26 @@ static ae2f_err_t Predict(
         ae2fCL_Ann.Q, K, 1, 0, 
         &_this->inc, 
         &_locworksize, 
-        0, 0, 0
+        1, event, event + 1
     );
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
-    ae2fCL_Ann.LErr = clEnqueueReadBuffer(ae2fCL_Ann.Q, _IO, CL_TRUE, _this->inc * ae2f_float_t_SIZE, ae2f_float_t_SIZE, &IBuffer, 0, 0, 0);
+    ae2fCL_Ann.LErr = clEnqueueReadBuffer(
+        ae2fCL_Ann.Q, _IO, 
+        CL_TRUE, _this->inc * ae2f_float_t_SIZE, 
+        ae2f_float_t_SIZE, &IBuffer, 
+        1, event + 1, event
+    );
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     IBuffer = _this->Act(IBuffer + *ae2f_mAnnSpB(_this, const));
     if(outret_opt) *outret_opt = IBuffer;
 
-    return ae2f_errGlob_OK;
+    END:
+    if(event[0]) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+    if(event[1]) ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+
+    return err;
 }
 
 #include "./CLCode/uf.h"
@@ -64,6 +84,11 @@ static ae2f_err_t Train(
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(learningrate == 0) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_WRONG_OPERATION;
     ae2f_err_t er = 0;
+
+    cl_event event[2] = {0, 0};
+
+    #undef return
+    #define return(n) { er = n; goto END; }
 
     UF_t uf;
     if(delta_optA) 
@@ -100,17 +125,25 @@ static ae2f_err_t Train(
     if((ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
         ae2fCL_Ann.Q, K, 1,
         0, &_this->inc, &_this->inc, 
-        0, 0, 0
-    )) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+        0, 0, event
+    )) != CL_SUCCESS) return (ae2f_errGlob_NFOUND);
+
+    puts("Sp Train ReadBuffer");
 
     if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _W, 
         CL_TRUE, 0, 
         _this->inc * sizeof(ae2f_float_t), 
         ae2f_mAnnSpW(_this), 
-        0, 0, 0
-    )) != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+        1, event, event + 1
+    )) != CL_SUCCESS) return (ae2f_errGlob_NFOUND);
 
+    END:
+    #undef return
+    if(event[0]) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+    if(event[1]) ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+
+    puts("Sp Train end");
     return er;
 }
 
