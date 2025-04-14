@@ -19,7 +19,8 @@ size_t ae2f_mAnnSpInit(
     size_t inc,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDerive,
+    ae2f_fpAnnLoss_t Loss,
     ae2f_err_t* erret,
     size_t offset_opt
 ) noexcept {
@@ -35,8 +36,9 @@ size_t ae2f_mAnnSpInit(
 
     _this->expected = 1;
     _this->inc = inc;
-    _this->CalDelta = CalDelta;
+    _this->Loss = Loss;
     _this->Act = Act;
+    _this->ActDeriv = ActDerive;
     _this->vPredict = Predict;
     _this->vTrain = Train;
     _this->vClean = 0;
@@ -70,14 +72,15 @@ ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inc,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDerive,
+    ae2f_fpAnnLoss_t Loss,
     ae2f_err_t* erret,
     size_t additional
 ) {
     ae2f_AnnSp* _this = 0;
 
     _this = calloc(ae2f_mAnnSpInitSz(additional, inc), 1);
-    ae2f_mAnnSpInit(&_this->Sp, inc, W_opt, Act, CalDelta, erret, additional);
+    ae2f_mAnnSpInit(&_this->Sp, inc, W_opt, Act, ActDerive, Loss, erret, additional);
 
     rtn:
     if(erret) *erret &= ~ae2f_errGlob_DONE_HOWEV;

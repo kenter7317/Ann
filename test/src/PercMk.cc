@@ -9,7 +9,8 @@ Sigmoid(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
-ae2f_AnnDelta_t Sub;
+#define SigmoidDeriv 0
+
 ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
     return out - goal;
 }
@@ -25,10 +26,15 @@ ae2f_extern int mainc() {
     ae2f_float_t out_checksum = 0;
 
     Perc = (ae2f_mAnnSp*)ae2f_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, 0
+        sizeof(Buff)/sizeof(ae2f_float_t), 0 /*Buff*/, 
+        Sigmoid, SigmoidDeriv, Sub, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
+
+    for(size_t i = 0; i < Perc->inc; i++) {
+        printf("Weight: %f\n", (Buff[i] = ae2f_mAnnSpW(Perc)[i]));
+    }
+    puts("");
 
     err = ae2f_mAnnSpPredict(
         Perc, Buff, &outfloat
@@ -73,7 +79,7 @@ int maincc() {
 
     Perc = ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, 0
+        Sigmoid, SigmoidDeriv, Sub, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
 

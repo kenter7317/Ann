@@ -15,11 +15,11 @@ ForwardPrime(ae2f_float_t output) {
     return output * (1.0 - output);
 }
 
-static ae2f_AnnDelta_t Backward;
+static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
 Backward(ae2f_float_t o, ae2f_float_t T) {
-    return (T - o) * ForwardPrime(o);
+    return (T - o);
 }
 int mainc(), maincc();
 int main() {
@@ -41,7 +41,7 @@ int mainc() {
 
     ae2f_err_t err2, err;
     ae2f_AnnSlp* Slp = ae2f_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2 
     );
     ae2f_float_t outbuff[2] = {  5 };
@@ -198,7 +198,7 @@ int maincc() {
 
     ae2f_err_t err2, err;
     ae2f_AnnSlp* Slp = ae2f_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2 
     );
     ae2f_float_t outbuff[2] = {  5 };

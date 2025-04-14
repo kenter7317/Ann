@@ -7,7 +7,7 @@ int main() {
     ae2fCL_AnnSlp* slp;
 
     slp = ae2fCL_AnnSlpMkB(
-        1, 0, 0, a, b, 1, 0, 0, 0 
+        1, 0, 0, a, a, b, 1, 0, 0, 0 
     );
     ae2f_float_t in, out;
 

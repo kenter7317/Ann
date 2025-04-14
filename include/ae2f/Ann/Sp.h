@@ -77,9 +77,13 @@ struct ae2f_mAnnSp {
     size_t inc;
 
     /// @brief Delta calculation
-    ae2f_AnnDelta_t* CalDelta;
-    /// @brief Activasion function customisable.
-    ae2f_AnnAct_t* Act;
+    ae2f_AnnLoss_t* Loss;
+    
+    ae2f_AnnAct_t
+    /** @brief Activasion function customisable. */
+    * Act
+    /** @brief Derivative for `Act`. */
+    , * ActDeriv;
     
     /// @brief Cleaning function
     ae2f_mAnnSpClean_t* vClean;
@@ -145,8 +149,8 @@ struct ae2f_mAnnSp {
 /// Weights 
 /// @param Act 
 /// Activasion function.
-/// @param CalDelta 
-/// Delta calculation function.
+/// @param Loss 
+/// Loss calculation function.
 /// @param[out] erret_opt 
 /// State
 /// @param offset_opt
@@ -160,7 +164,8 @@ size_t ae2f_mAnnSpInit(
     size_t inum,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDerive,
+    ae2f_fpAnnLoss_t Loss,
     ae2f_err_t* erret_opt,
     size_t offset_opt
 ) noexcept;
@@ -184,7 +189,8 @@ ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inum,
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDerive,
+    ae2f_fpAnnLoss_t Loss,
     ae2f_err_t* erret,
     size_t offset_opt
 ) noexcept;

@@ -29,7 +29,7 @@ ForwardPrime(ae2f_float_t output) {
 
 static ae2f_float_t
 Backward(ae2f_float_t output, ae2f_float_t target) {
-    return (target - output) * ForwardPrime(output);
+    return (target - output);
 }
 
 int main() {
@@ -49,7 +49,7 @@ int main() {
 
     ae2f_err_t err2, err;
     ae2fCL_AnnSp* Perc = ae2fCL_AnnSpMk(
-        2, 0, Forward, Backward, &err2, 0, 0
+        2, 0, Forward, ForwardPrime, Backward, &err2, 0, 0
     );
 
     if(err2) {

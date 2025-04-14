@@ -16,7 +16,7 @@ static ae2f_float_t MlpTrain_HidErr(
         union {
             const size_t* pad;
             const ae2f_mAnnSp* slp;
-        } perv = { .pad = ae2f_mAnnSlpPerVPad(layerNxt)[i] + 1 };
+        } perv = { .pad = ae2f_mAnnSlpPerVPad(layerNxt, const)[i] + 1 };
         ret += ae2f_mAnnSpW(perv.slp, const)[idxThen] * deltasNxt[i];
     }
 

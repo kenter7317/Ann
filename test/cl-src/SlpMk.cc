@@ -10,7 +10,12 @@ Sigmoid(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
-ae2f_AnnDelta_t Sub;
+static ae2f_float_t 
+SigmoidPrime(ae2f_float_t x) {
+    return (x) * (1.0f - x);
+}
+
+ae2f_AnnLoss_t Sub;
 ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
     return out - goal;
 }
@@ -32,7 +37,7 @@ int mainc() {
 
     SLP = ae2fCL_AnnSlpMkB(
         sizeof(Buff)/sizeof(ae2f_float_t), NULL, 
-        Buff, Sigmoid, Sub, 1, 0,
+        Buff, Sigmoid, SigmoidPrime, Sub, 1, 0,
         &err, errcl
     );
 
@@ -89,7 +94,7 @@ int maincc() {
 
     SLP = ae2fCL_AnnSlpMkB(
         sizeof(Buff)/sizeof(ae2f_float_t), NULL, 
-        Buff, Sigmoid, Sub, 1, 0,
+        Buff, Sigmoid, SigmoidPrime, Sub, 1, 0,
         &err, errcl
     );
 

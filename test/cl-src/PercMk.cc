@@ -10,7 +10,12 @@ Sigmoid(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
 
-ae2f_AnnDelta_t Sub;
+static ae2f_float_t 
+SigmoidPrime(ae2f_float_t x) {
+    return (x) * (1.0f - x);
+}
+
+ae2f_AnnLoss_t Sub;
 ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
     return out - goal;
 }
@@ -31,7 +36,7 @@ int mainc() {
 
     Perc = ae2fCL_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, errcl, 0
+        Sigmoid, SigmoidPrime, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
     
@@ -85,7 +90,7 @@ int maincc() {
 
     Perc = ae2fCL_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, Sub, &err, errcl, 0
+        Sigmoid, SigmoidPrime, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 

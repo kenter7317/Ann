@@ -1,158 +1,169 @@
 #include "../test.h"
-#include <ae2fCL/Ann/Mlp.h>
-#include <ae2fCL/Ann.h>
+#include <ae2f/Ann/Mlp.h>
 #include <stdio.h>
 
 #include <math.h>
 
 #define gLearningRate 0.1
-#define gEpochs 100
+#define gEpochs 5000
 
-static ae2f_float_t
-Forward(ae2f_float_t x) {
-    return 1.0 / (1.0 + exp(-x));
+#define SOMETHINGSMALL 0.0000001
+
+// Activation and loss functions
+static ae2f_float_t relu(ae2f_float_t x) { return x > 0 ? x : 0; }
+static ae2f_float_t relu_deriv(ae2f_float_t x) { 
+    return (ae2f_float_t)x > 0; 
+}
+static ae2f_float_t sigmoid(ae2f_float_t x) { 
+    return 1 / (1 + exp(-x));
 }
 
-static ae2f_float_t
-ForwardPrime(ae2f_float_t output) {
-    return (output) * (1.0f - output);
+static ae2f_float_t sigmoid_deriv(ae2f_float_t x) {
+    return x * (1 - x);
 }
 
-static ae2f_float_t
-Backward(ae2f_float_t output, ae2f_float_t target) {
-    return (target - output) * ForwardPrime(output);
+static ae2f_float_t ce_gradient(ae2f_float_t y_pred, ae2f_float_t y_true) {
+    ae2f_float_t grad = y_pred - y_true;
+    if (grad > 1.0) grad = 1.0;
+    if (grad < -1.0) grad = -1.0;
+    return grad;
+}
+
+static ae2f_float_t ce_value(ae2f_float_t y_pred, ae2f_float_t y_true) {
+    y_pred = y_pred < 1e-7 ? 1e-7 : y_pred;
+    y_pred = y_pred > 1 - 1e-7 ? 1 - 1e-7 : y_pred;
+    return -y_true * log(y_pred) - (1 - y_true) * log(1 - y_pred);
+}
+
+// XOR dataset
+static const ae2f_float_t xor_inputs[4][2] = {
+    {0, 0}, {0, 1}, {1, 0}, {1, 1}
+};
+static const ae2f_float_t xor_targets[4][1] = {
+    {0}, {1}, {1}, {0}
+};
+
+static ae2f_float_t 
+_wv[12];
+
+static size_t wc[] = {2, 4, 1};
+
+void WeightMaker(ae2f_float_t** makerv, const size_t* makercv, const size_t makercc) {
+    srand(0);
+    for(size_t l = 1; l < makercc; l++) {
+        const size_t 
+        fan_in = makercv[l - 1]
+        , fan_out = makercv[l];
+
+        float scale = sqrt(6.0 / (fan_in + fan_out));
+        for (int j = 0; j < fan_out; j++) {
+            for (int i = 0; i < fan_in; i++) {
+                makerv[l][j * fan_out + i] = (rand() / (ae2f_float_t)RAND_MAX) * 2 * scale - scale;
+            }
+        }
+    }
 }
 
 int main() {
-    ae2f_err_t err_ae2f = 0;
-    cl_int err2 = 0;
-    ae2f_float_t diff_got[2] = {0, };
-    ae2f_AnnMlp* Mlp = 0;
-    size_t sizes[] = {2, 3, 1};
-    ae2f_float_t outbuff[2] = {  0, 0 };
+    // MLP: 2 input, 4 hidden, 1 output (3 layers)
+    size_t layerlenv[] = {2, 4, 1};
+    size_t layerc = sizeof(layerlenv) / sizeof(layerlenv[0]);
 
-    // [1, 1], [1, 0], [0, 1], [0, 0]
-    ae2f_float_t ins[] = {
-        1, 1, 1, 0, 0, 1, 0, 0
-    };
+    // Function pointers
+    ae2f_fpAnnAct_t actv[] = {sigmoid, sigmoid}; // Output: no activation
+    ae2f_fpAnnAct_t act_deriv_v[] = {sigmoid_deriv}; // Last unused
+    ae2f_fpAnnLoss_t loss_v[] = {ce_gradient, ce_gradient}; 
 
-    // 1, 1, 0, 0
-    const ae2f_float_t goals[] = {
-        1, 1, 0, 0
-    };
+    ae2f_float_t* wv[] = { 0, _wv, _wv + 8 };
 
-    err_ae2f = ae2fCL_AnnMkEasy(&err2);
-    CHECK_ERR(err_ae2f, CL_SUCCESS, __failure);
+    WeightMaker(wv, layerlenv, layerc);
 
-    Mlp = ae2fCL_AnnMlpMk(
-        sizeof(sizes) / sizeof(size_t), 0, sizes, 
-        0, 0, Forward, Backward, 0,
-        &err_ae2f, 0
+    // Create MLP
+    ae2f_err_t err;
+    ae2f_AnnMlp* mlp = ae2f_AnnMlpMk(
+        layerc,
+        0,
+        layerlenv,
+        NULL,
+        NULL,
+        actv,
+        act_deriv_v,
+        loss_v,
+        _wv,
+        &err
     );
-    #if 0
-    puts("Hello");
-    if(!(Mlp->inc == 2 && Mlp->outc == 1 && Mlp->layerc == 3)) {
-        puts("ae2fCL_AnnM.lpMk has UB");
-        printf(
-            "INC: %u\n"
-            "OUTC: %u\n"
-            "LAYERC: %u\n\n",
 
-            Mlp->inc, Mlp->outc, Mlp->layerc
-        );
+    if (!mlp || err != ae2f_errGlob_OK) {
+        printf("Failed to create MLP: err=%d\n", err);
+        return 1;
+    }
 
-        goto __failure;
-    } else {
-        puts("ae2fCL_AnnMlpMk was good");
+    // Training
+    const int epochs = 1000;
+    const ae2f_float_t learning_rate = 0.1;
+
+    {
+            // Loss monitoring
+            ae2f_float_t output[1];
+            for(size_t i = 0; i < 4; i++) {
+                ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
+                printf(
+                    "Check Output for debug: in %f %f -> out %f\n"
+                    , xor_inputs[i][0]
+                    , xor_inputs[i][1]
+                    , output[0]
+                );
+            }
     }
-    #endif
-    #if 1
-    if(err_ae2f) {
-        goto __failure;
-    }
-    for(size_t _ = 0; _ < gEpochs; _++) {
-        err2 = ae2f_mAnnSlpTrainB(
-            &Mlp->Slp, ins, 
-            goals + 2, gLearningRate
-        );
-        if(err2) {
-            err_ae2f = err2; goto __failure;
+
+    for (int epoch = 0; epoch < epochs; epoch++) {
+        ae2f_float_t total_loss = 0;
+        for (int i = 0; i < 4; i++) {
+            err = ae2f_mAnnSlpTrain(
+                &mlp->Slp
+                , xor_inputs[i]
+                , NULL
+                , xor_targets[i]
+                , learning_rate
+            );
+            if (err) {
+                printf("Training failed: err=%d\n", err);
+                ae2f_AnnMlpDel(mlp);
+                return 1;
+            }
+
+            // Loss monitoring
+            ae2f_float_t output[1];
+            ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
+            total_loss += ce_value(output[0], xor_targets[i][0]);
         }
-
-        err2 = ae2f_mAnnSlpTrainB(
-            &Mlp->Slp, ins + 2, 
-            goals, gLearningRate
-        );
-        if(err2) {
-             goto __failure;
-        }
-
-        err2 = ae2f_mAnnSlpTrainB(
-            &Mlp->Slp, ins + 4, 
-            goals, gLearningRate
-        );
-        if(err2) {
-             goto __failure;
-        }
-
-        err2 = ae2f_mAnnSlpTrainB(
-            &Mlp->Slp, ins + 6, 
-            goals + 2, gLearningRate
-        );
-        if(err2) {
-             goto __failure;
+        if (epoch % 100 == 0) {
+            // Loss monitoring
+            ae2f_float_t output[1];
+            for(size_t i = 0; i < 4; i++) {
+                ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
+                printf(
+                    "Check Output for debug: in %f %f -> out %f\n"
+                    , xor_inputs[i][0]
+                    , xor_inputs[i][1]
+                    , output[0]
+                );
+            }
+            printf("Epoch %d, Loss: %.4f\n", epoch, total_loss / 4);
         }
     }
-    #endif
 
-    #if 1
-    puts("Predict time");
-
-    err2 = ae2f_mAnnSlpPredict(
-        &Mlp->Slp, ins, outbuff
-    ); if(err2) {
-        goto __failure;
-    } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] > 0.5) {
-        printf("AND 1, 1 no good\n");
-        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
+    // Testing
+    printf("\nTesting XOR:\n");
+    for (int i = 0; i < 4; i++) {
+        ae2f_float_t output[1];
+        ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
+        ae2f_float_t y_pred = output[0]; // Post-process for prediction
+        int predicted = y_pred > 0.5 ? 1 : 0;
+        printf("Input: [%.0f, %.0f], Raw: %.4f, Predicted: %d, Target: %.0f\n",
+               xor_inputs[i][0], xor_inputs[i][1], output[0], predicted, xor_targets[i][0]);
     }
 
-    err2 = ae2f_mAnnSlpPredict(
-        &Mlp->Slp, ins + 6, outbuff
-    ); if(err2) {
-        err2 = err2; goto __failure;
-    } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] > 0.5) {
-        printf("AND 0, 0 no good\n");
-        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
-    }
-
-    err2 = ae2f_mAnnSlpPredict(
-        &Mlp->Slp, ins + 4, outbuff 
-    ); if(err2) {
-        err_ae2f = err2; goto __failure;
-    } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] < 0.5) {
-        printf("AND 0, 1 no good\n");
-        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
-    }
-
-    err2 = ae2f_mAnnSlpPredict(
-        &Mlp->Slp, ins + 2, outbuff
-    ); if(err2) {
-        err_ae2f = err2; goto __failure;
-    } printf("Checking the value: %f\n", outbuff[0]);
-    if(outbuff[0] < 0.5) {
-        printf("AND 1, 0 no good\n");
-        err_ae2f = ae2f_errGlob_IMP_NOT_FOUND;
-    }
-
-    #endif
-
-    __failure:
-    ae2f_mAnnSlpDel(&Mlp->Slp);
-    ae2fCL_AnnDel();
-    printf("Something is over, code: %d\n", err_ae2f | err2);
-    return err_ae2f | err2;
+    ae2f_AnnMlpDel(mlp);
+    return 0;
 }

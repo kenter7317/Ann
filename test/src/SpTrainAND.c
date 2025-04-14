@@ -46,7 +46,7 @@ int main() {
 
     ae2f_err_t err2, err;
     ae2f_mAnnSp* Slp = (ae2f_mAnnSp*)ae2f_AnnSpMk(
-        2, 0, Forward, Backward, &err2, 0 
+        2, 0, Forward, ForwardPrime, Backward, &err2, 0 
     );
 
     if(err2) {

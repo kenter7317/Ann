@@ -140,9 +140,9 @@ _BUFFSET:
 		*ae2f_mAnnSpB(perc) += PREDICTED_BUFF[i] = 
 			delta_optA ?
 			PREDICTED_BUFF[i] * learningrate :
-			perc->CalDelta(PREDICTED_BUFF[i], goal_optB[i]) * learningrate;
-
-
+			perc->Loss(PREDICTED_BUFF[i], goal_optB[i]) 
+			* perc->ActDeriv(PREDICTED_BUFF[i]) 
+			* learningrate;
 	}
 
 	if((err2 = clEnqueueWriteBuffer(
@@ -402,7 +402,8 @@ size_t ae2fCL_mAnnSlpInit(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
@@ -441,7 +442,7 @@ size_t ae2fCL_mAnnSlpInit(
         ae2f_mAnnSpInit(
             ae2f_mAnnSlpPerV(_this, i),
             _inc, w_opt,
-            Act, CalDelta,
+            Act, ActDeriv, Loss,
             &ertmp, 0
         );
 
@@ -499,7 +500,8 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
@@ -509,7 +511,20 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 
-    ae2fCL_mAnnSlpInit(&rtn->CL_Slp, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, 0, &err, &err2);
+    ae2fCL_mAnnSlpInit(
+		&rtn->CL_Slp
+		, incs_optA
+		, ginc_optB
+		, inpads_opt
+		, w_opt
+		, Act
+		, ActDeriv
+		, Loss
+		, outc
+		, 0
+		, &err
+		, &err2
+	);
 
     if(err_opt) *err_opt = err;
     if(err_nfound_opt) *err_nfound_opt = err2;

@@ -7,7 +7,7 @@ static void MlpTrain_OutCompute(
     ae2f_float_t* retDeltaOut
 ) {
     for(size_t i = 0; i < layerOut->outc; i++) {
-        retDeltaOut[i] = ae2f_mAnnSlpPerV(layerOut, i, const)->CalDelta(
+        retDeltaOut[i] = ae2f_mAnnSlpPerV(layerOut, i, const)->Loss(
             out[i], goal[i]
         );
     }

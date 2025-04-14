@@ -65,11 +65,9 @@ static ae2f_err_t Train(
         _er |= ae2f_mAnnSpTrain(
             layer.perc, 
             in + _pad, 
-            delta_optA, G, 
+            delta_optA ? delta_optA + i : 0, G, 
             learningrate
         );
-
-        if(delta_optA) delta_optA++;
     }
     #else
     size_t i = 0;

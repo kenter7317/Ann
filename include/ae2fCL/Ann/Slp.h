@@ -48,18 +48,19 @@ size_t ae2fCL_mAnnSlpInit(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
     cl_int* err_nfound_opt
 ) noexcept;
 
-#define ae2fCL_mAnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
-ae2fCL_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+#define ae2fCL_mAnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt)
 
-#define ae2fCL_mAnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
-ae2fCL_mAnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+#define ae2fCL_mAnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_mAnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt)
 
 typedef union ae2fCL_AnnSlp {
     ae2f_mAnnSlp Slp;
@@ -77,7 +78,8 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
@@ -87,11 +89,11 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
 #define ae2fCL_AnnSlpClean ae2f_AnnSlpClean 
 #define ae2fCL_AnnSlpDel ae2f_AnnSlpDel 
 
-#define ae2fCL_AnnSlpMkA(incs, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
-ae2fCL_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+#define ae2fCL_AnnSlpMkA(incs, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt)
 
-#define ae2fCL_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt) \
-ae2fCL_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err_opt, err_nfound_opt)
+#define ae2fCL_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt) \
+ae2fCL_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt, err_nfound_opt)
 
 /** 
  * @param outc

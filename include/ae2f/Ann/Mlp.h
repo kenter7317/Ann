@@ -39,7 +39,7 @@ typedef ae2f_mAnnSlp ae2f_mAnnMlp;
 
 typedef union ae2f_AnnMlp {
     ae2f_mAnnSlp Slp;
-    ae2f_mAnnMlp Mlp;
+ae2f_mAnnMlp Mlp;
 
     #if ae2f_WhenCXX(!)0
     #include "Mlp.h.cxx/Mlp.hh"
@@ -89,20 +89,26 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t**, ae2f_mAnnMlpLayerBuffCount(mlp
 #define ae2f_mAnnMlpX(mlp,type,...) \
 ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_mAnnMlpCache(mlp, __VA_ARGS__) + 1)
 
-/// @memberof ae2f_mAnnMlp
-/// @brief 
-/// d
-/// @param _this 
-/// @param layerc 
-/// @param add_opt 
-/// @param layerlenv 
-/// @param layerpadv_opt 
-/// @param inpadv_opt 
-/// @param actglob_opt 
-/// @param deltaglob_opt 
-/// @param weights_opt 
-/// @param errret_opt 
-/// @return 
+/**
+ * @brief
+ * Initialise, and make additional allocations for the model. \n
+ * It could be cleaned with @ref ae2f_AnnMlpClean
+ * 
+ * @param layerc
+ * The length + 1 for almost any kind of vectors.
+ *
+ * @param act_deriv_v_opt
+ * Its length is layerc - 1.
+ *
+ * It will be for each layer of perceptron's 
+ * delta-to-delta calculation.
+ *
+ * @param delta_opt
+ * This one function pointer is for delta calculatoin from goal,
+ * for last layer, which could get the actual goal(expected output) 
+ * as it seem.
+ *
+ * */
 ae2f_extern ae2f_SHAREDCALL
 size_t ae2f_mAnnMlpInit(
     ae2f_mAnnMlp* _this,
@@ -111,12 +117,34 @@ size_t ae2f_mAnnMlpInit(
     const size_t* layerlenv,
     const size_t* layerpadv_opt,
     const size_t* inpadv_opt,
-    ae2f_AnnAct_t* actglob_opt,
-    ae2f_AnnDelta_t* deltaglob_opt,
+    const ae2f_fpAnnAct_t* actv_opt,
+    const ae2f_fpAnnAct_t* act_deriv_v_opt,
+    const ae2f_fpAnnLoss_t* loss_v_opt,
     const ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;
 
+/**
+ * @brief
+ * Makes an actual instance of MLP. \n
+ * It could be released with
+ * @ref ae2f_AnnMlpDel
+ * or simply `delete` in a context of C++.
+ *
+ * @param layerc
+ * The length for almost any kind of vectors.
+ *
+ * @param act_deriv_v_opt
+ * Its length is layerc - 1,
+ * 
+ * It will be for each layer of perceptron's 
+ * delta-to-delta calculation.
+ *
+ * @param delta_opt
+ * This one function pointer is for delta calculatoin from goal,
+ * for last layer, which could get the actual goal(expected output) 
+ * as it seem.
+ * */
 ae2f_extern ae2f_SHAREDCALL
 ae2f_AnnMlp* ae2f_AnnMlpMk(
     size_t layerc,
@@ -124,8 +152,9 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
     const size_t* layerlenv,
     const size_t* layerpadv_opt,
     const size_t* inpadv_opt,
-    ae2f_AnnAct_t* actglob_opt,
-    ae2f_AnnDelta_t* deltaglob_opt,
+    const ae2f_fpAnnAct_t* actv_opt,
+    const ae2f_fpAnnAct_t* act_deriv_v_opt,
+    const ae2f_fpAnnLoss_t* loss_v_opt,
     const ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;

@@ -48,7 +48,8 @@ size_t ae2fCL_mAnnSpInit(
     size_t icount,
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
-    ae2f_AnnDelta_t CalDelta,
+    ae2f_AnnAct_t ActDeriv,
+    ae2f_AnnLoss_t Loss,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -71,7 +72,8 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     size_t icount,
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
-    ae2f_AnnDelta_t CalDelta,
+    ae2f_AnnAct_t ActDeriv,
+    ae2f_AnnLoss_t Loss,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt

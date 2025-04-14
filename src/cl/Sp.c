@@ -70,7 +70,8 @@ static ae2f_err_t Train(
         *uf.F = *delta_optA;
     else {
         er = Predict(_this, in, uf.F);
-        *uf.F = _this->CalDelta(*uf.F, goal_optB);
+        *uf.F = _this->Loss(*uf.F, goal_optB) 
+        * (_this->ActDeriv ? _this->ActDeriv(*uf.F) : *uf.F);
     }
     if(er) return er;
 
@@ -119,7 +120,8 @@ size_t ae2fCL_mAnnSpInit(
     size_t icount,
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
-    ae2f_AnnDelta_t CalDelta,
+    ae2f_AnnAct_t ActDeriv,
+    ae2f_AnnLoss_t Loss,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -128,7 +130,17 @@ size_t ae2fCL_mAnnSpInit(
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 
-    ae2f_mAnnSpInit(perc_opt, icount, w_opt, Act, CalDelta, &err, off_opt);
+    ae2f_mAnnSpInit(
+        perc_opt
+        , icount
+        , w_opt
+        , Act
+        , ActDeriv
+        , Loss
+        , &err
+        , off_opt
+    );
+
     if(err) goto END;
 
     *ae2fCL_mAnnSpWCl(perc_opt) = clCreateBuffer(
@@ -164,14 +176,25 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     size_t icount,
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
-    ae2f_AnnDelta_t CalDelta,
+    ae2f_AnnAct_t ActDeriv,
+    ae2f_AnnLoss_t Loss,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
 ) noexcept {
     ae2fCL_AnnSp* v;
     v = calloc(ae2fCL_mAnnSpInitSz(off_opt, icount), 1);
-    ae2fCL_mAnnSpInit(&v->CL_Sp, icount, w_opt, Act, CalDelta, errret_opt, erronnfound_opt, off_opt);
+    ae2fCL_mAnnSpInit(
+        &v->CL_Sp
+        , icount
+        , w_opt
+        , Act
+        , ActDeriv
+        , Loss
+        , errret_opt
+        , erronnfound_opt
+        , off_opt
+    );
     return v;
 }
 

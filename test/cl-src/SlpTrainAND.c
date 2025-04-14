@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define gLearningRate 0.1
-#define gEpochs 5000
+#define gEpochs 1000
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -16,7 +16,7 @@ ForwardPrime(ae2f_float_t output) {
     return output * (1.0 - output);
 }
 
-static ae2f_AnnDelta_t Backward;
+static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
 Backward(ae2f_float_t o, ae2f_float_t T) {
@@ -43,7 +43,7 @@ int main() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     ae2fCL_AnnSlp* Slp = ae2fCL_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2, &errcl
     );
     ae2f_float_t outbuff[2] = {  5 };

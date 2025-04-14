@@ -8,7 +8,8 @@ size_t ae2f_mAnnSlpInit(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -45,7 +46,7 @@ size_t ae2f_mAnnSlpInit(
         	ae2f_mAnnSpInit(
 				ae2f_mAnnSlpPerV(_this, i),
 				_inc, w_opt,
-				Act, CalDelta,
+				Act, ActDeriv, Loss,
 				&ertmp, 0
 		);
 
@@ -75,14 +76,27 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const size_t* inpads_opt,
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_fpAnnAct_t ActDeriv, 
+    ae2f_fpAnnLoss_t Loss,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
 ) noexcept {
     ae2f_AnnSlp* _this = 0;
     _this = calloc(ae2f_mAnnSlpInitSz(outc, offset_opt), 1);
-    ae2f_mAnnSlpInit(&_this->Slp, incs_optA, ginc_optB, inpads_opt, w_opt, Act, CalDelta, outc, offset_opt, err);
+    ae2f_mAnnSlpInit(
+		&_this->Slp
+		, incs_optA
+		, ginc_optB
+		, inpads_opt
+		, w_opt
+		, Act
+		, ActDeriv
+		, Loss
+		, outc
+		, offset_opt
+		, err
+	);
     if(err) *err &= ~ae2f_errGlob_DONE_HOWEV;
     return _this;
 }
