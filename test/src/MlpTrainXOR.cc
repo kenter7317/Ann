@@ -4,9 +4,9 @@
 
 #include <math.h>
 
-#define gLearningRate 0.0000001
-#define gEpochs 50
-#define gEpochsVerbose 10
+#define gLearningRate 0.01
+#define gEpochs 50000
+#define gEpochsVerbose 100
 
 #define SOMETHINGSMALL 0.0000001
 
@@ -28,9 +28,6 @@ static ae2f_float_t sigmoid_deriv(ae2f_float_t x) {
 }
 
 static ae2f_float_t ce_gradient(ae2f_float_t y_pred, ae2f_float_t y_true) {
-    static uint64_t counter = 0;
-
-    counter++;
     return y_pred - y_true;
 }
 
@@ -48,6 +45,11 @@ static const ae2f_float_t xor_inputs[4][2] = {
 static const ae2f_float_t xor_targets[4][1] = {
     {0}, {1}, {1}, {0}
 };
+
+
+static ae2f_float_t mse(ae2f_float_t a, ae2f_float_t b) {
+    return (a - b) * (a - b);
+}
 
 static ae2f_float_t 
 _wv[12]
@@ -79,7 +81,7 @@ int main() {
     // Function pointers
     ae2f_fpAnnAct_t actv[] = {sigmoid, sigmoid}; // Output: no activation
     ae2f_fpAnnAct_t act_deriv_v[] = {sigmoid_deriv, sigmoid_deriv}; // Last unused
-    ae2f_fpAnnLoss_t loss_v[] = {ce_gradient, ce_gradient}; 
+    ae2f_fpAnnLoss_t loss_v[] = {0, mse}; 
 
     WeightMaker(wv, layerlenv, layerc);
 

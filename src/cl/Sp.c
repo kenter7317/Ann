@@ -128,8 +128,6 @@ static ae2f_err_t Train(
         0, 0, event
     )) != CL_SUCCESS) return (ae2f_errGlob_NFOUND);
 
-    puts("Sp Train ReadBuffer");
-
     if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _W, 
         CL_TRUE, 0, 
@@ -142,8 +140,6 @@ static ae2f_err_t Train(
     #undef return
     if(event[0]) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
     if(event[1]) ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
-
-    puts("Sp Train end");
     return er;
 }
 

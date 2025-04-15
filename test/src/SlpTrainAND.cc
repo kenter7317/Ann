@@ -19,7 +19,7 @@ static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
 Backward(ae2f_float_t o, ae2f_float_t T) {
-    return (T - o);
+    return (o - T);
 }
 int mainc(), maincc();
 int main() {

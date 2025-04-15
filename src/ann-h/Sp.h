@@ -38,7 +38,7 @@ ae2f_err_t Predict(
         sum += ae2f_mAnnSpPredictI(_this, in, i);
     }
 
-    sum += *ae2f_mAnnSpB(_this);
+    sum += *ae2f_mAnnSpB(_this, const);
 
     if(_this->Act) sum = (_this)->Act(sum);
 
@@ -61,11 +61,11 @@ ae2f_err_t Train(
     if(!_this) return (ae2f_errGlob_PTR_IS_NULL);
     if(!in) return (ae2f_errGlob_PTR_IS_NULL);
     if(learningrate == 0) return (ae2f_errGlob_OK);
-    if(!_this->Loss) return ae2f_errGlob_IMP_NOT_FOUND;
 
     if(delta_optA) 
         _delta = *delta_optA;
     else {
+        if(!_this->Loss) return ae2f_errGlob_IMP_NOT_FOUND;
         err = ae2f_mAnnSpPredict(_this, in, &_delta);
         if(err) goto __DONE;
         _delta = (_this->ActDeriv ? _this->ActDeriv(_delta) : _delta) * _this->Loss(_delta, goal_optB);
@@ -74,10 +74,10 @@ ae2f_err_t Train(
     _delta *= learningrate;
 
     for(size_t i = 0; i < _this->inc; i++) {
-        ae2f_mAnnSpW(_this, )[i] += _delta * in[i];
+        ae2f_mAnnSpW(_this, )[i] -= _delta * in[i];
     }
     
-    *ae2f_mAnnSpB(_this) += _delta;
+    *ae2f_mAnnSpB(_this) -= _delta;
 
     __DONE:
     return err;

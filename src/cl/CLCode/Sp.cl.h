@@ -77,4 +77,4 @@ __kernel void ae2fCL_eAnnKernsSpTrain(
         	out = loc[0]; \
     	}
 
-#define ae2fCL_AnnDevSpTrain(_in, field, LrErr, i) ((field)[i] += (LrErr) * (_in)[i])
+#define ae2fCL_AnnDevSpTrain(_in, field, LrErr, i) ((field)[i] -= (LrErr) * (_in)[i])

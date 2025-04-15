@@ -10,12 +10,6 @@ Step(ae2f_float_t x) {
     return x >= 0;
 }
 
-
-static ae2f_float_t
-Calculate(ae2f_float_t out, ae2f_float_t goal) {
-    return goal - out;
-}
-
 static ae2f_float_t
 Forward(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
@@ -28,7 +22,7 @@ ForwardPrime(ae2f_float_t output) {
 
 static ae2f_float_t
 Backward(ae2f_float_t output, ae2f_float_t target) {
-    return (target - output) * ForwardPrime(output);
+    return (output - target);
 }
 
 int main() {
