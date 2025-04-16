@@ -11,8 +11,9 @@ Sigmoid(ae2f_float_t x) {
 
 #define SigmoidDeriv 0
 
-ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
-    return out - goal;
+static ae2f_float_t
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
 
 ae2f_extern int mainc() {
@@ -27,7 +28,7 @@ ae2f_extern int mainc() {
 
     Perc = (ae2f_mAnnSp*)ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), 0 /*Buff*/, 
-        Sigmoid, SigmoidDeriv, Sub, &err, 0
+        Sigmoid, SigmoidDeriv, Backward, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
 
@@ -79,7 +80,7 @@ int maincc() {
 
     Perc = ae2f_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
-        Sigmoid, SigmoidDeriv, Sub, &err, 0
+        Sigmoid, SigmoidDeriv, Backward, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
 

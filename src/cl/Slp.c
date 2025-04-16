@@ -140,7 +140,7 @@ _BUFFSET:
 		*ae2f_mAnnSpB(perc) += PREDICTED_BUFF[i] = 
 			delta_optA ?
 			PREDICTED_BUFF[i] * learningrate :
-			perc->Loss(PREDICTED_BUFF[i], goal_optB[i]) 
+			perc->LossDeriv(PREDICTED_BUFF, goal_optB, i, OC) 
 			* perc->ActDeriv(PREDICTED_BUFF[i]) 
 			* learningrate;
 	}
@@ -403,7 +403,7 @@ size_t ae2fCL_mAnnSlpInit(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
@@ -442,7 +442,7 @@ size_t ae2fCL_mAnnSlpInit(
         ae2f_mAnnSpInit(
             ae2f_mAnnSlpPerV(_this, i),
             _inc, w_opt,
-            Act, ActDeriv, Loss,
+            Act, ActDeriv, LossDeriv,
             &ertmp, 0
         );
 
@@ -501,7 +501,7 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err_opt,
@@ -519,7 +519,7 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
 		, w_opt
 		, Act
 		, ActDeriv
-		, Loss
+		, LossDeriv
 		, outc
 		, 0
 		, &err

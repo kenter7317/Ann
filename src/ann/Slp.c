@@ -9,7 +9,7 @@ size_t ae2f_mAnnSlpInit(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -46,7 +46,7 @@ size_t ae2f_mAnnSlpInit(
         	ae2f_mAnnSpInit(
 				ae2f_mAnnSlpPerV(_this, i),
 				_inc, w_opt,
-				Act, ActDeriv, Loss,
+				Act, ActDeriv, LossDeriv,
 				&ertmp, 0
 		);
 
@@ -77,7 +77,7 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -92,7 +92,7 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
 		, w_opt
 		, Act
 		, ActDeriv
-		, Loss
+		, LossDeriv
 		, outc
 		, offset_opt
 		, err

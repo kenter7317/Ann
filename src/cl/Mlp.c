@@ -12,7 +12,7 @@ size_t ae2fCL_AnnMlpInit(
 		const size_t* inpadv_opt,
         const ae2f_fpAnnAct_t* actv_opt,
         const ae2f_fpAnnAct_t* act_deriv_v_opt,
-        const ae2f_fpAnnLoss_t* loss_v_opt,
+        const ae2f_fpAnnLoss_t* lossderiv_v_opt,
 		const ae2f_float_t* weights_opt,
 		ae2f_err_t* errret_opt,
 		cl_int* errnfound_opt
@@ -62,10 +62,8 @@ size_t ae2fCL_AnnMlpInit(
 			, 0
 			, weights_opt
 			, actv_opt ? actv_opt[i] : 0
-			, act_deriv_v_opt 
-			? act_deriv_v_opt[i]
-			: 0
-            , loss_v_opt ? loss_v_opt[i] : 0
+			, act_deriv_v_opt ? act_deriv_v_opt[i] : 0
+            , lossderiv_v_opt ? lossderiv_v_opt[i] : 0
 			, LAYERSZ_R
 			, 0
 			, &e
@@ -104,7 +102,7 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
 		const size_t* inpadv_opt,
         const ae2f_fpAnnAct_t* actv_opt,
         const ae2f_fpAnnAct_t* act_deriv_v_opt,
-        const ae2f_fpAnnLoss_t* loss_v_opt,
+        const ae2f_fpAnnLoss_t* lossderiv_v_opt,
 		const ae2f_float_t* weights_opt,
 		ae2f_err_t* errret_opt,
 		cl_int* errnfound_opt
@@ -126,7 +124,7 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
 		    , inpadv_opt
 		    , actv_opt
 		    , act_deriv_v_opt
-		    , loss_v_opt
+		    , lossderiv_v_opt
 		    , weights_opt
 		    , errret_opt
 		    , errnfound_opt

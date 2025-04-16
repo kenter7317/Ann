@@ -30,8 +30,10 @@ typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;
 /// @param goal Expected value (wanted)
 /// @return Calculated loss.
 typedef ae2f_float_t ae2f_AnnLoss_t (
-		ae2f_float_t out, 
-		ae2f_float_t goal
+		const ae2f_float_t* out, 
+		const ae2f_float_t* goal,
+		size_t index,
+		size_t count
 		);
 
 /// @brief

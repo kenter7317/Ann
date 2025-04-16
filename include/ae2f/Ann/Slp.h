@@ -172,7 +172,7 @@ ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f
 /// Pre-weights.
 /// @param Act 
 /// Activasion. it will be set globally.
-/// @param Loss 
+/// @param LossDeriv 
 /// Delta calculation. It will be set globally.
 /// @param[in] outc 
 /// Desired output count
@@ -192,7 +192,7 @@ size_t ae2f_mAnnSlpInit(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -212,7 +212,7 @@ size_t ae2f_mAnnSlpInit(
 /// Activasion. it will be set globally.
 /// @param ActDeriv
 /// Activasion. it will be set globally.
-/// @param Loss 
+/// @param LossDeriv 
 /// Delta calculation. It will be set globally.
 /// @param[in] outc 
 /// Desired output count
@@ -223,8 +223,8 @@ size_t ae2f_mAnnSlpInit(
 /// @return 
 /// Its desired size
 /// @ref ae2f_mAnnSlpInitSz(outc, offset_opt)
-#define ae2f_mAnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt) \
-ae2f_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt)
+#define ae2f_mAnnSlpInitA(_this, incs, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt) \
+ae2f_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt)
 
 /// @memberof ae2f_mAnnSlp
 /// @brief 
@@ -238,7 +238,7 @@ ae2f_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, o
 /// Pre-weights.
 /// @param Act 
 /// Activasion. it will be set globally.
-/// @param Loss 
+/// @param LossDeriv 
 /// Delta calculation. It will be set globally.
 /// @param[in] outc 
 /// Desired output count
@@ -249,8 +249,8 @@ ae2f_mAnnSlpInit(_this, incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, o
 /// @return 
 /// Its desired size
 /// @ref ae2f_mAnnSlpInitSz(outc, offset_opt)
-#define ae2f_mAnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt) \
-ae2f_mAnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt)
+#define ae2f_mAnnSlpInitB(_this, ginc, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt) \
+ae2f_mAnnSlpInit(_this, 0, ginc, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt)
 
 typedef union ae2f_AnnSlp {
     ae2f_mAnnSlp Slp;
@@ -273,7 +273,7 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const ae2f_float_t* w_opt,
     ae2f_fpAnnAct_t Act, 
     ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -285,8 +285,8 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
 /// See @ref ae2f_mAnnSlpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
-#define ae2f_AnnSlpMkA(incs, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt) \
-ae2f_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt)
+#define ae2f_AnnSlpMkA(incs, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt) \
+ae2f_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt)
 
 /// @memberof ae2f_mAnnSlp
 /// @brief 
@@ -294,8 +294,8 @@ ae2f_AnnSlpMk(incs, 0, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt,
 /// See @ref ae2f_mAnnSlpInit.
 /// 
 /// It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
-#define ae2f_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt) \
-ae2f_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, ActDeriv, Loss, outc, offset_opt, err_opt)
+#define ae2f_AnnSlpMkB(ginc, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt) \
+ae2f_AnnSlpMk(0, ginc, inpads_opt, w_opt, Act, ActDeriv, LossDeriv, outc, offset_opt, err_opt)
 
 /// @fn ae2f_mAnnSlpDel
 /// @memberof ae2f_mAnnSlp

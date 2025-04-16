@@ -65,10 +65,13 @@ ae2f_err_t Train(
     if(delta_optA) 
         _delta = *delta_optA;
     else {
-        if(!_this->Loss) return ae2f_errGlob_IMP_NOT_FOUND;
+        if(!_this->LossDeriv) return ae2f_errGlob_IMP_NOT_FOUND;
         err = ae2f_mAnnSpPredict(_this, in, &_delta);
         if(err) goto __DONE;
-        _delta = (_this->ActDeriv ? _this->ActDeriv(_delta) : _delta) * _this->Loss(_delta, goal_optB);
+        _delta = (_this->ActDeriv ? 
+            _this->ActDeriv(_delta) : _delta) * 
+            _this->LossDeriv(&_delta, &goal_optB, 0, 1
+            );
     }
 
     _delta *= learningrate;

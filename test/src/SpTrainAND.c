@@ -21,8 +21,8 @@ ForwardPrime(ae2f_float_t output) {
 }
 
 static ae2f_float_t
-Backward(ae2f_float_t output, ae2f_float_t target) {
-    return (output - target);
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
 
 int main() {

@@ -18,9 +18,10 @@ ForwardPrime(ae2f_float_t output) {
 static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
-Backward(ae2f_float_t o, ae2f_float_t T) {
-    return (o - T);
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
+
 int mainc(), maincc();
 int main() {
     return mainc() + maincc();

@@ -17,9 +17,8 @@
 #ifndef ae2fCL_Ann_Sp_h
 #define ae2fCL_Ann_Sp_h
 
-#include <ae2fCL/Loc.h>
 #include <ae2f/Ann/Sp.h>
-#include <CL/cl.h>
+#include <ae2fCL/Ann.h>
 
 #if ae2f_WhenCXX(!) 0
 struct ae2fCL_mAnnSp {
@@ -49,7 +48,7 @@ size_t ae2fCL_mAnnSpInit(
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
     ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t Loss,
+    ae2f_AnnLoss_t LossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -73,7 +72,7 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
     ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t Loss,
+    ae2f_AnnLoss_t LossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt

@@ -95,7 +95,7 @@ static ae2f_err_t Train(
         *uf.F = *delta_optA;
     else {
         er = Predict(_this, in, uf.F);
-        *uf.F = _this->Loss(*uf.F, goal_optB) 
+        *uf.F = _this->LossDeriv(uf.F, &goal_optB, 0, 1) 
         * (_this->ActDeriv ? _this->ActDeriv(*uf.F) : *uf.F);
     }
     if(er) return er;
@@ -150,7 +150,7 @@ size_t ae2fCL_mAnnSpInit(
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
     ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t Loss,
+    ae2f_AnnLoss_t LossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -165,7 +165,7 @@ size_t ae2fCL_mAnnSpInit(
         , w_opt
         , Act
         , ActDeriv
-        , Loss
+        , LossDeriv
         , &err
         , off_opt
     );
@@ -206,7 +206,7 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     const ae2f_float_t* w_opt,
     ae2f_AnnAct_t Act,
     ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t Loss,
+    ae2f_AnnLoss_t LossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -219,7 +219,7 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
         , w_opt
         , Act
         , ActDeriv
-        , Loss
+        , LossDeriv
         , errret_opt
         , erronnfound_opt
         , off_opt

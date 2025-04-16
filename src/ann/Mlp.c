@@ -10,7 +10,7 @@ size_t ae2f_mAnnMlpInit(
     const size_t* inpadv_opt,
     const ae2f_fpAnnAct_t* actv_opt,
     const ae2f_fpAnnAct_t* act_deriv_v_opt,
-    const ae2f_fpAnnLoss_t* loss_v_opt,
+    const ae2f_fpAnnLoss_t* lossderiv_v_opt,
     const ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) {
@@ -68,7 +68,7 @@ size_t ae2f_mAnnMlpInit(
 					? act_deriv_v_opt[i]
 					: 0 
 
-					, loss_v_opt ? loss_v_opt[i] : 0
+					, lossderiv_v_opt ? lossderiv_v_opt[i] : 0
 				    , LAYERSZ_R, 0, &e
 				    );
 
@@ -107,7 +107,7 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
 		const size_t* inpadv_opt,
 		const ae2f_fpAnnAct_t* actv_opt,
 		const ae2f_fpAnnAct_t* act_deriv_v_opt,
-		const ae2f_fpAnnLoss_t* loss_v_opt,
+		const ae2f_fpAnnLoss_t* lossderiv_v_opt,
 		const ae2f_float_t* weights_opt,
 		ae2f_err_t* errret_opt
 ) noexcept {
@@ -121,7 +121,7 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
 		    , inpadv_opt
 		    , actv_opt
 		    , act_deriv_v_opt
-		    , loss_v_opt
+		    , lossderiv_v_opt
 		    , weights_opt
 		    , errret_opt
     );

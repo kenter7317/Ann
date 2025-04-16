@@ -77,7 +77,7 @@ struct ae2f_mAnnSp {
     size_t inc;
 
     /// @brief Delta calculation
-    ae2f_AnnLoss_t* Loss;
+    ae2f_AnnLoss_t* LossDeriv;
     
     ae2f_AnnAct_t
     /** @brief Activasion function customisable. */
@@ -149,8 +149,8 @@ struct ae2f_mAnnSp {
 /// Weights 
 /// @param Act 
 /// Activasion function.
-/// @param Loss 
-/// Loss calculation function.
+/// @param LossDeriv 
+/// LossDeriv calculation function.
 /// @param[out] erret_opt 
 /// State
 /// @param offset_opt
@@ -165,7 +165,7 @@ size_t ae2f_mAnnSpInit(
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
     ae2f_fpAnnAct_t ActDerive,
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     ae2f_err_t* erret_opt,
     size_t offset_opt
 ) noexcept;
@@ -190,7 +190,7 @@ ae2f_AnnSp* ae2f_AnnSpMk(
     const ae2f_float_t* W_opt,
     ae2f_fpAnnAct_t Act,
     ae2f_fpAnnAct_t ActDerive,
-    ae2f_fpAnnLoss_t Loss,
+    ae2f_fpAnnLoss_t LossDeriv,
     ae2f_err_t* erret,
     size_t offset_opt
 ) noexcept;

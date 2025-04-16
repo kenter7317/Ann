@@ -15,9 +15,11 @@ SigmoidPrime(ae2f_float_t x) {
     return (x) * (1.0f - x);
 }
 
-ae2f_AnnLoss_t Sub;
-ae2f_float_t Sub(ae2f_float_t out, ae2f_float_t goal) {
-    return out - goal;
+static ae2f_AnnLoss_t Sub;
+
+static ae2f_float_t
+Sub(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
 
 int mainc() {
