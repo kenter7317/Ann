@@ -50,16 +50,6 @@ constexprfun ae2f_float_t* ae2f_TMP W() {
     return ae2f_mAnnSpW(this, );
 }
 
-template<typename T>
-constexprfun const T* ae2f_TMP X() const {
-    return ae2f_mAnnSpX(this, T*, const);
-}
- 
-template<typename T>
-constexprfun T* ae2f_TMP X() {
-    return ae2f_mAnnSpX(this, T*, );
-}
-
 constexprfun size_t ae2f_TMP sz(size_t off, size_t inc) {
     return ae2f_mAnnSpInitSz(off, inc);
 }

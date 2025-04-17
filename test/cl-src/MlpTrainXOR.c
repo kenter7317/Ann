@@ -1,11 +1,14 @@
+// 17.6 sec on 2:4:1
+// TIMEOUT sec on 2:500:1
+
 #include "../test.h"
 #include <ae2fCL/Ann/Mlp.h>
 #include <stdio.h>
 
 #include <math.h>
 
-#define gLearningRate 0.1
-#define gEpochs 10000
+#define gLearningRate 0.2
+#define gEpochs 2000
 #define gEpochsVerbose 100
 
 // XOR dataset
@@ -35,7 +38,7 @@ int main() {
     ae2fCL_AnnMkEasy(0);
 
     // MLP: 2 input, 4 hidden, 1 output (3 layers)
-    size_t layerlenv[] = {2, 4, 1};
+    size_t layerlenv[] = {2, 3, 1};
     size_t layerc = sizeof(layerlenv) / sizeof(layerlenv[0]);
 
     // Function pointers
@@ -91,6 +94,10 @@ int main() {
         int predicted = y_pred > 0.5 ? 1 : 0;
         printf("Input: [%.0f, %.0f], Raw: %.4f, Predicted: %d, Target: %.0f\n",
                xor_inputs[i][0], xor_inputs[i][1], output[0], predicted, xor_targets[i][0]);
+        if(predicted != xor_targets[i][0]) {
+            puts("NO MATCH");
+            return 1;
+        }
     }
 
     ae2f_AnnMlpDel(mlp);

@@ -64,7 +64,7 @@ int mainc() {
     }
 
     out_checksum += *Perc->B();
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum = Perc->vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -121,7 +121,7 @@ int maincc() {
     }
     
     out_checksum += *Perc->B();
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum = Perc->vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");

@@ -9,8 +9,8 @@ inline static void MlpTrain_OutCompute(
     for(size_t i = 0; i < layerOut->outc; i++) {
         #define SP(i) ae2f_mAnnSlpPerV(layerOut, i, const)
 
-        retDeltaOut[i] = SP(i)->LossDeriv(
+        retDeltaOut[i] = SP(i)->vLossDeriv(
             out, goal, i, layerOut->outc
-        ) * SP(i)->ActDeriv(out[i]);
+        ) * SP(i)->vActDeriv(out[i]);
     }
 }

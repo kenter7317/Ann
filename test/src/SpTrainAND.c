@@ -6,11 +6,6 @@
 #define gEpochs 1000
 
 static ae2f_float_t
-Step(ae2f_float_t x) {
-    return x >= 0;
-}
-
-static ae2f_float_t
 Forward(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }

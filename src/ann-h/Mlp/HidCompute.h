@@ -20,7 +20,7 @@ static void MlpTrain_HidCompute(
     const ae2f_fpAnnAct_t act_p = ae2f_mAnnSlpPerV(
         layerThen
         , i, const
-        )->ActDeriv;
+        )->vActDeriv;
 
     if(act_p)
         retDeltaThen[i] = act_p(outThen[i]) * err;

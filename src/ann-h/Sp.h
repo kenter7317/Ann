@@ -40,7 +40,7 @@ ae2f_err_t Predict(
 
     sum += *ae2f_mAnnSpB(_this, const);
 
-    if(_this->Act) sum = (_this)->Act(sum);
+    if(_this->vAct) sum = (_this)->vAct(sum);
 
     __DONE:
     if(out_opt) *out_opt = sum;
@@ -65,12 +65,12 @@ ae2f_err_t Train(
     if(delta_optA) 
         _delta = *delta_optA;
     else {
-        if(!_this->LossDeriv) return ae2f_errGlob_IMP_NOT_FOUND;
+        if(!_this->vLossDeriv) return ae2f_errGlob_IMP_NOT_FOUND;
         err = ae2f_mAnnSpPredict(_this, in, &_delta);
         if(err) goto __DONE;
-        _delta = (_this->ActDeriv ? 
-            _this->ActDeriv(_delta) : _delta) * 
-            _this->LossDeriv(&_delta, &goal_optB, 0, 1
+        _delta = (_this->vActDeriv ? 
+            _this->vActDeriv(_delta) : _delta) * 
+            _this->vLossDeriv(&_delta, &goal_optB, 0, 1
             );
     }
 

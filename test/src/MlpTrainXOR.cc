@@ -4,8 +4,8 @@
 
 #include <math.h>
 
-#define gLearningRate 0.1
-#define gEpochs 10000
+#define gLearningRate 0.17
+#define gEpochs 3000
 #define gEpochsVerbose 100
 
 // XOR dataset

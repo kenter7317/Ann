@@ -30,6 +30,10 @@ int mainc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
+    ae2f_float_t Buff2[] = {
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
     ae2fCL_AnnSp* Perc;
     ae2f_float_t out_checksum = 0;
     
@@ -37,7 +41,7 @@ int mainc() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     Perc = ae2fCL_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
+        sizeof(Buff)/sizeof(ae2f_float_t), Buff2, 
         Sigmoid, SigmoidPrime, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -61,7 +65,7 @@ int mainc() {
         printf("Check-got: %f\n", got);
     }
     out_checksum += *ae2f_mAnnSpB(&Perc->Sp);
-    out_checksum = Perc->Sp.Act(out_checksum);
+    out_checksum = Perc->Sp.vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -84,6 +88,10 @@ int maincc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
+    ae2f_float_t Buff2[] = {
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
     ae2fCL_AnnSp* Perc;
     ae2f_float_t out_checksum = 0;
     
@@ -91,7 +99,7 @@ int maincc() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     Perc = ae2fCL_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
+        sizeof(Buff)/sizeof(ae2f_float_t), Buff2, 
         Sigmoid, SigmoidPrime, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
@@ -114,7 +122,7 @@ int maincc() {
         printf("Check-got: %f\n", got);
     }
     out_checksum += *Perc->Sp.B();
-    out_checksum = Perc->Sp.Act(out_checksum);
+    out_checksum = Perc->Sp.vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");

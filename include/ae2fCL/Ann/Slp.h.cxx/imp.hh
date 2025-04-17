@@ -17,6 +17,13 @@ constexprfun ae2f_float_t* ae2f_TMP OutCache() {
     return ae2fCL_mAnnSlpOutCache(_this);
 }
 
+constexprfun const cl_event* ae2f_TMP EventVec() const {
+    return ae2fCL_mAnnSlpEventVec(_this, const);
+}
+constexprfun cl_event* ae2f_TMP EventVec() {
+    return ae2fCL_mAnnSlpEventVec(_this);
+}
+
 template<typename T>
 constexprfun const T* ae2f_TMP X() const {
     return ae2fCL_mAnnSlpX(_this, T, const);

@@ -20,7 +20,7 @@ ae2f_extern int mainc() {
     ae2f_err_t err = 0;
     ae2f_float_t outfloat = 0;
     ae2f_float_t Buff[] = {
-        0.3, 0.2, 0.4, 0.6, 0.1
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
     };
 
     ae2f_mAnnSp* Perc;
@@ -56,7 +56,7 @@ ae2f_extern int mainc() {
         printf("Check-got: %f\n", got);
     }
     out_checksum += *ae2f_mAnnSpB(Perc);
-    out_checksum = Perc->Act(out_checksum);
+    out_checksum = Perc->vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -75,11 +75,15 @@ int maincc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
+    ae2f_float_t Buff2[] = {
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
     ae2f_AnnSp* Perc;
     ae2f_float_t out_checksum = 0;
 
     Perc = ae2f_AnnSpMk(
-        sizeof(Buff)/sizeof(ae2f_float_t), Buff, 
+        sizeof(Buff)/sizeof(ae2f_float_t), Buff2, 
         Sigmoid, SigmoidDeriv, Backward, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
@@ -103,7 +107,7 @@ int maincc() {
         printf("Check-got: %f\n", got);
     }
     out_checksum += *Perc->Sp.B();
-    out_checksum = Perc->Sp.Act(out_checksum);
+    out_checksum = Perc->Sp.vAct(out_checksum);
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");

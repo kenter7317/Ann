@@ -16,6 +16,7 @@ static ae2f_err_t Predict(
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!outret_opt) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_DONE_HOWEV;
+    if(ae2fCL_Ann.LErr) return ae2f_errGlob_NFOUND;
 
     cl_mem _W = *ae2fCL_mAnnSpWCl(_this, const), _IO = *ae2fCL_mAnnSpIOCl(_this, const);
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpPredict];
@@ -52,6 +53,8 @@ static ae2f_err_t Predict(
         1, event, event + 1
     );
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+    ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
     ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _IO, 
@@ -59,14 +62,33 @@ static ae2f_err_t Predict(
         ae2f_float_t_SIZE, &IBuffer, 
         1, event + 1, event
     );
-    if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+    ae2fCL_Ann.LErr = clReleaseEvent(event[1]); event[1] = 0;
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
-    IBuffer = _this->Act(IBuffer + *ae2f_mAnnSpB(_this, const));
+    IBuffer = _this->vAct(IBuffer + *ae2f_mAnnSpB(_this, const));
     if(outret_opt) *outret_opt = IBuffer;
 
     END:
-    if(event[0]) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
-    if(event[1]) ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+    if(event[0]) {
+        ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+        if(!ae2fCL_Ann.LErr)
+            ae2fCL_Ann.LErr = clReleaseEvent(event[0]);
+    }
+
+    if(ae2fCL_Ann.LErr) {
+        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+    }
+
+    if(event[1]) {
+        ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+        if(!ae2fCL_Ann.LErr)
+            ae2fCL_Ann.LErr = clReleaseEvent(event[1]);
+    }
+
+    if(ae2fCL_Ann.LErr) {
+        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+    }
 
     return err;
 }
@@ -83,6 +105,7 @@ static ae2f_err_t Train(
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(learningrate == 0) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_WRONG_OPERATION;
+    if(ae2fCL_Ann.LErr) return ae2f_errGlob_NFOUND;
     ae2f_err_t er = 0;
 
     cl_event event[2] = {0, 0};
@@ -94,14 +117,14 @@ static ae2f_err_t Train(
     if(delta_optA) 
         *uf.F = *delta_optA;
     else {
-        er = Predict(_this, in, uf.F);
-        *uf.F = _this->LossDeriv(uf.F, &goal_optB, 0, 1) 
-        * (_this->ActDeriv ? _this->ActDeriv(*uf.F) : *uf.F);
+        er = (_this->vPredict ? _this->vPredict(_this, in, uf.F) : ae2f_errGlob_IMP_NOT_FOUND);
+        *uf.F = _this->vLossDeriv(uf.F, &goal_optB, 0, 1) 
+        * (_this->vActDeriv ? _this->vActDeriv(*uf.F) : *uf.F);
     }
     if(er) return er;
 
     *uf.F *= learningrate;
-    *ae2f_mAnnSpB(_this) += *uf.F;
+    *ae2f_mAnnSpB(_this) -= *uf.F;
 
     cl_mem _W = *ae2fCL_mAnnSpWCl(_this), _IO = *ae2fCL_mAnnSpIOCl(_this);
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpTrain];
@@ -135,11 +158,31 @@ static ae2f_err_t Train(
         ae2f_mAnnSpW(_this), 
         1, event, event + 1
     )) != CL_SUCCESS) return (ae2f_errGlob_NFOUND);
+    ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
     END:
     #undef return
-    if(event[0]) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
-    if(event[1]) ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+    if(event[0]) {
+        ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+        if(!ae2fCL_Ann.LErr)
+            ae2fCL_Ann.LErr = clReleaseEvent(event[0]);
+    }
+
+    if(ae2fCL_Ann.LErr) {
+        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+    }
+
+    if(event[1]) {
+        ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
+        if(!ae2fCL_Ann.LErr)
+            ae2fCL_Ann.LErr = clReleaseEvent(event[1]);
+    }
+
+    if(ae2fCL_Ann.LErr) {
+        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+    }
+
     return er;
 }
 
@@ -147,10 +190,10 @@ ae2f_SHAREDEXPORT
 size_t ae2fCL_mAnnSpInit(
     ae2fCL_mAnnSp* perc_opt,
     size_t icount,
-    const ae2f_float_t* w_opt,
-    ae2f_AnnAct_t Act,
-    ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t LossDeriv,
+    ae2f_float_t* Field_opt,
+    ae2f_AnnAct_t vAct,
+    ae2f_AnnAct_t vActDeriv,
+    ae2f_AnnLoss_t vLossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
@@ -162,15 +205,19 @@ size_t ae2fCL_mAnnSpInit(
     ae2f_mAnnSpInit(
         perc_opt
         , icount
-        , w_opt
-        , Act
-        , ActDeriv
-        , LossDeriv
+        , Field_opt
+        , vAct
+        , vActDeriv
+        , vLossDeriv
         , &err
         , off_opt
     );
 
     if(err) goto END;
+
+    if(!Field_opt) {
+        perc_opt->pField = ae2f_reinterpret_cast(ae2f_float_t*, ae2fCL_mAnnSpIOCl(perc_opt) + 1);
+    }
 
     *ae2fCL_mAnnSpWCl(perc_opt) = clCreateBuffer(
         ae2fCL_Ann.Ctx, 
@@ -203,23 +250,23 @@ size_t ae2fCL_mAnnSpInit(
 ae2f_SHAREDEXPORT
 ae2fCL_AnnSp* ae2fCL_AnnSpMk(
     size_t icount,
-    const ae2f_float_t* w_opt,
-    ae2f_AnnAct_t Act,
-    ae2f_AnnAct_t ActDeriv,
-    ae2f_AnnLoss_t LossDeriv,
+    ae2f_float_t* Field_opt,
+    ae2f_AnnAct_t vAct,
+    ae2f_AnnAct_t vActDeriv,
+    ae2f_AnnLoss_t vLossDeriv,
     ae2f_err_t* errret_opt,
     cl_int* erronnfound_opt,
     size_t off_opt
 ) noexcept {
     ae2fCL_AnnSp* v;
-    v = calloc(ae2fCL_mAnnSpInitSz(off_opt, icount), 1);
+    v = calloc(ae2fCL_mAnnSpInitSz(off_opt - (Field_opt ? (icount + 1) * sizeof(ae2f_float_t) : 0), icount), 1);
     ae2fCL_mAnnSpInit(
         &v->CL_Sp
         , icount
-        , w_opt
-        , Act
-        , ActDeriv
-        , LossDeriv
+        , Field_opt
+        , vAct
+        , vActDeriv
+        , vLossDeriv
         , errret_opt
         , erronnfound_opt
         , off_opt
@@ -229,12 +276,12 @@ ae2fCL_AnnSp* ae2fCL_AnnSpMk(
 
 static ae2f_err_t Clean(ae2f_mAnnSp* a) {
     if(!a) return ae2f_errGlob_PTR_IS_NULL;
-    cl_int er[2];
-    er[0] = clReleaseMemObject(*ae2fCL_mAnnSpIOCl(a));
-    er[1] = clReleaseMemObject(*ae2fCL_mAnnSpWCl(a));
+    if(ae2fCL_Ann.LErr) return ae2f_errGlob_NFOUND;
 
-    if(er[0] || er[1])
-    return ae2f_errGlob_NFOUND;
+    ae2fCL_Ann.LErr = clReleaseMemObject(*ae2fCL_mAnnSpIOCl(a));
+    if(ae2fCL_Ann.LErr) return ae2f_errGlob_NFOUND | ae2f_errGlob_FLUSH_FAILED;
+    ae2fCL_Ann.LErr = clReleaseMemObject(*ae2fCL_mAnnSpWCl(a));
+    if(ae2fCL_Ann.LErr) return ae2f_errGlob_NFOUND | ae2f_errGlob_FLUSH_FAILED;
 
     return ae2f_errGlob_OK;
 }

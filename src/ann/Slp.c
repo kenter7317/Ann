@@ -6,10 +6,10 @@ size_t ae2f_mAnnSlpInit(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* w_opt,
-    ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t LossDeriv,
+    const ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct, 
+    ae2f_fpAnnAct_t vActDeriv, 
+    ae2f_fpAnnLoss_t vLossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -45,15 +45,15 @@ size_t ae2f_mAnnSlpInit(
 
         	ae2f_mAnnSpInit(
 				ae2f_mAnnSlpPerV(_this, i),
-				_inc, w_opt,
-				Act, ActDeriv, LossDeriv,
+				_inc, Field_opt,
+				vAct, vActDeriv, vLossDeriv,
 				&ertmp, 0
 		);
 
         	er |= ertmp;
         	*(ae2f_mAnnSlpPerVPad(_this)[i]) = _pad;
 
-        	w_opt && (w_opt += _inc);
+        	Field_opt && (Field_opt += _inc);
 
         	if(_this->inc < _pad + _inc) 
 		{
@@ -74,10 +74,10 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* w_opt,
-    ae2f_fpAnnAct_t Act, 
-    ae2f_fpAnnAct_t ActDeriv, 
-    ae2f_fpAnnLoss_t LossDeriv,
+    const ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct, 
+    ae2f_fpAnnAct_t vActDeriv, 
+    ae2f_fpAnnLoss_t vLossDeriv,
     size_t outc,
     size_t offset_opt,
     ae2f_err_t* err
@@ -89,10 +89,10 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
 		, incs_optA
 		, ginc_optB
 		, inpads_opt
-		, w_opt
-		, Act
-		, ActDeriv
-		, LossDeriv
+		, Field_opt
+		, vAct
+		, vActDeriv
+		, vLossDeriv
 		, outc
 		, offset_opt
 		, err
