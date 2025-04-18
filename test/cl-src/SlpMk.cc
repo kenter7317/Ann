@@ -30,6 +30,10 @@ int mainc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
+    ae2f_float_t Buff2[] = {
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
     ae2f_mAnnSp* Perc = 0;
     ae2fCL_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
@@ -39,7 +43,7 @@ int mainc() {
 
     SLP = ae2fCL_AnnSlpMkB(
         sizeof(Buff)/sizeof(ae2f_float_t), NULL, 
-        Buff, Sigmoid, SigmoidPrime, Sub, 1, 0,
+        Buff2, Sigmoid, SigmoidPrime, Sub, 1, 0,
         &err, errcl
     );
 
@@ -87,6 +91,10 @@ int maincc() {
         0.3, 0.2, 0.4, 0.6, 0.1
     };
 
+    ae2f_float_t Buff2[] = {
+        0, 0.3, 0.2, 0.4, 0.6, 0.1
+    };
+
     ae2f_mAnnSp* Perc = 0;
     ae2fCL_AnnSlp* SLP;
     ae2f_float_t out_checksum = 0;
@@ -96,7 +104,7 @@ int maincc() {
 
     SLP = ae2fCL_AnnSlpMkB(
         sizeof(Buff)/sizeof(ae2f_float_t), NULL, 
-        Buff, Sigmoid, SigmoidPrime, Sub, 1, 0,
+        Buff2, Sigmoid, SigmoidPrime, Sub, 1, 0,
         &err, errcl
     );
 
