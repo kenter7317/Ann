@@ -95,6 +95,12 @@ typedef struct ae2f_mAnnSlp {
     /// Training function
     ae2f_mAnnSlpTrain_t* vTrain;
 
+    /**
+     * @brief
+     * Fields allocated as 2nd array.
+     * */
+    ae2f_float_t* pField;
+
     #if ae2f_WhenCXX(!)0
     #include "Slp.h.cxx/mSlp.hh"
     #endif
@@ -108,7 +114,10 @@ typedef struct ae2f_mAnnSlp {
 /// When not, it is null.
 #define ae2f_mAnnSlpPerVPad(slp, ...) \
 (ae2f_CmpGetMem(slp, expected, 0) ? \
-ae2f_reinterpret_cast(__VA_ARGS__ size_t* __VA_ARGS__ *, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSlp*, slp) + 1) : \
+ae2f_reinterpret_cast( \
+	__VA_ARGS__ size_t* __VA_ARGS__ * \
+	, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSlp*, slp) + 1 \
+	) : \
 0)
 
 /// @memberof ae2f_mAnnSlp
@@ -124,13 +133,26 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnSlpEl*, (ae2f_mAnnSlpPerVPad(slp, __V
 /// @memberof ae2f_mAnnSlp
 /// @brief
 /// Additional buffer allocated.
-#define ae2f_mAnnSlpX(slp, type, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_CmpGetMem(slp, expected, 0) ? (ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) + (slp)->layerc) : 0)
+#define ae2f_mAnnSlpField(slp, ...) \
+ae2f_reinterpret_cast( \
+		__VA_ARGS__ ae2f_float_t* \
+		, ae2f_CmpGetMem(slp, expected, 0) \
+		? ( \
+			ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) \
+			+ (slp)->layerc \
+			) \
+		: 0 \
+		)
 
 /// @memberof ae2f_mAnnSlp
 /// @brief
 /// Desired least byte size for initialising.
-#define ae2f_mAnnSlpInitSz(outc, off) ((off) + sizeof(ae2f_mAnnSlp) + (outc) * sizeof(void*))
+#define ae2f_mAnnSlpInitSz(inc, outc, off) ( \
+		(off) \
+		+ sizeof(ae2f_mAnnSlp) \
+		+ (outc) * sizeof(void*) \
+		+ (outc) * (1 + (inc)) * sizeof(ae2f_float_t) \
+		)
 
 /// @memberof ae2f_mAnnSlp
 /// @brief
@@ -189,7 +211,7 @@ size_t ae2f_mAnnSlpInit(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -270,7 +292,7 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,

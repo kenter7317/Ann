@@ -10,13 +10,6 @@ constexprfun ae2f_float_t* ae2f_TMP OutCache();
 
 constexprfun const cl_event* ae2f_TMP EventVec() const;
 constexprfun cl_event* ae2f_TMP EventVec();
-
-template<typename T>
-constexprfun const T* ae2f_TMP X() const;
-
-template<typename T>
-constexprfun T* ae2f_TMP X();
-
 #undef ae2f_TMP
 
 private:

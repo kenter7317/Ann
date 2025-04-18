@@ -23,15 +23,4 @@ constexprfun const cl_event* ae2f_TMP EventVec() const {
 constexprfun cl_event* ae2f_TMP EventVec() {
     return ae2fCL_mAnnSlpEventVec(_this);
 }
-
-template<typename T>
-constexprfun const T* ae2f_TMP X() const {
-    return ae2fCL_mAnnSlpX(_this, T, const);
-}
-
-template<typename T>
-constexprfun T* ae2f_TMP X() {
-    return ae2fCL_mAnnSlpX(_this, T, const);
-}
-
 #undef ae2f_TMP

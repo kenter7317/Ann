@@ -6,7 +6,7 @@ size_t ae2f_mAnnSlpInit(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -31,29 +31,11 @@ size_t ae2f_mAnnSlpInit(
 	_this->vPredict = Predict;
 	_this->vTrain = Train;
 
+	/* Calculate maximum input size */
 	for(size_t i = 0; i < outc; i++) {
-        	size_t 
-		_inc =  incs_optA ? incs_optA[i] : ginc_optB,
-        	_pad = inpads_opt ? inpads_opt[i] : 0;
-        
-        	if(!(ae2f_mAnnSlpPerVPad(_this)[i]
-        		= calloc(ae2f_mAnnSpInitSz(sizeof(size_t), _inc), 1))) 
-		{
-            		er |= ae2f_errGlob_ALLOC_FAILED;
-            		continue;
-		}
-
-        	ae2f_mAnnSpInit(
-				ae2f_mAnnSlpPerV(_this, i),
-				_inc, Field_opt,
-				vAct, vActDeriv, vLossDeriv,
-				&ertmp, 0
-		);
-
-        	er |= ertmp;
-        	*(ae2f_mAnnSlpPerVPad(_this)[i]) = _pad;
-
-        	Field_opt && (Field_opt += _inc);
+		size_t 
+			_inc =  incs_optA ? incs_optA[i] : ginc_optB
+			, _pad = inpads_opt ? inpads_opt[i] : 0;
 
         	if(_this->inc < _pad + _inc) 
 		{
@@ -61,12 +43,54 @@ size_t ae2f_mAnnSlpInit(
 		}
 	}
 
+	if(Field_opt) {
+		offset_opt -= 
+			sizeof(ae2f_float_t)
+			* _this->inc
+			* _this->outc
+			;
+	}
+	else {
+		Field_opt = ae2f_mAnnSlpField(_this);
+	}
+
+
+	for(size_t i = 0; i < outc; i++) {
+        	size_t 
+		_inc =  incs_optA ? incs_optA[i] : ginc_optB,
+        	_pad = inpads_opt ? inpads_opt[i] : 0;
+        
+        	if(!(ae2f_mAnnSlpPerVPad(_this)[i] 
+					= calloc(
+						ae2f_mAnnSpInitSz(
+							sizeof(size_t)
+							, _inc)
+						, 1
+						)
+					)
+				)
+		{
+            		er |= ae2f_errGlob_ALLOC_FAILED;
+            		continue;
+		}
+
+        	ae2f_mAnnSpInit(
+				ae2f_mAnnSlpPerV(_this, i),
+				_inc, Field_opt + i * _this->inc,
+				vAct, vActDeriv, vLossDeriv,
+				&ertmp, 0
+		);
+
+        	er |= ertmp;
+        	*(ae2f_mAnnSlpPerVPad(_this)[i]) = _pad;
+	}
+
 
 
 #undef return
 DONE:
 	if(err) *err = er;
-	return ae2f_mAnnSlpInitSz(outc, offset_opt);
+	return ae2f_mAnnSlpInitSz(_this->inc, outc, offset_opt);
 }
 
 ae2f_SHAREDEXPORT
@@ -74,7 +98,7 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -83,7 +107,25 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
     ae2f_err_t* err
 ) noexcept {
     ae2f_AnnSlp* _this = 0;
-    _this = calloc(ae2f_mAnnSlpInitSz(outc, offset_opt), 1);
+
+    size_t inc = 0;
+
+    /* Calculate maximum input size */
+    for(size_t i = 0; i < outc; i++) {
+	    size_t 
+		    _inc =  incs_optA ? incs_optA[i] : ginc_optB
+		    , _pad = inpads_opt ? inpads_opt[i] : 0;
+	    
+	    if(inc < _pad + _inc) 
+	    {
+		    inc = _pad + _inc;
+	    }
+    }
+
+	if(Field_opt)
+		offset_opt -= inc * outc * sizeof(ae2f_float_t);
+
+    _this = calloc(ae2f_mAnnSlpInitSz(inc, outc, offset_opt), 1);
     ae2f_mAnnSlpInit(
 		&_this->Slp
 		, incs_optA

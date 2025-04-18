@@ -58,7 +58,7 @@ size_t ae2fCL_mAnnSlpInit(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -88,7 +88,7 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -111,20 +111,17 @@ ae2fCL_AnnSlpMk(0, ginc, inpads_opt, Field_opt, vAct, vActDeriv, vLossDeriv, out
  * @param outc
  * @param off 
  * */
-#define ae2fCL_mAnnSlpInitSz(outc, off) \
-	ae2f_mAnnSlpInitSz(outc, (off) + sizeof(ae2fCL_mAnnSlpMemX) + ((sizeof(ae2f_float_t) + sizeof(cl_event)) * (outc)))
+#define ae2fCL_mAnnSlpInitSz(inc, outc, off) \
+	ae2f_mAnnSlpInitSz(inc, outc, (off) + sizeof(ae2fCL_mAnnSlpMemX) + ((sizeof(ae2f_float_t) + sizeof(cl_event)) * (outc)))
 
 #define ae2fCL_mAnnSlpAdd(slp, ...) \
-	ae2f_mAnnSlpX(slp, ae2fCL_mAnnSlpMemX*, __VA_ARGS__)
+    ae2f_reinterpret_cast(__VA_ARGS__ ae2fCL_mAnnSlpMemX*, ae2f_mAnnSlpField(slp, __VA_ARGS__) + (slp)->inc * (slp)->outc) 
 
 #define ae2fCL_mAnnSlpOutCache(slp, ...) \
 	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2fCL_mAnnSlpAdd(slp, __VA_ARGS__) + 1)
 
 #define ae2fCL_mAnnSlpEventVec(slp, ...) \
  	ae2f_reinterpret_cast(__VA_ARGS__ cl_event*, ae2fCL_mAnnSlpOutCache(slp, __VA_ARGS__) + (slp)->outc)
-
-#define ae2fCL_mAnnSlpX(slp, type, ...) \
- 	ae2f_reinterpret_cast(__VA_ARGS__ type*, ae2fCL_mAnnSlpEventVec(slp, __VA_ARGS__) + (slp)->outc)
 
 #include <ae2f/Pack/End.h>
 

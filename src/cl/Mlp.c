@@ -34,14 +34,20 @@ size_t ae2fCL_AnnMlpInit(
     _this->layerc = --layerc;
 
     for(size_t i = 0; i < layerc; i++) {
+        const size_t 
+        LAYERSZ_L = layerlenv[i],
+        LAYERSZ_R = layerlenv[i + 1];
+
+        if(max < LAYERSZ_R)
+        max = LAYERSZ_R;
+    }
+
+    for(size_t i = 0; i < layerc; i++) {
         cl_int er_cl;
 
         size_t 
         LAYERSZ_L = layerlenv[i],
         LAYERSZ_R = layerlenv[i + 1];
-        
-        if(max < LAYERSZ_R)
-        max = LAYERSZ_R;
 
         ae2f_err_t e = 0;
 
@@ -54,13 +60,14 @@ size_t ae2fCL_AnnMlpInit(
             }* u;
         } perc = {ae2f_mAnnMlpLayerVPad(_this) + i};
 
-        perc.u->pad = calloc(ae2fCL_mAnnSlpInitSz(LAYERSZ_R, sizeof(size_t)), 1);
+        perc.u->pad = calloc(ae2fCL_mAnnSlpInitSz(max, LAYERSZ_R, sizeof(size_t)), 1);
+
         perc.u->pad++;
         ae2fCL_mAnnSlpInitB(
 			perc.u->slp
 			, LAYERSZ_L
 			, 0
-			, weights_opt
+			, weights_opt ? weights_opt + max * max * i : 0
 			, actv_opt ? actv_opt[i] : 0
 			, act_deriv_v_opt ? act_deriv_v_opt[i] : 0
             , lossderiv_v_opt ? lossderiv_v_opt[i] : 0
@@ -69,6 +76,7 @@ size_t ae2fCL_AnnMlpInit(
 			, &e
 			, &er_cl
 			);
+
         if(er_cl) err2 = er_cl;
 
         *(--perc.u->pad) = 0;
@@ -111,7 +119,7 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
     ae2f_err_t err = 0;
     cl_int err2 = 0;
     ae2f_AnnMlp* obj = calloc(
-		    ae2f_mAnnMlpInitSz(layerc, add_opt)
+		    ae2fCL_mAnnMlpInitSz(layerc, add_opt)
 		    , 1
 		    );
 

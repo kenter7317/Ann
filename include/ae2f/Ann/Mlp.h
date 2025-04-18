@@ -39,7 +39,7 @@ typedef ae2f_mAnnSlp ae2f_mAnnMlp;
 
 typedef union ae2f_AnnMlp {
     ae2f_mAnnSlp Slp;
-ae2f_mAnnMlp Mlp;
+    ae2f_mAnnMlp Mlp;
 
     #if ae2f_WhenCXX(!)0
     #include "Mlp.h.cxx/Mlp.hh"
@@ -76,18 +76,16 @@ typedef ae2f_mAnnSlpClean_t ae2f_mAnnMlpClean_t;
 /// @brief
 /// The predicted max buffer count among all perceptron's possible length of I/O.
 #define ae2f_mAnnMlpLayerBuffCount(mlp, ...) \
-ae2f_mAnnSlpX(mlp, __VA_ARGS__ size_t*, __VA_ARGS__)
+ae2f_reinterpret_cast( \
+    __VA_ARGS__ size_t* \
+    , ae2f_mAnnSlpField(mlp, __VA_ARGS__) \
+)
 
 /// @memberof ae2f_mAnnMlp
 /// @brief
 /// Its length is @ref (*ae2f_mAnnMlpLayerBuffCount(mlp) * mlp->layerc, 3 * sizeof(ae2f_float_t)).
 #define ae2f_mAnnMlpCache(mlp, ...) \
 ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t**, ae2f_mAnnMlpLayerBuffCount(mlp, __VA_ARGS__) + 1)
-
-/// @memberof ae2f_mAnnMlp
-/// @brief
-#define ae2f_mAnnMlpX(mlp,type,...) \
-ae2f_reinterpret_cast(__VA_ARGS__ type, ae2f_mAnnMlpCache(mlp, __VA_ARGS__) + 1)
 
 /**
  * @brief

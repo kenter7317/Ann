@@ -51,6 +51,7 @@ size_t ae2f_mAnnMlpInit(
 
 		    perc.u->pad = calloc(
 				    ae2f_mAnnSlpInitSz(
+						LAYERSZ_L,
 					    LAYERSZ_R, 
 					    sizeof(size_t)
 					    )
@@ -61,7 +62,8 @@ size_t ae2f_mAnnMlpInit(
 		    ae2f_mAnnSlpInitB(
 				    perc.u->slp
 				    , LAYERSZ_L
-				    , 0, weights_opt
+				    , 0
+					, weights_opt ? weights_opt + max * max * i : 0
 				    , actv_opt ? actv_opt[i] : 0
 
 					, act_deriv_v_opt 

@@ -8,7 +8,7 @@
 #include <math.h>
 
 #define gLearningRate 0.2
-#define gEpochs 2000
+#define gEpochs 3000
 #define gEpochsVerbose 100
 
 // XOR dataset
@@ -46,6 +46,8 @@ int main() {
     ae2f_fpAnnAct_t act_deriv_v[] = {ForwardPrime, ForwardPrime}; // Last unused
     ae2f_fpAnnLoss_t loss_v[] = { Backward, Backward };
 
+    puts("Before Mk");
+
     // Create MLP
     ae2f_err_t err;
     
@@ -66,6 +68,8 @@ int main() {
         printf("Failed to create MLP: err=%d\n", err);
         return 1;
     }
+
+    puts("Starting Training;");
 
     for (int epoch = 0; epoch < gEpochs; epoch++) {
         ae2f_float_t total_loss = 0;

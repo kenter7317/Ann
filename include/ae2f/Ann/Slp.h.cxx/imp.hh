@@ -37,16 +37,6 @@ inline ae2f_err_t ae2f_TMP TrainB(
     return ae2f_mAnnSlpTrainB(this, in, goal_optB, learningrate);
 }
 
-template<typename T>
-constexprfun const T* ae2f_TMP X() const {
-    return ae2f_mAnnSlpX(this, T*, const);
-}
- 
-template<typename T>
-constexprfun T* ae2f_TMP X() {
-    return ae2f_mAnnSlpX(this, T*);
-}
-
 constexprfun ae2f_mAnnSlpEl* ae2f_TMP Perc(size_t i) {
     return ae2f_mAnnSlpPerV(this, i);
 }

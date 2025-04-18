@@ -432,7 +432,7 @@ size_t ae2fCL_mAnnSlpInit(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -459,6 +459,16 @@ size_t ae2fCL_mAnnSlpInit(
     _this->vPredict = PredictCL;
     _this->vTrain = TrainCL;
 
+	for(size_t i = 0; i < outc; i++) {
+        size_t 
+        _inc =  incs_optA ? incs_optA[i] : ginc_optB,
+        _pad = inpads_opt ? inpads_opt[i] : 0;
+
+		if(_this->inc < _pad + _inc) {
+            _this->inc = _pad + _inc;
+        }
+	}
+
     for(size_t i = 0; i < outc; i++) {
         size_t 
         _inc =  incs_optA ? incs_optA[i] : ginc_optB,
@@ -484,10 +494,6 @@ size_t ae2fCL_mAnnSlpInit(
         *ae2f_mAnnSlpPerVPad(_this)[i] = _pad;
 
         Field_opt && (Field_opt += _inc);
-
-        if(_this->inc < _pad + _inc) {
-            _this->inc = _pad + _inc;
-        }
     }
 
     ae2fCL_mAnnSlpAdd(_this)->In = 
@@ -506,7 +512,7 @@ size_t ae2fCL_mAnnSlpInit(
     DONE:
     if(err_opt) *err_opt = er;
     if(errnfound_opt) *errnfound_opt = V;
-    return ae2fCL_mAnnSlpInitSz(outc, offset_opt);
+    return ae2fCL_mAnnSlpInitSz(_this->inc, outc, offset_opt);
 }
 
 static ae2f_err_t CleanCL(ae2f_mAnnSlp* _) {
@@ -543,7 +549,7 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     const size_t* incs_optA,
     size_t ginc_optB,
     const size_t* inpads_opt,
-    const ae2f_float_t* Field_opt,
+    ae2f_float_t* Field_opt,
     ae2f_fpAnnAct_t vAct, 
     ae2f_fpAnnAct_t vActDeriv, 
     ae2f_fpAnnLoss_t vLossDeriv,
@@ -552,7 +558,18 @@ ae2fCL_AnnSlp* ae2fCL_AnnSlpMk(
     ae2f_err_t* err_opt,
     cl_int* err_nfound_opt
 ) noexcept {
-    ae2fCL_AnnSlp* rtn = calloc(ae2fCL_mAnnSlpInitSz(outc, offset_opt), 1);
+	size_t inc = 0;
+	for(size_t i = 0; i < outc; i++) {
+        size_t 
+        _inc =  incs_optA ? incs_optA[i] : ginc_optB,
+        _pad = inpads_opt ? inpads_opt[i] : 0;
+
+		if(inc < _pad + _inc) {
+            inc = _pad + _inc;
+        }
+	}
+
+    ae2fCL_AnnSlp* rtn = calloc(ae2fCL_mAnnSlpInitSz(inc, outc, offset_opt), 1);
     ae2f_err_t err = 0;
     cl_int err2 = 0;
 

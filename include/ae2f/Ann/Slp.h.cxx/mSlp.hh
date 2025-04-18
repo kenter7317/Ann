@@ -30,12 +30,6 @@ inline ae2f_err_t ae2f_TMP TrainB(
     ae2f_float_t learningrate
 ) noexcept;
 
-template<typename T>
-constexprfun const T* ae2f_TMP X() const;
- 
-template<typename T>
-constexprfun T* ae2f_TMP X();
-
 constexprfun ae2f_mAnnSlpEl* ae2f_TMP Perc(size_t);
 constexprfun const ae2f_mAnnSlpEl* ae2f_TMP Perc(size_t) const;
 
