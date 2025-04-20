@@ -112,6 +112,7 @@ int maincc() {
 
     CHECK_ERR(err, CL_SUCCESS, __failure);
     err = SLP->Slp.Predict(Buff, &outfloat);
+    printf("PREDICT: %d\n", err);
 
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
@@ -145,5 +146,6 @@ int maincc() {
 }
 
 int main() {
-    return ((maincc()) | (mainc()));
+    int d = ((maincc()) || (mainc()));
+    return d;
 }

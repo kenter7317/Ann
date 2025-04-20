@@ -51,7 +51,6 @@ static ae2f_err_t Train(
 
     ae2f_err_t _er = 0;
 
-    #if 1
     for(size_t i = 0; i < _this->outc; i++) {
         ae2f_float_t G = goal_optB ? goal_optB[i] : 0;
         union {
@@ -69,24 +68,6 @@ static ae2f_err_t Train(
             learningrate
         );
     }
-    #else
-    size_t i = 0;
-    ae2f_float_t G = goal_optB ? goal_optB[i] : 0;
-    union {
-        size_t* pad;
-        ae2f_mAnnSp* perc;
-    }  layer = {ae2f_mAnnSlpPerVPad(_this)[i]};
-
-    size_t _pad = *layer.pad;
-    layer.pad++;
-
-    _er |= ae2f_mAnnSpTrain(
-        layer.perc, 
-        in + _pad, 
-        delta_optA, G, 
-        learningrate
-    );
-    #endif
 
     return _er;
 }

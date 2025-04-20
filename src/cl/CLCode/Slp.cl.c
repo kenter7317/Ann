@@ -27,20 +27,22 @@ __kernel void ae2fCL_eAnnKernsSlpPredict(
 	__global const ae2f_float_t* const in = in_fieldsqr_out;
 
 	__global const ae2f_float_t* field = 
-		  in + in_sz * (out_id + 1);
+		  in + (in_sz + 1) * (out_id + 1);
 
 	__global ae2f_float_t* out = 
-		  in_fieldsqr_out + in_sz 
-		+ in_sz * out_count
+		in_fieldsqr_out
+		+ in_sz
+		+ (in_sz + 1) * out_count
 		+ out_id;
 
-	ae2fCL_whenCL(__local) ae2f_float_t* loc = _loc + in_sz * out_id;
+	ae2fCL_whenCL(__local) ae2f_float_t* loc = 
+		_loc + in_sz * out_id;
 
 
 	/* in, field, loc, globalid **/
 	ae2fCL_AnnDevSpPredict_Loc(
 			in, field, loc, globalid0 
-	);
+			);
 
 	ae2fCL_AnnDevSpPredict_Out(localid, blockSize, halfBlockSize, loc, *out);
 
@@ -53,8 +55,8 @@ __kernel void ae2fCL_eAnnKernsSlpPredict(
 #undef out_id 
 }
 
-__kernel void ae2fCL_eAnnKernsSlpTrain( 
-	__global ae2f_float_t* in 
+__kernel void ae2fCL_eAnnKernsSlpTrain(
+	__global ae2f_float_t* in
 ) {
 	const size_t 
 		iid = get_global_id(0)
@@ -65,8 +67,8 @@ __kernel void ae2fCL_eAnnKernsSlpTrain(
 
 	__global ae2f_float_t
 		* _field = in + isz,
-		* field = _field + isz * oid,
-		* _LrErr = _field + isz * osz;
+		* field = _field + (isz + 1) * oid,
+		* _LrErr = _field + (isz + 1) * osz;
 
 	/** in, field, lrerr, i */
 	ae2fCL_AnnDevSpTrain(in, field, _LrErr[oid], iid);
