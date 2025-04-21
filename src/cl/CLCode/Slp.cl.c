@@ -1,5 +1,6 @@
 
 #include "Slp.cl.h"
+#include <stdio.h>
 
 __kernel void ae2fCL_eAnnKernsSlpPredict(
 	__global ae2f_float_t* in_fieldsqr_out,
@@ -23,11 +24,10 @@ __kernel void ae2fCL_eAnnKernsSlpPredict(
 	ae2fCL_AnnDevSpPredict_OutTent(localid, blockSize, halfBlockSize);
 	const size_t locid2 = get_local_id(1);
 
-
 	__global const ae2f_float_t* const in = in_fieldsqr_out;
 
 	__global const ae2f_float_t* field = 
-		  in + (in_sz + 1) * (out_id + 1);
+		  in + (in_sz) + (in_sz + 1) * (out_id) + 1;
 
 	__global ae2f_float_t* out = 
 		in_fieldsqr_out
@@ -44,7 +44,7 @@ __kernel void ae2fCL_eAnnKernsSlpPredict(
 			in, field, loc, globalid0 
 			);
 
-	ae2fCL_AnnDevSpPredict_Out(localid, blockSize, halfBlockSize, loc, *out);
+	ae2fCL_AnnDevSpPredict_Out(localid, blockSize, halfBlockSize, loc, (*out));
 
 
 #undef in_sz
@@ -67,7 +67,7 @@ __kernel void ae2fCL_eAnnKernsSlpTrain(
 
 	__global ae2f_float_t
 		* _field = in + isz,
-		* field = _field + (isz + 1) * oid,
+		* field = _field + (isz + 1) * oid + 1,
 		* _LrErr = _field + (isz + 1) * osz;
 
 	/** in, field, lrerr, i */

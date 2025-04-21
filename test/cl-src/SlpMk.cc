@@ -7,6 +7,7 @@
 #define gThreshold 0.0001
 static ae2f_float_t 
 Sigmoid(ae2f_float_t x) {
+    printf("THIS IS SIGMOID %f\n", x);
     return 1.0 / (1.0 + exp(-x));
 }
 
@@ -112,6 +113,10 @@ int maincc() {
 
     CHECK_ERR(err, CL_SUCCESS, __failure);
     err = SLP->Slp.Predict(Buff, &outfloat);
+
+    printf("BIAS %f %p\n", SLP->Slp.Perc(0)->pField[0], SLP->Slp.Perc(0)->pField);
+    printf("W[0] %f %p\n", SLP->Slp.Perc(0)->W()[0], SLP->Slp.Perc(0)->W());
+    
     printf("PREDICT: %d\n", err);
 
     if(err) goto __failure;
@@ -142,6 +147,8 @@ int maincc() {
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
     if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
+
+    printf("is it good? %d\n", err);
     return err;
 }
 

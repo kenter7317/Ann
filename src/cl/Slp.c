@@ -244,6 +244,7 @@ ae2f_err_t PredictCL(
 		return(ae2f_errGlob_NFOUND);
 	}
 
+	/* Inputs */
 	ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
 			ae2fCL_Ann.Q
 			,__X->In
@@ -264,7 +265,6 @@ ae2f_err_t PredictCL(
 
 	if(__X->Changed) 
 	{
-		}
 		ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
 				ae2fCL_Ann.Q
 				, __X->In
@@ -275,6 +275,7 @@ ae2f_err_t PredictCL(
 				, 0, 0, events + 1
 				);
 		if(ae2fCL_Ann.LErr) return(ae2f_errGlob_NFOUND);
+	}
 
 	{
 		if((ae2fCL_Ann.LErr = clSetKernelArg(
@@ -311,8 +312,8 @@ ae2f_err_t PredictCL(
 		if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
 				ae2fCL_Ann.Q
 				, __X->In
-				, CL_TRUE
-				, CHUNKSZ - sizeof(ae2f_float_t) * OC
+				, CL_FALSE
+				, (IC + (IC + 1) * OC) * sizeof(ae2f_float_t)
 				, OC * sizeof(ae2f_float_t)
 				, out
 				, 1, events, events + 1
@@ -320,9 +321,15 @@ ae2f_err_t PredictCL(
 
 
 		if((ae2fCL_Ann.LErr = clReleaseEvent(events[0])))
-		return(ae2f_errGlob_NFOUND);
-
+			return(ae2f_errGlob_NFOUND);
 		events[0] = 0;
+
+		if((ae2fCL_Ann.LErr = clWaitForEvents(1, events + 1)))
+			return(ae2f_errGlob_NFOUND);
+
+		if((ae2fCL_Ann.LErr = clReleaseEvent(events[1])))
+			return(ae2f_errGlob_NFOUND);
+		events[1] = 0;
 	}
 
 	for(size_t i = 0; i < OC; i++)
