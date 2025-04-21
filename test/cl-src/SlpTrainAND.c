@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define gLearningRate 0.1
-#define gEpochs 5000
+#define gEpochs 1000
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {
@@ -16,12 +16,11 @@ ForwardPrime(ae2f_float_t output) {
     return output * (1.0 - output);
 }
 
-static ae2f_AnnDelta_t Backward;
+static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
-Backward(ae2f_float_t o, ae2f_float_t T) {
-    
-    return (T - o) * ForwardPrime(o);
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
 
 int main() {
@@ -43,10 +42,16 @@ int main() {
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
     ae2fCL_AnnSlp* Slp = ae2fCL_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2, &errcl
     );
     ae2f_float_t outbuff[2] = {  5 };
+
+
+    puts(
+		    "Allocation has done.\n" 
+		    "Early prediction is starting..."
+		    );
 
     #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     ae2f_mAnnSlpPredict(&obj->Slp, inb + in_idx, out)
@@ -89,6 +94,9 @@ int main() {
     #define ae2fCL_mAnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
 
     if(err) goto __failure;
+
+    puts("Training session start");
+
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2f_mAnnSlpTrainB(
             &Slp->Slp, ins,
@@ -183,5 +191,6 @@ int main() {
     ae2f_AnnSlpDel(Slp);
     ae2fCL_AnnDel();
     printf("ERR: %d\n", err);
+    printf("ERR-CL: %d\n", ae2fCL_Ann.LErr);
     return err;
 }

@@ -16,10 +16,9 @@
  * 
  */
 #include <ae2f/Ann/Sp.h>
-#include <stdio.h>
 
 #define ae2f_mAnnSpPredictI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__ const)[i] * (in)[i])
-#define ae2f_mAnnSpTrainI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__)[i] += _delta * (in)[i])
+#define ae2f_mAnnSpTrainI(_this, in, i, ...) (ae2f_mAnnSpW(_this, __VA_ARGS__)[i] -= _delta * (in)[i])
 
 static ae2f_mAnnSpPredict_t Predict;
 static ae2f_mAnnSpTrain_t Train;
@@ -39,9 +38,9 @@ ae2f_err_t Predict(
         sum += ae2f_mAnnSpPredictI(_this, in, i);
     }
 
-    sum += *ae2f_mAnnSpB(_this);
+    sum += *ae2f_mAnnSpB(_this, const);
 
-    if(_this->Act) sum = (_this)->Act(sum);
+    if(_this->vAct) sum = (_this)->vAct(sum);
 
     __DONE:
     if(out_opt) *out_opt = sum;
@@ -62,23 +61,24 @@ ae2f_err_t Train(
     if(!_this) return (ae2f_errGlob_PTR_IS_NULL);
     if(!in) return (ae2f_errGlob_PTR_IS_NULL);
     if(learningrate == 0) return (ae2f_errGlob_OK);
-    if(!_this->CalDelta) return ae2f_errGlob_IMP_NOT_FOUND;
 
     if(delta_optA) 
         _delta = *delta_optA;
     else {
+        if(!_this->vLossDeriv) return ae2f_errGlob_IMP_NOT_FOUND;
         err = ae2f_mAnnSpPredict(_this, in, &_delta);
         if(err) goto __DONE;
-        _delta = _this->CalDelta(_delta, goal_optB);
+        _delta = (_this->vActDeriv ? 
+            _this->vActDeriv(_delta) : _delta) * 
+            _this->vLossDeriv(&_delta, &goal_optB, 0, 1
+            ) * learningrate;
     }
-
-    _delta *= learningrate;
 
     for(size_t i = 0; i < _this->inc; i++) {
-        ae2f_mAnnSpW(_this, )[i] += _delta * in[i];
+        ae2f_mAnnSpW(_this, )[i] -= _delta * in[i];
     }
     
-    *ae2f_mAnnSpB(_this) += _delta;
+    *ae2f_mAnnSpB(_this) -= _delta;
 
     __DONE:
     return err;

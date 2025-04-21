@@ -12,15 +12,17 @@ Forward(ae2f_float_t x) {
 
 static ae2f_float_t
 ForwardPrime(ae2f_float_t output) {
+    output += 0.0001;
     return output * (1.0 - output);
 }
 
-static ae2f_AnnDelta_t Backward;
+static ae2f_AnnLoss_t Backward;
 
 static ae2f_float_t
-Backward(ae2f_float_t o, ae2f_float_t T) {
-    return (T - o) * ForwardPrime(o);
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
+
 int mainc(), maincc();
 int main() {
     return mainc() + maincc();
@@ -41,7 +43,7 @@ int mainc() {
 
     ae2f_err_t err2, err;
     ae2f_AnnSlp* Slp = ae2f_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2 
     );
     ae2f_float_t outbuff[2] = {  5 };
@@ -198,7 +200,7 @@ int maincc() {
 
     ae2f_err_t err2, err;
     ae2f_AnnSlp* Slp = ae2f_AnnSlpMkB(
-        2, 0, 0, Forward, Backward, 1, 
+        2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2 
     );
     ae2f_float_t outbuff[2] = {  5 };

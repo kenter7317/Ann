@@ -10,3 +10,6 @@ link_libraries(ae2f::Ann)
 
 find_dependency(CL-Ann-H REQUIRED)
 link_libraries(ae2fCL::CL-Ann-H)
+
+find_dependency(OpenCL REQUIRED)
+link_libraries(OpenCL::OpenCL)

@@ -17,9 +17,10 @@ ae2f_SHAREDEXPORT
 size_t ae2f_mAnnSpInit(
     ae2f_mAnnSp* _this,
     size_t inc,
-    const ae2f_float_t* W_opt,
-    ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct,
+    ae2f_fpAnnAct_t vActDerive,
+    ae2f_fpAnnLoss_t vLossDeriv,
     ae2f_err_t* erret,
     size_t offset_opt
 ) noexcept {
@@ -35,15 +36,18 @@ size_t ae2f_mAnnSpInit(
 
     _this->expected = 1;
     _this->inc = inc;
-    _this->CalDelta = CalDelta;
-    _this->Act = Act;
+    _this->vLossDeriv = vLossDeriv;
+    _this->vAct = vAct;
+    _this->vActDeriv = vActDerive;
     _this->vPredict = Predict;
     _this->vTrain = Train;
     _this->vClean = 0;
 
-    if(W_opt) {
-        memcpy(ae2f_mAnnSpW(_this), W_opt, sizeof(ae2f_float_t) * inc);
+    if(Field_opt) {
+        _this->pField = Field_opt;
+        offset_opt -= sizeof(ae2f_float_t) * (_this->inc + 1);
     } else {
+        _this->pField = ae2f_reinterpret_cast(ae2f_float_t*, _this + 1);
         uint64_t _ = ae2f_AnnLcgRandSeed.u64;
 
         for(size_t i = 0; i < _this->inc; i++) {
@@ -68,16 +72,17 @@ size_t ae2f_mAnnSpInit(
 ae2f_SHAREDEXPORT
 ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inc,
-    const ae2f_float_t* W_opt,
-    ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct,
+    ae2f_fpAnnAct_t vActDerive,
+    ae2f_fpAnnLoss_t vLossDeriv,
     ae2f_err_t* erret,
     size_t additional
 ) {
     ae2f_AnnSp* _this = 0;
 
-    _this = calloc(ae2f_mAnnSpInitSz(additional, inc), 1);
-    ae2f_mAnnSpInit(&_this->Sp, inc, W_opt, Act, CalDelta, erret, additional);
+    _this = calloc(ae2f_mAnnSpInitSz(additional - (Field_opt ? (inc + 1) * sizeof(ae2f_float_t) : 0), inc), 1);
+    ae2f_mAnnSpInit(&_this->Sp, inc, Field_opt, vAct, vActDerive, vLossDeriv, erret, additional);
 
     rtn:
     if(erret) *erret &= ~ae2f_errGlob_DONE_HOWEV;

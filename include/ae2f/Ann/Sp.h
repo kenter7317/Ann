@@ -77,9 +77,13 @@ struct ae2f_mAnnSp {
     size_t inc;
 
     /// @brief Delta calculation
-    ae2f_AnnDelta_t* CalDelta;
-    /// @brief Activasion function customisable.
-    ae2f_AnnAct_t* Act;
+    ae2f_AnnLoss_t* vLossDeriv;
+    
+    ae2f_AnnAct_t
+    /** @brief Activasion function customisable. */
+    * vAct
+    /** @brief Derivative for `vAct`. */
+    , * vActDeriv;
     
     /// @brief Cleaning function
     ae2f_mAnnSpClean_t* vClean;
@@ -89,6 +93,15 @@ struct ae2f_mAnnSp {
 
     /// @brief Training function
     ae2f_mAnnSpTrain_t* vTrain;
+
+    /** 
+     * @brief
+     * Points directly to Memory field it's showing. \n
+     * It's size must be inc + 1(for bias). 
+     * 
+     * Bias goes first, weights vector goes later.
+     */
+    ae2f_float_t* pField;
 
     #if ae2f_WhenCXX(1) + 0
     #include "Sp.h.cxx/mSp.hh"
@@ -102,7 +115,7 @@ struct ae2f_mAnnSp {
 /// 
 /// Valid when @ref ae2f_mAnnSp::expected is 1. \n
 /// When not, it is null.
-#define ae2f_mAnnSpB(_this, ...) (ae2f_CmpGetMem(_this, expected, 0) ? ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSp*, _this) + 1) : 0)
+#define ae2f_mAnnSpB(_this, ...) (ae2f_CmpGetMem(_this, expected, 0) ? (_this)->pField : 0)
 
 /// @memberof ae2f_mAnnSp
 /// @brief 
@@ -111,16 +124,7 @@ struct ae2f_mAnnSp {
 /// 
 /// Valid when @ref ae2f_mAnnSp::expected is 1. \n
 /// When not, it is null.
-#define ae2f_mAnnSpW(_this, ...) (ae2f_CmpGetMem(_this, expected, 0) ? (ae2f_mAnnSpB(_this, __VA_ARGS__) + 1) : 0)
-
-/// @memberof ae2f_mAnnSp
-/// @brief 
-/// Additional allocated byte vector.
-/// 
-/// Valid when @ref ae2f_mAnnSp::expected is 1. \n
-/// When not, it is null.
-/// @param prm_type The return value.
-#define ae2f_mAnnSpX(_this, prm_type, ...) ((_this) ? (_this)->expected ? ae2f_reinterpret_cast(__VA_ARGS__ prm_type, ae2f_mAnnSpW(_this, __VA_ARGS__) + (_this)->inc) : ae2f_reinterpret_cast(__VA_ARGS__ prm_type, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSp*, _this) + 1) : 0)
+#define ae2f_mAnnSpW(_this, ...) (ae2f_mAnnSpB(_this, __VA_ARGS__) + 1) 
 
 /// @memberof ae2f_mAnnSp
 /// @brief 
@@ -133,7 +137,7 @@ struct ae2f_mAnnSp {
 ///
 /// @param inc
 /// Count of weight vector.
-#define ae2f_mAnnSpInitSz(off, inc) ((off + 1) + sizeof(ae2f_mAnnSp) + (inc) * sizeof(ae2f_float_t))
+#define ae2f_mAnnSpInitSz(off, inc) ((off) + sizeof(ae2f_mAnnSp) + (inc + 1) * sizeof(ae2f_float_t))
 
 /// @memberof ae2f_mAnnSp
 /// @brief 
@@ -141,12 +145,18 @@ struct ae2f_mAnnSp {
 /// @param[out] _this_opt 
 /// @param inum
 /// Input count, (aka weights count, inc)
-/// @param[in] W_opt 
-/// Weights 
-/// @param Act 
+/// @param[in] Field_opt 
+/// Field reference. 
+/// If null, additional bytes will be allocated.
+///
+/// For first element would be bias.
+/// Rest of them will be weight vector.
+///
+/// Its size must be inum + 1
+/// @param vAct 
 /// Activasion function.
-/// @param CalDelta 
-/// Delta calculation function.
+/// @param vLossDeriv 
+/// vLossDeriv calculation function.
 /// @param[out] erret_opt 
 /// State
 /// @param offset_opt
@@ -158,9 +168,10 @@ ae2f_extern ae2f_SHAREDCALL
 size_t ae2f_mAnnSpInit(
     ae2f_mAnnSp* _this_opt,
     size_t inum,
-    const ae2f_float_t* W_opt,
-    ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct,
+    ae2f_fpAnnAct_t vActDerive,
+    ae2f_fpAnnLoss_t vLossDeriv,
     ae2f_err_t* erret_opt,
     size_t offset_opt
 ) noexcept;
@@ -182,9 +193,10 @@ typedef union ae2f_AnnSp {
 ae2f_extern ae2f_SHAREDCALL
 ae2f_AnnSp* ae2f_AnnSpMk(
     size_t inum,
-    const ae2f_float_t* W_opt,
-    ae2f_fpAnnAct_t Act,
-    ae2f_fpAnnDelta_t CalDelta,
+    ae2f_float_t* Field_opt,
+    ae2f_fpAnnAct_t vAct,
+    ae2f_fpAnnAct_t vActDerive,
+    ae2f_fpAnnLoss_t vLossDeriv,
     ae2f_err_t* erret,
     size_t offset_opt
 ) noexcept;

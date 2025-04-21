@@ -37,16 +37,6 @@ inline ae2f_err_t ae2f_TMP TrainB(
     return ae2f_mAnnSlpTrainB(this, in, goal_optB, learningrate);
 }
 
-template<typename T>
-constexprfun const T* ae2f_TMP X() const {
-    return ae2f_mAnnSlpX(this, T*, const);
-}
- 
-template<typename T>
-constexprfun T* ae2f_TMP X() {
-    return ae2f_mAnnSlpX(this, T*);
-}
-
 constexprfun ae2f_mAnnSlpEl* ae2f_TMP Perc(size_t i) {
     return ae2f_mAnnSlpPerV(this, i);
 }
@@ -60,6 +50,20 @@ constexprfun size_t* ae2f_TMP PercPad(size_t i) {
 constexprfun const size_t* ae2f_TMP PercPad(size_t i) const {
     return ae2f_mAnnSlpPerVPad(this, const)[i];
 }
+
+constexprfun const ae2f_float_t* ae2f_TMP Field() const {
+    return ae2f_mAnnSlpField(this, const);
+}
+constexprfun ae2f_float_t* ae2f_TMP Field() {
+    return ae2f_mAnnSlpField(this);
+}
+constexprfun const ae2f_float_t* ae2f_TMP OutCache() const {
+    return ae2f_mAnnSlpOutCache(this, const);
+}
+constexprfun ae2f_float_t* ae2f_TMP OutCache() {
+    return ae2f_mAnnSlpOutCache(this);
+}
+
 
 #undef ae2f_TMP
 #pragma endregion

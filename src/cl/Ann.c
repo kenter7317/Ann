@@ -5,8 +5,6 @@ static const char* __clsrc[] =
 #include "CLCode/__PROCESSED.clh"
 };
 
-#include <stdio.h>
-
 ae2f_SHAREDEXPORT struct ae2fCL_Ann_t ae2fCL_Ann = {0, };
 
 static cl_program LIB;

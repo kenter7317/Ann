@@ -1,7 +1,7 @@
 #ifndef uf_t_h
 #define uf_t_h
 
-#include <ae2f/Float.h>
+#include <ae2f/Float.auto.h>
 #include <ae2fCL/Loc.h>
 #include "Size/ae2f_float_t.auto.h"
 #include "Size/cl_mem.auto.h"

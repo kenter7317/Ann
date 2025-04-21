@@ -16,7 +16,6 @@
 #include "Mlp/HidCompute.h"
 #include "Mlp/OutCompute.h"
 #include "Mlp/Predict.h"
-#include <stdio.h>
 
 static ae2f_mAnnMlpPredict_t Predict;
 static ae2f_mAnnMlpTrain_t Train;
@@ -69,7 +68,7 @@ static ae2f_err_t Train (
     ae2f_float_t learningrate
 ) noexcept {
     ae2f_err_t ret = 0;
-    #define return(n) { ret |= n; goto RET; }
+    #define return(n) {  ret |= n; goto RET; }
     const size_t
     MAXBUFFCOUNT_FOR_LAYER = *ae2f_mAnnMlpLayerBuffCount(_this),
     SkipInput = MAXBUFFCOUNT_FOR_LAYER * _this->layerc;
@@ -90,7 +89,6 @@ static ae2f_err_t Train (
     
     memcpy(cache_Out2, _cache_Out, sizeof(ae2f_float_t) * SkipInput);
 
-
     for(size_t i = _this->layerc - 1; i != ((size_t)-1); i--) {
         ae2f_mAnnSlp
         * const LAYER = ae2f_mAnnMlpLayerV(_this, i),
@@ -103,6 +101,7 @@ static ae2f_err_t Train (
                 delta_optA, 
                 _this->outc * sizeof(ae2f_float_t)
             );
+            
             else if(goal_optB) 
             MlpTrain_OutCompute(
                 LAYER,
@@ -121,12 +120,20 @@ static ae2f_err_t Train (
             );
         }
 
+        puts("asdf1");
+
+        printf("in %llu out %llu\n", LAYER->inc, LAYER->outc);
+        printf("%f %f\n", in[0], in[1]);
+        printf("%llu\n", MAXBUFFCOUNT_FOR_LAYER);
+        
         ret |= ae2f_mAnnSlpTrainA(
-            LAYER,
-            i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
-            cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER,
-            learningrate
+            LAYER
+            , i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in
+	    , cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER
+            , learningrate
         );
+
+        puts("asdf2");
     }
 
     RET:
@@ -149,10 +156,10 @@ static ae2f_err_t Clean(
                 ae2f_mAnnSlp* slp;
             }* u;
         } perc = { .unused = ae2f_mAnnMlpLayerVPad(_this) + i };
+        if(!perc.u->pad) break;
         perc.u->pad++;
         ae2f_mAnnSlpClean(perc.u->slp);
-        free(--perc.u->pad);
-        ae2f_mAnnMlpLayerVPad(_this, )[i] = 0;
+        free(perc.u->pad - 1);
     }
 
     if(*ae2f_mAnnMlpCache(_this)) 

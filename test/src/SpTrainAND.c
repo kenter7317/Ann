@@ -6,17 +6,6 @@
 #define gEpochs 1000
 
 static ae2f_float_t
-Step(ae2f_float_t x) {
-    return x >= 0;
-}
-
-
-static ae2f_float_t
-Calculate(ae2f_float_t out, ae2f_float_t goal) {
-    return goal - out;
-}
-
-static ae2f_float_t
 Forward(ae2f_float_t x) {
     return 1.0 / (1.0 + exp(-x));
 }
@@ -27,8 +16,8 @@ ForwardPrime(ae2f_float_t output) {
 }
 
 static ae2f_float_t
-Backward(ae2f_float_t output, ae2f_float_t target) {
-    return (target - output) * ForwardPrime(output);
+Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+    return (output[i] - target[i]) / c;
 }
 
 int main() {
@@ -46,7 +35,7 @@ int main() {
 
     ae2f_err_t err2, err;
     ae2f_mAnnSp* Slp = (ae2f_mAnnSp*)ae2f_AnnSpMk(
-        2, 0, Forward, Backward, &err2, 0 
+        2, 0, Forward, ForwardPrime, Backward, &err2, 0 
     );
 
     if(err2) {

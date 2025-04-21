@@ -1,5 +1,4 @@
 #include <ae2f/Ann/Mlp.h>
-#include <stdio.h>
 static ae2f_err_t MlpTrain_Predict(
     const ae2f_mAnnMlp* _this,
     const ae2f_float_t* in,
