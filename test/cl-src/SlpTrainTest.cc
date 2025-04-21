@@ -22,7 +22,7 @@ Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_
 #define EPSILON 0.00000001
 
 int a() {
-    ae2f_float_t goal[2] = {1, 1};
+    ae2f_float_t goal[] = {1, 14, 5, 2, 7, 5, 3};
     #define goallen (sizeof(goal) / sizeof(goal[0]))
     ae2f_float_t in[5] = {1, 0, 0.2, 0.3, 1};
     #define inlen (sizeof(in) / sizeof(in[0]))

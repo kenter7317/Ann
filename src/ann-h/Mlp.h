@@ -127,10 +127,10 @@ static ae2f_err_t Train (
         printf("%llu\n", MAXBUFFCOUNT_FOR_LAYER);
         
         ret |= ae2f_mAnnSlpTrainA(
-            LAYER,
-            i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in,  
-            cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER,
-            learningrate
+            LAYER
+            , i ? cache_Out2 + MAXBUFFCOUNT_FOR_LAYER * (i - 1) : in
+	    , cache_Deltas + (i) * MAXBUFFCOUNT_FOR_LAYER
+            , learningrate
         );
 
         puts("asdf2");

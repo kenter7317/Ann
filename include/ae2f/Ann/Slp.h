@@ -116,7 +116,7 @@ typedef struct ae2f_mAnnSlp {
 (ae2f_CmpGetMem(slp, expected, 0) ? \
 ae2f_reinterpret_cast( \
 	__VA_ARGS__ size_t* __VA_ARGS__ * \
-	, ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSlp*, slp) + 1 \
+	, (ae2f_static_cast(__VA_ARGS__ ae2f_mAnnSlp*, slp) + 1) \
 	) : \
 0)
 
@@ -139,7 +139,7 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnSlpEl*, (ae2f_mAnnSlpPerVPad(slp, __V
 			, ae2f_CmpGetMem(slp, expected, 0) \
 			? ( \
 				ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) \
-				+ (slp)->inc \
+				+ (slp)->outc \
 				) \
 			: 0 \
 			)
@@ -153,7 +153,7 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnSlpEl*, (ae2f_mAnnSlpPerVPad(slp, __V
 #define ae2f_mAnnSlpInitSz(inc, outc, off) ( \
 		(off) \
 		+ sizeof(ae2f_mAnnSlp) \
-		+ (inc) * sizeof(void*) \
+		+ (outc) * sizeof(void*) \
 		+ (outc) * (2 + (inc)) * sizeof(ae2f_float_t) \
 		)
 

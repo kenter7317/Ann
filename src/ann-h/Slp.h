@@ -10,32 +10,34 @@ static ae2f_err_t Predict(
     const ae2f_float_t* in,
     ae2f_float_t* out_opt
 ) noexcept {
-    if(!_this) return ae2f_errGlob_PTR_IS_NULL;
-    if(!out_opt) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL;
-    if(!in) return ae2f_errGlob_PTR_IS_NULL;
+	if(!_this) return ae2f_errGlob_PTR_IS_NULL;
+	if(!out_opt) return ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL;
+	if(!in) return ae2f_errGlob_PTR_IS_NULL;
+	
+	ae2f_err_t err = 0;
 
-    ae2f_err_t err = 0;
+	for(size_t i = 0; i < _this->outc; i++) {
+		union {
+			const size_t* pad;
+			const ae2f_mAnnSp* perc;
+		}  layer = { ae2f_mAnnSlpPerVPad(_this, const)[i] };
 
-    for(size_t i = 0; i < _this->outc; i++) {
-        union {
-            const size_t* pad;
-            const ae2f_mAnnSp* perc;
-        }  layer = {ae2f_mAnnSlpPerVPad(_this, const)[i]};
+        printf("asdf %p\n", layer.pad);
 
-        size_t _pad = *layer.pad;
-        layer.pad++;
+		size_t _pad = *layer.pad;
+		layer.pad++;
 
-        ae2f_err_t er = 
-        ae2f_mAnnSpPredict(
-            layer.perc,
-            in + _pad,
-            out_opt + i
-        );
+		ae2f_err_t er = 
+			ae2f_mAnnSpPredict(
+					layer.perc,
+					in + _pad,
+					out_opt + i
+					);
 
-        err |= er;
-    }
+		err |= er;
+	}
 
-    return err;
+	return err;
 }
 
 static ae2f_err_t Train(
