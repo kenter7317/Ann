@@ -117,14 +117,11 @@ ae2fCL_AnnSlpMk(0, ginc, inpads_opt, Field_opt, vAct, vActDeriv, vLossDeriv, out
 			+ sizeof(ae2fCL_mAnnSlpMemX) \
 			+ ( \
 				 + sizeof(ae2f_float_t) \
-				 ) * (outc) * (inc + 1) \
+				 ) * (outc) * (inc + 2) \
 				 )
 
 #define ae2fCL_mAnnSlpAdd(slp, ...) \
-    ae2f_reinterpret_cast(__VA_ARGS__ ae2fCL_mAnnSlpMemX*, ae2f_mAnnSlpField(slp, __VA_ARGS__) + (slp)->inc * (slp)->outc) 
-
-#define ae2fCL_mAnnSlpOutCache(slp, ...) \
-	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2fCL_mAnnSlpAdd(slp, __VA_ARGS__) + 1)
+    ae2f_reinterpret_cast(__VA_ARGS__ ae2fCL_mAnnSlpMemX*, ae2f_mAnnSlpOutCache(slp, __VA_ARGS__) + (slp)->outc) 
 
 #include <ae2f/Pack/End.h>
 

@@ -35,7 +35,7 @@ size_t ae2fCL_AnnMlpInit(
 	const ae2f_fpAnnAct_t* actv_opt,
 	const ae2f_fpAnnAct_t* act_deriv_v_opt,
 	const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-	const ae2f_float_t* weights_opt,
+	ae2f_float_t* weights_opt,
 	ae2f_err_t* errret_opt,
 	cl_int* errnfound_opt
 ) noexcept;
@@ -71,7 +71,7 @@ ae2f_AnnMlp* ae2fCL_AnnMlpMk(
 	const ae2f_fpAnnAct_t* actv_opt,
 	const ae2f_fpAnnAct_t* act_deriv_v_opt,
 	const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-	const ae2f_float_t* weights_opt,
+	ae2f_float_t* weights_opt,
 	ae2f_err_t* errret_opt,
 	cl_int* errnfound_opt
 ) noexcept;

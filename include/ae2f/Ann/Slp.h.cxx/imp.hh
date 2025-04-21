@@ -51,6 +51,20 @@ constexprfun const size_t* ae2f_TMP PercPad(size_t i) const {
     return ae2f_mAnnSlpPerVPad(this, const)[i];
 }
 
+constexprfun const ae2f_float_t* ae2f_TMP Field() const {
+    return ae2f_mAnnSlpField(this, const);
+}
+constexprfun ae2f_float_t* ae2f_TMP Field() {
+    return ae2f_mAnnSlpField(this);
+}
+constexprfun const ae2f_float_t* ae2f_TMP OutCache() const {
+    return ae2f_mAnnSlpOutCache(this, const);
+}
+constexprfun ae2f_float_t* ae2f_TMP OutCache() {
+    return ae2f_mAnnSlpOutCache(this);
+}
+
+
 #undef ae2f_TMP
 #pragma endregion
 

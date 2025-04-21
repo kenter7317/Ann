@@ -43,7 +43,7 @@ size_t ae2f_mAnnSlpInit(
 		}
 	}
 
-	if(Field_opt) {
+	if((_this->pField = Field_opt)) {
 		offset_opt -= 
 			sizeof(ae2f_float_t)
 			* _this->inc
@@ -51,7 +51,7 @@ size_t ae2f_mAnnSlpInit(
 			;
 	}
 	else {
-		Field_opt = ae2f_mAnnSlpField(_this);
+		_this->pField = Field_opt = ae2f_mAnnSlpField(_this);
 	}
 
 
@@ -76,7 +76,7 @@ size_t ae2f_mAnnSlpInit(
 
         	ae2f_mAnnSpInit(
 				ae2f_mAnnSlpPerV(_this, i),
-				_inc, Field_opt + i * _this->inc,
+				_inc, Field_opt + i * (_this->inc + 1),
 				vAct, vActDeriv, vLossDeriv,
 				&ertmp, 0
 		);
@@ -122,10 +122,14 @@ ae2f_AnnSlp* ae2f_AnnSlpMk(
 	    }
     }
 
-	if(Field_opt)
-		offset_opt -= inc * outc * sizeof(ae2f_float_t);
-
+	if(Field_opt) {
+		offset_opt -= (inc + 1) * outc * sizeof(ae2f_float_t);
+	}
     _this = calloc(ae2f_mAnnSlpInitSz(inc, outc, offset_opt), 1);
+    if(!_this) {
+	    if(err) *err |= ae2f_errGlob_ALLOC_FAILED;
+	    return _this;
+    }
     ae2f_mAnnSlpInit(
 		&_this->Slp
 		, incs_optA

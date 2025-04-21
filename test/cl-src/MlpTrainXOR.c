@@ -7,9 +7,8 @@
 
 #include <math.h>
 
-#define gLearningRate 0.2
+#define gLearningRate 0.5
 #define gEpochs 3000
-#define gEpochsVerbose 100
 
 // XOR dataset
 static const ae2f_float_t xor_inputs[4][2] = {

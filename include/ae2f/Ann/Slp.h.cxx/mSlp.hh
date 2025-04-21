@@ -36,4 +36,10 @@ constexprfun const ae2f_mAnnSlpEl* ae2f_TMP Perc(size_t) const;
 constexprfun size_t* ae2f_TMP PercPad(size_t);
 constexprfun const size_t* ae2f_TMP PercPad(size_t) const;
 
+constexprfun const ae2f_float_t* ae2f_TMP Field() const;
+constexprfun ae2f_float_t* ae2f_TMP Field();
+
+constexprfun const ae2f_float_t* ae2f_TMP OutCache() const;
+constexprfun ae2f_float_t* ae2f_TMP OutCache();
+
 #undef ae2f_TMP

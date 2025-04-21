@@ -11,7 +11,7 @@ size_t ae2f_mAnnMlpInit(
     const ae2f_fpAnnAct_t* actv_opt,
     const ae2f_fpAnnAct_t* act_deriv_v_opt,
     const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-    const ae2f_float_t* weights_opt,
+    ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) {
     ae2f_err_t err = 0;
@@ -30,12 +30,21 @@ size_t ae2f_mAnnMlpInit(
     _this->layerc = --layerc;
 
     for(size_t i = 0; i < layerc; i++) {
+        const size_t 
+        LAYERSZ_L = layerlenv[i],
+        LAYERSZ_R = layerlenv[i + 1];
+
+        if(max < LAYERSZ_R)
+        max = LAYERSZ_R;
+
+		if(max < LAYERSZ_L)
+        max = LAYERSZ_L;
+    }
+
+    for(size_t i = 0; i < layerc; i++) {
 	    size_t 
 		    LAYERSZ_L = layerlenv[i],
 		    LAYERSZ_R = layerlenv[i + 1];
-
-		    if(max < LAYERSZ_R)
-			    max = LAYERSZ_R;
 
 		    ae2f_err_t e = 0;
 
@@ -51,12 +60,14 @@ size_t ae2f_mAnnMlpInit(
 
 		    perc.u->pad = calloc(
 				    ae2f_mAnnSlpInitSz(
-						LAYERSZ_L,
+						max,
 					    LAYERSZ_R, 
 					    sizeof(size_t)
 					    )
 				    , 1
 				    );
+			if(!perc.u->pad)
+			return ae2f_errGlob_ALLOC_FAILED;
 
 		    perc.u->pad++;
 		    ae2f_mAnnSlpInitB(
@@ -88,11 +99,14 @@ size_t ae2f_mAnnMlpInit(
 
     }
 
-    ae2f_mAnnMlpCache(_this,)[0] = calloc(
+	*ae2f_mAnnMlpLayerBuffCount(_this) = max;
+    if(!(ae2f_mAnnMlpCache(_this,)[0] = calloc(
         (max * layerc) << 2,
         sizeof(ae2f_float_t)
-    );
-    *ae2f_mAnnMlpLayerBuffCount(_this) = max;
+    ))) {
+		return ae2f_errGlob_ALLOC_FAILED;
+	}
+    
 
     EXIT:
     #undef return
@@ -110,7 +124,7 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
 		const ae2f_fpAnnAct_t* actv_opt,
 		const ae2f_fpAnnAct_t* act_deriv_v_opt,
 		const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-		const ae2f_float_t* weights_opt,
+		ae2f_float_t* weights_opt,
 		ae2f_err_t* errret_opt
 ) noexcept {
     ae2f_AnnMlp* obj = calloc(ae2f_mAnnMlpInitSz(layerc, add_opt), 1);

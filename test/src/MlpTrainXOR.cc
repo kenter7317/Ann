@@ -4,8 +4,8 @@
 
 #include <math.h>
 
-#define gLearningRate 0.17
-#define gEpochs 3000
+#define gLearningRate 0.5
+#define gEpochs 1000
 #define gEpochsVerbose 100
 
 // XOR dataset
@@ -62,6 +62,8 @@ int main() {
         printf("Failed to create MLP: err=%d\n", err);
         return 1;
     }
+
+    puts("Training start");
 
     for (int epoch = 0; epoch < gEpochs; epoch++) {
         ae2f_float_t total_loss = 0;

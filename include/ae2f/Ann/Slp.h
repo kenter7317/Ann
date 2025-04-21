@@ -134,15 +134,18 @@ ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnSlpEl*, (ae2f_mAnnSlpPerVPad(slp, __V
 /// @brief
 /// Additional buffer allocated.
 #define ae2f_mAnnSlpField(slp, ...) \
-ae2f_reinterpret_cast( \
-		__VA_ARGS__ ae2f_float_t* \
-		, ae2f_CmpGetMem(slp, expected, 0) \
-		? ( \
-			ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) \
-			+ (slp)->layerc \
-			) \
-		: 0 \
-		)
+	ae2f_reinterpret_cast( \
+			__VA_ARGS__ ae2f_float_t* \
+			, ae2f_CmpGetMem(slp, expected, 0) \
+			? ( \
+				ae2f_mAnnSlpPerVPad(slp, __VA_ARGS__) \
+				+ (slp)->inc \
+				) \
+			: 0 \
+			)
+
+#define ae2f_mAnnSlpOutCache(slp, ...) \
+	(ae2f_mAnnSlpField(slp, __VA_ARGS__) + (1 + (slp)->inc) * (slp)->outc)
 
 /// @memberof ae2f_mAnnSlp
 /// @brief
@@ -150,8 +153,8 @@ ae2f_reinterpret_cast( \
 #define ae2f_mAnnSlpInitSz(inc, outc, off) ( \
 		(off) \
 		+ sizeof(ae2f_mAnnSlp) \
-		+ (outc) * sizeof(void*) \
-		+ (outc) * (1 + (inc)) * sizeof(ae2f_float_t) \
+		+ (inc) * sizeof(void*) \
+		+ (outc) * (2 + (inc)) * sizeof(ae2f_float_t) \
 		)
 
 /// @memberof ae2f_mAnnSlp

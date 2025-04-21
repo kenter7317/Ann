@@ -68,8 +68,11 @@ __kernel void ae2fCL_eAnnKernsSlpTrain(
 	__global ae2f_float_t
 		* _field = in + isz,
 		* field = _field + (isz + 1) * oid + 1,
-		* _LrErr = _field + (isz + 1) * osz;
+		* _LrErr = _field + (isz + 1) * osz; /**/
 
 	/** in, field, lrerr, i */
 	ae2fCL_AnnDevSpTrain(in, field, _LrErr[oid], iid);
+	if(!(iid)) {
+		field[-1] -= _LrErr[oid];
+	}
 }
