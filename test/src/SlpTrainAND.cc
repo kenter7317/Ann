@@ -12,6 +12,7 @@ Forward(ae2f_float_t x) {
 
 static ae2f_float_t
 ForwardPrime(ae2f_float_t output) {
+    output += 0.0001;
     return output * (1.0 - output);
 }
 

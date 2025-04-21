@@ -18,8 +18,6 @@ __kernel void ae2fCL_eAnnKernsSpPredict(
 
 #include "uf.h"
 
-
-
 __kernel void ae2fCL_eAnnKernsSpTrain(
     __global const ae2f_float_t* _in,
     __global ae2f_float_t* field,

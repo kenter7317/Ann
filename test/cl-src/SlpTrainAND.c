@@ -47,6 +47,12 @@ int main() {
     );
     ae2f_float_t outbuff[2] = {  5 };
 
+
+    puts(
+		    "Allocation has done.\n" 
+		    "Early prediction is starting..."
+		    );
+
     #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     ae2f_mAnnSlpPredict(&obj->Slp, inb + in_idx, out)
 
@@ -88,6 +94,9 @@ int main() {
     #define ae2fCL_mAnnSlpTrain(obj, ins, _, in_idx, __, goal, learnrate, ...) ae2f_mAnnSlpTrainB(obj, ins + in_idx, goal, learnrate)
 
     if(err) goto __failure;
+
+    puts("Training session start");
+
     for(size_t _ = 0; _ < gEpochs; _++) {
         err2 = ae2f_mAnnSlpTrainB(
             &Slp->Slp, ins,
@@ -182,5 +191,6 @@ int main() {
     ae2f_AnnSlpDel(Slp);
     ae2fCL_AnnDel();
     printf("ERR: %d\n", err);
+    printf("ERR-CL: %d\n", ae2fCL_Ann.LErr);
     return err;
 }

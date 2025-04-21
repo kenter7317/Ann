@@ -71,10 +71,8 @@ ae2f_err_t Train(
         _delta = (_this->vActDeriv ? 
             _this->vActDeriv(_delta) : _delta) * 
             _this->vLossDeriv(&_delta, &goal_optB, 0, 1
-            );
+            ) * learningrate;
     }
-
-    _delta *= learningrate;
 
     for(size_t i = 0; i < _this->inc; i++) {
         ae2f_mAnnSpW(_this, )[i] -= _delta * in[i];

@@ -20,7 +20,7 @@
 
 typedef struct ae2fCL_mAnnSlpMemX {
 	cl_mem In;
-    cl_mem field;
+	cl_mem field;
 
 	/** @brief Has weights been changed */
 	bool Changed;
@@ -112,16 +112,16 @@ ae2fCL_AnnSlpMk(0, ginc, inpads_opt, Field_opt, vAct, vActDeriv, vLossDeriv, out
  * @param off 
  * */
 #define ae2fCL_mAnnSlpInitSz(inc, outc, off) \
-	ae2f_mAnnSlpInitSz(inc, outc, (off) + sizeof(ae2fCL_mAnnSlpMemX) + ((sizeof(ae2f_float_t) + sizeof(cl_event)) * (outc)))
+	ae2f_mAnnSlpInitSz( \
+			inc, outc, (off) \
+			+ sizeof(ae2fCL_mAnnSlpMemX) \
+			+ ( \
+				 + sizeof(ae2f_float_t) \
+				 ) * (outc) * (inc + 2) \
+				 )
 
 #define ae2fCL_mAnnSlpAdd(slp, ...) \
-    ae2f_reinterpret_cast(__VA_ARGS__ ae2fCL_mAnnSlpMemX*, ae2f_mAnnSlpField(slp, __VA_ARGS__) + (slp)->inc * (slp)->outc) 
-
-#define ae2fCL_mAnnSlpOutCache(slp, ...) \
-	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2fCL_mAnnSlpAdd(slp, __VA_ARGS__) + 1)
-
-#define ae2fCL_mAnnSlpEventVec(slp, ...) \
- 	ae2f_reinterpret_cast(__VA_ARGS__ cl_event*, ae2fCL_mAnnSlpOutCache(slp, __VA_ARGS__) + (slp)->outc)
+    ae2f_reinterpret_cast(__VA_ARGS__ ae2fCL_mAnnSlpMemX*, ae2f_mAnnSlpOutCache(slp, __VA_ARGS__) + (slp)->outc) 
 
 #include <ae2f/Pack/End.h>
 

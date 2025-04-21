@@ -55,8 +55,24 @@ typedef union ae2f_AnnMlp {
 ae2f_reinterpret_cast(__VA_ARGS__ ae2f_mAnnMlpEl*, ae2f_mAnnMlpLayerVPad(mlp, __VA_ARGS__)[i] + 1)
 
 /// @memberof ae2f_mAnnMlp
+/// @brief
+/// The predicted max buffer count among all perceptron's possible length of I/O.
+#define ae2f_mAnnMlpLayerBuffCount(mlp, ...) \
+ae2f_reinterpret_cast( \
+    __VA_ARGS__ size_t* \
+    , (ae2f_mAnnMlpLayerVPad(mlp, __VA_ARGS__) + (mlp)->layerc) \
+)
+
+/// @memberof ae2f_mAnnMlp
+/// @brief
+/// Its length is @ref (*ae2f_mAnnMlpLayerBuffCount(mlp) * mlp->layerc, 3 * sizeof(ae2f_float_t)).
+#define ae2f_mAnnMlpCache(mlp, ...) \
+ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t* __VA_ARGS__ * __VA_ARGS__, ae2f_mAnnMlpLayerBuffCount(mlp, __VA_ARGS__) + 1)
+
+
+/// @memberof ae2f_mAnnMlp
 #define ae2f_mAnnMlpInitSz(layerc, add) \
-(sizeof(ae2f_mAnnMlp) + (sizeof(void*) * ((layerc))) + (sizeof(size_t) * 1) + (add))
+(sizeof(ae2f_mAnnMlp) + (sizeof(void*) * ((layerc) + 1)) + (sizeof(size_t)) + (add))
 
 /// @brief 
 /// Predict function api. \n
@@ -71,21 +87,6 @@ typedef ae2f_mAnnSlpTrain_t ae2f_mAnnMlpTrain_t;
 /// @brief 
 /// Cleaning function api.
 typedef ae2f_mAnnSlpClean_t ae2f_mAnnMlpClean_t;
-
-/// @memberof ae2f_mAnnMlp
-/// @brief
-/// The predicted max buffer count among all perceptron's possible length of I/O.
-#define ae2f_mAnnMlpLayerBuffCount(mlp, ...) \
-ae2f_reinterpret_cast( \
-    __VA_ARGS__ size_t* \
-    , ae2f_mAnnSlpField(mlp, __VA_ARGS__) \
-)
-
-/// @memberof ae2f_mAnnMlp
-/// @brief
-/// Its length is @ref (*ae2f_mAnnMlpLayerBuffCount(mlp) * mlp->layerc, 3 * sizeof(ae2f_float_t)).
-#define ae2f_mAnnMlpCache(mlp, ...) \
-ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t**, ae2f_mAnnMlpLayerBuffCount(mlp, __VA_ARGS__) + 1)
 
 /**
  * @brief
@@ -118,7 +119,7 @@ size_t ae2f_mAnnMlpInit(
     const ae2f_fpAnnAct_t* actv_opt,
     const ae2f_fpAnnAct_t* act_deriv_v_opt,
     const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-    const ae2f_float_t* weights_opt,
+    ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;
 
@@ -153,7 +154,7 @@ ae2f_AnnMlp* ae2f_AnnMlpMk(
     const ae2f_fpAnnAct_t* actv_opt,
     const ae2f_fpAnnAct_t* act_deriv_v_opt,
     const ae2f_fpAnnLoss_t* lossderiv_v_opt,
-    const ae2f_float_t* weights_opt,
+    ae2f_float_t* weights_opt,
     ae2f_err_t* errret_opt
 ) noexcept;
 
