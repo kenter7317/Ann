@@ -120,11 +120,7 @@ static ae2f_err_t Train (
             );
         }
 
-        puts("asdf1");
 
-        printf("in %llu out %llu\n", LAYER->inc, LAYER->outc);
-        printf("%f %f\n", in[0], in[1]);
-        printf("%llu\n", MAXBUFFCOUNT_FOR_LAYER);
         
         ret |= ae2f_mAnnSlpTrainA(
             LAYER
@@ -133,7 +129,6 @@ static ae2f_err_t Train (
             , learningrate
         );
 
-        puts("asdf2");
     }
 
     RET:
