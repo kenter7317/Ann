@@ -40,15 +40,26 @@ int mainc() {
     err = ae2fCL_AnnMkEasy(errcl);
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
+    printf("Buff2: %f\n", Buff2[0]);
+
     Perc = ae2fCL_AnnSpMk(
         sizeof(Buff)/sizeof(ae2f_float_t), Buff2, 
         Sigmoid, SigmoidPrime, Sub, &err, errcl, 0
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
-    
+    if(ae2f_mAnnSpB(&Perc->Sp) != Buff2)
+    {
+        puts("Link failed");
+        return 1;
+    }
+
+    printf("Buff2: %f\n", Buff2[0]);
+
     err = ae2f_mAnnSpPredict(
         &Perc->Sp, Buff, &outfloat
     );
+
+    printf("buff2: %f\n", *Buff2);
 
     if(err) goto __failure;
     printf("out: %f\n", outfloat);
@@ -58,14 +69,18 @@ int mainc() {
         (*ae2f_mAnnSpB(&Perc->Sp)) * sizeof(Buff)/ sizeof(ae2f_float_t) + outfloat
     );
 
+    printf("Bias checked on C++: %f\n", Perc->Sp.B()[0]);
+
     for(size_t i = 0; i < Perc->Sp.inc; i++) 
     {
         ae2f_float_t got = Buff[i] * Buff[i];
         out_checksum += got;
         printf("Check-got: %f\n", got);
+        printf("Buff2: %f\n", Buff2[i + 1]);
     }
     out_checksum += *ae2f_mAnnSpB(&Perc->Sp);
     out_checksum = Perc->Sp.vAct(out_checksum);
+
     printf("Checking two values match...: %f %f\n", out_checksum, outfloat);
     if((out_checksum - outfloat) * (out_checksum - outfloat) > gThreshold) {
         printf("Check failed\n");
@@ -92,7 +107,7 @@ int maincc() {
         0, 0.3, 0.2, 0.4, 0.6, 0.1
     };
 
-    ae2fCL_AnnSp* Perc;
+    ae2fCL_AnnSp* Perc = 0;
     ae2f_float_t out_checksum = 0;
     
     err = ae2fCL_AnnMkEasy(errcl);
@@ -104,10 +119,12 @@ int maincc() {
     );
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
+    puts("PREDICT START: MAINCC");
     err = Perc->Sp.Predict(
         Buff, &outfloat
     );
     if(err) goto __failure;
+    puts("PREDICT SUCCEED: MAINCC");
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
@@ -135,9 +152,9 @@ int maincc() {
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);
     if(ae2fCL_Ann.Ctx) clReleaseContext(ae2fCL_Ann.Ctx);
-    return err;
+    return err | errcl[0];
 }
 
 int main() {
-    return ((maincc()) | (mainc()));
+    return ((mainc()) || maincc() );//|| (mainc()));
 }

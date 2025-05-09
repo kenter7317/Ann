@@ -132,7 +132,7 @@ static ae2f_err_t ae2fCL_AnnMkEasy(
     if(reterr) *reterr = *er;
     if(device) clReleaseDevice(device);
     return err | ae2fCL_AnnMk(ae2fCL_Ann.Q, ae2fCL_Ann.Ctx, 1, &device, reterr);
-} 
+}
 
 /// @warning
 /// This will not release 
@@ -143,5 +143,35 @@ static ae2f_err_t ae2fCL_AnnMkEasy(
 /// Release the library
 /// @return 
 ae2f_extern ae2f_SHAREDCALL cl_int ae2fCL_AnnDel();
+
+static cl_int ae2fCL_AnnDelEasy() {
+    cl_int clerr = 0;
+
+    clerr = ae2fCL_AnnDel();
+    if(clerr) {
+        goto ____GOTO__RETURN;
+    }
+
+    if(ae2fCL_Ann.Ctx) {
+        clerr = clReleaseContext(ae2fCL_Ann.Ctx);
+        ae2fCL_Ann.Ctx = 0;
+
+        if(clerr) {
+            goto ____GOTO__RETURN;
+        }
+    }
+
+    if(ae2fCL_Ann.Q) {
+        clReleaseCommandQueue(ae2fCL_Ann.Q);
+        ae2fCL_Ann.Q = 0;
+
+        if(clerr) {
+            goto ____GOTO__RETURN;
+        }
+    }
+
+    ____GOTO__RETURN:
+    return clerr;
+}
 
 #endif

@@ -2,6 +2,7 @@
 #include <ae2fCL/Ann/Sp.h>
 #include "CLCode/Size/ae2f_float_t.auto.h"
 #include "CLCode/Size/cl_mem.auto.h"
+#include <stdio.h>
 
 static ae2f_mAnnSpPredict_t Predict;
 static ae2f_mAnnSpTrain_t Train;
@@ -12,7 +13,7 @@ static ae2f_err_t Predict(
     const ae2f_float_t *in, 
     ae2f_float_t *outret_opt
 ) {
-    ae2f_err_t err=0;
+    ae2f_err_t err = 0;
     if(!_this) return ae2f_errGlob_PTR_IS_NULL;
     if(!in) return ae2f_errGlob_PTR_IS_NULL;
     if(!outret_opt) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_DONE_HOWEV;
@@ -28,7 +29,7 @@ static ae2f_err_t Predict(
 
     ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
         ae2fCL_Ann.Q, 
-        _IO, CL_TRUE, 
+        _IO, CL_FALSE, 
         0, ae2f_float_t_SIZE * _this->inc, 
         in, 0, 0, event
     );
@@ -47,18 +48,19 @@ static ae2f_err_t Predict(
     const size_t _locworksize = _this->inc;
 
     ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
-        ae2fCL_Ann.Q, K, 1, 0, 
-        &_this->inc, 
-        &_locworksize, 
+        ae2fCL_Ann.Q, K, 1, 0,
+        &_this->inc,
+        &_locworksize,
         1, event, event + 1
     );
-    if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
+
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
     ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
     ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _IO, 
-        CL_TRUE, _this->inc * ae2f_float_t_SIZE, 
+        CL_FALSE, _this->inc * ae2f_float_t_SIZE, 
         ae2f_float_t_SIZE, &IBuffer, 
         1, event + 1, event
     );
@@ -66,6 +68,12 @@ static ae2f_err_t Predict(
     ae2fCL_Ann.LErr = clReleaseEvent(event[1]); event[1] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
+    if(event) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+    if(event) ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
+    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+
+    printf("IBUFFER: %f\n", IBuffer);
     IBuffer = _this->vAct(IBuffer + *ae2f_mAnnSpB(_this, const));
     if(outret_opt) *outret_opt = IBuffer;
 
@@ -74,16 +82,17 @@ static ae2f_err_t Predict(
         ae2fCL_Ann.LErr = clWaitForEvents(1, event);
         if(!ae2fCL_Ann.LErr)
             ae2fCL_Ann.LErr = clReleaseEvent(event[0]);
+        event[0] = 0;
     }
 
     if(ae2fCL_Ann.LErr) {
         return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
     }
-
     if(event[1]) {
         ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
         if(!ae2fCL_Ann.LErr)
             ae2fCL_Ann.LErr = clReleaseEvent(event[1]);
+        event[1] = 0;
     }
 
     if(ae2fCL_Ann.LErr) {

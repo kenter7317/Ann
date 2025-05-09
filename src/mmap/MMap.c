@@ -14,6 +14,8 @@ size_t ae2f_mMMapInit(
 	ae2f_err_t err = 0;
 #define return(_) { err = _; goto RETURN; }
 
+	
+
 	if(!mmap)
 		return(ae2f_errGlob_PTR_IS_NULL);
 	if(!lens)
