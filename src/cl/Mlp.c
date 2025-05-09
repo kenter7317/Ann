@@ -17,24 +17,28 @@ size_t ae2fCL_AnnMlpInit(
 		ae2f_err_t* errret_opt,
 		cl_int* errnfound_opt
 ) noexcept {
-    cl_int err2 = 0;
-    ae2f_err_t err = 0;
-    #define return(code) { err = code; goto EXIT; } 
-    if(!_this) return(ae2f_errGlob_PTR_IS_NULL);
-    if(!layerlenv) return(ae2f_errGlob_PTR_IS_NULL);
-    if(layerpadv_opt_unused) err |= ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_IMP_NOT_FOUND;
-    if(layerc == 1) return(ae2f_errGlob_WRONG_OPERATION);
+	ae2f_fdef(int, a);
+	cl_int err2 = 0;
+	ae2f_err_t err = 0;
 
-    _this->expected = 1;
-    size_t max = _this->inc = *layerlenv;
-    _this->outc = layerlenv[layerc - 1];
-    _this->vClean = Clean;
-    _this->vPredict = Predict;
-    _this->vTrain = Train;
-    _this->layerc = --layerc;
+#define return(code) { err = code; goto EXIT; } 
 
-    for(size_t i = 0; i < layerc; i++) {
-        const size_t 
+	if(!_this) return(ae2f_errGlob_PTR_IS_NULL);
+	if(!layerlenv) return(ae2f_errGlob_PTR_IS_NULL);
+	if(layerpadv_opt_unused) err |= ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_IMP_NOT_FOUND;
+	if(layerc == 1) return(ae2f_errGlob_WRONG_OPERATION);
+
+
+	_this->expected = 1;
+	size_t max = _this->inc = *layerlenv;
+	_this->outc = layerlenv[layerc - 1];
+	_this->vClean = Clean;
+	_this->vPredict = Predict;
+	_this->vTrain = Train;
+	_this->layerc = --layerc;
+
+	for(size_t i = 0; i < layerc; i++) {
+		const size_t 
         LAYERSZ_L = layerlenv[i] + 1,
         LAYERSZ_R = layerlenv[i + 1];
 
@@ -63,7 +67,14 @@ size_t ae2fCL_AnnMlpInit(
             }* u;
         } perc = {ae2f_mAnnMlpLayerVPad(_this) + i};
 
-        perc.u->pad = calloc(ae2fCL_mAnnSlpInitSz(LAYERSZ_L, LAYERSZ_R, sizeof(size_t)), 1);
+        perc.u->pad = calloc(
+			ae2fCL_mAnnSlpInitSz(
+				LAYERSZ_L
+				, LAYERSZ_R
+				, sizeof(size_t)
+				)
+			, 1
+			);
         if(!perc.u->pad)
             return ae2f_errGlob_ALLOC_FAILED;    
 
@@ -75,7 +86,7 @@ size_t ae2fCL_AnnMlpInit(
 			, weights_opt ? weights_opt + max * max * i : 0
 			, actv_opt ? actv_opt[i] : 0
 			, act_deriv_v_opt ? act_deriv_v_opt[i] : 0
-            , lossderiv_v_opt ? lossderiv_v_opt[i] : 0
+			, lossderiv_v_opt ? lossderiv_v_opt[i] : 0
 			, LAYERSZ_R
 			, 0
 			, &e

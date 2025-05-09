@@ -22,8 +22,6 @@ static ae2f_err_t Predict(
 			const ae2f_mAnnSp* perc;
 		}  layer = { ae2f_mAnnSlpPerVPad(_this, const)[i] };
 
-        printf("asdf %p\n", layer.pad);
-
 		size_t _pad = *layer.pad;
 		layer.pad++;
 

@@ -31,7 +31,6 @@ ae2f_extern int mainc() {
         Sigmoid, SigmoidDeriv, Backward, &err, 0
     );
     CHECK_ERR(err, 0, __failure);
-
     for(size_t i = 0; i < Perc->inc; i++) {
         printf("Weight: %f\n", (Buff[i] = ae2f_mAnnSpW(Perc)[i]));
     }
@@ -120,5 +119,12 @@ int maincc() {
 }
 
 int main() {
-    return mainc() | maincc();
+    int a; 
+    return 0;
+    a = mainc();
+    if(a) return 1;
+
+    a = maincc();
+    if(a) return 1;
+    return 0;
 }

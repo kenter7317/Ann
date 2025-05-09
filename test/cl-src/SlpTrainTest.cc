@@ -1,6 +1,7 @@
 #include <ae2fCL/Ann/Slp.h>
 #include <ae2f/Ann/LcgRand.h>
 #include <math.h>
+#include <stdio.h>
 
 static ae2f_float_t
 Forward(ae2f_float_t x) {

@@ -1,4 +1,7 @@
 #include <ae2f/Ann/Conv.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <memory.h>
 
 #define ae2f_AnnConv1dSz(in_f, in_g, pad, stride) \
 	(((((pad << 1) + *ae2f_mMMapDimLen(in_f, const)) \
@@ -6,13 +9,21 @@
 	/ stride) \
 	+ 1)
 
+inline static size_t getIndex(const ae2f_float_t* x, const size_t* xi,  const size_t* xc, size_t dim) {
+    int idx = 0;
+    for (int i = 0; i < dim; i++) {
+        idx += xi[i] * xc[i];
+    }
+    return idx;
+}
+
 /** 
  * @brief
  * all vectors are suggested initiated as 0. 
  * */
 ae2f_SHAREDEXPORT
 ae2f_err_t
-__ae2f_AnnConv1d(
+ae2f_AnnCnnConv1d(
 		const ae2f_float_t* infv,
 		size_t infc,
 		const ae2f_float_t* ingv,
@@ -54,7 +65,6 @@ __ae2f_AnnConv1d(
 
 			sum += 
 				infv[(infi - pad)] * ingv[j];
-
 		}
 
 		/**
@@ -63,12 +73,12 @@ __ae2f_AnnConv1d(
 		 * */
 		outv[i] += sum;
 	}
-
 _return:
 #undef return
 	if(opt_outc) *opt_outc = outc;
 	return err;
-}
+} 
+
 
 /**
  * @brief 
@@ -89,7 +99,7 @@ _return:
  * */
 ae2f_SHAREDEXPORT
 ae2f_err_t
-__ae2f_AnnConv(
+ae2f_AnnCnnConv(
 		size_t dim, 
 		const ae2f_float_t* infv, 
 		const size_t* infc,
@@ -147,7 +157,7 @@ __ae2f_AnnConv(
 	if(!dim) return ae2f_errGlob_IMP_NOT_FOUND;
 	/* Lowkey for 1D (builtin) */
 	else if(dim == 1)
-		return __ae2f_AnnConv1d(
+		return ae2f_AnnCnnConv1d(
 				infv
 				, *infc
 				, ingv
@@ -182,7 +192,7 @@ __ae2f_AnnConv(
 			 *
 			 *
 			 * */
-			e |= __ae2f_AnnConv(
+			e |= ae2f_AnnCnnConv(
 					dim - 1
 					, infv + (infi) * infcc, infc, infcc
 					, ingv + j * ingcc, ingc, ingcc

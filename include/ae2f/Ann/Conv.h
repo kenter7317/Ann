@@ -8,17 +8,6 @@
 
 #include <ae2f/Pack/Beg.h>
 
-typedef ae2f_err_t
-ae2f_AnnConv_t(
-		const ae2f_mMMap* in_f,
-		const ae2f_mMMap* in_g,
-		ae2f_mMMap* out,
-		size_t* opt_retoutszrequired,
-		const size_t* stride,
-		const size_t* pad
-		) noexcept;
-
-
 /**
  * @brief
  * all vectors are suggested initiated as 0. 
@@ -26,7 +15,7 @@ ae2f_AnnConv_t(
  * */
 ae2f_extern ae2f_SHAREDEXPORT
 ae2f_err_t
-__ae2f_AnnConv1d(
+ae2f_AnnCnnConv1d(
 		const ae2f_float_t* infv,
 		size_t infc,
 		const ae2f_float_t* ingv,
@@ -53,7 +42,7 @@ __ae2f_AnnConv1d(
  * */
 ae2f_extern ae2f_SHAREDEXPORT
 ae2f_err_t
-__ae2f_AnnConv(
+ae2f_AnnCnnConv(
 		size_t dim, 
 		const ae2f_float_t* infv, 
 		const size_t* infc,

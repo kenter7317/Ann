@@ -19,4 +19,4 @@ html
 test/none
 
 .*/
-*.auto.h
+*.auto.*

@@ -2,11 +2,17 @@ cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
 option(ae2fCL_needed "" ON)
+option(ae2f_TEST "" ON)
 include(cmake/Core.cmake)
+
+# Soon will be doomed
+    if(NOT _WIN32)
+	    link_libraries(m)
+    endif()
 
 project(MMap VERSION 0.0.0 LANGUAGES C CXX)
 if(NOT TARGET ${PROJECT_NAME})
-	ae2f_CoreLibFetchX(ae2f Core Rel-v6.22.17)
+	ae2f_CoreLibFetchX(ae2f Core Rel-v6.23.17)
 
 	ae2f_CoreLibTentConfigCustom(
 		MMap-H INTERFACE
@@ -42,8 +48,8 @@ if(NOT TARGET ${PROJECT_NAME})
         ${PROJECT_SOURCE_DIR}/Config/Ann-H.cmake.in 
         "include/ae2f/Ann/Act.h"
         "include/ae2f/Ann/LcgRand.h"
-
-	"include/ae2f/Ann/Conv.h"
+        
+        "include/ae2f/Ann/Conv.h"
         
         "include/ae2f/Ann/Sp.h"
         "include/ae2f/Ann/Sp.h.c/clean.script.h"
@@ -105,12 +111,13 @@ if(NOT TARGET ${PROJECT_NAME})
 endif()
 
 if(ae2fCL_needed)
-    project(CL-Ann VERSION 3.3.0 LANGUAGES C CXX)
+    project(CL-Ann VERSION 3.3.1 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
     ae2f_CoreLibFetchX(ae2f Ruler		Rel-v0.1.5)
     ae2f_CoreLibFetchX(ae2f Ann 		None)
     ae2f_CoreLibFetchX(ae2f Ann-H 		None)
     ae2f_CoreLibFetchX(ae2f Ann-H-Private 	None)
+    find_package(OpenCL REQUIRED)
 
     ae2f_CoreLibFetchX_NS(ae2f ae2fCL CL-Core	Rel-v4.15.21)
 
@@ -158,10 +165,10 @@ if(ae2fCL_needed)
         )
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__Ann-H__FETCHED})
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__ae2fCL__CL-Core__FETCHED})
-        
-    target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
+	target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
 	target_link_libraries(CL-Ann PUBLIC ${ae2f__Ann-H-Private__FETCHED})
 	target_link_libraries(CL-Ann PRIVATE ${ae2f__Ann__FETCHED})
+	target_link_libraries(CL-Ann PUBLIC OpenCL::OpenCL)
 
         ae2fCL_CoreAppendInclude(
             ${PROJECT_SOURCE_DIR}/include
@@ -174,7 +181,6 @@ if(ae2fCL_needed)
             CL-Ann
             "${PROJECT_SOURCE_DIR}/src/cl/CLCode"
         )
-        ae2fCL_CheckNeeded()
 
         ae2fCL_CoreTestTent(CL-Ann "test/cl-src")
 
