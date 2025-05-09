@@ -111,7 +111,7 @@ if(NOT TARGET ${PROJECT_NAME})
 endif()
 
 if(ae2fCL_needed)
-    project(CL-Ann VERSION 3.3.1 LANGUAGES C CXX)
+    project(CL-Ann VERSION 3.3.2 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
     ae2f_CoreLibFetchX(ae2f Ruler		Rel-v0.1.5)
     ae2f_CoreLibFetchX(ae2f Ann 		None)
@@ -167,7 +167,7 @@ if(ae2fCL_needed)
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__ae2fCL__CL-Core__FETCHED})
 	target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
 	target_link_libraries(CL-Ann PUBLIC ${ae2f__Ann-H-Private__FETCHED})
-	target_link_libraries(CL-Ann PRIVATE ${ae2f__Ann__FETCHED})
+	target_link_libraries(CL-Ann PUBLIC ${ae2f__Ann__FETCHED})
 	target_link_libraries(CL-Ann PUBLIC OpenCL::OpenCL)
 
         ae2fCL_CoreAppendInclude(
