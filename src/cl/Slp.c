@@ -236,6 +236,7 @@ ae2f_err_t PredictCL(
 			, events
 			); 
 	if(ae2fCL_Ann.LErr) return(ae2f_errGlob_NFOUND);
+	if(!events[0]) return(ae2f_errGlob_ALLOC_FAILED);
 
 	if(__X->Changed) 
 	{
@@ -250,6 +251,7 @@ ae2f_err_t PredictCL(
 				, events + 1
 				);
 		if(ae2fCL_Ann.LErr) return(ae2f_errGlob_NFOUND);
+		if(!events[1]) return(ae2f_errGlob_ALLOC_FAILED);
 	}
 
 	{
@@ -278,12 +280,15 @@ ae2f_err_t PredictCL(
 				, events
 				, events + 2
 				))) return(ae2f_errGlob_NFOUND);
-		if((ae2fCL_Ann.LErr = clReleaseEvent(events[0])))
+
+		if(events[0] && (ae2fCL_Ann.LErr = clReleaseEvent(events[0])))
 			return(ae2f_errGlob_NFOUND);
 		events[0] = 0;
-		if(__X->Changed && (ae2fCL_Ann.LErr = clReleaseEvent(events[1])))
+		if(events[1] && __X->Changed && (ae2fCL_Ann.LErr = clReleaseEvent(events[1])))
 			return(ae2f_errGlob_NFOUND);
 		events[1] = 0;
+
+		if(!events[2]) return(ae2f_errGlob_ALLOC_FAILED);
 
 		if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
 				ae2fCL_Ann.Q
@@ -294,6 +299,7 @@ ae2f_err_t PredictCL(
 				, out
 				, 1, events + 2, events
 				))) return(ae2f_errGlob_NFOUND);
+		if(!events[0]) return(ae2f_errGlob_ALLOC_FAILED);
 		if((ae2fCL_Ann.LErr = clReleaseEvent(events[2])))
 			return(ae2f_errGlob_NFOUND);
 		events[2] = 0;

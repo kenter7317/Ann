@@ -45,6 +45,9 @@ static ae2f_err_t Predict(
     ae2fCL_Ann.LErr = clSetKernelArg(K, 2, _this->inc * sizeof(ae2f_float_t), 0);
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
+    if(!event[0]) return(ae2f_errGlob_ALLOC_FAILED);
+
+
     const size_t _locworksize = _this->inc;
 
     ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
@@ -55,8 +58,10 @@ static ae2f_err_t Predict(
     );
 
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
-    ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
+    if(event[0]) ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+
+    if(!event[1]) return(ae2f_errGlob_ALLOC_FAILED);
 
     ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _IO, 
@@ -65,20 +70,23 @@ static ae2f_err_t Predict(
         1, event + 1, event
     );
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
-    ae2fCL_Ann.LErr = clReleaseEvent(event[1]); event[1] = 0;
+    if(event[1]) ae2fCL_Ann.LErr = clReleaseEvent(event[1]); event[1] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
-    if(event) ae2fCL_Ann.LErr = clWaitForEvents(1, event);
-    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
-    if(event) ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
-    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+    if(event[0]) {
+	    ae2fCL_Ann.LErr = clWaitForEvents(1, event);
+	    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+	    ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
+	    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
+    } else 
+	    return(ae2f_errGlob_ALLOC_FAILED);
 
-    printf("IBUFFER: %f\n", IBuffer);
+
     IBuffer = _this->vAct(IBuffer + *ae2f_mAnnSpB(_this, const));
     if(outret_opt) *outret_opt = IBuffer;
 
     END:
-    if(event[0]) {
+    if(event[0] && !ae2fCL_Ann.LErr) {
         ae2fCL_Ann.LErr = clWaitForEvents(1, event);
         if(!ae2fCL_Ann.LErr)
             ae2fCL_Ann.LErr = clReleaseEvent(event[0]);
@@ -86,9 +94,9 @@ static ae2f_err_t Predict(
     }
 
     if(ae2fCL_Ann.LErr) {
-        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+        return err | ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
     }
-    if(event[1]) {
+    if(event[1] && !ae2fCL_Ann.LErr) {
         ae2fCL_Ann.LErr = clWaitForEvents(1, event + 1);
         if(!ae2fCL_Ann.LErr)
             ae2fCL_Ann.LErr = clReleaseEvent(event[1]);
@@ -96,7 +104,7 @@ static ae2f_err_t Predict(
     }
 
     if(ae2fCL_Ann.LErr) {
-        return ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
+        return err | ae2f_errGlob_FLUSH_FAILED | ae2f_errGlob_NFOUND;
     }
 
     return err;
