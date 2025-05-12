@@ -12,9 +12,18 @@
  */
 
 #include <CL/cl.h>
+#include <stdio.h>
 
 int main() {
     cl_platform_id platform;
-    cl_int err = clGetPlatformIDs(1, &platform, 0);
+    cl_int err;
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    err = clGetPlatformIDs(1, &platform,0);
+    puts("clGetPlatformIDHasLeak");
     return err;
 }

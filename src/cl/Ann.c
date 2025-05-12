@@ -5,9 +5,9 @@ static const char* __clsrc[] =
 #include "CLCode/__PROCESSED.clh"
 };
 
-ae2f_SHAREDEXPORT struct ae2fCL_Ann_t ae2fCL_Ann = {0, };
+ae2f_SHAREDEXPORT struct ae2fCL_Ann_t ae2fCL_Ann = {0, 0, 0, 0, 0, 0, 0 };
 
-static cl_program LIB;
+static cl_program LIB = 0;
 
 ae2f_SHAREDEXPORT
 ae2f_err_t ae2fCL_AnnMk(
@@ -33,7 +33,7 @@ ae2f_err_t ae2fCL_AnnMk(
         err2 = clBuildProgram(LIB, devCount, devs, 0, 0, 0);
     }
 
-    if(err2 != CL_SUCCESS) return(err2) ;
+    if(err2 != CL_SUCCESS) return(err2);
 
     #define LocCreateKernel(name) \
     if(!ae2fCL_AnnKerns[name]) { \

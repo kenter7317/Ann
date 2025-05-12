@@ -31,9 +31,9 @@ int main() {
         1, 1, 0, 0
     };
 
-    ae2f_float_t diff_got[2];
+    ae2f_float_t diff_got[2] = { 0, 0};
 
-    ae2f_err_t err2, err;
+    ae2f_err_t err2 = 0, err = 0;
     
     ae2f_mAnnSp* Slp = (ae2f_mAnnSp*)ae2f_AnnSpMk(
         2, 0, Forward, ForwardPrime, Backward, &err2, 0 
@@ -87,7 +87,7 @@ int main() {
             err = err2; goto __failure;
         }
     }
-    ae2f_float_t outbuff[2] = {  5 };
+    ae2f_float_t outbuff[2] = {  5, 5 };
 
     #define ae2fCL_mAnnSlpPredict(obj, inb, _, in_idx, __, out, ...) \
     ae2f_mAnnSpPredict(obj, inb + in_idx, (out))

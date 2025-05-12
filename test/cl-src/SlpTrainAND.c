@@ -1,7 +1,6 @@
 #include "../test.h"
 #include <ae2fCL/Ann/Slp.h>
 #include <ae2fCL/Ann.h>
-#include <stdio.h>
 
 #define gLearningRate 0.1
 #define gEpochs 1000
@@ -24,8 +23,9 @@ Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_
 }
 
 int main() {
-    cl_int errcl;
-    ae2f_err_t err2, err;
+	ae2fCL_AnnSlp* Slp = 0 ;
+    cl_int errcl = 0;
+    ae2f_err_t err2 = 0, err = 0;
     // [1, 1], [1, 0], [0, 1], [0, 0]
     ae2f_float_t ins[] = {
         1, 1, 1, 0, 0, 1, 0, 0
@@ -36,12 +36,18 @@ int main() {
         1, 1, 0, 0
     };
 
-    ae2f_float_t diff_got[2];
+    ae2f_float_t diff_got[2] = {0, 0};
+
+    puts("AnnMkEasy go");
 
     err = ae2fCL_AnnMkEasy(&errcl);
+    puts("AnnMkEasy Check");
+
     CHECK_ERR(err, CL_SUCCESS, __failure);
 
-    ae2fCL_AnnSlp* Slp = ae2fCL_AnnSlpMkB(
+    puts("AnnMkEasy done");
+
+    Slp = ae2fCL_AnnSlpMkB(
         2, 0, 0, Forward, ForwardPrime, Backward, 1, 
         0, &err2, &errcl
     );
@@ -188,9 +194,10 @@ int main() {
     }
 
     __failure:
-    ae2f_AnnSlpDel(Slp);
-    ae2fCL_AnnDel();
+    puts("Deinit");
+    if(Slp) ae2f_AnnSlpDel(Slp);
     printf("ERR: %d\n", err);
     printf("ERR-CL: %d\n", ae2fCL_Ann.LErr);
+    ae2fCL_AnnDel();
     return err;
 }

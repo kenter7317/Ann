@@ -21,9 +21,11 @@ static ae2f_err_t Predict(
 
     cl_mem _W = *ae2fCL_mAnnSpWCl(_this, const), _IO = *ae2fCL_mAnnSpIOCl(_this, const);
     cl_kernel K = ae2fCL_Ann.Kerns[ae2fCL_eAnnKernsSpPredict];
-    ae2f_float_t IBuffer;
+    ae2f_float_t IBuffer = 0;
 
     cl_event event[2] = {0, 0};
+    const size_t _locworksize[1] = {_this->inc};
+    size_t _locmemsize = _locworksize[0] * sizeof(ae2f_float_t);
 
     #define return(n) { err = n; goto END; }
 
@@ -42,27 +44,32 @@ static ae2f_err_t Predict(
     ae2fCL_Ann.LErr = clSetKernelArg(K, 1, sizeof(cl_mem), &_W);
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
-    ae2fCL_Ann.LErr = clSetKernelArg(K, 2, _this->inc * sizeof(ae2f_float_t), 0);
+
+    if(_locmemsize == sizeof(cl_mem))
+    {
+        _locmemsize += 1;
+    }
+
+    ae2fCL_Ann.LErr = clSetKernelArg(K, 2, _locmemsize, 0);
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return ae2f_errGlob_NFOUND;
 
     if(!event[0]) return(ae2f_errGlob_ALLOC_FAILED);
 
-
-    const size_t _locworksize = _this->inc;
-
+    event[1] = 0;
+#if 1
     ae2fCL_Ann.LErr = clEnqueueNDRangeKernel(
         ae2fCL_Ann.Q, K, 1, 0,
-        &_this->inc,
-        &_locworksize,
+        _locworksize,
+        _locworksize,
         1, event, event + 1
     );
-
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
     if(event[0]) ae2fCL_Ann.LErr = clReleaseEvent(event[0]); event[0] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
 
     if(!event[1]) return(ae2f_errGlob_ALLOC_FAILED);
-
+    event[0] = 0;
+#endif
     ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _IO, 
         CL_FALSE, _this->inc * ae2f_float_t_SIZE, 
@@ -72,7 +79,6 @@ static ae2f_err_t Predict(
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
     if(event[1]) ae2fCL_Ann.LErr = clReleaseEvent(event[1]); event[1] = 0;
     if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
-
     if(event[0]) {
 	    ae2fCL_Ann.LErr = clWaitForEvents(1, event);
 	    if(ae2fCL_Ann.LErr != CL_SUCCESS) return(ae2f_errGlob_NFOUND);
@@ -170,7 +176,7 @@ static ae2f_err_t Train(
 
     if((ae2fCL_Ann.LErr = clEnqueueReadBuffer(
         ae2fCL_Ann.Q, _W, 
-        CL_TRUE, 0, 
+        CL_FALSE, 0, 
         _this->inc * sizeof(ae2f_float_t), 
         ae2f_mAnnSpW(_this), 
         1, event, event + 1
@@ -238,7 +244,7 @@ size_t ae2fCL_mAnnSpInit(
 
     *ae2fCL_mAnnSpWCl(perc_opt) = clCreateBuffer(
         ae2fCL_Ann.Ctx, 
-        CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR,
+        CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
         ae2f_float_t_SIZE * icount, ae2f_mAnnSpW(perc_opt),
         &err2
     );

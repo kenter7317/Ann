@@ -48,7 +48,7 @@ int main() {
     puts("Before Mk");
 
     // Create MLP
-    ae2f_err_t err;
+    ae2f_err_t err = 0;
     
     ae2f_AnnMlp* mlp = ae2fCL_AnnMlpMk(
         layerc,

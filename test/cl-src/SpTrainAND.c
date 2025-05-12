@@ -47,7 +47,7 @@ int main() {
 
     ae2fCL_AnnMkEasy(0);
 
-    ae2f_err_t err2, err;
+    ae2f_err_t err2 = 0, err = 0;
     ae2fCL_AnnSp* Perc = ae2fCL_AnnSpMk(
         2, 0, Forward, ForwardPrime, Backward, &err2, 0, 0
     );
@@ -155,6 +155,6 @@ int main() {
 
     __failure:
     ae2fCL_AnnSpDel(Perc);
-    ae2fCL_AnnDel();
+    ae2fCL_AnnDelEasy();
     return err | err2;
 }
