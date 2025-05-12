@@ -6,7 +6,7 @@
 
 
 #define SLP_CL_CHUNK_SZ(in, out) \
-	((in) + (in + 2) * (out))
+	((in) + ((in) + 2) * (out))
 
 ae2f_err_t TrainCL(
 		ae2f_mAnnSlp* _this,
@@ -349,6 +349,7 @@ _DONE:
 
 static ae2f_mAnnSlpClean_t CleanCL;
 
+
 ae2f_SHAREDEXPORT
 size_t ae2fCL_mAnnSlpInit(
     ae2f_mAnnSlp* _this,
@@ -400,6 +401,7 @@ size_t ae2fCL_mAnnSlpInit(
 		    = ae2f_mAnnSlpField(_this);
     }
 
+
     for(size_t i = 0; i < outc; i++) {
         size_t 
         _inc =  incs_optA ? incs_optA[i] : ginc_optB,
@@ -431,6 +433,7 @@ size_t ae2fCL_mAnnSlpInit(
         er |= ertmp;
         *ae2f_mAnnSlpPerVPad(_this)[i] = _pad;
     }
+
 
     ae2fCL_mAnnSlpAdd(_this)->In = 
 	    	clCreateBuffer(
