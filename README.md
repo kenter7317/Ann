@@ -14,7 +14,7 @@ ANN interfaces with basic implementation for example.
 - cmake
 
 # CL-Ann
-> Rel-v3.3.3
+> Rel-v3.3.4
 
 A simple ann project with opencl written in C.
 

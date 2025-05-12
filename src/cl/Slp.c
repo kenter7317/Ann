@@ -243,7 +243,7 @@ ae2f_err_t PredictCL(
 		ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
 				ae2fCL_Ann.Q
 				, __X->In
-				, CL_TRUE
+				, CL_FALSE
 				, IC * sizeof(ae2f_float_t)
 				, (IC + 1) * OC * sizeof(ae2f_float_t)
 				, _->pField
@@ -459,6 +459,17 @@ static ae2f_err_t CleanCL(ae2f_mAnnSlp* _) {
 	if(_ && ae2fCL_mAnnSlpAdd(_)->In) {
 		if((ae2fCL_Ann.LErr = clReleaseMemObject(
 				ae2fCL_mAnnSlpAdd(_)->In
+				)))
+		{
+			e = 
+				ae2f_errGlob_FLUSH_FAILED | 
+				ae2f_errGlob_NFOUND;
+		}
+	}
+
+	if(_ && ae2fCL_mAnnSlpAdd(_)->field) {
+		if((ae2fCL_Ann.LErr = clReleaseMemObject(
+				ae2fCL_mAnnSlpAdd(_)->field
 				)))
 		{
 			e = 

@@ -54,14 +54,14 @@ int mainc() {
     }
 
     printf("Buff2: %f\n", Buff2[0]);
-
+    ae2fCL_Ann.LErr = 0;
     err = ae2f_mAnnSpPredict(
         &Perc->Sp, Buff, &outfloat
     );
 
     printf("buff2: %f\n", *Buff2);
-
     if(err) goto __failure;
+    if(ae2fCL_Ann.LErr) goto __failure;
     printf("out: %f\n", outfloat);
     printf(
         "Bias global: %f, with bias: %f\n", 
@@ -88,6 +88,8 @@ int mainc() {
     }
 
     __failure:
+    printf("Done. in whatever reason. %d\n", err);
+    printf("ErrCL: %d\n", ae2fCL_Ann.LErr);
     if(Perc) ae2fCL_AnnSpDel(Perc);
     ae2fCL_AnnDel();
     if(ae2fCL_Ann.Q) clReleaseCommandQueue(ae2fCL_Ann.Q);

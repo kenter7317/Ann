@@ -111,7 +111,7 @@ if(NOT TARGET ${PROJECT_NAME})
 endif()
 
 if(ae2fCL_needed)
-    project(CL-Ann VERSION 3.3.3 LANGUAGES C CXX)
+    project(CL-Ann VERSION 3.3.4 LANGUAGES C CXX)
     if(NOT TARGET ${PROJECT_NAME})
     ae2f_CoreLibFetchX(ae2f Ruler		Rel-v0.1.5)
     ae2f_CoreLibFetchX(ae2f Ann 		None)

@@ -27,7 +27,7 @@ int mainc() {
   ae2f_float_t Buff2[] = {0, 0.3, 0.2, 0.4, 0.6, 0.1};
 
   ae2f_mAnnSp *Perc = 0;
-  ae2fCL_AnnSlp *SLP;
+  ae2fCL_AnnSlp *SLP = 0;
   ae2f_float_t out_checksum = 0;
 
   err = ae2fCL_AnnMkEasy(errcl);
@@ -68,8 +68,10 @@ __failure:
   ae2fCL_AnnDel();
   if (ae2fCL_Ann.Q)
     clReleaseCommandQueue(ae2fCL_Ann.Q);
+    ae2fCL_Ann.Q = 0;
   if (ae2fCL_Ann.Ctx)
     clReleaseContext(ae2fCL_Ann.Ctx);
+    ae2fCL_Ann.Ctx = 0;
   return err;
 }
 
@@ -123,13 +125,17 @@ int maincc() {
   }
 
 __failure:
-  if (SLP)
-    delete SLP;
+  if (SLP) {
+    delete SLP; // ae2fCL_AnnSlpDel(SLP);
+    SLP = 0;
+  }
   ae2fCL_AnnDel();
   if (ae2fCL_Ann.Q)
     clReleaseCommandQueue(ae2fCL_Ann.Q);
+    ae2fCL_Ann.Q = 0;
   if (ae2fCL_Ann.Ctx)
     clReleaseContext(ae2fCL_Ann.Ctx);
+    ae2fCL_Ann.Ctx = 0;
 
   printf("is it good? %d\n", err);
   return err;

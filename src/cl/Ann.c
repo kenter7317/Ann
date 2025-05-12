@@ -46,9 +46,6 @@ ae2f_err_t ae2fCL_AnnMk(
     LocCreateKernel(ae2fCL_eAnnKernsSlpPredict);
     LocCreateKernel(ae2fCL_eAnnKernsSlpTrain);
 
-#include <stdio.h>
-    puts("asdfsdfasd fasdfasd fa dsf ");
-
     #undef LocCreateKernel
     RET:
     if(reterr) *reterr = err2;
