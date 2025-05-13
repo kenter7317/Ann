@@ -80,6 +80,19 @@ _return:
 } 
 
 
+ae2f_extern ae2f_SHAREDEXPORT
+ae2f_err_t ae2f_AnnCnnPool1d(
+		const ae2f_float_t* inv,
+		const size_t* inc,
+		ae2f_float_t* outv,
+		const size_t* outc,
+		const size_t pool_size,
+		const size_t stride_opt
+		) noexcept
+{
+	
+}
+
 /**
  * @brief 
  * `dim` must be the dimension of mmaps, lengths of lists.
