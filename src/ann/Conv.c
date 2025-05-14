@@ -1,7 +1,4 @@
 #include <ae2f/Ann/Conv.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <memory.h>
 
 #define ae2f_AnnConv1dSz(in_f, in_g, pad, stride) \
 	(((((pad << 1) + *ae2f_mMMapDimLen(in_f, const)) \
@@ -35,13 +32,11 @@ ae2f_AnnCnnConv1d(
 		)
 {
 	ae2f_err_t err = 0;
-
-	if(!stride) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_WRONG_OPERATION;
-
 	const size_t outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
-#define return(n) { err = n; goto _return; }
 
-	if(!outv) return(ae2f_errGlob_DONE_HOWEV | ae2f_errGlob_PTR_IS_NULL);
+#define return(n) { err = n; goto _return; }
+	if(!stride) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_WRONG_OPERATION;
+	if(!outv) return(0);
 	if(outc <= pad << 1) return (ae2f_errGlob_OK);
 
 	for(size_t i = 0; i < outc; i++)
@@ -79,18 +74,75 @@ _return:
 	return err;
 } 
 
-
 ae2f_extern ae2f_SHAREDEXPORT
 ae2f_err_t ae2f_AnnCnnPool1d(
 		const ae2f_float_t* inv,
-		const size_t* inc,
+		const size_t inc,
 		ae2f_float_t* outv,
-		const size_t* outc,
-		const size_t pool_size,
-		const size_t stride_opt
+		size_t* opt_outc,
+		const size_t window,
+		const size_t stride,
+		ae2f_eAnnCnnPool type
 		) noexcept
 {
-	
+	if(!stride) return ae2f_errGlob_WRONG_OPERATION;
+
+	/** @brief Calculation of out vector's size. */
+	size_t outc = 1 + ((inc - window) / stride); 
+
+	if(inc < window)
+		return ae2f_errGlob_IMP_NOT_FOUND;
+
+	if(opt_outc) {
+		*opt_outc = outc;
+	}
+
+	if(!inv)	return ae2f_errGlob_PTR_IS_NULL;
+	if(!outv)	return ae2f_errGlob_OK;
+	if(!stride)	return ae2f_errGlob_WRONG_OPERATION;
+	if(!window)	return ae2f_errGlob_OK;
+
+	for(size_t i = 0; i < outc; i++)
+	{
+#define o (i * stride)
+		ae2f_float_t a = 0;
+
+		if(!(type & 0b10)) {
+			a = inv[o]; /** is not adding, comparing? */
+		}
+
+		if(type & 0b100) {
+			a = outv[i];	/** is outer thing */
+		}
+
+
+		for(size_t j = 0; j < window; j++)
+		{
+			switch(type & 0b11)
+			{
+				case ae2f_eAnnCnnPool_ADD:
+				case ae2f_eAnnCnnPool_AVG:
+					a += inv[o + j];
+					break;
+#include <ae2f/Cmp.h>
+				case ae2f_eAnnCnnPool_MAX:
+					a = ae2f_CmpGetGt(a, inv[o + j]);
+					break;
+
+				case ae2f_eAnnCnnPool_MIN:
+					a = ae2f_CmpGetLs(a, inv[o + j]);
+					break;
+			}
+#undef o
+		}
+
+		if(type == ae2f_eAnnCnnPool_AVG)
+			a /= window;
+
+		outv[i] = a;
+	}
+
+	return 0;
 }
 
 /**
@@ -128,61 +180,70 @@ ae2f_AnnCnnConv(
 		)
 {
 	ae2f_err_t e = 0;
+	size_t stride, pad, opaddedlast, __onavg = 1;
 
 	if(!outv)	return ae2f_errGlob_PTR_IS_NULL;
 	if(!infc)	return ae2f_errGlob_PTR_IS_NULL;
 	if(!ingc)	return ae2f_errGlob_PTR_IS_NULL;
 
+	/* 0D is not possible */
+	if(!dim) return ae2f_errGlob_IMP_NOT_FOUND;
+
 	/* When infcc or ingcc is zero, calculate both of them. */
-	if(!(infcc && ingcc && outcc) && (infcc = 1) && (ingcc = 1) && (outcc = 1))
+	if((infcc && ingcc && outcc)) {
+		for(size_t i = 0; i < dim; i++)
+		{
+			pad = pad_opt ? pad_opt[i] : 0;
+			stride = stride_opt ? stride_opt[i] : 1;
+
+			/* 
+			 * outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
+			 * */
+			opaddedlast = ((infc[i] - ingc[i] + (pad << 1)) / stride) + 1;
+			if(outc_opt)	outc_opt[i] = opaddedlast;
+
+		}
+	}
+	else {
+		infcc = ingcc = outcc = 1;
 		for(size_t i = 0; i < dim; i++) {
-			const size_t 
-				pad = pad_opt ? pad_opt[i] : 0
-				, stride = stride_opt ? stride_opt[i] : 1;
+			pad = pad_opt ? pad_opt[i] : 0;
+			stride = stride_opt ? stride_opt[i] : 1;
 
 			infcc *= infc[i], ingcc *= ingc[i];
 
 			/* 
 			 * outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
 			 * */
-			outcc *= ((infc[i] - ingc[i] + (pad << 1)) / stride) + 1;
+			opaddedlast = ((infc[i] - ingc[i] + (pad << 1)) / stride) + 1;
+			outcc *= opaddedlast;
+			if(outc_opt)	outc_opt[i] = opaddedlast;
 		}
+	}
 
 	/* When they went zero, the function is broken. */
 	if(!(infcc && ingcc && outcc))
 		return ae2f_errGlob_WRONG_OPERATION | ae2f_errGlob_PTR_IS_NULL;
 
-	else infcc /= infc[dim - 1], ingcc /= ingc[dim - 1];
-
-	const size_t 
-		stride = stride_opt ? stride_opt[dim - 1] : 1
-		, pad = pad_opt ? pad_opt[dim - 1] : 0
-		, opaddedlast = ((
-				infc[dim - 1]
-				+ (pad << 1) 
-				- ingc[dim - 1]
-				) / (stride)) + 1;
-
+	infcc /= infc[dim - 1];
+	ingcc /= ingc[dim - 1];
 	outcc /= opaddedlast;
 
+	if(!outv) return 0;
 
-	/* 0D is not possible */
-	if(!dim) return ae2f_errGlob_IMP_NOT_FOUND;
 	/* Lowkey for 1D (builtin) */
-	else if(dim == 1)
+	if(dim == 1) {
 		return ae2f_AnnCnnConv1d(
 				infv
 				, *infc
 				, ingv
 				, *ingc
 				, outv
-				, outc_opt
+				, 0
 				, stride
 				, pad
 				);
-
-	if(outc_opt)
-		outc_opt[dim - 1] = opaddedlast;
+	}
 
 	for(size_t i = 0; i < opaddedlast; i++) {
 		const size_t 
@@ -209,7 +270,8 @@ ae2f_AnnCnnConv(
 					dim - 1
 					, infv + (infi) * infcc, infc, infcc
 					, ingv + j * ingcc, ingc, ingcc
-					, outv ? outv + i * outcc : 0, outc_opt, outcc
+					, outv ? outv + i * stride * outcc : 0
+					, 0, outcc
 					, stride_opt, pad_opt
 				      );
 
@@ -217,6 +279,130 @@ ae2f_AnnCnnConv(
 				return e;
 		}
 	}
+
+	return e;
+}
+
+
+
+ae2f_extern ae2f_SHAREDEXPORT
+ae2f_err_t ae2f_AnnCnnPool_imp(
+		size_t dim,
+		const ae2f_float_t* inv,
+		const size_t* inc,
+		size_t incc,
+		ae2f_float_t* outv,
+		size_t* opt_outc,
+		size_t outcc,
+		const size_t* window_opt,
+		const size_t* stride_opt,
+		ae2f_eAnnCnnPool type
+		)
+{
+	if(!inv)	return ae2f_errGlob_PTR_IS_NULL;
+	if(!inc)	return ae2f_errGlob_PTR_IS_NULL;
+	if(!dim)	{
+		return ae2f_errGlob_IMP_NOT_FOUND;
+	}
+
+	size_t outt, window, stride;
+
+	/* When infcc or ingcc is zero, calculate both of them. */
+	if((incc && outcc)) {
+		for(size_t i = 0; i < dim; i++) {
+			window = window_opt ? window_opt[i] : 1;
+			stride = stride_opt ? stride_opt[i] : 0;
+
+			/* 
+			 * outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
+			 * */
+			outt = 1 + ((inc[i] - window) / stride);
+
+			if(opt_outc) opt_outc[i] = outt;
+		}
+	}
+	else {
+		incc = outcc = 1;
+		for(size_t i = 0; i < dim; i++) {
+			window = window_opt ? window_opt[i] : 1;
+			stride = stride_opt ? stride_opt[i] : 0;
+			
+			incc *= inc[i];
+			/* 
+			 * outc = ((infc - ingc + (pad << 1)) / (stride)) + 1;
+			 * */
+			outt = 1 + ((inc[i] - window) / stride);
+
+			if(opt_outc) opt_outc[i] = outt;
+			outcc *= outt;
+		}
+	}
+
+	if(!(incc && outcc))
+		return ae2f_errGlob_ALLOC_FAILED;
+
+	incc /= inc[dim - 1];
+	outcc /= outt;
+
+	if(dim == 1) {
+		return ae2f_AnnCnnPool1d(
+				inv
+				, inc[dim - 1]
+				, outv
+				, 0
+				, window
+				, stride
+				, type | 0b100
+				);
+	}
+
+	ae2f_err_t e = 0;
+	for(size_t i = 0; i < outt; i++)
+	{
+		for(size_t _j = 0; _j < window; _j++)
+		{
+#define j ((i * stride) + _j)
+			e |= ae2f_AnnCnnPool_imp(
+					dim - 1
+					, inv + j * incc, inc, incc
+					, outv + i * outcc, 0, outcc
+					, window_opt, stride_opt, type 
+					);
+#undef j
+		}
+	}
+
+	return e;
+}
+
+ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t
+ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
+                size_t incc, ae2f_float_t *outv, size_t *opt_outc, size_t outcc,
+                const size_t *window_opt, size_t windowcc,
+                const size_t *stride_opt, ae2f_eAnnCnnPool type)
+{
+	ae2f_err_t e = ae2f_AnnCnnPool_imp(
+			dim
+			, inv, inc, incc
+			, outv, opt_outc, outcc
+			, window_opt, stride_opt
+			, type
+			);
+	if(!windowcc) {
+		windowcc = 1;
+		for(size_t i = 0; i < dim; i++)
+		{
+			windowcc *= window_opt ? window_opt[i] : 1;
+		}
+	}
+
+	if(!outv) return ae2f_errGlob_OK;
+
+	if(ae2f_eAnnCnnPool_AVG == type & 0b11) 
+		for(size_t i = 0; i < windowcc; i++)
+		{
+			outv[i] /= windowcc;
+		}
 
 	return e;
 }

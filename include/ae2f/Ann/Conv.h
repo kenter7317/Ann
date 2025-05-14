@@ -42,15 +42,63 @@ ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnConv(
 
 /**
  * @brief
+ * Pooling type.
+ * See @ref ae2f_AnnCnnPool
+ * */
+typedef enum ae2f_eAnnCnnPool {
+
+  /** @brief Max */
+  ae2f_eAnnCnnPool_MAX = 0b00,
+
+  /** @brief Min */
+  ae2f_eAnnCnnPool_MIN = 0b01,
+
+  /** @brief Add */
+  ae2f_eAnnCnnPool_ADD = 0b10,
+
+  /** @brief Average */
+  ae2f_eAnnCnnPool_AVG = 0b11,
+
+  /**
+   * @brief Middle. respect the output vector's value
+   * */
+  ae2f_eAnnCnnPool_MIDDLE = 0b100
+} ae2f_eAnnCnnPool;
+
+/**
+ * @brief
  * # Pooling Layer
  *
  * @param outv
  * Vectors are suggested initiated as 0.
- * or they are being added.
+ * or they will affect the output itself.
+ *
+ * @param window size scanner
+ * @param stride size jumper
  * */
-ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnPool1d(
-    const ae2f_float_t *inv, const size_t *inc, ae2f_float_t *outv,
-    const size_t *outc, const size_t stride_opt, const size_t pad_opt) noexcept;
+ae2f_extern ae2f_SHAREDCALL ae2f_err_t
+ae2f_AnnCnnPool1d(const ae2f_float_t *inv, const size_t inc, ae2f_float_t *outv,
+                  size_t *opt_outc, const size_t window_opt,
+                  const size_t stride_opt, ae2f_eAnnCnnPool) noexcept;
+
+/**
+ * @brief
+ * # Pooling layer
+ *
+ * @param incc		Pass 0 and will be calculated automatically
+ * @param outcc		Pass 0 and will be calculated automatically
+ * */
+ae2f_extern ae2f_SHAREDCALL ae2f_err_t
+ae2f_AnnCnnPool_imp(size_t dim, const ae2f_float_t *inv, const size_t *inc,
+                    size_t incc, ae2f_float_t *outv, size_t *opt_outc,
+                    size_t outcc, const size_t *window_opt,
+                    const size_t *stride_opt, ae2f_eAnnCnnPool type) noexcept;
+
+ae2f_extern ae2f_SHAREDCALL ae2f_err_t
+ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
+                size_t incc, ae2f_float_t *outv, size_t *opt_outc, size_t outcc,
+                const size_t *window_opt, size_t windowcc,
+                const size_t *stride_opt, ae2f_eAnnCnnPool type) noexcept;
 
 #include <ae2f/Pack/End.h>
 

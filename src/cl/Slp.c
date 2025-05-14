@@ -8,7 +8,13 @@
 #define SLP_CL_CHUNK_SZ(in, out) \
 	((in) + ((in) + 2) * (out))
 
-ae2f_err_t TrainCL(
+static ae2f_err_t PredictCL(
+	const ae2f_mAnnSlp* _
+	, const ae2f_float_t* in
+	, ae2f_float_t* out
+	);
+
+static ae2f_err_t TrainCL(
 		ae2f_mAnnSlp* _this,
 		const ae2f_float_t* in,
 		const ae2f_float_t* delta_optA,
@@ -18,6 +24,8 @@ ae2f_err_t TrainCL(
 {
 	if(!_this) 
 		return ae2f_errGlob_PTR_IS_NULL;
+
+	ae2f_mAnnSlp __this = *_this;
 
 	if(!in) 
 		return ae2f_errGlob_PTR_IS_NULL;
@@ -37,18 +45,19 @@ ae2f_err_t TrainCL(
 
 	ae2fCL_mAnnSlpMemX* memx = ae2fCL_mAnnSlpAdd(_this);
 
-#define __X memx
 	const size_t 
-		WORKSZ[2] = { _this->inc, _this->outc },
+		WORKSZ[2] = { __this.inc, __this.outc },
 		CHUNKSZ = SLP_CL_CHUNK_SZ(WORKSZ[0], WORKSZ[1]) * sizeof(ae2f_float_t);
 
 #define IC WORKSZ[0]
 #define OC WORKSZ[1]
 	ae2f_float_t* PREDICTED_BUFF = ae2f_mAnnSlpOutCache(_this);
-	
-	if(__X->Changed) {
+	if(!delta_optA && __this.vPredict == PredictCL)
+		goto __PREDICT_IS_PredictCL;
+
+	if(memx->Changed) {
 		const size_t* const *pad = ae2f_mAnnSlpPerVPad(_this, const);
-		ae2f_float_t* field = _this->pField;
+		ae2f_float_t* field = __this.pField;
 		for(size_t i = 0; i < OC; i++) 
 			for(size_t j = 0; j < pad[i][0]; j++)
 				j[field + i * (IC + 1) + 1] = 0;
@@ -65,11 +74,11 @@ ae2f_err_t TrainCL(
 			); 
 	if(err2) err = err2;
 		
-	if(__X->Changed)
+	if(memx->Changed)
 	{
 		if((ae2fCL_Ann.LErr = clEnqueueWriteBuffer(
 						ae2fCL_Ann.Q
-						, __X->In
+						, memx->In
 						, CL_TRUE
 						, IC * sizeof(ae2f_float_t)
 						, (IC + 1) * OC * sizeof(ae2f_float_t)
@@ -77,7 +86,7 @@ ae2f_err_t TrainCL(
 						, 0, 0, 0
 						)))
 				return(ae2f_errGlob_NFOUND);
-		__X->Changed = 0;
+		memx->Changed = 0;
 	}
 
 	if(delta_optA) {
@@ -90,10 +99,11 @@ ae2f_err_t TrainCL(
 #undef __X
 
 	/* From here is the part for calculating delta from goal */
-	if(!_this->vPredict)
+	if(!__this.vPredict)
 		return(ae2f_errGlob_IMP_NOT_FOUND);
 
-	if((er = _this->vPredict(
+__PREDICT_IS_PredictCL:
+	if((er = __this.vPredict(
 					_this
 					, in
 					, PREDICTED_BUFF
@@ -107,6 +117,7 @@ ae2f_err_t TrainCL(
 			* perc->vActDeriv(PREDICTED_BUFF[i]) 
 			* learningrate; /**/
 	}
+
 _BUFFSET:
 
 	if((err2 = clEnqueueWriteBuffer(
@@ -177,7 +188,7 @@ _OUT:
 /**
  * OpenCL Code for Predicting SLP.
  * */
-ae2f_err_t PredictCL(
+static ae2f_err_t PredictCL(
 	const ae2f_mAnnSlp* _
 	, const ae2f_float_t* in
 	, ae2f_float_t* out

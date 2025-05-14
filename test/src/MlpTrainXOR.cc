@@ -1,6 +1,7 @@
 #include "../test.h"
 #include <ae2f/Ann/Mlp.h>
 #include <stdio.h>
+#include <chrono>
 
 #include <math.h>
 
@@ -41,8 +42,6 @@ int main() {
     ae2f_fpAnnAct_t act_deriv_v[] = {ForwardPrime, ForwardPrime}; // Last unused
     ae2f_fpAnnLoss_t loss_v[] = { Backward, Backward };
 
-    
-
     // Create MLP
     ae2f_err_t err;
     ae2f_AnnMlp* mlp = ae2f_AnnMlpMk(
@@ -65,6 +64,8 @@ int main() {
 
     puts("Training start");
 
+    const auto now = std::chrono::system_clock::now();
+    const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
     for (int epoch = 0; epoch < gEpochs; epoch++) {
         ae2f_float_t total_loss = 0;
         for (int i = 0; i < 4; i++) {
@@ -82,9 +83,10 @@ int main() {
             }
         }
     }
-
+    const std::time_t t_c2 = std::chrono::system_clock::to_time_t(now);
+    
     // Testing
-    printf("\nTesting XOR:\n");
+    printf("\nTesting XOR: Elapsed: %llu\n", t_c2);
     for (int i = 0; i < 4; i++) {
         ae2f_float_t output[1];
         ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
