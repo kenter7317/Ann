@@ -266,12 +266,166 @@ uint64_t Conv2DTest() {
 	return e;
 }
 
+
+uint64_t Pool1dTest()
+{
+	puts("Pool1dTest");
+	ae2f_err_t e = 0;
+
+	/* Define input vector and parameters */
+	ae2f_float_t inv[5] = {1.0, 2.0, 3.0, 4.0, 5.0};
+	size_t inc = 5;
+	size_t window = 2;
+	size_t stride = 2;
+	ae2f_float_t 
+		outv[2] = {0, 0}, /* Output vector */
+		outv_expected[4][2] = {
+			{2, 4},	/* MAX */
+			{1, 3},	/* MIN */
+			{3, 7},	/* ADD */
+			{1.5, 3.5}	/* AVG */
+		};
+
+	size_t outc;          /* Output size */
+
+	/* Array of pooling types and their names for iteration */
+	ae2f_eAnnCnnPool types[] = {
+		ae2f_eAnnCnnPool_MAX, 
+		ae2f_eAnnCnnPool_MIN, 
+		ae2f_eAnnCnnPool_ADD, 
+		ae2f_eAnnCnnPool_AVG, 
+	};
+	const char* type_names[] = {
+		"MAX", "MIN", "ADD", "AVG", "MIDDLE"
+	};
+	int num_types = sizeof(types) / sizeof(types[0]);
+
+	/* Test each pooling type */
+	for (int i = 0; i < num_types; i++) {
+		/* Reset output vector to zeros */ 
+		outv[0] = 0.0;
+		outv[1] = 0.0;
+
+		/* Call the function */
+		e = ae2f_AnnCnnPool1d(inv, inc, outv, &outc, window, stride, types[i]);
+
+	    
+		/* Check and print results */
+		if (e == 0) {
+			printf("%s Pooling: outc = %zu, outv = [%f, %f]\n", 
+					type_names[i], outc, outv[0], outv[1]);
+
+			if(
+					((outv[0] - outv_expected[i][0])
+					* (outv[0] - outv_expected[i][0])
+					> EPSILON)
+
+					|| ((outv[1] - outv_expected[i][1])
+					* (outv[1] - outv_expected[i][1])
+					> EPSILON)
+
+					) {
+				printf("Mismatch: Expected value: %f, %f\n"
+						, outv_expected[i][0]
+						, outv_expected[i][1]
+						);
+				return 8;
+			}
+		} else {
+			printf("%s Pooling: Error occurred: %d\n", type_names[i], e);
+			return 8;
+		}
+	}
+	
+	return 0;
+}
+
+uint64_t Pool2dTest() {
+	puts("Pool2dTest START");
+
+    /* Input 4x4 grid, flattened in row-major order */
+    ae2f_float_t inv[16] = {
+	    1, 2, 3, 4, 
+	    5, 6, 7, 8, 
+	    9, 10, 11, 12, 
+	    13, 14, 15, 16
+    };
+    
+    /* Input dimensions: 4x4 */
+    size_t inc[2] = {4, 4};
+    
+    /* Window size: 2x2 */
+    size_t window_opt[2] = {2, 2};
+    
+    /* Stride: 2x2 */
+    size_t stride_opt[2] = {2, 2};
+    
+    /* Output array (allocate for 2x2 = 4 elements) */
+    ae2f_float_t outv[4] = {0, 0, 0, 0};
+    
+    /* Variable to store computed output size */ 
+    size_t outc = 0;
+    
+    /* Error code */
+    ae2f_err_t err = 0;
+
+    /* Test MAX pooling */
+    err = ae2f_AnnCnnPool(2, inv, inc, 0, outv, 0, 0, window_opt, 0,  stride_opt, ae2f_eAnnCnnPool_MAX);
+    if (err == 0) {
+        printf("MAX Pooling: outc = %zu, outv = [%f, %f, %f, %f]\n", 
+               outc, outv[0], outv[1], outv[2], outv[3]);
+
+
+	ae2f_float_t tar[] = {6., 8., 14., 16.};
+	for(size_t i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
+	{
+		if((tar[i] - outv[i]) * (tar[i] - outv[i]) > EPSILON)
+		{
+			printf("Mismatch: %f, %f\n", tar[i], outv[i]);
+			return 16;
+		}
+	}
+
+    } else {
+        printf("MAX Pooling Error: %d\n", err);
+	return 16;
+    }
+
+    outv[0] = outv[1] = outv[2] = outv[3] = 0;
+
+    /* Test AVG pooling */
+    err = ae2f_AnnCnnPool(2, inv, inc, 0, outv, 0, 0, window_opt, 0, stride_opt, ae2f_eAnnCnnPool_AVG);
+    if (err == 0) {
+        printf("AVG Pooling: outc = %zu, outv = [%f, %f, %f, %f]\n", 
+               outc, outv[0], outv[1], outv[2], outv[3]);
+
+
+	ae2f_float_t tar[] = {3.5, 5.5, 11.5, 13.5};
+	for(size_t i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
+	{
+		if((tar[i] - outv[i]) * (tar[i] - outv[i]) > EPSILON)
+		{
+			printf("Mismatch: %f, %f\n", tar[i], outv[i]);
+			return 16;
+		}
+	}
+
+    } else {
+        printf("AVG Pooling Error: %d\n", err);
+	return 16;
+    }
+
+    return 0;
+}
+
 int main() {
 	uint64_t 
 		a = 
 		Conv1dTestNoPad()
 		| Conv1dTestWithPad()
 		| Conv2DTest()
+		| Pool1dTest()
+		| Pool2dTest()
 		| 0
 		;
 

@@ -6,9 +6,10 @@
 #include <stdio.h>
 
 #include <math.h>
+#include <chrono>
 
 #define gLearningRate 0.5
-#define gEpochs 3000
+#define gEpochs 1000
 
 // XOR dataset
 static const ae2f_float_t xor_inputs[4][2] = {
@@ -69,7 +70,8 @@ int main() {
     }
 
     puts("Starting Training;");
-
+    const auto start = std::chrono::high_resolution_clock::now();
+    
     for (int epoch = 0; epoch < gEpochs; epoch++) {
         ae2f_float_t total_loss = 0;
         for (int i = 0; i < 4; i++) {
@@ -88,8 +90,11 @@ int main() {
         }
     }
 
+    const auto finish = std::chrono::high_resolution_clock::now();
+    
     // Testing
-    printf("\nTesting XOR:\n");
+    printf("\nTesting XOR: Elapsed: %llu ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count());
+
     for (int i = 0; i < 4; i++) {
         ae2f_float_t output[1];
         ae2f_mAnnSlpPredict(&mlp->Slp, xor_inputs[i], output);
