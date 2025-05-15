@@ -31,7 +31,7 @@ __kernel void ae2fCL_eAnnKernsSpTrain(
         ae2f_float_half_t LrErrB
     #define LrErrTent() \
         const ae2f_float_t LrErr = \
-        ((UF_t) { LrErrA, LrErrB }).F
+        *((UF_t) { LrErrA, LrErrB }).F
     #else
         ae2f_float_t LrErr
         #define LrErrTent()
