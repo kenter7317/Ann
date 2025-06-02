@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
 option(ae2fCL_needed "" ON)
+option(ae2fVK_needed "" ON)
 option(ae2f_TEST "" ON)
 include(cmake/Core.cmake)
 
@@ -148,8 +149,8 @@ if(ae2fCL_needed)
         ae2f_RulerMeasure(
             ae2f_float_t 
             ${PROJECT_SOURCE_DIR}/src/cl/CLCode/Size/ae2f_float_t.auto.h 
-            -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f 
-            Float.h
+            -I${PROJECT_SOURCE_DIR}/submod/ae2f/Core/include/ae2f
+            Float.auto.h
         )
 
         ae2f_CoreLibTentConfigCustom(
@@ -163,6 +164,7 @@ if(ae2fCL_needed)
             "src/cl/CLCode/Size/ae2f_float_t.auto.h"
             "src/cl/CLCode/Size/cl_mem.auto.h"
         )
+
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__Ann-H__FETCHED})
 	target_link_libraries(CL-Ann-H INTERFACE ${ae2f__ae2fCL__CL-Core__FETCHED})
 	target_link_libraries(CL-Ann PUBLIC CL-Ann-H)
@@ -185,4 +187,34 @@ if(ae2fCL_needed)
         ae2fCL_CoreTestTent(CL-Ann "test/cl-src")
 
     endif()
+endif()
+
+if(ae2fVK_needed)
+	project(VK-Ann VERSION 0.0.0 LANGUAGES C CXX)
+
+	if(NOT TARGET ${PROJECT_NAME})
+		ae2f_CoreLibFetchX(ae2f Ruler		Rel-v0.1.5)
+		ae2f_CoreLibFetchX(ae2f Ann 		None)
+		ae2f_CoreLibFetchX(ae2f Ann-H 		None)
+		ae2f_CoreLibFetchX(ae2f Ann-H-Private 	None)
+		find_package(Vulkan REQUIRED)
+		ae2f_CoreLibFetchX_NS(ae2f ae2fVK VK-Core	Rel-v5.15.22)
+
+		file(GLOB_RECURSE VK-Ann-src ${PROJECT_SOURCE_DIR}/src/vk/*)
+		file(GLOB_RECURSE VK-Ann-inc ${PROJECT_SOURCE_DIR}/include/ae2fVK/*)
+
+        ae2f_CoreLibTentConfigCustom(
+            VK-Ann-H INTERFACE
+                include ae2fVK
+                ${PROJECT_SOURCE_DIR}/Config/VK-Ann-H.cmake.in
+            ${VK-Ann-inc}
+        )
+
+        ae2f_CoreLibTentConfigCustom(
+            VK-Ann ${ae2f_LIBPREFIX}
+            include ae2fVK
+            ${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in
+            ${VK-Ann-src} ${VK-Ann-inc}
+        )
+	endif()
 endif()

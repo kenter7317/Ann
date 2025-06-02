@@ -68,10 +68,10 @@ __failure:
   ae2fCL_AnnDel();
   if (ae2fCL_Ann.Q)
     clReleaseCommandQueue(ae2fCL_Ann.Q);
-    ae2fCL_Ann.Q = 0;
+  ae2fCL_Ann.Q = 0;
   if (ae2fCL_Ann.Ctx)
     clReleaseContext(ae2fCL_Ann.Ctx);
-    ae2fCL_Ann.Ctx = 0;
+  ae2fCL_Ann.Ctx = 0;
   return err;
 }
 
@@ -132,10 +132,10 @@ __failure:
   ae2fCL_AnnDel();
   if (ae2fCL_Ann.Q)
     clReleaseCommandQueue(ae2fCL_Ann.Q);
-    ae2fCL_Ann.Q = 0;
+  ae2fCL_Ann.Q = 0;
   if (ae2fCL_Ann.Ctx)
     clReleaseContext(ae2fCL_Ann.Ctx);
-    ae2fCL_Ann.Ctx = 0;
+  ae2fCL_Ann.Ctx = 0;
 
   printf("is it good? %d\n", err);
   return err;

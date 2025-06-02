@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+include(CMakePackageConfigHelpers)
+include("${CMAKE_CURRENT_LIST_DIR}/VK-Ann-HTargets.cmake")
+
+find_dependency(Ann-H REQUIRED)
+link_libraries(ae2f::Ann-H)
+
+find_dependency(VK-Core REQUIRED)
+link_libraries(ae2f::VK-Core)

@@ -19,10 +19,19 @@
 #include <ae2fCL/Ann.h>
 
 typedef struct ae2fCL_mAnnSlpMemX {
+    /** @brief Input layer memory object */
 	cl_mem In;
+    /** @brief field memory object */
 	cl_mem field;
+    /** @brief kernel for memory object */
+    cl_kernel kernel;
+    /** @brief programme */
+    cl_program programme;
 
-	/** @brief Has weights been changed */
+    /** @brief State of the model. */
+    cl_int errstate;
+
+	/** @brief Has weights been changed and it needs sync. */
 	bool Changed;
 } ae2fCL_mAnnSlpMemX;
 
