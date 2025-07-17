@@ -16,8 +16,7 @@
 #include <ae2f/Float.auto.h>
 
 /// @brief Customisable activasion function type.
-typedef ae2f_float_t ae2f_AnnAct_t 
-    (ae2f_float_t x);
+typedef ae2f_float_t ae2f_AnnAct_t (ae2f_float_t x);
 
 /// @brief Customisable activasion function pointer type.
 typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;

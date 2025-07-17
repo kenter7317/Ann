@@ -6,9 +6,6 @@
 #include <ae2f/Float.auto.h>
 #undef __ae2f_MACRO_GENERATED
 #define __ae2f_MACRO_GENERATED 1
-#include "ae2f/Cast/Constexpr.hpp"
-#undef __ae2f_MACRO_GENERATED
-#define __ae2f_MACRO_GENERATED 1
 #include <ae2f/Call.h>
 #undef __ae2f_MACRO_GENERATED
 #define __ae2f_MACRO_GENERATED 1
@@ -41,22 +38,20 @@ ae2f_structdef_v(struct, ae2f_mMMap, ae2f_mMMap)
 {
 	/** @brief aka dimension count */
 	size_t m_dim;
-
-#if ae2f_WhenCXX(!) 0
-#define ae2f_TMP
-
-constexprfun size_t* ae2f_TMP DimLen();
-constexprfun const size_t* ae2f_TMP DimLen() const;
-
-constexprfun ae2f_float_t* ae2f_TMP Field();
-constexprfun const ae2f_float_t* ae2f_TMP Field() const;
-
-#undef ae2f_TMP
-#endif
 };
 
-#if ae2f_MAC_BUILD
+ae2f_structdef(union, ae2f_MMap) {
+	ae2f_mMMap MMap;
+#if ae2f_WhenCXX(!)0
+#define	ae2f_TMP
 
+	private:
+	char _;
+	constexprfun ae2f_MMap() : _(0) {}
+#undef	ae2f_TMP
+
+#endif
+};
 
 ae2f_extern ae2f_SHAREDCALL
 void ae2f_mMMapInit(
@@ -88,8 +83,7 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapSz(
 		const size_t dim, const size_t* const lens
 		, size_t* const ret);
 
-
-#else
+#if !(ae2f_MAC_BUILD && __ae2f_MACRO_GENERATED)
 
 #define ae2f_mMMapInit	__ae2f_mMMapInit
 #define ae2f_mMMapMk	__ae2f_mMMapMk
@@ -121,18 +115,40 @@ ae2f_structdef(struct, ae2f_mMMapSz_t) {
 	size_t m_dim;
 };
 
-#if !ae2f_MACRO_GENERATED
-void __ae2f_mMMapSz_imp(
-		ae2f_mMMapSz_t v_mapsz
-		, const size_t dim, const size_t* const lens
-		);
+ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
+	size_t m_ret;
+	size_t m_i;
+	size_t m_dim;
 
-void __ae2f_mMMapSz(
-		const size_t dim
-		, const size_t* const lens
-		, size_t* const ret
-		);
-#else
+	size_t m_L, m_I;
+};
+
+ae2f_structdef(struct, ae2f_mMMapInit_t) {
+	size_t m_i, m_ret;
+};
+
+ae2f_structdef(struct, ae2f_mMMapMk_t) {
+	ae2f_mMMap* m_ptr;
+	ae2f_mMMapInit_t m_initstack;
+};
+
+#include <ae2f/Pack/End.h>
+#undef __ae2f_MACRO_GENERATED
+#define __ae2f_MACRO_GENERATED 1
+
+#endif
+
+
+#ifndef ae2f_MMap_c
+
+#if !__ae2f_MACRO_GENERATED
+#include <ae2f/MMap/MMap.h>
+#undef __ae2f_MACRO_GENERATED
+#define __ae2f_MACRO_GENERATED 1
+#endif
+
+#define ae2f_MMap_c
+
 
 #define __ae2f_mMMapSz_imp( \
 	/** tparam */ \
@@ -140,7 +156,7 @@ void __ae2f_mMMapSz(
  \
 	/** param */ \
 		/*    , ae2f_mMMapSz_t    */ v_mapsz, \
-		/*   const size_t */ dim, \
+		/*   const size_t    */ dim, \
 		/*   constsize_t*  const    */ lens \
 ) \
 { \
@@ -180,8 +196,7 @@ void __ae2f_mMMapSz(
 	} \
 }
 
-#endif
-
+#if ae2f_WhenCXX(!)0
 /**
  * @brief
  * Calculates the memory length needed in bytes.
@@ -207,17 +222,8 @@ constextendedfun size_t _ae2f_mMMapSz(
 	return v_sz.m_ret;
 }
 
+#endif
 
-
-ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
-	size_t m_ret;
-	size_t m_i;
-	size_t m_dim;
-
-	size_t m_L, m_I;
-};
-
-#if ae2f_MACRO_GENERATED
 
 #define __ae2f_mMMapFieldIdx_imp( \
 	/** tparam */ \
@@ -231,7 +237,7 @@ ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
 ) \
 { \
 	v_fidx.m_L = 1; \
-	v_fidx.m_dim = ae2f_CmpGetLs(dim, (mmap)->dim); \
+	v_fidx.m_dim = ae2f_CmpGetLs(dim, (mmap)->m_dim); \
  \
 	for(; v_fidx.m_i < v_fidx.m_dim - 1 && v_fidx.m_L; v_fidx.m_i++) { \
 		v_fidx.m_L = ae2f_mMMapDimLen(mmap)[v_fidx.m_dim - v_fidx.m_i - 1]; \
@@ -249,7 +255,7 @@ ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
 				- v_fidx.m_i  \
 				- 1 \
 		]; \
-		v_fidx.m_dim = (mmap)->dim; \
+		v_fidx.m_dim = (mmap)->m_dim; \
  \
 		for(; v_fidx.m_i < v_fidx.m_dim - 1; v_fidx.m_i++) { \
 			v_fidx.m_ret *= ae2f_mMMapDimLen(mmap)[v_fidx.m_dim - 1 - v_fidx.m_i]; \
@@ -268,7 +274,8 @@ ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
 		/*    size_t*  const    */ ret \
 ) \
 { \
-	unless(ret); \
+	unless(ret) \
+		; \
 	unless((idxs) && (mmap)) \
 		*(ret) = -1; \
 	else { \
@@ -278,24 +285,8 @@ ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
 	} \
 }
 
-#else
 
-void __ae2f_mMMapFieldIdx_imp(
-		ae2f_mMMapFieldIdx_t v_fidx,
-		const ae2f_mMMap* const mmap,
-		const size_t dim,
-		const size_t* const idxs
-		);
-
-void __ae2f_mMMapFieldIdx(
-		const ae2f_mMMap* const mmap,
-		const size_t dim,
-		const size_t* const idxs,
-		size_t* const ret
-		);
-
-#endif
-
+#if ae2f_WhenCXX(!)0
 
 // 1, 2, ..... n
 constextendedfun size_t _ae2f_mMMapFieldIdx(
@@ -313,72 +304,10 @@ constextendedfun size_t _ae2f_mMMapFieldIdx(
 	return v_idx.m_ret; // / lens[i - 1];
 }
 
+#endif
+
 
 #define ae2f_mMMapDel free
-
-ae2f_structdef(union, ae2f_MMap) {
-	ae2f_mMMap MMap;
-#if ae2f_WhenCXX(!)0
-#define	ae2f_TMP
-
-	private:
-	char _;
-	constexprfun ae2f_MMap() : _(0) {}
-#undef	ae2f_TMP
-
-#endif
-};
-
-/*** END ***/
-#if ae2f_WhenCXX(!)0
-
-#define ae2f_TMP ae2f_mMMap::
-
-constextendedfun size_t* ae2f_TMP DimLen() 
-{
-	return ae2f_mMMapDimLen(this);
-}
-
-constextendedfun const size_t* ae2f_TMP DimLen() const 
-{
-	return ae2f_mMMapDimLen(this, const);
-}
-
-constextendedfun ae2f_float_t* ae2f_TMP Field()
-{
-	return ae2f_mMMapField(this);
-}
-
-constextendedfun const ae2f_float_t* ae2f_TMP Field() const 
-{
-	return ae2f_mMMapField(this, const);
-}
-
-#undef ae2f_TMP
-#endif
-
-ae2f_structdef(struct, ae2f_mMMapInit_t) {
-	size_t m_i, m_ret;
-};
-
-#if !__ae2f_MACRO_GENERATED
-
-void __ae2f_mMMapInit_imp(
-		ae2f_mMMapInit_t v_init,
-		struct ae2f_mMMap* const mmap,
-		const size_t dim,
-		const size_t* const lens
-		);
-
-void __ae2f_mMMapInit(
-		struct ae2f_mMMap* const mmap,
-		const size_t dim,
-		const size_t* const lens,
-		ae2f_err_t* const ret_e,
-		size_t* const opt_sz
-		);
-
-#else
 
 #define __ae2f_mMMapInit_imp( \
 	/** tparam */ \
@@ -396,7 +325,7 @@ void __ae2f_mMMapInit(
 		ae2f_mMMapDimLen(mmap)[v_init.m_i] = (lens)[v_init.m_i]; \
  \
 	memcpy(ae2f_mMMapDimLen(mmap), lens, (dim) * sizeof(size_t)); \
-	v_init.m_ret = _ae2f_mMMapSz((dim), lens); \
+	__ae2f_mMMapSz((dim), lens, &v_init.m_ret); \
 }
 
 #define __ae2f_mMMapInit( \
@@ -422,14 +351,9 @@ void __ae2f_mMMapInit(
 	} \
 }
 
-#endif
 
-ae2f_structdef(struct, ae2f_mMMapMk_t) {
-	ae2f_mMMap* m_ptr;
-	ae2f_mMMapInit_t m_initstack;
-};
 
-#if __ae2f_MACRO_GENERATED
+
 #define __ae2f_mMMapMk_imp( \
 	/** tparam */ \
 		 \
@@ -439,7 +363,8 @@ ae2f_structdef(struct, ae2f_mMMapMk_t) {
 		/*   const size_t */ dim, \
 		/*   constsize_t*  const */ lens \
 ) { \
-	if((v_mk.m_ptr = calloc(1, _ae2f_mMMapSz(dim, lens))))  \
+	__ae2f_mMMapSz(dim, lens, &v_mk.m_initstack.m_ret); \
+	if((v_mk.m_ptr = calloc(1, v_mk.m_initstack.m_ret))) \
 		__ae2f_mMMapInit_imp(v_mk.m_initstack, v_mk.m_ptr, dim, lens); \
 }
 
@@ -467,16 +392,6 @@ ae2f_structdef(struct, ae2f_mMMapMk_t) {
 	} \
 }
 
-
-
-#else
-void __ae2f_mMMapMk_imp(ae2f_mMMapMk_t v_mk, const size_t dim, const size_t* const lens);
-
-#endif
-
-#include <ae2f/Pack/End.h>
-#undef __ae2f_MACRO_GENERATED
-#define __ae2f_MACRO_GENERATED 1
 #endif
 
 #undef	__ae2f_MACRO_GENERATED

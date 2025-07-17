@@ -1,0 +1,5 @@
+#include <ae2f/Call.h>
+
+#undef	ae2f_MAC_BUILD
+#define	ae2f_MAC_BUILD @ae2f_MAC_BUILD@
+

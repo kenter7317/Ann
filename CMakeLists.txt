@@ -4,7 +4,7 @@ option(ae2f_CXX "" ON)
 option(ae2fCL_needed "" OFF)
 option(ae2f_TEST "" ON)
 option(ae2f_MAC_BUILD "" ON)
-option(ae2f_IS_SHARED "" ON)
+option(ae2f_IS_SHARED "" OFF)
 
 include(cmake/Core.cmake)
 
@@ -31,6 +31,9 @@ if(NOT TARGET ae2f::${PROJECT_NAME})
 	ae2f_CoreLibFetchX(ae2f Macro	main)
 
 	file(GLOB mmap-inc ${PROJECT_SOURCE_DIR}/inc/ae2f/MMap/*.h)
+	configure_file(${PROJECT_SOURCE_DIR}/src/mmap/Util.h.in ${PROJECT_SOURCE_DIR}/inc/ae2f/MMap/Util.h)
+
+	ae2f_Macro_init(1, 100, 100)
 
 	ae2f_Macro_Lib_V(
 		ae2f MMap "${ae2f_LIBPREFIX}" 
@@ -53,14 +56,14 @@ if(NOT TARGET ae2f::${PROJECT_NAME})
 	ae2f_Macro_Lib_V(
 		ae2f Ann "${ae2f_LIBPREFIX}" 
 		${PROJECT_SOURCE_DIR}/src/ann "*.imp.c" 
-		${PROJECT_SOURCE_DIR}/src/ann "*.def.c" 
+		${PROJECT_SOURCE_DIR}/src/ann "*.def.c*" 
 		${PROJECT_SOURCE_DIR}/inc/ae2f/Ann ".h"
 		${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in inc
 		${Ann-inc}
 	)
 
 	ae2f_itll(${ae2f__Ann__TENT} ${ae2f__MMap__TENT})
-	# ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/src")
+	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
 
 	if(OFF)
 		ae2f_CoreLibTentConfigCustom(

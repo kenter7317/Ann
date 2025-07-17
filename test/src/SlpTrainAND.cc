@@ -16,8 +16,6 @@ ForwardPrime(ae2f_float_t output) {
     return output * (1.0 - output);
 }
 
-static ae2f_AnnLoss_t Backward;
-
 static ae2f_float_t
 Backward(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
     return (output[i] - target[i]) / c;

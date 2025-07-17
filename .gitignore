@@ -9,7 +9,7 @@ clinclude/*
 *.cl
 
 submod
-include/ae2fCL/Ann/Sizes/*
+inc/ae2fCL/Ann/Sizes/*
 
 Doxyfile
 html
@@ -20,3 +20,8 @@ test/none
 
 .*/
 *.auto.*
+
+inc/ae2f/Ann/Slp.h
+inc/ae2f/Ann/Mlp.h
+inc/ae2f/MMap/MMap.h
+inc/ae2f/MMap/Util.h

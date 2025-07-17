@@ -120,7 +120,6 @@ static ae2f_err_t Train (
             );
         }
 
-
         
         ret |= ae2f_mAnnSlpTrainA(
             LAYER

@@ -14,18 +14,18 @@ static void MlpTrain_HidCompute(
     const ae2f_float_t* deltasNxt,
     const ae2f_float_t* outThen
 ) {
-    for(size_t i = 0; i < layerThen->outc; i++) {
-	const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i);
-    
-    const ae2f_fpAnnAct_t act_p = ae2f_mAnnSlpPerV(
-        layerThen
-        , i, const
-        )->vActDeriv;
+	for(size_t i = 0; i < layerThen->outc; i++) {
+		const ae2f_float_t err = MlpTrain_HidErr(layerNxt, deltasNxt, i);
 
-    if(act_p)
-        retDeltaThen[i] = act_p(outThen[i]) * err;
-    else  {
-        retDeltaThen[i] = outThen[i] * err;
-    }
-    } 
+		const ae2f_fpAnnAct_t act_p = ae2f_mAnnSlpPerV(
+				layerThen
+				, i, const
+				)->vActDeriv;
+
+		if(act_p)
+			retDeltaThen[i] = act_p(outThen[i]) * err;
+		else  {
+			retDeltaThen[i] = outThen[i] * err;
+		}
+	}
 }
