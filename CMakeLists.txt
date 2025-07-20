@@ -9,7 +9,7 @@ option(ae2f_IS_SHARED "" OFF)
 include(cmake/Core.cmake)
 
 # Soon will be doomed
-if(NOT _WIN32 AND ${ae2f_TEST})
+if(NOT WIN32 AND ${ae2f_TEST})
 	link_libraries(m)
 endif()
 
