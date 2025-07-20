@@ -1,6 +1,8 @@
 # Ann
 > Rel-v1.0.0
 
+[![ae2f-workflow](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml/badge.svg)](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml)
+
 ANN interfaces with basic implementation for example.
 
 # See Also
