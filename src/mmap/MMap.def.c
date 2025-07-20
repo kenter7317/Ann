@@ -10,6 +10,9 @@
 
 #include <ae2f/Pack/Beg.h>
 #include <ae2f/Macro.h>
+#include <ae2f/Guide.h>
+
+#include <assert.h>
 
 /** @brief
  * Multilinear map, or tensor.
@@ -22,17 +25,8 @@ ae2f_structdef_v(struct, ae2f_mMMap, ae2f_mMMap)
 	size_t m_dim;
 };
 
-ae2f_structdef(union, ae2f_MMap) {
-	ae2f_mMMap MMap;
-#if ae2f_WhenCXX(!)0
-#define	ae2f_TMP
-
-	private:
-	char _;
-	constexprfun ae2f_MMap() : _(0) {}
-#undef	ae2f_TMP
-
-#endif
+ae2f_structdef(struct, ae2f_MMap) {
+	ae2f_mMMap	mmap;
 };
 
 ae2f_extern ae2f_SHAREDCALL
@@ -50,7 +44,7 @@ void ae2f_mMMapMk(
 		const size_t dim,
 		const size_t* const lens,
 		ae2f_err_t* const opt_ret_err,
-		ae2f_mMMap** const ret_mmap
+		ae2f_FREE(free, ae2f_mMMapDel) ae2f_mMMap** const ret_mmap
 		) noexcept;
 
 ae2f_extern ae2f_SHAREDCALL 
@@ -65,12 +59,17 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapSz(
 		const size_t dim, const size_t* const lens
 		, size_t* const ret);
 
+ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapDel(
+		ae2f_mMMap*	mmap
+		);
+
 #if !(ae2f_MAC_BUILD && __ae2f_MACRO_GENERATED)
 
-#define ae2f_mMMapInit	__ae2f_mMMapInit
-#define ae2f_mMMapMk	__ae2f_mMMapMk
-#define ae2f_mMMapSz	__ae2f_mMMapSz
-#define ae2f_mMMapFieldIdx __ae2f_mMMapFieldIdx
+#define ae2f_mMMapInit		__ae2f_mMMapInit
+#define ae2f_mMMapMk		__ae2f_mMMapMk
+#define ae2f_mMMapDel		__ae2f_mMMapDel
+#define ae2f_mMMapSz		__ae2f_mMMapSz
+#define ae2f_mMMapFieldIdx	__ae2f_mMMapFieldIdx
 
 #include <string.h>
 #include <stdlib.h>
@@ -80,11 +79,11 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapSz(
 
 /** @brief Length vector for every dimension index. */
 #define ae2f_mMMapDimLen(mmap, ...) \
-	ae2f_reinterpret_cast(__VA_ARGS__ size_t*, (mmap) + 1)
+	ae2f_reinterpret_cast(__VA_ARGS__ size_t*, ((mmap) + 1))
 
 /** @breif Memory field. Indexer needed. */
 #define ae2f_mMMapField(mmap, ...) \
-	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_mMMapDimLen(mmap, __VA_ARGS__) + (mmap)->dim)
+	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_mMMapDimLen(mmap, __VA_ARGS__) + (mmap)->m_dim)
 
 
 ae2f_structdef(struct, ae2f_mMMapSz_t) {
@@ -130,32 +129,36 @@ ae2f_MAC() _ae2f_mMMapSz_imp(
 		, const size_t* const lens
 		)
 {
+	assert(dim);
+	assert(lens);
+
 	v_mapsz.m_ret = 1;
-	for(
-			v_mapsz.m_dim = (dim) - 1; 
-			v_mapsz.m_dim != -1 && (lens)[v_mapsz.m_dim]; 
-			--v_mapsz.m_dim) 
-	{
-		v_mapsz.m_ret *= (lens)[v_mapsz.m_dim];
+	v_mapsz.m_dim = (dim);
+
+	while(v_mapsz.m_dim--) {
+		v_mapsz.m_ret *= (lens)[(v_mapsz).m_dim];
 	}
 
-	if(v_mapsz.m_dim == -1)
-		v_mapsz.m_ret = 
-			v_mapsz.m_ret * sizeof(ae2f_float_t)
-			+	((dim) + 1) * sizeof(size_t);
-	else
-		v_mapsz.m_ret = -1;
+	assert(v_mapsz.m_dim == -1);
+
+	v_mapsz.m_ret = 
+		v_mapsz.m_ret * sizeof(ae2f_float_t)
+		+	((dim)) * sizeof(size_t)
+		+	sizeof(ae2f_MMap);
+
+
 }
 
 ae2f_MAC() _ae2f_mMMapSz(const size_t dim, const size_t* const lens
 		, size_t* const ret)
 {
 	unless(lens) {
+		assert(0 && "lens is not good");
 		(ret) && (*(ret) = -1);
 	} else {
 		ae2f_mMMapSz_t v_sz;
 		__ae2f_mMMapSz_imp(v_sz, dim, lens);
-		(ret) && (*(ret) = -1);
+		(ret) && (*(ret) = v_sz.m_ret);
 	}
 }
 
@@ -176,7 +179,7 @@ constextendedfun size_t _ae2f_mMMapSz(
 		const size_t* lens
 		) noexcept
 {
-	if(!lens) {
+	if(!(lens)) {
 		return -1;
 	}
 
@@ -195,18 +198,25 @@ ae2f_MAC() _ae2f_mMMapFieldIdx_imp(
 		const size_t* const idxs
 		)
 {
+	assert((mmap) && "mmap is null");
+	assert((idxs));
+
 	v_fidx.m_L = 1;
 	v_fidx.m_dim = ae2f_CmpGetLs(dim, (mmap)->m_dim);
+	v_fidx.m_ret = 0;
 
-	for(; v_fidx.m_i < v_fidx.m_dim - 1 && v_fidx.m_L; v_fidx.m_i++) {
+	for(v_fidx.m_i = 0; v_fidx.m_i < v_fidx.m_dim - 1 && v_fidx.m_L; v_fidx.m_i++) {
 		v_fidx.m_L = ae2f_mMMapDimLen(mmap)[v_fidx.m_dim - v_fidx.m_i - 1];
 		v_fidx.m_I = (idxs)[v_fidx.m_dim - 1 - v_fidx.m_i] % v_fidx.m_L;
 		v_fidx.m_ret += v_fidx.m_I;
 		v_fidx.m_ret *= v_fidx.m_L;
 	}
 
-	if(v_fidx.m_i < v_fidx.m_dim - 1)
+	if(v_fidx.m_i < v_fidx.m_dim - 1) 
+	{
+		assert(0 && "who are you");
 		v_fidx.m_ret = -1;
+	}
 
 	else {
 		v_fidx.m_ret += (idxs)[(dim) - 1 - v_fidx.m_i] % ae2f_mMMapDimLen(mmap)[
@@ -214,6 +224,7 @@ ae2f_MAC() _ae2f_mMMapFieldIdx_imp(
 				- v_fidx.m_i 
 				- 1
 		];
+
 		v_fidx.m_dim = (mmap)->m_dim;
 
 		for(; v_fidx.m_i < v_fidx.m_dim - 1; v_fidx.m_i++) {
@@ -231,8 +242,10 @@ ae2f_MAC() _ae2f_mMMapFieldIdx(
 {
 	unless(ret)
 		;
-	unless((idxs) && (mmap))
+	unless((idxs) && (mmap)) {
+		assert(0 && "nullptr from __ae2f_mMMapFieldIdx");
 		*(ret) = -1;
+	}
 	else {
 		ae2f_mMMapFieldIdx_t v_idx;
 		__ae2f_mMMapFieldIdx_imp(v_idx, mmap, dim, idxs);
@@ -260,9 +273,6 @@ constextendedfun size_t _ae2f_mMMapFieldIdx(
 }
 
 #endif
-
-
-#define ae2f_mMMapDel free
 
 ae2f_MAC() _ae2f_mMMapInit_imp(
 		ae2f_mMMapInit_t v_init,
@@ -298,13 +308,19 @@ ae2f_MAC() _ae2f_mMMapInit(
 	}
 }
 
-
-
-
 ae2f_MAC() _ae2f_mMMapMk_imp(ae2f_mMMapMk_t v_mk, const size_t dim, const size_t* const lens) {
-	__ae2f_mMMapSz(dim, lens, &v_mk.m_initstack.m_ret);
-	if((v_mk.m_ptr = calloc(1, v_mk.m_initstack.m_ret)))
-		__ae2f_mMMapInit_imp(v_mk.m_initstack, v_mk.m_ptr, dim, lens);
+	assert((lens) && "lens is null");
+	__ae2f_mMMapSz((dim), (lens), (&v_mk.m_initstack.m_ret));
+
+	assert((v_mk.m_initstack.m_ret != -1) && "Sz has failed.");
+	assert((v_mk.m_initstack.m_ret > sizeof(ae2f_mMMap)) && "Sz is fishy.");
+
+
+	if((v_mk.m_ptr = calloc(1, v_mk.m_initstack.m_ret))) {
+		__ae2f_mMMapInit_imp(v_mk.m_initstack, (v_mk.m_ptr), dim, lens);
+	} else {
+		assert(0 && "allocation has failed");
+	}
 }
 
 ae2f_MAC() _ae2f_mMMapMk(
@@ -324,7 +340,13 @@ ae2f_MAC() _ae2f_mMMapMk(
 		unless(v_mk.m_ptr) {
 			(opt_ret_err) && (*(opt_ret_err) |= ae2f_errGlob_ALLOC_FAILED);
 		}
+
+		*(ret_mmap) = v_mk.m_ptr;
 	}
+}
+
+ae2f_MAC() _ae2f_mMMapDel(void* a) {
+	free(a);
 }
 
 #endif

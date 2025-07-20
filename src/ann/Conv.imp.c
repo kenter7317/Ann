@@ -7,8 +7,8 @@
 	+ 1)
 
 inline static size_t getIndex(const ae2f_float_t* x, const size_t* xi,  const size_t* xc, size_t dim) {
-    int idx = 0;
-    for (int i = 0; i < dim; i++) {
+    int idx = 0, i = 0;
+    for (; i < dim; i++) {
         idx += xi[i] * xc[i];
     }
     return idx;
@@ -38,13 +38,13 @@ ae2f_AnnCnnConv1d(
 	if(!stride) return ae2f_errGlob_PTR_IS_NULL | ae2f_errGlob_WRONG_OPERATION;
 	if(!outv) return(0);
 	if(outc <= pad << 1) return (ae2f_errGlob_OK);
-
-	for(size_t i = 0; i < outc; i++)
+	size_t i = 0, j;
+	for(; i < outc; i++)
 	{
 		ae2f_float_t sum = 0;
 		const size_t begi = i * stride;
 
-		for(size_t j = 0; j < ingc; j++)
+		for(j = 0; j < ingc; j++)
 		{
 			const size_t infi = begi + j;
 
@@ -88,7 +88,7 @@ ae2f_err_t ae2f_AnnCnnPool1d(
 	if(!stride) return ae2f_errGlob_WRONG_OPERATION;
 
 	/** @brief Calculation of out vector's size. */
-	size_t outc = 1 + ((inc - window) / stride); 
+	size_t outc = 1 + ((inc - window) / stride), i, j; 
 
 	if(inc < window)
 		return ae2f_errGlob_IMP_NOT_FOUND;
@@ -102,7 +102,7 @@ ae2f_err_t ae2f_AnnCnnPool1d(
 	if(!stride)	return ae2f_errGlob_WRONG_OPERATION;
 	if(!window)	return ae2f_errGlob_OK;
 
-	for(size_t i = 0; i < outc; i++)
+	for(i = 0; i < outc; i++)
 	{
 #define o (i * stride)
 		ae2f_float_t a = 0;
@@ -116,7 +116,7 @@ ae2f_err_t ae2f_AnnCnnPool1d(
 		}
 
 
-		for(size_t j = 0; j < window; j++)
+		for(j = 0; j < window; j++)
 		{
 			switch(type & 0b11)
 			{
@@ -182,6 +182,8 @@ ae2f_AnnCnnConv(
 	ae2f_err_t e = 0;
 	size_t stride, pad, opaddedlast, __onavg = 1;
 
+	size_t i, j;
+
 	if(!outv)	return ae2f_errGlob_PTR_IS_NULL;
 	if(!infc)	return ae2f_errGlob_PTR_IS_NULL;
 	if(!ingc)	return ae2f_errGlob_PTR_IS_NULL;
@@ -191,7 +193,7 @@ ae2f_AnnCnnConv(
 
 	/* When infcc or ingcc is zero, calculate both of them. */
 	if((infcc && ingcc && outcc)) {
-		for(size_t i = 0; i < dim; i++)
+		for(i = 0; i < dim; i++)
 		{
 			pad = pad_opt ? pad_opt[i] : 0;
 			stride = stride_opt ? stride_opt[i] : 1;
@@ -206,7 +208,7 @@ ae2f_AnnCnnConv(
 	}
 	else {
 		infcc = ingcc = outcc = 1;
-		for(size_t i = 0; i < dim; i++) {
+		for(i = 0; i < dim; i++) {
 			pad = pad_opt ? pad_opt[i] : 0;
 			stride = stride_opt ? stride_opt[i] : 1;
 
@@ -245,11 +247,11 @@ ae2f_AnnCnnConv(
 				);
 	}
 
-	for(size_t i = 0; i < opaddedlast; i++) {
+	for(i = 0; i < opaddedlast; i++) {
 		const size_t 
 			begi = i * stride;
 
-		for(size_t j = 0; j < ingc[dim - 1]; j++) {
+		for(j = 0; j < ingc[dim - 1]; j++) {
 			const size_t infi = begi + j;
 
 			/* If infv is padded so it went to zero. */
@@ -306,10 +308,11 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 	}
 
 	size_t outt, window, stride;
+	size_t i, j;
 
 	/* When infcc or ingcc is zero, calculate both of them. */
 	if((incc && outcc)) {
-		for(size_t i = 0; i < dim; i++) {
+		for(i = 0; i < dim; i++) {
 			window = window_opt ? window_opt[i] : 1;
 			stride = stride_opt ? stride_opt[i] : 0;
 
@@ -323,7 +326,7 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 	}
 	else {
 		incc = outcc = 1;
-		for(size_t i = 0; i < dim; i++) {
+		for(i = 0; i < dim; i++) {
 			window = window_opt ? window_opt[i] : 1;
 			stride = stride_opt ? stride_opt[i] : 0;
 			
@@ -357,9 +360,10 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 	}
 
 	ae2f_err_t e = 0;
-	for(size_t i = 0; i < outt; i++)
+	for(i = 0; i < outt; i++)
 	{
-		for(size_t _j = 0; _j < window; _j++)
+		size_t _j;
+		for(_j = 0; _j < window; _j++)
 		{
 #define j ((i * stride) + _j)
 			e |= ae2f_AnnCnnPool_imp(
@@ -388,9 +392,11 @@ ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
 			, window_opt, stride_opt
 			, type
 			);
+
+	size_t i, j;
 	if(!windowcc) {
 		windowcc = 1;
-		for(size_t i = 0; i < dim; i++)
+		for(i = 0; i < dim; i++)
 		{
 			windowcc *= window_opt ? window_opt[i] : 1;
 		}
@@ -398,8 +404,8 @@ ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
 
 	if(!outv) return ae2f_errGlob_OK;
 
-	if(ae2f_eAnnCnnPool_AVG == type & 0b11) 
-		for(size_t i = 0; i < windowcc; i++)
+	if(ae2f_eAnnCnnPool_AVG == (type & 0b11)) 
+		for(i = 0; i < windowcc; i++)
 		{
 			outv[i] /= windowcc;
 		}

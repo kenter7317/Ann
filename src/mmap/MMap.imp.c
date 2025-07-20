@@ -41,4 +41,8 @@ void ae2f_mMMapMk(
 	__ae2f_mMMapMk(dim, lens, opt_ret_err, ret_mmap);
 }
 
+void ae2f_mMMapDel(ae2f_mMMap* del) {
+	__ae2f_mMMapDel(del);
+}
+
 #endif

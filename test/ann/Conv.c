@@ -5,6 +5,15 @@
 /** @brief SUPER SMALL NUMBER that I would not care when comparing */
 #define EPSILON 0.000001
 
+size_t i, j, a, el;
+
+size_t test_mMMapFieldIdx(const ae2f_mMMap *const mmap, const size_t dim, const size_t *const idxs) 
+{
+	size_t ret;
+	ae2f_mMMapFieldIdx(mmap, dim, idxs, &ret);
+	return ret;
+}
+
 uint64_t Conv1dTestNoPad() {
 	uint64_t r = 0;
 
@@ -15,11 +24,11 @@ uint64_t Conv1dTestNoPad() {
 
 	size_t inputsz = 10, kernelsz = 3, outsz = 8, stride = 1, padding = 0;
 
-	input = ae2f_mMMapMk(1, &inputsz, 0);
-	kernel = ae2f_mMMapMk(1, &kernelsz, 0);
-	output = ae2f_mMMapMk(1, &outsz, 0);
+	ae2f_mMMapMk(1, &inputsz, 0, &input);
+	ae2f_mMMapMk(1, &kernelsz, 0, &kernel);
+	ae2f_mMMapMk(1, &outsz, 0, &output);
 
-	for(size_t i = 0; i < inputsz; i++) {
+	for(i = 0; i < inputsz; i++) {
 		ae2f_mMMapField(input)[i] = i + 1;
 	}
 
@@ -49,7 +58,7 @@ uint64_t Conv1dTestNoPad() {
 			7.7, 
 			8.7
 		};
-	for(size_t i = 0; i < outsz; i++)
+	for(i = 0; i < outsz; i++)
 	{
 		(matchbuff = ae2f_mMMapField(
 			output
@@ -90,11 +99,11 @@ uint64_t Conv1dTestWithPad() {
 
 	size_t inputsz = 6, kernelsz = 3, outsz = 8, stride = 1, padding = 2;
 
-	input = ae2f_mMMapMk(1, &inputsz, 0);
-	kernel = ae2f_mMMapMk(1, &kernelsz, 0);
-	output = ae2f_mMMapMk(1, &outsz, 0);
+	ae2f_mMMapMk(1, &inputsz, 0, &input);
+	ae2f_mMMapMk(1, &kernelsz, 0, &kernel);
+	ae2f_mMMapMk(1, &outsz, 0, &output);
 
-	for(size_t i = 0; i < inputsz; i++) {
+	for(i = 0; i < inputsz; i++) {
 		ae2f_mMMapField(input)[i] = i + 1;
 	}
 
@@ -118,7 +127,7 @@ uint64_t Conv1dTestWithPad() {
 		, targets[] = {
 			0.2, 0.7, 1.7, 2.7, 3.7, 4.7, 4.3, 3
 		};
-	for(size_t i = 0; i < outsz; i++)
+	for(i = 0; i < outsz; i++)
 	{
 		printf(
 				"Match: %f %f\n"
@@ -165,18 +174,22 @@ uint64_t Conv2DTest() {
 	size_t idxbuff[2] = {0, 0};
 	ae2f_float_t kernelelbuff[3] = { 0, };
 
-	input = ae2f_mMMapMk(2, inputsz, 0);
-	kernel = ae2f_mMMapMk(2, kernelsz, 0);
-	output = ae2f_mMMapMk(2, outsz, 0);
+	ae2f_mMMapMk(2, inputsz, 0, &input);
+	ae2f_mMMapMk(2, kernelsz, 0, &kernel);
+	ae2f_mMMapMk(2, outsz, 0, &output);
 
-	for(size_t i = 0, el = 1; i < 4; i++)
-		for(size_t j = 0; j < 4; j++) {
+	puts("obj has made");
+
+	for(i = 0, el = 1; i < 4; i++)
+		for(j = 0; j < 4; j++) {
 			idxbuff[1] = i;
 			idxbuff[0] = j;
 
-			ae2f_mMMapField(input)[ae2f_mMMapFieldIdx(input, 2, idxbuff)]
+			ae2f_mMMapField(input)[test_mMMapFieldIdx(input, 2, idxbuff)]
 				= el++;
 		}
+
+	puts("field");
 
 	kernelelbuff[0] = 1;
 	kernelelbuff[1] = 0;
@@ -185,6 +198,9 @@ uint64_t Conv2DTest() {
 	idxbuff[0] = 0;
 	idxbuff[1] = 2;
 
+
+	puts("buff has made");
+
 	memcpy(
 			ae2f_mMMapField(kernel)
 			, kernelelbuff
@@ -192,7 +208,7 @@ uint64_t Conv2DTest() {
 			);
 
 	memcpy(
-			ae2f_mMMapField(kernel) + ae2f_mMMapFieldIdx(kernel, 2, idxbuff)
+			ae2f_mMMapField(kernel) + test_mMMapFieldIdx(kernel, 2, idxbuff)
 			, kernelelbuff
 			, sizeof(ae2f_float_t) * 3
 			);
@@ -203,20 +219,20 @@ uint64_t Conv2DTest() {
 	kernelelbuff[2] = -2;
 
 	memcpy(
-			ae2f_mMMapField(kernel) + ae2f_mMMapFieldIdx(kernel, 2, idxbuff)
+			ae2f_mMMapField(kernel) + test_mMMapFieldIdx(kernel, 2, idxbuff)
 			, kernelelbuff
 			, sizeof(ae2f_float_t) * 3
 			);
 
 
-	for(size_t i = 0, el = 1; i < 3; i++) {
-		for(size_t j = 0; j < 3; j++) {
+	for(i = 0, el = 1; i < 3; i++) {
+		for(j = 0; j < 3; j++) {
 			idxbuff[1] = i;
 			idxbuff[0] = j;
 
 
-			printf("%d "
-					, ae2f_mMMapFieldIdx(
+			printf("%lu "
+					, test_mMMapFieldIdx(
 						kernel,
 						2, 
 						idxbuff
@@ -224,7 +240,7 @@ uint64_t Conv2DTest() {
 					);
 			printf(
 					"%f "
-					, ae2f_mMMapField(kernel)[ae2f_mMMapFieldIdx(
+					, ae2f_mMMapField(kernel)[test_mMMapFieldIdx(
 						kernel, 
 						2, 
 						idxbuff
@@ -249,7 +265,7 @@ uint64_t Conv2DTest() {
 		, {-8., -8.}
 	};
 
-	for(size_t a = 0; a < sizeof(target) / sizeof(**target); a++) {
+	for(a = 0; a < sizeof(target) / sizeof(**target); a++) {
 		printf("Check: %f %f\n", ae2f_mMMapField(output)[a], target[0][a]); 
 		if( 
 				((ae2f_mMMapField(output)[a] - target[0][a]) 
@@ -301,7 +317,7 @@ uint64_t Pool1dTest()
 	int num_types = sizeof(types) / sizeof(types[0]);
 
 	/* Test each pooling type */
-	for (int i = 0; i < num_types; i++) {
+	for (i = 0; i < num_types; i++) {
 		/* Reset output vector to zeros */ 
 		outv[0] = 0.0;
 		outv[1] = 0.0;
@@ -377,7 +393,7 @@ uint64_t Pool2dTest() {
 
 
 	ae2f_float_t tar[] = {6., 8., 14., 16.};
-	for(size_t i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
+	for(i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
 	{
 		if((tar[i] - outv[i]) * (tar[i] - outv[i]) > EPSILON)
 		{
@@ -401,7 +417,7 @@ uint64_t Pool2dTest() {
 
 
 	ae2f_float_t tar[] = {3.5, 5.5, 11.5, 13.5};
-	for(size_t i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
+	for(i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
 	{
 		if((tar[i] - outv[i]) * (tar[i] - outv[i]) > EPSILON)
 		{
@@ -429,7 +445,7 @@ int main() {
 		| 0
 		;
 
-	printf("Check 0: %llu\n", a);
+	printf("Check 0: %lu\n", a);
 
 	return a;
 }
