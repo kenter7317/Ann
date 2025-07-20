@@ -64,66 +64,6 @@ if(NOT TARGET ae2f::${PROJECT_NAME})
 
 	ae2f_itll(${ae2f__Ann__TENT} ${ae2f__MMap__TENT})
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
-
-	if(OFF)
-		ae2f_CoreLibTentConfigCustom(
-			Ann INTERFACE
-			include ae2f
-			${PROJECT_SOURCE_DIR}/Config/Ann-H.cmake.in 
-			"include/ae2f/Ann/Act.h"
-			"include/ae2f/Ann/LcgRand.h"
-
-			"include/ae2f/Ann/Conv.h"
-
-			"include/ae2f/Ann/Sp.h"
-			"include/ae2f/Ann/Sp.h.c/clean.script.h"
-			"include/ae2f/Ann/Sp.h.c/cleandef.h"
-			"include/ae2f/Ann/Sp.h.cxx/Sp.hh"
-			"include/ae2f/Ann/Sp.h.cxx/mSp.hh"
-			"include/ae2f/Ann/Sp.h.cxx/imp.hh"
-
-			"include/ae2f/Ann/Slp.h"
-			"include/ae2f/Ann/Slp.h.cxx/Slp.hh"
-			"include/ae2f/Ann/Slp.h.cxx/mSlp.hh"
-			"include/ae2f/Ann/Slp.h.cxx/imp.hh"
-
-			"include/ae2f/Ann/Mlp.h"
-			"include/ae2f/Ann/Mlp.h.cxx/Mlp.hh"
-			"include/ae2f/Ann/Mlp.h.cxx/mMlp.hh"
-			"include/ae2f/Ann/Mlp.h.cxx/imp.hh"
-		)
-
-		ae2f_CoreLibTentConfigCustom(
-			Ann-H-Private INTERFACE
-			src ae2f
-			${PROJECT_SOURCE_DIR}/Config/Ann-H-Private.cmake.in
-
-			"src/ann-h/Sp.h"
-			"src/ann-h/Slp.h"
-			"src/ann-h/Mlp.h"
-			"src/ann-h/Mlp/Predict.h"
-			"src/ann-h/Mlp/OutCompute.h"
-			"src/ann-h/Mlp/HidErr.h"
-			"src/ann-h/Mlp/HidCompute.h"
-		)
-		target_link_libraries(Ann-H-Private INTERFACE Ann-H)
-
-		ae2f_CoreLibTentConfigCustom(
-			Ann ${ae2f_LIBPREFIX}
-			include ae2f
-			${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in
-			"src/ann/LcgRand.c"
-			"src/ann/Sp.c"
-			"src/ann/Slp.c"
-			"src/ann/Mlp.c"
-			"src/ann/Conv.c"
-		)
-
-		target_link_libraries(Ann PRIVATE Ann-H-Private)
-		target_link_libraries(Ann PUBLIC Ann-H)
-		target_link_libraries(Ann PUBLIC ${ae2f__MMap__FETCHED})
-	endif()
-
 endif()
 
 if(ae2fCL_needed)
