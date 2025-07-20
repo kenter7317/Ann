@@ -17,7 +17,7 @@ ActDeriv(ae2f_float_t output) {
 /** Cross entrophy */
 static ae2f_float_t
 LossDeriv(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
-	constexpr ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
+	ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
 	ae2f_float_t o_i = output[i];
 	// Clip output to avoid log(0) or division by zero
 	o_i = o_i < epsilon ? epsilon : (o_i > 1.0 - epsilon ? 1.0 - epsilon : o_i);
@@ -52,7 +52,7 @@ int tryand() {
 				, Act, ActDeriv, LossDeriv
 				, 0.1, 0.1
 				, &err
-				) ae2f_AnnSlp;
+			  ) ae2f_AnnSlp;
 
 		printf("Learningrate dump: %f, %f\n", slp->m_learningrate, slp->m_learningrate_bias);
 		printf("function points: %p %p %p\n", slp->m_act, slp->m_actderiv, slp->m_lossderiv);

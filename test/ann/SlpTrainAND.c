@@ -17,11 +17,11 @@ ActDeriv(ae2f_float_t output) {
 /** Cross entrophy */
 static ae2f_float_t
 LossDeriv(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
-    constexpr ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
-    ae2f_float_t o_i = output[i];
-    // Clip output to avoid log(0) or division by zero
-    o_i = o_i < epsilon ? epsilon : (o_i > 1.0 - epsilon ? 1.0 - epsilon : o_i);
-    return (o_i - target[i]) / (c * o_i * (1.0 - o_i));
+	ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
+	ae2f_float_t o_i = output[i];
+	// Clip output to avoid log(0) or division by zero
+	o_i = o_i < epsilon ? epsilon : (o_i > 1.0 - epsilon ? 1.0 - epsilon : o_i);
+	return (o_i - target[i]) / (c * o_i * (1.0 - o_i));
 }
 
 const ae2f_float_t inp[4][2] = { 1, 1, 0, 0, 0, 1, 1, 0 };
