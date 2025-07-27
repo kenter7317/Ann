@@ -1,10 +1,9 @@
 #ifndef ae2f_MMap_h
 #define ae2f_MMap_h
 
-#include <ae2f/Float.auto.h>
 #include <ae2f/Call.h>
 #include <ae2f/Cast.h>
-#include <ae2f/Float.auto.h>
+#include <ae2f/Float.h>
 #include <ae2f/errGlob.h>
 #include <ae2f/Cmp.h>
 
@@ -337,6 +336,7 @@ ae2f_MAC() _ae2f_mMMapMk(
 		ae2f_mMMapMk_t v_mk;
 		__ae2f_mMMapMk_imp(v_mk, dim, lens);
 
+		assert(v_mk.m_ptr);
 		unless(v_mk.m_ptr) {
 			(opt_ret_err) && (*(opt_ret_err) |= ae2f_errGlob_ALLOC_FAILED);
 		}

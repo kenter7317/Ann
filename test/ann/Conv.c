@@ -6,6 +6,7 @@
 #define EPSILON 0.000001
 
 size_t i, j, a, el;
+ae2f_err_t e[1] = {0};
 
 size_t test_mMMapFieldIdx(const ae2f_mMMap *const mmap, const size_t dim, const size_t *const idxs) 
 {
@@ -24,9 +25,11 @@ uint64_t Conv1dTestNoPad() {
 
 	size_t inputsz = 10, kernelsz = 3, outsz = 8, stride = 1, padding = 0;
 
-	ae2f_mMMapMk(1, &inputsz, 0, &input);
-	ae2f_mMMapMk(1, &kernelsz, 0, &kernel);
-	ae2f_mMMapMk(1, &outsz, 0, &output);
+	ae2f_mMMapMk(1, &inputsz, e, &input);
+	ae2f_mMMapMk(1, &kernelsz, e, &kernel);
+	ae2f_mMMapMk(1, &outsz, e, &output);
+
+	assert(!(*e));
 
 	for(i = 0; i < inputsz; i++) {
 		ae2f_mMMapField(input)[i] = i + 1;
@@ -99,9 +102,11 @@ uint64_t Conv1dTestWithPad() {
 
 	size_t inputsz = 6, kernelsz = 3, outsz = 8, stride = 1, padding = 2;
 
-	ae2f_mMMapMk(1, &inputsz, 0, &input);
-	ae2f_mMMapMk(1, &kernelsz, 0, &kernel);
-	ae2f_mMMapMk(1, &outsz, 0, &output);
+	ae2f_mMMapMk(1, &inputsz, e, &input);
+	ae2f_mMMapMk(1, &kernelsz, e, &kernel);
+	ae2f_mMMapMk(1, &outsz, e, &output);
+
+	assert(!(*e));
 
 	for(i = 0; i < inputsz; i++) {
 		ae2f_mMMapField(input)[i] = i + 1;
@@ -163,8 +168,6 @@ uint64_t Conv2DTest() {
 		, * kernel
 		, * output;
 
-	uint64_t e = 0;
-
 	size_t 
 		inputsz[2] = {4, 4},
 		kernelsz[2] = {3, 3}, 
@@ -174,9 +177,10 @@ uint64_t Conv2DTest() {
 	size_t idxbuff[2] = {0, 0};
 	ae2f_float_t kernelelbuff[3] = { 0, };
 
-	ae2f_mMMapMk(2, inputsz, 0, &input);
-	ae2f_mMMapMk(2, kernelsz, 0, &kernel);
-	ae2f_mMMapMk(2, outsz, 0, &output);
+	ae2f_mMMapMk(2, inputsz, e, &input);
+	ae2f_mMMapMk(2, kernelsz, e, &kernel);
+	ae2f_mMMapMk(2, outsz, e, &output);
+	assert(!(*e));
 
 	puts("obj has made");
 
@@ -272,14 +276,14 @@ uint64_t Conv2DTest() {
 				 * (ae2f_mMMapField(output)[a] - target[0][a])) 
 				> EPSILON 
 				)
-		{ puts("Match None"); e = 4; }
+		{ puts("Match None"); assert("Match None"); }
 	}
 
 	ae2f_mMMapDel(input);
 	ae2f_mMMapDel(kernel);
 	ae2f_mMMapDel(output);
 
-	return e;
+	return 0;
 }
 
 
@@ -395,6 +399,7 @@ uint64_t Pool2dTest() {
 	ae2f_float_t tar[] = {6., 8., 14., 16.};
 	for(i = 0; i < sizeof(tar)/ sizeof(tar[0]);i++)
 	{
+		printf("Match test %lu\n", i);
 		if((tar[i] - outv[i]) * (tar[i] - outv[i]) > EPSILON)
 		{
 			printf("Mismatch: %f, %f\n", tar[i], outv[i]);

@@ -1,5 +1,4 @@
 #include <ae2f/Ann/Mlp.h>
-#include <ae2f/Ann/Mlp.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -29,7 +28,7 @@ const ae2f_float_t goal_xor[4] = {0, 1, 1, 0};
 
 ae2f_float_t output[1] = { 0 };
 
-#define MLP_DEPTH 3
+#define MLP_DEPTH 4
 #define MLP_IN 2
 #define MLP_HID 3
 #define MLP_OUT 1
@@ -38,7 +37,7 @@ ae2f_float_t output[1] = { 0 };
 ae2f_AnnMlp_t mlp;
 ae2f_AnnSlp_t slplast;
 
-const size_t mlp_szv[] = { MLP_IN, MLP_HID, MLP_OUT };
+const size_t mlp_szv[] = { MLP_IN, MLP_HID, 1, MLP_OUT };
 
 // --- Corrected Memory Layout ---
 // The MLP functions expect a flat, padded memory layout for weights and biases.
@@ -53,15 +52,16 @@ ae2f_float_t mlp_outstream[(MLP_DEPTH - 1) * MLP_OUT_GREATEST] = {0};
 ae2f_float_t mlp_deltastream[(MLP_DEPTH - 1) * MLP_OUT_GREATEST] = {0};
 // --- End Corrected Memory Layout ---
 
-ae2f_AnnAct_t* mlp_acts[MLP_DEPTH - 1] = { Act, Act };
-ae2f_AnnAct_t* mlp_actderivs[MLP_DEPTH - 1] = { ActDeriv, ActDeriv };
+ae2f_AnnAct_t* mlp_acts[MLP_DEPTH - 1] = { Act, Act, Act };
+ae2f_AnnAct_t* mlp_actderivs[MLP_DEPTH - 1] = { ActDeriv, ActDeriv, ActDeriv };
 
 size_t i, j, k;
 
 union TEST_STACK {
 	ae2f_AnnMlpPredictStream_t	m_predictsteam;
 	ae2f_AnnSlpFetchDelta_t		m_fetch;
-	ae2f_AnnMlpPropagateAll_t	m_propagate;
+	ae2f_AnnMlpFollow_t		m_propagate;
+	ae2f_AnnMlpTrain_t		m_train;
 } __test_stack;
 
 int main() {
@@ -109,8 +109,9 @@ int main() {
 	}
 
 	puts("Training...");
-	for(j = 0; j < 9000; ++j) {
+	for(j = 0; j < 999000; ++j) {
 		for(i = 0; i < 4; ++i) {
+#if 0
 			__ae2f_AnnMlpPredictStream_imp(
 					__test_stack.m_predictsteam, mlp, inp[i], output, mlp_szv,
 					mlp_weights, mlp_bias, mlp_outstream, mlp_acts
@@ -129,6 +130,17 @@ int main() {
 					0.6, 0.5,
 					mlp_actderivs
 					);
+#else
+			__ae2f_AnnMlpTrainPrimal_imp(
+					-1, ae2f_NONE
+					, __test_stack.m_train, mlp
+					, inp[i], output,  &goal_xor[i]
+					, mlp_szv, mlp_outstream
+					, mlp_deltastream, mlp_weights, mlp_bias
+					, 0.1, 0.07
+					, mlp_acts, mlp_actderivs, LossDeriv
+					);
+#endif
 		}
 	}
 	puts("Training complete.");
