@@ -648,7 +648,7 @@ ae2f_MAC() _ae2f_AnnSlpFollow_C(
 }
 
 ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
-		ae2f_AnnSlpFetchDelta_t v_delta
+		ae2f_AnnSlpFetchDelta_t		v_delta
 		, const ae2f_AnnSlp_t		slp
 
 		, const ae2f_float_t* const	out

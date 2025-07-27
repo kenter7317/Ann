@@ -109,7 +109,7 @@ int main() {
 	}
 
 	puts("Training...");
-	for(j = 0; j < 999000; ++j) {
+	for(j = 0; j < 99000; ++j) {
 		for(i = 0; i < 4; ++i) {
 #if 0
 			__ae2f_AnnMlpPredictStream_imp(
@@ -137,7 +137,7 @@ int main() {
 					, inp[i], output,  &goal_xor[i]
 					, mlp_szv, mlp_outstream
 					, mlp_deltastream, mlp_weights, mlp_bias
-					, 0.1, 0.07
+					, 0.2, 0.3
 					, mlp_acts, mlp_actderivs, LossDeriv
 					);
 #endif
