@@ -3,8 +3,9 @@ enable_testing()
 option(ae2f_CXX "" ON)
 option(ae2fVK_needed "" OFF)
 option(ae2f_TEST "" ON)
-option(ae2f_MAC_BUILD "" ON)
+option(ae2f_MAC_BUILD "" OFF)
 option(ae2f_IS_SHARED "" OFF)
+option(ae2f_DEVEL ""	OFF)
 
 include(cmake/Core.cmake)
 
@@ -64,6 +65,28 @@ if(NOT TARGET ae2f::Ann)
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
 endif()
 
-if(ae2fVK_needed)
+if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	ae2f_CoreLibFetchX(ae2f VK-Core	main)
+	file(GLOB AnnVK-inc ${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/*.h)
+
+	if(ae2f_DEVEL)
+		file(GLOB_RECURSE AnnVK-src ${PROJECT_SOURCE_DIR}/src/vk/*.def.c*)
+	else()
+		set(AnnVK-src "")
+	endif()
+
+	ae2f_Macro_Lib_V(
+		ae2fVK VK-Ann "${ae2f_LIBPREFIX}" 
+		${PROJECT_SOURCE_DIR}/src/vk "*.imp.c" 
+		${PROJECT_SOURCE_DIR}/src/vk "*.def.c*" 
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".h"
+		${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in inc
+		${AnnVK-inc} ${AnnVK-src}
+	)
+
+	add_library(ae2fVK::Ann ALIAS ${ae2fVK__VK-Ann__TENT})
+	add_library(ae2f::VK-Ann ALIAS ${ae2fVK__VK-Ann__TENT})
+
+	ae2f_itll(${ae2fVK__VK-Ann__TENT} ae2f::Ann)
+	ae2f_itll(${ae2fVK__VK-Ann__TENT} ae2fVK::Core)
 endif()

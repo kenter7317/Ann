@@ -1,10 +1,13 @@
+#define	ae2f_NEED_CLASS 0
+
+#include <ae2f/Ann/Act.h>
 #include <ae2f/Ann/Mlp.h>
-#include <ae2f/Ann/Mlp.h>
+
+#include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-
 
 static ae2f_float_t Act(ae2f_float_t x) {	
 	return 1.0 / (1.0 + exp(-x));

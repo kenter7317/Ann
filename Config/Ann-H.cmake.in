@@ -1,9 +1,0 @@
-@PACKAGE_INIT@
-
-include(CMakeFindDependencyMacro)
-
-include(CMakePackageConfigHelpers)
-include("${CMAKE_CURRENT_LIST_DIR}/Ann-HTargets.cmake")
-
-find_dependency(MMap-H REQUIRED)
-link_libraries(ae2f::MMap-H)

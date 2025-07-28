@@ -1,18 +1,20 @@
+#ifndef ae2f_NEED_CLASS
+#define ae2f_NEED_CLASS	1
+#endif
+
 #ifndef ae2f_Ann_Slp_h
 #define ae2f_Ann_Slp_h
 
 #include <ae2f/Float.auto.h>
-
-#include <ae2f/Ann/Act.h>
-
 #include <ae2f/errGlob.h>
-
 #include <ae2f/Cast.h>
 #include <ae2f/Call.h>
-
 #include <ae2f/Macro.h>
 #include <ae2f/Guide.h>
 
+#if	ae2f_NEED_CLASS || !__ae2f_MACRO_GENERATED
+#include <ae2f/Ann/Act.h>
+#endif
 
 #include <ae2f/Pack/Beg.h>
 
@@ -35,7 +37,9 @@ ae2f_structdef(struct, ae2f_AnnSlp_t) {
 	size_t m_outc;
 };
 
-ae2f_structdef(struct, ae2f_AnnSlp) {
+ae2f_structdef(struct, ae2f_AnnSlp) 
+#if ae2f_NEED_CLASS
+{
 	/**
 	 * @brief
 	 * Fields allocated as 2nd array.
@@ -104,7 +108,9 @@ ae2f_structdef(struct, ae2f_AnnSlp) {
 
 #undef ae2f_TMP
 #endif 
-};
+}
+#endif
+;
 
 
 #include <ae2f/Pack/End.h>
@@ -286,13 +292,15 @@ ae2f_structdef_n(struct, ae2f_AnnSlpFollow_t, ae2f_AnnSlpFit_t, ae2f_AnnSlpFetch
 
 #define ae2f_Ann_Slp_c
 
-#if !(ae2f_MAC_BUILD) || !(__ae2f_MACRO_GENERATED)
+#if !(ae2f_MAC_BUILD) && ae2f_NEED_CLASS || !(__ae2f_MACRO_GENERATED)
 #include <stdlib.h>
+#include <assert.h>
 #endif /** for non-builds */
 
 #define __ae2f_AnnSlpDel	free
 #define __ae2f_AnnSlpDel_C	free
 
+#if ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpInitInpSz_imp(
 		size_t			v_init
 		, ae2f_float_t* const	weight_opt
@@ -357,8 +365,25 @@ ae2f_MAC() _ae2f_AnnSlpInit(
 	}
 }
 
+#else
+#undef	__ae2f_AnnSlpInitInpSz_imp
+#define __ae2f_AnnSlpInitInpSz_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#undef	__ae2f_AnnSlpInit_imp
+#define __ae2f_AnnSlpInit_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#undef	__ae2f_AnnSlpInit
+#define __ae2f_AnnSlpInit(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
+
+
+
 #define __ae2f_AnnSlpInit_C __ae2f_AnnSlpInit
 
+#if ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpMk_imp(
 		ae2f_AnnSlpMk_t v_mk,
 
@@ -464,6 +489,17 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 			(*(err_opt) |= ae2f_errGlob_PTR_IS_NULL);
 	}
 }
+#else
+#undef	__ae2f_AnnSlpMk_imp
+#define	__ae2f_AnnSlpMk_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#undef	__ae2f_AnnSlpMk
+#define	__ae2f_AnnSlpMk(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
+
+
 
 #define __ae2f_AnnSlpMk_C __ae2f_AnnSlpMk
 
@@ -531,6 +567,7 @@ ae2f_MAC() _ae2f_AnnSlpPredict(
 	}
 }
 
+#if ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpPredict_C(
 		ae2f_err_t* const err_opt
 		, const ae2f_AnnSlp* const _this
@@ -550,6 +587,11 @@ ae2f_MAC() _ae2f_AnnSlpPredict_C(
 				);
 	}
 }
+#else
+#undef	__ae2f_AnnSlpPredict_C
+#define	__ae2f_AnnSlpPredict_C(...)  \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
 
 ae2f_MAC() _ae2f_AnnSlpFollowSingle_imp(
 		ae2f_AnnSlpFollowSingle_t v_follow
@@ -628,6 +670,7 @@ ae2f_MAC() _ae2f_AnnSlpFollow(
 	}
 }
 
+#if ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpFollow_C(
 		ae2f_err_t* const reterr_opt
 		, const ae2f_AnnSlp* const _this
@@ -646,6 +689,11 @@ ae2f_MAC() _ae2f_AnnSlpFollow_C(
 				);
 	}
 }
+#else
+#undef	__ae2f_AnnSlpFollow_C
+#define __ae2f_AnnSlpFollow_C(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
 
 ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
 		ae2f_AnnSlpFetchDelta_t		v_delta
@@ -708,9 +756,9 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta(
 				, retdelta
 				);
 	}
-
 }
 
+#if	ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 		ae2f_opt ae2f_err_t* const	err
 		, const ae2f_AnnSlp* const	slp
@@ -747,6 +795,11 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 		}
 	}
 }
+#else
+#undef	__ae2f_AnnSlpFetchDelta_C
+#define __ae2f_AnnSlpFetchDelta_C(...)	\
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
 
 ae2f_MAC() _ae2f_AnnSlpFit_imp(
 		ae2f_AnnSlpFit_t v_fit
@@ -799,7 +852,7 @@ ae2f_MAC() _ae2f_AnnSlpFit(
 
 		, const ae2f_float_t		learningrate
 		, const ae2f_float_t		learningrate_bias
-		) 
+		)
 {
 	if((reterr_opt) && *(reterr_opt))
 		;
@@ -845,6 +898,7 @@ ae2f_MAC() _ae2f_AnnSlpFit(
 	}
 }
 
+#if	ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpFit_C(
 		ae2f_err_t* const reterr_opt
 		, const ae2f_AnnSlp* const _this
@@ -872,6 +926,11 @@ ae2f_MAC() _ae2f_AnnSlpFit_C(
 				);
 	}
 }
+#else
+#undef	__ae2f_AnnSlpFit_C
+#define	__ae2f_AnnSlpFit_C(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+#endif
 
 ae2f_MAC() _ae2f_AnnSlpTrain_imp(
 		ae2f_AnnSlpTrain_t		v_train
@@ -902,6 +961,7 @@ ae2f_MAC() _ae2f_AnnSlpTrain_imp(
 			);
 }
 
+#if ae2f_NEED_CLASS
 ae2f_MAC() _ae2f_AnnSlpTrain_C(
 		ae2f_err_t* const	err
 		, ae2f_AnnSlp*		slp
@@ -927,6 +987,12 @@ ae2f_MAC() _ae2f_AnnSlpTrain_C(
 				);
 	}
 }
+#else
+#undef	__ae2f_AnnSlpTrain_C
+#define __ae2f_AnnSlpTrain_C \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#endif
 
 ae2f_MAC() _ae2f_AnnSlpTrain(
 		ae2f_err_t* const		err
@@ -996,7 +1062,7 @@ ae2f_MAC() _ae2f_AnnSlpTrain(
 	}
 }
 
-#if ae2f_WhenCXX(!)0 && !defined(ae2f_Ann_Slp_cc)
+#if ae2f_WhenCXX(!)0 && !defined(ae2f_Ann_Slp_cc) && ae2f_NEED_CLASS
 #define ae2f_Ann_Slp_cc
 
 #define ae2f_TMP ae2f_AnnSlp::

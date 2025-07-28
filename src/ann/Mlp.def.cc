@@ -1,22 +1,22 @@
-/** 
- * FIXME
- * */
+#ifndef	ae2f_NEED_CLASS
+#define ae2f_NEED_CLASS 1
+#endif
 
 #ifndef ae2f_Ann_Mlp_h
 #define ae2f_Ann_Mlp_h
 
-#include "ae2f/Call.h"
-#include "ae2f/Cast.h"
-#include "ae2f/Float.auto.h"
-#include "ae2f/errGlob.h"
-#include <ae2f/Ann/Slp.h>
-#include <ae2f/Pack/Beg.h>
-#include <ae2f/Macro.h>
-
-#if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED || 1
+#if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
 #include <assert.h>
 #include <stdlib.h>
 #endif
+
+#if ae2f_NEED_CLASS
+#include <ae2f/Ann/Act.h>
+#endif
+
+#include <ae2f/Ann/Slp.h>
+#include <ae2f/Pack/Beg.h>
+#include <ae2f/Macro.h>
 
 ae2f_structdef(struct, ae2f_AnnMlp_t)
 {
@@ -27,6 +27,7 @@ ae2f_structdef(struct, ae2f_AnnMlp_t)
 };
 
 ae2f_structdef(struct, ae2f_AnnMlp)
+#if	ae2f_NEED_CLASS
 {
 	size_t			m_depth;
 
@@ -102,7 +103,9 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 			) noexcept;
 
 #endif
-};
+}
+#endif
+;
 
 ae2f_structdef_n(struct, ae2f_AnnMlpPredict_t, ae2f_AnnMlpPredictStream_t) {
 	size_t		m_inc, m_outc, m_i, m_j, m_k, m_depth, m_outc_max;
@@ -310,7 +313,7 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAutoStream(
 #endif
 
 
-#if !defined(ae2f_Ann_Mlp_c)
+#ifndef	ae2f_Ann_Mlp_c
 
 #if !__ae2f_MACRO_GENERATED
 
@@ -325,83 +328,7 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAutoStream(
 
 #define ae2f_Ann_Mlp_c
 
-#if ae2f_WhenCXX(!)0 && __ae2f_MACRO_GENERATED
-
-	/** 
-	 * @FIXME 
-	 * It somehow compiles and I see redefining errors. 
-	 * */
-#undef	ae2f_TMP
-#define	ae2f_TMP ae2f_AnnMlp::
-inline void ae2f_TMP Predict(
-		ae2f_err_t* restrict			reterr
-		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* restrict const		out	ae2f_LP(mlp::m_sz[fin])
-		) const noexcept {
-	ae2f_AnnMlpPredict(reterr, this, inp, out);
-}
-
-inline void ae2f_TMP PredictStream(
-		ae2f_err_t* restrict			reterr
-		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* restrict const		out	ae2f_LP(mlp::m_sz[fin])
-		) const noexcept {
-	ae2f_AnnMlpPredictStream(reterr, this, inp, out);
-}
-
-inline void ae2f_TMP Follow(
-		ae2f_err_t* const		reterr
-		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* restrict const	delta	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpFollow(reterr, this, inp, delta);
-}
-
-inline void ae2f_TMP FollowStream(
-		ae2f_err_t* const		reterr
-		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* restrict const	delta	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpFollowStream(reterr, this, inp, delta);
-}
-
-inline void ae2f_TMP Train(
-		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* restrict const		out		ae2f_LP(mlp::m_sz[fin])
-		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpTrain(reterr, this, inp, out, out_desired);
-}
-
-inline void ae2f_TMP TrainStream(
-		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* restrict const		out		ae2f_LP(mlp::m_sz[fin])
-		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpTrainStream(reterr, this, inp, out, out_desired);
-}
-
-inline void ae2f_TMP TrainAuto(
-		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpTrainAuto(reterr, this, inp, out_desired);
-}
-
-inline void ae2f_TMP TrainAutoStream(
-		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) noexcept {
-	ae2f_AnnMlpTrainAutoStream(reterr, this, inp, out_desired);
-}
-
-
-#endif
-
+#if	ae2f_NEED_CLASS
 
 #define __ae2f_AnnMlpDel_C(a) free(ae2f_reinterpret_cast(void*, a))
 
@@ -445,6 +372,19 @@ inline void ae2f_TMP TrainAutoStream(
 			}
 		}
 	}
+
+#else
+
+#define	__ae2f_AnnMlpDel_C(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#define	__ae2f_AnnMlpMk_C(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+
+#endif
+
+#if	ae2f_NEED_CLASS
 
 ae2f_MAC() _ae2f_AnnMlpMk_imp(
 		ae2f_AnnMlpMk_t			v_mk
@@ -649,7 +589,23 @@ ae2f_MAC() _ae2f_AnnMlpInit_imp(
 			);
 }
 
-/** layer must be more than 2 */
+#else
+
+#define __ae2f_AnnMlpMk_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#define __ae2f_AnnMlpSz_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#define __ae2f_AnnMlpInitWithOutSz_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#define __ae2f_AnnMlpInit_imp(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#endif
+
+/** @brief layer must be more than 2 */
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 		ae2f_AnnMlpPredict_t		v_predict
 		, const ae2f_AnnMlp_t		mlp
@@ -768,6 +724,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 	}
 }
 
+#if	ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 		ae2f_err_t*			reterr
 		, const ae2f_AnnMlp* const	mlp
@@ -793,76 +750,25 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 				);
 	}
 } 
+#else
 
-ae2f_MAC() _ae2f_AnnMlpPredictStream_imp(
-		ae2f_AnnMlpPredict_t		v_predict
-		, const ae2f_AnnMlp_t		mlp
+#define __ae2f_AnnMlpPredictPrimal(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
 
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
-
-		, const size_t* const		sz
-		, const ae2f_float_t* const	weight
-		, const ae2f_float_t* const	bias
-		, ae2f_float_t* const		outcache
-
-		, ae2f_AnnAct_t* const * const	act_opt
-		) {
-	__ae2f_AnnMlpPredictPrimal_imp(
-			-1 , 
-			, v_predict
-			, mlp
-			, inp, out, sz
-			, weight, bias, outcache
-			, act_opt
-			);
-}
-
-ae2f_MAC() _ae2f_AnnMlpPredictStream_C(
-		ae2f_err_t*			reterr
-		, const ae2f_AnnMlp* const	mlp
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
-		) 
-{
-	__ae2f_AnnMlpPredictPrimal(-1, , reterr, mlp, inp, out);
-}
+#endif
 
 
-ae2f_MAC() _ae2f_AnnMlpPredict_imp(
-		ae2f_AnnMlpPredict_t		v_predict
-		, const ae2f_AnnMlp_t		mlp
+#define	__ae2f_AnnMlpPredictStream_imp(...) \
+	__ae2f_AnnMlpPredictPrimal_imp(-1, , __VA_ARGS__)
 
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
+#define __ae2f_AnnMlpPredictStream_C(reterr, mlp, inp, out) \
+	__ae2f_AnnMlpPredictPrimal(-1, , reterr, mlp, inp, out)
 
-		, const size_t* const		sz
-		, const ae2f_float_t* const	weight
-		, const ae2f_float_t* const	bias
-		, ae2f_float_t* const		outcache
+#define __ae2f_AnnMlpPredict_imp(...) \
+	__ae2f_AnnMlpPredictPrimal_imp(^1&1, &1, __VA_ARGS__)
 
-		, ae2f_AnnAct_t* const * const	act_opt
-		) {
-	__ae2f_AnnMlpPredictPrimal_imp(
-			^ 1 & 1, & 1
-			, v_predict
-			, mlp, inp, out
-			, sz
-			, weight, bias, outcache
-			, act_opt
-			);
-}
-
-ae2f_MAC() _ae2f_AnnMlpPredict_C(
-		ae2f_err_t*			reterr
-		, const ae2f_AnnMlp* const	mlp
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
-		)
-{
-	__ae2f_AnnMlpPredictPrimal(^1&1, &1, reterr, mlp, inp, out);
-}
-
+#define	__ae2f_AnnMlpPredict_C(...) \
+	__ae2f_AnnMlpPredictPrimal(^1&1, &1, __VA_ARGS__)
 
 ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 		ae2f_AnnMlpHidDeltaSingle_t	v_single
@@ -899,78 +805,12 @@ ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
 	}
 }
 
-ae2f_MAC() _ae2f_AnnMlpFollowStream_imp(
-		ae2f_AnnMlpPropagateAll_t	v_follow
-		, const ae2f_AnnMlp_t		mlp
+#define __ae2f_AnnMlpFollowStream_imp(...) \
+	__ae2f_AnnMlpFollowPrimal_imp(-1,ae2f_NONE,__VA_ARGS__)
 
-		, const ae2f_float_t* const	inp
-		, const ae2f_float_t* const	delta
-		, const size_t* const		lenv
 
-		, const ae2f_float_t* const	outstream
-
-		, ae2f_float_t* const		deltacache
-		, ae2f_float_t* const		weight
-		, ae2f_float_t* const		bias
-
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
-
-		, ae2f_AnnAct_t* const * const	actderiv) 
-{
-	__ae2f_AnnMlpFollowPrimal_imp(
-			-1, /** none */,
-			v_follow
-			, mlp
-			, inp
-			, delta
-			, lenv
-			, outstream
-			, deltacache
-			, weight
-			, bias
-			, learningrate
-			, learningrate_bias
-			, actderiv
-			);
-}
-
-ae2f_MAC() _ae2f_AnnMlpFollow_imp(
-		ae2f_AnnMlpPropagateAll_t	v_follow
-		, const ae2f_AnnMlp_t		mlp
-
-		, const ae2f_float_t* const	inp
-		, const ae2f_float_t* const	delta
-		, const size_t* const		lenv
-
-		, const ae2f_float_t* const	outstream
-
-		, ae2f_float_t* const		deltacache
-		, ae2f_float_t* const		weight
-		, ae2f_float_t* const		bias
-
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
-
-		, ae2f_AnnAct_t* const * const	actderiv) 
-{
-	__ae2f_AnnMlpFollowPrimal_imp(
-			^ 1 & 1, & 1,
-			v_follow
-			, mlp
-			, inp
-			, delta
-			, lenv
-			, outstream
-			, deltacache
-			, weight
-			, bias
-			, learningrate
-			, learningrate_bias
-			, actderiv
-			);
-}
-
+#define	__ae2f_AnnMlpFollow_imp(...) \
+	__ae2f_AnnMlpFollowPrimal_imp(^1&1,&1, __VA_ARGS__)
 
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		ae2f_AnnMlpFollow_t		v_follow
@@ -1044,7 +884,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 
 	/** nxt-delta to then-delta */
 	if((actderiv)[(v_follow).m_k]) {
-		/** __ae2f_AnnMlpPropagate_imp(v_send, slp_then, retdelta_then, deltaseed, actderiv_then, inp) */
 		__ae2f_AnnMlpPropagate_imp(
 				(v_follow).m_stack.m_send
 				, (v_follow)
@@ -1137,6 +976,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 			);
 }
 
+#if ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 		ae2f_err_t* const		reterr
 		, const ae2f_AnnMlp*		mlp
@@ -1165,25 +1005,18 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 	}
 }
 
-ae2f_MAC() _ae2f_AnnMlpFollow_C(
-		ae2f_err_t* const		reterr
-		, const ae2f_AnnMlp*		mlp
-		, const ae2f_float_t* const	inp
-		, const ae2f_float_t* const	delta
-		) 
-{
-	__ae2f_AnnMlpFollowPrimal(&1, ^1&1, reterr, mlp, inp, delta);
-}
+#else
 
-ae2f_MAC() _ae2f_AnnMlpFollowStream_C(
-		ae2f_err_t* const		reterr
-		, const ae2f_AnnMlp*		mlp
-		, const ae2f_float_t* const	inp
-		, const ae2f_float_t* const	delta
-		)
-{
-	__ae2f_AnnMlpFollowPrimal(-1, , reterr, mlp, inp, delta);
-}
+#define	__ae2f_AnnMlpFollowPrimal(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#endif
+
+#define	__ae2f_AnnMlpFollow_C(...) \
+	__ae2f_AnnMlpFollowPrimal(&1,^1&1, __VA_ARGS__)
+
+#define	__ae2f_AnnMlpFollowStream_C(...) \
+	__ae2f_AnnMlpFollowPrimal(-1, , __VA_ARGS__)
 
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 		ae2f_AnnMlpTrain_t		v_train
@@ -1249,6 +1082,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 			);
 }
 
+#if ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal(
 		ae2f_err_t* const ae2f_opt	reterr
 		, ae2f_AnnMlp* const		mlp
@@ -1274,87 +1108,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal(
 				, (mlp)->m_act, (mlp)->m_actderiv, (mlp)->m_lossderiv
 				);
 	}
-}
-
-
-#undef	__ae2f_AnnMlpTrain_C
-#define	__ae2f_AnnMlpTrain_C(reterr, mlp, inp, out, out_desired) \
-	__ae2f_AnnMlpTrainPrimal(&1, ^1&1, reterr, mlp, inp, out, out_desired)
-
-#undef	__ae2f_AnnMlpTrainStream_C
-#define	__ae2f_AnnMlpTrainStream_C(reterr, mlp, inp, out, out_desired) \
-	__ae2f_AnnMlpTrainPrimal(-1, ae2f_NONE, reterr, mlp, inp, out, out_desired)
-
-ae2f_MAC() _ae2f_AnnMlpTrain_imp(
-		ae2f_AnnMlpTrain_t		v_train
-		, const ae2f_AnnMlp_t		mlp
-
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
-		, const ae2f_float_t* const	out_desired
-		, const size_t* const		lenv
-
-		, ae2f_float_t* const		outstream
-
-		, ae2f_float_t* const		deltacache
-		, ae2f_float_t* const		weight
-		, ae2f_float_t* const		bias
-
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
-
-		, ae2f_opt ae2f_AnnAct_t* const * const	act
-		, ae2f_opt ae2f_AnnAct_t* const * const	actderiv
-		, ae2f_AnnLoss_t* 		lossderiv
-) {
-	assert(out_desired);
-	assert(out);
-	assert(inp);
-	assert(act);
-	assert(actderiv);
-
-	__ae2f_AnnMlpTrainPrimal_imp(
-			&1, &1^1
-			, v_train, mlp, inp
-			, out, out_desired, lenv
-			, outstream, deltacache
-			, weight, bias
-			, learningrate, learningrate_bias
-			, act, actderiv, lossderiv
-			);
-}
-
-ae2f_MAC() _ae2f_AnnMlpTrainStream_imp(
-		ae2f_AnnMlpTrain_t		v_train
-		, const ae2f_AnnMlp_t		mlp
-
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out
-		, const ae2f_float_t* const	out_desired
-		, const size_t* const		lenv
-
-		, ae2f_float_t* const		outstream
-
-		, ae2f_float_t* const		deltacache
-		, ae2f_float_t* const		weight
-		, ae2f_float_t* const		bias
-
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
-
-		, ae2f_opt ae2f_AnnAct_t* const * const	act
-		, ae2f_opt ae2f_AnnAct_t* const * const	actderiv
-		, ae2f_AnnLoss_t* 		lossderiv
-) {
-	__ae2f_AnnMlpTrainPrimal_imp(
-			-1, ae2f_NONE
-			, v_train, mlp, inp
-			, out, out_desired, lenv
-			, outstream, deltacache
-			, weight, bias
-			, learningrate, learningrate_bias
-			, act, actderiv, lossderiv
-			);
 }
 
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainAutoPrimal(
@@ -1384,16 +1137,118 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainAutoPrimal(
 	}
 }
 
-#undef	__ae2f_AnnMlpTrainAuto
+#else
+#define	__ae2f_AnnMlpTrainPrimal(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#define __ae2f_AnnMlpTrainAutoPrimal(...) \
+	typedef char NO_ae2f_NEED_CLASS[-1]
+
+#endif
+
+
+#define	__ae2f_AnnMlpTrain_C(reterr, mlp, inp, out, out_desired) \
+	__ae2f_AnnMlpTrainPrimal(&1, ^1&1, reterr, mlp, inp, out, out_desired)
+
+#define	__ae2f_AnnMlpTrainStream_C(reterr, mlp, inp, out, out_desired) \
+	__ae2f_AnnMlpTrainPrimal(-1, ae2f_NONE, reterr, mlp, inp, out, out_desired)
+
+#define	__ae2f_AnnMlpTrain_imp(...) \
+	__ae2f_AnnMlpTrainPrimal_imp(&1, ^1&1, __VA_ARGS__)
+
+#define	__ae2f_AnnMlpTrainStream_imp(...) \
+	__ae2f_AnnMlpTrainPrimal_imp(-1, ae2f_NONE, __VA_ARGS__)
+
+
+
+#undef	__ae2f_AnnMlpTrainAuto_C
 
 /** @see __ae2f_AnnMlpTrainAutoPrimal */
 #define	__ae2f_AnnMlpTrainAuto_C(reterr, mlp, inp, out_desired) \
 	__ae2f_AnnMlpTrainAutoPrimal(&1, ^1&1, reterr, mlp, inp, out_desired)
 
-#undef	__ae2f_AnnMlpTrainAutoStream
+#undef	__ae2f_AnnMlpTrainAutoStream_C
 
 /** @see __ae2f_AnnMlpTrainAutoPrimal */
 #define	__ae2f_AnnMlpTrainAutoStream_C(reterr, mlp, inp, out_desired) \
 	__ae2f_AnnMlpTrainAutoPrimal(-1, ae2f_NONE, reterr, mlp, inp, out_desired)
+
+#endif
+
+#if ae2f_WhenCXX(!)0 && ae2f_NEED_CLASS && !defined(ae2f_Ann_Mlp_cc)
+#define ae2f_Ann_Mlp_cc
+
+/** 
+ * @FIXME 
+ * It somehow compiles and I see redefining errors. 
+ * */
+#undef	ae2f_TMP
+#define	ae2f_TMP ae2f_AnnMlp::
+inline void ae2f_TMP Predict(
+		ae2f_err_t* restrict			reterr
+		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
+		, ae2f_float_t* restrict const		out	ae2f_LP(mlp::m_sz[fin])
+		) const noexcept {
+	ae2f_AnnMlpPredict(reterr, this, inp, out);
+}
+
+inline void ae2f_TMP PredictStream(
+		ae2f_err_t* restrict			reterr
+		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
+		, ae2f_float_t* restrict const		out	ae2f_LP(mlp::m_sz[fin])
+		) const noexcept {
+	ae2f_AnnMlpPredictStream(reterr, this, inp, out);
+}
+
+inline void ae2f_TMP Follow(
+		ae2f_err_t* const		reterr
+		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	delta	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpFollow(reterr, this, inp, delta);
+}
+
+inline void ae2f_TMP FollowStream(
+		ae2f_err_t* const		reterr
+		, const ae2f_float_t* restrict const	inp	ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	delta	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpFollowStream(reterr, this, inp, delta);
+}
+
+inline void ae2f_TMP Train(
+		ae2f_err_t* restrict const ae2f_opt	reterr
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
+		, ae2f_float_t* restrict const		out		ae2f_LP(mlp::m_sz[fin])
+		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpTrain(reterr, this, inp, out, out_desired);
+}
+
+inline void ae2f_TMP TrainStream(
+		ae2f_err_t* restrict const ae2f_opt	reterr
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
+		, ae2f_float_t* restrict const		out		ae2f_LP(mlp::m_sz[fin])
+		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpTrainStream(reterr, this, inp, out, out_desired);
+}
+
+inline void ae2f_TMP TrainAuto(
+		ae2f_err_t* restrict const ae2f_opt	reterr
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpTrainAuto(reterr, this, inp, out_desired);
+}
+
+inline void ae2f_TMP TrainAutoStream(
+		ae2f_err_t* restrict const ae2f_opt	reterr
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
+		) noexcept {
+	ae2f_AnnMlpTrainAutoStream(reterr, this, inp, out_desired);
+}
+
 
 #endif

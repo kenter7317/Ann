@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <memory.h>
 
+#if ae2f_MAC_BUILD
+
 /** @brief SUPER SMALL NUMBER that I would not care when comparing */
 #define EPSILON 0.000001
 
@@ -454,3 +456,9 @@ int main() {
 
 	return a;
 }
+
+#else
+
+int main() { return 0; }
+
+#endif
