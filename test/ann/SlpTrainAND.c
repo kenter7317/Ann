@@ -51,7 +51,7 @@ int tryand() {
 		ae2f_AnnSlpMk(
 				NULL, NULL, NULL
 				, 2
-				, 2, 0
+				, 2, 3, 4
 				, &slp
 				, Act, ActDeriv, LossDeriv
 				, 0.1, 0.1

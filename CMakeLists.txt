@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
-option(ae2fVK_needed "" OFF)
+option(ae2fVK_needed "" ON)
 option(ae2f_TEST "" ON)
-option(ae2f_MAC_BUILD "" OFF)
+option(ae2f_MAC_BUILD "" ON)
 option(ae2f_IS_SHARED "" OFF)
-option(ae2f_DEVEL ""	OFF)
+option(ae2f_DEVEL ""	ON)
 
 include(cmake/Core.cmake)
 
@@ -89,4 +89,6 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 
 	ae2f_itll(${ae2fVK__VK-Ann__TENT} ae2f::Ann)
 	ae2f_itll(${ae2fVK__VK-Ann__TENT} ae2fVK::Core)
+
+	ae2f_CoreTestTent(${ae2fVK__VK-Ann__TENT} "test/vk")
 endif()

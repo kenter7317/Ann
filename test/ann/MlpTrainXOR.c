@@ -37,6 +37,8 @@ int main() {
 			, LossDeriv
 			, 0, 0, 0, 0
 			, 0.6, 0.5
+
+			, 3, 3
 			);
 
 	assert(mlp->m_learningrate != 0);

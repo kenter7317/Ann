@@ -24,87 +24,129 @@
  *
  * Multiple input, multiple output. \n
  * For predicting & training operations are able to be parallel.
- * */
+ */
 ae2f_structdef(struct, ae2f_AnnSlp_t) {
-	/* @brief 
+	/**
+	 * @brief 
 	 * input count
 	 */
 	size_t m_inc;
 
-	/* @brief 
+	/**
+	 * @brief 
 	 * output count
 	 */
 	size_t m_outc;
 };
 
+/**
+ * @brief
+ * # Single Layered Perceptron
+ *
+ * This is the main structure for the SLP.
+ */
 ae2f_structdef(struct, ae2f_AnnSlp) 
 #if ae2f_NEED_CLASS
 {
 	/**
 	 * @brief
-	 * Fields allocated as 2nd array.
-	 * */
+	 * Weights of the network.
+	 */
 	ae2f_float_t* restrict m_weight;
+	/**
+	 * @brief
+	 * Biases of the network.
+	 */
 	ae2f_float_t* restrict m_bias;
+	/**
+	 * @brief
+	 * Cache for layer outputs.
+	 */
 	ae2f_float_t* restrict m_cache;
 
+	/**
+	 * @brief
+	 * SLP data.
+	 */
 	ae2f_AnnSlp_t m_Slp[1];
 
-	ae2f_AnnAct_t * m_act, * m_actderiv;
+	/**
+	 * @brief
+	 * Activation function.
+	 */
+	ae2f_AnnAct_t * m_act;
+	/**
+	 * @brief
+	 * Derivative of the activation function.
+	 */
+	ae2f_AnnAct_t * m_actderiv;
+	/**
+	 * @brief
+	 * Derivative of the loss function.
+	 */
 	ae2f_AnnLoss_t* m_lossderiv;
 
-	ae2f_float_t m_learningrate, m_learningrate_bias;
+	/**
+	 * @brief
+	 * Learning rate for weights.
+	 */
+	ae2f_float_t m_learningrate;
+	/**
+	 * @brief
+	 * Learning rate for biases.
+	 */
+	ae2f_float_t m_learningrate_bias;
 
 #if ae2f_WhenCXX(!)0
 #define ae2f_TMP
 
 	inline static void ae2f_TMP operator delete(void* end);
 	inline static void* ae2f_TMP operator new(
-			size_t oneonly
-			, ae2f_LP(inc * outc) ae2f_float_t* restrict const	weight_opt,
-			ae2f_LP(outc) ae2f_float_t* restrict const 		bias_opt,
-			ae2f_LP(outc) ae2f_float_t* restrict const 		cache_opt,
+		size_t oneonly
+		, ae2f_LP(inc * outc) ae2f_float_t* restrict const	weight_opt,
+		ae2f_LP(outc) ae2f_float_t* restrict const 			bias_opt,
+		ae2f_LP(outc) ae2f_float_t* restrict const 			cache_opt,
 
-			const size_t					inc,
-			const size_t					outc,
-			const size_t					offset_opt,
+		const size_t					inc,
+		const size_t					outc,
+		const size_t					offset_opt,
 
-			ae2f_opt ae2f_AnnAct_t* const			act,
-			ae2f_opt ae2f_AnnAct_t* const			actderiv,
-			ae2f_AnnLoss_t* const				lossderiv,
-			ae2f_float_t					learningrate,
-			ae2f_float_t					learningrate_bias,
-			ae2f_opt ae2f_err_t* restrict const		err_opt
-			) throw();
+		ae2f_opt ae2f_AnnAct_t* const			act,
+		ae2f_opt ae2f_AnnAct_t* const			actderiv,
+		ae2f_AnnLoss_t* const				lossderiv,
+		ae2f_float_t					learningrate,
+		ae2f_float_t					learningrate_bias,
+		ae2f_opt ae2f_err_t* restrict const		err_opt
+		) throw();
 
 	inline void ae2f_TMP Predict(
-			ae2f_err_t* const err_opt
-			, ae2f_LP(_this::inc)
-			const ae2f_float_t* const prm_in
-			, ae2f_LP(_this::outc)
-			ae2f_float_t* const out
-			) const;
+		ae2f_err_t* const err_opt
+		, ae2f_LP(_this::inc)
+		const ae2f_float_t* const prm_in
+		, ae2f_LP(_this::outc)
+		ae2f_float_t* const out
+		) const;
 
 	inline void ae2f_TMP Follow(
-			ae2f_err_t* const reterr_opt
-			, ae2f_LP(_this::inc)
-			const ae2f_float_t* const prm_in
-			, ae2f_LP(_this::outc) 
-			const ae2f_float_t* const delta
-			);
+		ae2f_err_t* const reterr_opt
+		, ae2f_LP(_this::inc)
+		const ae2f_float_t* const prm_in
+		, ae2f_LP(_this::outc) 
+		const ae2f_float_t* const delta
+		);
 
 	inline void ae2f_TMP Fit(
-			ae2f_err_t* const reterr_opt
-			, ae2f_LP(_this::inc) const ae2f_float_t* const prm_inp
-			, ae2f_LP(_this::outc) const ae2f_float_t* const prm_out
-			, ae2f_LP(_this::outc) const ae2f_float_t* const prm_out_desired
-			);
+		ae2f_err_t* const reterr_opt
+		, ae2f_LP(_this::inc) const ae2f_float_t* const prm_inp
+		, ae2f_LP(_this::outc) const ae2f_float_t* const prm_out
+		, ae2f_LP(_this::outc) const ae2f_float_t* const prm_out_desired
+		);
 
 	inline void ae2f_TMP Train(
-			ae2f_err_t* const				err
-			, ae2f_LP(slp::inc)	const ae2f_float_t*	inp
-			, ae2f_LP(slp::outc)	const ae2f_float_t*	out_desired
-			);
+		ae2f_err_t* const					err
+		, ae2f_LP(slp::inc)	const ae2f_float_t*	inp
+		, ae2f_LP(slp::outc)	const ae2f_float_t*	out_desired
+		);
 
 #undef ae2f_TMP
 #endif 
@@ -131,7 +173,7 @@ ae2f_structdef(struct, ae2f_AnnSlp)
  * Initiator
  *
  * No allocation is occurred on this function.
- * */
+ */
 ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpInit(
 		ae2f_AnnSlp_t* restrict _this,
 		const size_t inc,
@@ -151,12 +193,13 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpInit(
  */
 ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpMk(
 		ae2f_LP(inc * outc) ae2f_float_t* restrict const	weight_opt,
-		ae2f_LP(outc) ae2f_float_t* restrict const 		bias_opt,
-		ae2f_LP(outc) ae2f_float_t* restrict const 		cache_opt,
+		ae2f_LP(outc) ae2f_float_t* restrict const 			bias_opt,
+		ae2f_LP(outc) ae2f_float_t* restrict const 			cache_opt,
 
 		const size_t					inc,
 		const size_t					outc,
 		const size_t					offset_opt,
+		const size_t					extra_opt,
 		ae2f_FREE(ae2f_AnnSlpDel, __ae2f_AnnSlpDel) 
 		ae2f_AnnSlp* restrict * restrict const		slp,
 		ae2f_opt ae2f_AnnAct_t* const			act,
@@ -210,32 +253,32 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
 	 * @brief
 	 * Adjusts the delta based on output and desired output.
 	 * */
-	ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFit(
-			ae2f_err_t* const reterr_opt
-			, const ae2f_AnnSlp* const _this
-			, ae2f_LP(_this::inc) const ae2f_float_t* restrict const prm_inp
-			, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out
-			, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out_desired
-			) noexcept;
+		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFit(
+				ae2f_err_t* const reterr_opt
+				, const ae2f_AnnSlp* const _this
+				, ae2f_LP(_this::inc) const ae2f_float_t* restrict const prm_inp
+				, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out
+				, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out_desired
+				) noexcept;
 
 	/** @brief Calculates the delta based on output and desired output. */
-	ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFetchDelta(
-			ae2f_opt ae2f_err_t* restrict const		err
-			, const ae2f_AnnSlp* restrict			slp
+		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFetchDelta(
+				ae2f_opt ae2f_err_t* restrict const		err
+				, const ae2f_AnnSlp* restrict			slp
 
-			, ae2f_LP(slp::outc) const ae2f_float_t* restrict const	out
-			, ae2f_LP(slp::outc) const ae2f_float_t* restrict const	out_desired
+				, ae2f_LP(slp::outc) const ae2f_float_t* restrict const	out
+				, ae2f_LP(slp::outc) const ae2f_float_t* restrict const	out_desired
 
-			, ae2f_LP(slp::outc) ae2f_float_t* restrict const	retdelta
-			) noexcept;
+				, ae2f_LP(slp::outc) ae2f_float_t* restrict const	retdelta
+				) noexcept;
 
 	/** @brief Adjusts the weights and biases based on predicted output from input and desired outpu. */
-	ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpTrain(
-			ae2f_err_t* const restrict				err
-			, ae2f_AnnSlp*	restrict				slp
-			, ae2f_LP(slp::inc)	const ae2f_float_t* restrict	inp
-			, ae2f_LP(slp::outc)	const ae2f_float_t* restrict	out_desired
-			) noexcept;
+		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpTrain(
+				ae2f_err_t* const restrict					err
+				, ae2f_AnnSlp*	restrict				slp
+				, ae2f_LP(slp::inc)	const ae2f_float_t*	restrict	inp
+				, ae2f_LP(slp::outc)	const ae2f_float_t*	restrict	out_desired
+				) noexcept;
 
 #if !(ae2f_MAC_BUILD)
 
@@ -260,24 +303,68 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
 
 	ae2f_AnnUtilV2(,ae2f_float_t,*restrict, ,ae2f_AnnSlp, *restrict);
 
+	/**
+	 * @brief
+	 * Structure for SLP creation data.
+	 */
 	ae2f_structdef(struct, ae2f_AnnSlpMk_t) {
+		/**
+		 * @brief
+		 * Stack size and allocation count.
+		 */
 		size_t m_stack, m_alloccount;
+		/**
+		 * @brief
+		 * Pointer to the created SLP.
+		 */
 		ae2f_AnnSlp* restrict m_ptr;
+		/**
+		 * @brief
+		 * Field pointer for SLP data.
+		 */
 		ae2f_AnnUtilV2Name(ae2f_float_t, ae2f_AnnSlp) m_fieldptr;
 	};
 
+/**
+ * @brief
+ * Structure for SLP prediction and training data.
+ */
 ae2f_structdef_n(struct, ae2f_AnnSlpPredict_t, ae2f_AnnSlpTrain_t) {
-	size_t		m_i, m_j, m_inc, m_outc;
-	ae2f_float_t	m_ret;
+	/**
+	 * @brief
+	 * Loop counters and layer sizes.
+	 */
+	size_t			m_i, m_j, m_inc, m_outc;
+	/**
+	 * @brief
+	 * Return value.
+	 */
+	ae2f_float_t		m_ret;
 };
 
+/**
+ * @brief
+ * Structure for a single step of the follow operation.
+ */
 ae2f_structdef(struct, ae2f_AnnSlpFollowSingle_t) {
-	size_t		m_j;
+	/**
+	 * @brief
+	 * Loop counter.
+	 */
+	size_t			m_j;
 };
 
 
+/**
+ * @brief
+ * Structure for SLP follow, fit, and fetch delta operations.
+ */
 ae2f_structdef_n(struct, ae2f_AnnSlpFollow_t, ae2f_AnnSlpFit_t, ae2f_AnnSlpFetchDelta_t) {
-	size_t		m_i, m_j, m_inc, m_outc;
+	/**
+	 * @brief
+	 * Loop counters and layer sizes.
+	 */
+	size_t			m_i, m_j, m_inc, m_outc;
 };
 
 #include <ae2f/Pack/End.h>
@@ -331,9 +418,9 @@ ae2f_MAC() _ae2f_AnnSlpInit_imp(
 		__ae2f_AnnSlpInitInpSz_imp(
 				v_init, 0, 0, 0, inc, outc
 				);
-		(_this).m_inc	= (inc);
+		(_this).m_inc	=	(inc);
 	} else {
-		(_this).m_inc	= (incmax_opt);
+		(_this).m_inc	=	(incmax_opt);
 	}
 
 	(_this).m_outc	=	(outc);
@@ -345,8 +432,8 @@ ae2f_MAC() _ae2f_AnnSlpInit(
 		const size_t		inc,
 		const size_t		outc,
 		const size_t		offset_opt,
-		ae2f_err_t* const	err_opt,
-		size_t* const		initsz_opt
+		ae2f_err_t* const		err_opt,
+		size_t* const			initsz_opt
 		)
 {
 	if((err_opt) && *(err_opt))
@@ -394,7 +481,7 @@ ae2f_MAC() _ae2f_AnnSlpMk_imp(
 		const size_t inc,
 		const size_t outc,
 		const size_t offset_opt,
-
+		const size_t extra_opt,
 
 		ae2f_opt ae2f_AnnAct_t* const act,
 		ae2f_opt ae2f_AnnAct_t* const actderiv,
@@ -407,10 +494,14 @@ ae2f_MAC() _ae2f_AnnSlpMk_imp(
 	__ae2f_AnnSlpInitInpSz_imp(v_mk.m_stack, weight_opt, bias_opt, cache_opt, inc, outc);
 	if((v_mk.m_ptr = ae2f_reinterpret_cast(
 					ae2f_AnnSlp*
-					, calloc(v_mk.m_stack + offset_opt, 1)))
+					, calloc((v_mk).m_stack + (offset_opt) + (extra_opt), 1)))
 	  ) {
 		(v_mk).m_alloccount = 0;
 		(v_mk).m_fieldptr.b = (v_mk).m_ptr + 1;
+		(v_mk).m_fieldptr.b = ae2f_reinterpret_cast(
+				ae2f_AnnSlp*
+				, ae2f_reinterpret_cast(char*, (v_mk).m_fieldptr.b) + (offset_opt)
+				);
 
 		if(weight_opt) {
 			(v_mk).m_ptr->m_weight = (weight_opt);
@@ -450,12 +541,13 @@ ae2f_MAC() _ae2f_AnnSlpMk_imp(
 
 ae2f_MAC() _ae2f_AnnSlpMk(
 		ae2f_float_t* const 		weight_opt,
-		ae2f_float_t* const 		bias_opt,
-		ae2f_float_t* const 		cache_opt,
+		ae2f_float_t* const 			bias_opt,
+		ae2f_float_t* const 			cache_opt,
 
 		const size_t			inc,
 		const size_t			outc,
 		const size_t			offset_opt,
+		const size_t			extra_opt,
 		ae2f_AnnSlp** const		slp,
 
 		ae2f_opt ae2f_AnnAct_t* const	act,
@@ -465,7 +557,7 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 		ae2f_float_t			learningrate,
 		ae2f_float_t			learningrate_bias,
 
-		ae2f_opt ae2f_err_t* const	err_opt
+		ae2f_opt ae2f_err_t* const		err_opt
 		) 
 {
 	if((err_opt) && *(err_opt))
@@ -478,7 +570,7 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 				v_mk
 				, weight_opt, bias_opt, cache_opt
 				, inc
-				, outc, offset_opt
+				, outc, offset_opt, extra_opt
 
 				, act, actderiv, lossderiv
 
@@ -612,6 +704,7 @@ ae2f_MAC() _ae2f_AnnSlpFollowSingle_imp(
 
 	(bias) -= (delta) * (learningrate_bias);
 }
+
 
 ae2f_MAC() _ae2f_AnnSlpFollow_imp(
 		ae2f_AnnSlpFollow_t v_follow
@@ -797,7 +890,7 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 }
 #else
 #undef	__ae2f_AnnSlpFetchDelta_C
-#define __ae2f_AnnSlpFetchDelta_C(...)	\
+#define __ae2f_AnnSlpFetchDelta_C(...) \
 	typedef char NO_ae2f_NEED_CLASS[-1]
 #endif
 
@@ -814,11 +907,11 @@ ae2f_MAC() _ae2f_AnnSlpFit_imp(
 		, ae2f_float_t* const bias
 		, ae2f_float_t* const cachedelta
 
-		, ae2f_AnnAct_t		actderiv_opt
-		, ae2f_AnnLoss_t	lossderiv
+		, ae2f_AnnAct_t			actderiv_opt
+		, ae2f_AnnLoss_t		lossderiv
 
-		, const ae2f_float_t	learningrate
-		, const ae2f_float_t	learningrate_bias
+		, const ae2f_float_t		learningrate
+		, const ae2f_float_t		learningrate_bias
 		)
 {
 	__ae2f_AnnSlpFetchDelta_imp(
@@ -839,19 +932,19 @@ ae2f_MAC() _ae2f_AnnSlpFit(
 		ae2f_err_t* const ae2f_opt reterr_opt
 		, const ae2f_AnnSlp_t* _this
 
-		, const ae2f_float_t* const	prm_inp
-		, const ae2f_float_t* const	prm_out
-		, const ae2f_float_t* const	prm_out_desired
+		, const ae2f_float_t* const		prm_inp
+		, const ae2f_float_t* const		prm_out
+		, const ae2f_float_t* const		prm_out_desired
 
 		, ae2f_float_t* const		weights
 		, ae2f_float_t* const		bias
 		, ae2f_float_t* const 		cachedelta
 
-		, ae2f_AnnAct_t	ae2f_opt	actderiv_opt
+		, ae2f_AnnAct_t	ae2f_opt		actderiv_opt
 		, ae2f_AnnLoss_t		lossderiv
 
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
+		, const ae2f_float_t			learningrate
+		, const ae2f_float_t			learningrate_bias
 		)
 {
 	if((reterr_opt) && *(reterr_opt))
@@ -866,34 +959,34 @@ ae2f_MAC() _ae2f_AnnSlpFit(
 		ae2f_AnnSlpFit_t v_fit;
 		if(actderiv_opt) {
 			__ae2f_AnnSlpFit_imp(
-					v_fit
-					, (*(_this))
-					, prm_inp
-					, prm_out
-					, prm_out_desired
-					, weights
-					, bias
-					, cachedelta
-					, actderiv_opt
-					, lossderiv
-					, learningrate
-					, learningrate_bias
-					);
+				v_fit
+				, (*(_this))
+				, prm_inp
+				, prm_out
+				, prm_out_desired
+				, weights
+				, bias
+				, cachedelta
+				, actderiv_opt
+				, lossderiv
+				, learningrate
+				, learningrate_bias
+				);
 		} else {
 			__ae2f_AnnSlpFit_imp(
-					v_fit
-					, (*(_this))
-					, prm_inp
-					, prm_out
-					, prm_out_desired
-					, weights
-					, bias
-					, cachedelta
-					, 
-					, lossderiv
-					, learningrate
-					, learningrate_bias
-					);
+				v_fit
+				, (*(_this))
+				, prm_inp
+				, prm_out
+				, prm_out_desired
+				, weights
+				, bias
+				, cachedelta
+				, 
+				, lossderiv
+				, learningrate
+				, learningrate_bias
+				);
 		}
 	}
 }
@@ -933,7 +1026,7 @@ ae2f_MAC() _ae2f_AnnSlpFit_C(
 #endif
 
 ae2f_MAC() _ae2f_AnnSlpTrain_imp(
-		ae2f_AnnSlpTrain_t		v_train
+		ae2f_AnnSlpTrain_t			v_train
 		, const ae2f_AnnSlp_t		slp
 
 		, const ae2f_float_t* const	inp
@@ -944,8 +1037,8 @@ ae2f_MAC() _ae2f_AnnSlpTrain_imp(
 		, ae2f_float_t* const		bias
 		, ae2f_float_t* const 		cachedelta
 
-		, ae2f_opt ae2f_AnnAct_t	act
-		, ae2f_opt ae2f_AnnAct_t	actderiv
+		, ae2f_opt ae2f_AnnAct_t		act
+		, ae2f_opt ae2f_AnnAct_t		actderiv
 		, ae2f_AnnLoss_t		lossderiv
 
 		, const ae2f_float_t		learningrate
@@ -995,7 +1088,7 @@ ae2f_MAC() _ae2f_AnnSlpTrain_C(
 #endif
 
 ae2f_MAC() _ae2f_AnnSlpTrain(
-		ae2f_err_t* const		err
+		ae2f_err_t* const			err
 		, const ae2f_AnnSlp_t* const	slp
 
 		, const ae2f_float_t* const	inp
@@ -1027,35 +1120,35 @@ ae2f_MAC() _ae2f_AnnSlpTrain(
 		if (act) {
 			if(actderiv) {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
-						, out_desired, weights, bias
-						, cachedelta, act, actderiv, lossderiv
-						, learningrate, learningrate_bias
-						);
+					v_train, (*slp), inp, out_cache
+					, out_desired, weights, bias
+					, cachedelta, act, actderiv, lossderiv
+					, learningrate, learningrate_bias
+					);
 			} else {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
-						, out_desired, weights, bias
-						, cachedelta, act, , lossderiv
-						, learningrate, learningrate_bias
-						);
+					v_train, (*slp), inp, out_cache
+					, out_desired, weights, bias
+					, cachedelta, act, , lossderiv
+					, learningrate, learningrate_bias
+					);
 
 			}
 		} else {
 			if(actderiv) {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
-						, out_desired, weights, bias
-						, cachedelta, , actderiv, lossderiv
-						, learningrate, learningrate_bias
-						);
+					v_train, (*slp), inp, out_cache
+					, out_desired, weights, bias
+					, cachedelta, , actderiv, lossderiv
+					, learningrate, learningrate_bias
+					);
 			} else {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
-						, out_desired, weights, bias
-						, cachedelta, , , lossderiv
-						, learningrate, learningrate_bias
-						);
+					v_train, (*slp), inp, out_cache
+					, out_desired, weights, bias
+					, cachedelta, , , lossderiv
+					, learningrate, learningrate_bias
+					);
 
 			}
 		}
@@ -1074,8 +1167,8 @@ inline void ae2f_TMP operator delete(void* end) {
 inline void* ae2f_TMP operator new(
 		size_t oneonly
 		, ae2f_LP(inc * outc) ae2f_float_t* const		weight_opt,
-		ae2f_LP(outc) ae2f_float_t* const 		bias_opt,
-		ae2f_LP(outc) ae2f_float_t* const 		cache_opt,
+		ae2f_LP(outc) ae2f_float_t* const 			bias_opt,
+		ae2f_LP(outc) ae2f_float_t* const 			cache_opt,
 
 		const size_t					inc,
 		const size_t					outc,
@@ -1093,8 +1186,8 @@ inline void* ae2f_TMP operator new(
 	ae2f_AnnSlp* __v[1] = { NULL };
 
 	ae2f_AnnSlpMk(
-			weight_opt, bias_opt, cache_opt, inc, outc, offset_opt
-			, __v, act, actderiv, lossderiv, learningrate, learningrate_bias, err_opt);
+		weight_opt, bias_opt, cache_opt, inc, outc, offset_opt, 0
+		, __v, act, actderiv, lossderiv, learningrate, learningrate_bias, err_opt);
 
 	return __v[0];
 }
@@ -1132,7 +1225,7 @@ inline void ae2f_TMP Fit(
 }
 
 inline void ae2f_TMP Train(
-		ae2f_err_t* const				err
+		ae2f_err_t* const					err
 		, ae2f_LP(slp::inc)	const ae2f_float_t*	inp
 		, ae2f_LP(slp::outc)	const ae2f_float_t*	out_desired
 		) 

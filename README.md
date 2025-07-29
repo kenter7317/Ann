@@ -3,32 +3,16 @@
 
 [![ae2f-workflow](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml/badge.svg?branch=main)](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml)
 
-ANN interfaces with basic implementation for example.
+> ANN interfaces with basic implementation for example.  
+> GPU acceleration backend is in plan to be shifted to vulkan.  
+> Currently no GPU acceleration is supported.
 
-# See Also
-- ae2f::Core-Template
-- ae2f::Core
-- ae2fCL::Core
 
 # Dependency
-- gcc
-- make
+- C>=90
+- C++>=98
 - cmake
-
-# CL-Ann
-> Rel-v3.3.4
-
-A simple ann project with opencl written in C.
-
-# See Also
-- ae2f::Core-Template
 - ae2f::Core
-- ae2fCL::Core
-- ae2f::Ruler
-- ae2f::Ann
+- ae2f::Preproc
 
-# Dependency
-- gcc
-- make
-- cmake
-- opencl
+

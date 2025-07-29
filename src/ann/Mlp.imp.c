@@ -21,6 +21,9 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpMk(
 
 		, ae2f_float_t const	learningrate
 		, ae2f_float_t const	learningrate_bias
+
+		, const size_t		offset
+		, const size_t		extra
 		) noexcept
 {
 	__ae2f_AnnMlpMk_C(
@@ -30,6 +33,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpMk(
 			, act, actderiv, lossderiv
 			, deltastream, outcache, weight
 			, bias, learningrate, learningrate_bias
+			, offset, extra
 			);
 }
 

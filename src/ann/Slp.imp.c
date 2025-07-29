@@ -31,6 +31,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpMk(
 		const size_t					inc,
 		const size_t					outc,
 		const size_t					offset_opt,
+		const size_t					extra_opt,
 		ae2f_FREE(ae2f_AnnSlpDel, __ae2f_AnnSlpDel) 
 		ae2f_AnnSlp* restrict * restrict const 				slp,
 		ae2f_opt ae2f_AnnAct_t*  const			act,
@@ -43,7 +44,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpMk(
 	__ae2f_AnnSlpMk_C(
 			weight_opt, bias_opt, cache_opt
 			, inc, outc
-			, offset_opt, slp
+			, offset_opt, extra_opt, slp
 			, act, actderiv, lossderiv
 			, learningrate, learningrate_bias
 			, err_opt)
