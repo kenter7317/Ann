@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
-option(ae2fVK_needed "" ON)
+option(ae2fVK_needed "" OFF)
 option(ae2f_TEST "" ON)
 option(ae2f_MAC_BUILD "" ON)
 option(ae2f_IS_SHARED "" OFF)
-option(ae2f_DEVEL ""	ON)
+option(ae2f_DEVEL ""	OFF)
 
 include(cmake/Core.cmake)
 
