@@ -36,6 +36,8 @@ for stdc in ${lstdc[@]}; do
 
 						cmake --build $builddir --config $buildtype || { echo "Build failed"; exit 1; }
 						ctest --test-dir $builddir -C $buildtype || { echo "Test failed"; exit 1; }
+
+						rm -rf $builddir
 					done 
 				done
 			done

@@ -558,7 +558,7 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 		ae2f_float_t			learningrate_bias,
 
 		ae2f_opt ae2f_err_t* const		err_opt
-		) 
+		)
 {
 	if((err_opt) && *(err_opt))
 		;

@@ -1,4 +1,5 @@
 #include <ae2fVK/Ann/Slp.h>
+#include <vulkan/vulkan_core.h>
 #include "../vk.h"
 #include "ae2f/Cast.h"
 
@@ -29,16 +30,19 @@ int main() {
 			, vkdev	
 			, vkphydevmemprops
 			, NULL
-			, (ae2f_reinterpret_cast(volatile const VkBufferCreateInfo* const, 0))
-			, ae2f_reinterpret_cast(volatile const VkMemoryAllocateInfo* const, 0)
+			, ae2f_reinterpret_cast(const VkBufferCreateInfo*, 0)
+			, ae2f_reinterpret_cast(const VkMemoryAllocateInfo*, 0)
 			);
 
 	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
+	assert(mk.m_reterr == ae2f_errGlob_OK);
 
 	__ae2fVK_AnnSlpMap(*(mk).m_union.m_alter.m_ptr, &map);
 	__ae2fVK_AnnSlpUnMap(*(mk).m_union.m_alter.m_ptr);
 
 	__ae2fVK_AnnSlpClean(*mk.m_union.m_alter.m_ptr);
+	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
+
 	free(mk.m_union.m_alter.m_ptr);
 	
 	Test_VkEnd();
