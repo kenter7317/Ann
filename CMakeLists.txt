@@ -65,7 +65,7 @@ if(NOT TARGET ae2f::Ann)
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
 endif()
 
-if(NOT TARGET ae2fVK::Ann)
+if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	ae2f_CoreLibFetchX(ae2f VK-Core	main)
 	file(GLOB AnnVK-inc ${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/*.h)
 
