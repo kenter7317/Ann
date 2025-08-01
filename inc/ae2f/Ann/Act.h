@@ -13,7 +13,7 @@
 #define ae2fCL_AnnAct_h
 
 #include <stddef.h>
-#include <ae2f/Float.auto.h>
+#include <ae2f/Float.h>
 
 /// @brief Customisable activasion function type.
 typedef ae2f_float_t ae2f_AnnAct_t (ae2f_float_t x);

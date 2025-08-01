@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 enable_testing()
 option(ae2f_CXX "" ON)
 option(ae2fVK_needed "" OFF)
+option(ae2fVK_need_glslang "" OFF)
 option(ae2f_TEST "" ON)
 option(ae2f_MAC_BUILD "" ON)
 option(ae2f_IS_SHARED "" OFF)
@@ -70,10 +71,53 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	file(GLOB AnnVK-inc ${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/*.h)
 
 	if(ae2f_DEVEL)
-		file(GLOB_RECURSE AnnVK-src ${PROJECT_SOURCE_DIR}/src/vk/*.def.c*)
+		file(GLOB_RECURSE AnnVK-src ${PROJECT_SOURCE_DIR}/src/vk/*.inc.c*)
 	else()
 		set(AnnVK-src "")
 	endif()
+
+	ae2f_Inc_init(
+		100 100 100 ON ON ON
+		"-DINC_LEAVE_NFOUND=OFF"
+	)
+
+	get_target_property(Core_INCLUDE_DIRS ae2f::Core INCLUDE_DIRECTORIES)
+	message("Dir: ${Core_INCLUDE_DIRS}/")
+
+	ae2f_FileRaw_init(ON 1)
+
+	if(OFF)
+		ae2f_Macro_one(
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.glsl
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.auto.glsl.i
+		)
+	endif()
+
+	if(OFF)
+		ae2f_Inc_Run_One(
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.auto.glsl.i
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.auto.glsl
+			"${Core_INCLUDE_DIRS}/"
+		)
+	endif()
+
+	if(ON)
+		ae2f_FileRaw_Run_One(
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.glsl
+			${PROJECT_SOURCE_DIR}/src/vk/glsl/Slp.auto.glsl.impl
+		)
+	endif()
+
+
+	ae2f_Inc_init(
+		100 100 100 ON ON ON
+		"-DINC_LEAVE_NFOUND=ON"
+	)
+
+	ae2f_Inc_Run_One(
+		${PROJECT_SOURCE_DIR}/src/vk/Slp.inc.cc
+		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.def.cc
+	)
 
 	ae2f_Macro_Lib_V(
 		ae2fVK VK-Ann "${ae2f_LIBPREFIX}" 
@@ -83,17 +127,6 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in inc
 		${AnnVK-inc} ${AnnVK-src}
 	)
-
-	ae2f_Inc_init(100 100 100 ON ON ON)
-	ae2f_Macro_one(
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.glsl
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.i.glsl
-	)
-	ae2f_Inc_Run_One(
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.i.glsl
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.glsl
-	)
-
 
 	add_library(ae2fVK::Ann ALIAS ${ae2fVK__VK-Ann__TENT})
 	add_library(ae2f::VK-Ann ALIAS ${ae2fVK__VK-Ann__TENT})

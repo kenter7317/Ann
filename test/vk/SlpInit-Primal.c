@@ -3,8 +3,13 @@
 #include "../vk.h"
 #include "ae2f/Cast.h"
 
+#include <string.h>
+
+
+#if ae2f_MAC_BUILD
 
 ae2fVK_AnnSlpMk_t	mk;
+
 size_t			mapinp;
 
 ae2f_float_t FakeAct(ae2f_float_t v) { return 0; }
@@ -20,6 +25,8 @@ ae2f_float_t*	map;
 
 int main() {
 	Test_VkInit();
+	sizeof(ae2fVK_AnnSlpMk_t);
+	sizeof(ae2fVK_AnnSlp);
 
 	__ae2fVK_AnnSlpMk_imp(
 			mk
@@ -32,6 +39,9 @@ int main() {
 			, NULL
 			, ae2f_reinterpret_cast(const VkBufferCreateInfo*, 0)
 			, ae2f_reinterpret_cast(const VkMemoryAllocateInfo*, 0)
+
+			, "#define LOSS_DERIV(y, y_desired, i, c) 0\n"
+			, "/** This is also a comment */"
 			);
 
 	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
@@ -50,3 +60,11 @@ int main() {
 
 	return 0;
 }
+
+#else
+
+int main() {
+	return 0;
+}
+
+#endif
