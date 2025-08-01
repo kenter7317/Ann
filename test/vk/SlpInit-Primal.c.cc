@@ -34,7 +34,7 @@ int main() {
 			, 3, 3, 0, 0
 			, FakeAct, FakeAct, FakeLoss
 			, 0, 0
-			, vkdev
+			, vkdev	
 			, vkphydevmemprops
 			, NULL
 			, ae2f_reinterpret_cast(const VkBufferCreateInfo*, 0)

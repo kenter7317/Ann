@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-VkResult vkres = 0;
+VkResult vkres = VK_SUCCESS;
 
-static VkInstanceCreateInfo	vulkancreat = {0, };
+static VkInstanceCreateInfo	vulkancreat;
 static VkInstance		vulkan;
 
 static VkPhysicalDevice			vkphydev;
