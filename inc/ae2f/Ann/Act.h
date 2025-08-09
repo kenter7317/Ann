@@ -18,9 +18,6 @@
 /// @brief Customisable activasion function type.
 typedef ae2f_float_t ae2f_AnnAct_t (ae2f_float_t x);
 
-/// @brief Customisable activasion function pointer type.
-typedef ae2f_AnnAct_t* ae2f_fpAnnAct_t;
-
 /// @brief
 /// Specify the way of calculating loss.
 /// 
@@ -35,15 +32,5 @@ typedef ae2f_float_t ae2f_AnnLoss_t (
 		size_t index,
 		size_t count
 		);
-
-/// @brief
-/// Specify the way of calculating loss.
-/// 
-/// This will be multiplied with learning rate, \n
-/// and that value will be added to each weights field and bias.
-/// @param out Predicted value
-/// @param goal Expected value (wanted)
-/// @return Calculated loss.
-typedef ae2f_AnnLoss_t *ae2f_fpAnnLoss_t;
 
 #endif

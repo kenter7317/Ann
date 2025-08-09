@@ -202,10 +202,13 @@ function(ae2f_CoreLibFetch_DNS prm_AuthorName prm_namespace prm_TarName prm_TagN
 			endif()
 		endif()
 
-		add_subdirectory(
-			${ae2f_ProjRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}
-			${ae2f_BinRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}
-		)
+		if(NOT ${prm_AuthorName}__${prm_namespace}__${prm_TarName}__SUB)
+			set(${prm_AuthorName}__${prm_namespace}__${prm_TarName}__SUB ON)
+			add_subdirectory(
+				${ae2f_ProjRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}
+				${ae2f_BinRoot}/${ae2f_submod}/${prm_AuthorName}/${prm_TarName}
+			)
+		endif()
 	endif()
 
 	set(

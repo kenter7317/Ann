@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-#if ae2f_MAC_BUILD
+#if 1
 
 ae2fVK_AnnSlpMk_t	mk;
 
@@ -25,12 +25,12 @@ ae2f_float_t*	map;
 
 int main() {
 	Test_VkInit();
-	sizeof(ae2fVK_AnnSlpMk_t);
-	sizeof(ae2fVK_AnnSlp);
+#if 1
+        memset(&(mk), 0, sizeof(mk));
 
 	__ae2fVK_AnnSlpMk_imp(
-			mk
-			, 0, 0, 0
+                        mk,
+			0, 0, 0
 			, 3, 3, 0, 0
 			, FakeAct, FakeAct, FakeLoss
 			, 0, 0
@@ -41,23 +41,21 @@ int main() {
 			, ae2f_reinterpret_cast(const VkMemoryAllocateInfo*, 0)
 
 			, "#define LOSS_DERIV(y, y_desired, i, c) 0\n"
-			, "/** This is also a comment */"
+			, "/** This is also a comment */\n"
 			);
 
 	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
 	assert(mk.m_reterr == ae2f_errGlob_OK);
 
-	__ae2fVK_AnnSlpMap(*(mk).m_union.m_alter.m_ptr, &map);
-	__ae2fVK_AnnSlpUnMap(*(mk).m_union.m_alter.m_ptr);
+        __ae2fVK_AnnSlpMap_imp((*mk.m_union.m_alter.m_ptr), &map);
+        __ae2fVK_AnnSlpUnMap_imp((*mk.m_union.m_alter.m_ptr));
 
-	__ae2fVK_AnnSlpClean(*mk.m_union.m_alter.m_ptr);
+
+	__ae2fVK_AnnSlpClean_imp((*mk.m_union.m_alter.m_ptr));
 	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
-
-	free(mk.m_union.m_alter.m_ptr);
-	
+	free(mk.m_union.m_alter.m_ptr); /** ? */
+#endif
 	Test_VkEnd();
-	mk.m_union.m_alter.m_ptr = 0;
-
 	return 0;
 }
 

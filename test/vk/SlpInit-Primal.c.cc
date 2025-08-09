@@ -25,8 +25,8 @@ ae2f_float_t*	map;
 
 int main() {
 	Test_VkInit();
-	sizeof(ae2fVK_AnnSlpMk_t);
-	sizeof(ae2fVK_AnnSlp);
+	(void)sizeof(ae2fVK_AnnSlpMk_t);
+	(void)sizeof(ae2fVK_AnnSlp);
 
 	__ae2fVK_AnnSlpMk_imp(
 			mk
@@ -47,10 +47,10 @@ int main() {
 	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
 	assert(mk.m_reterr == ae2f_errGlob_OK);
 
-	__ae2fVK_AnnSlpMap(*(mk).m_union.m_alter.m_ptr, &map);
-	__ae2fVK_AnnSlpUnMap(*(mk).m_union.m_alter.m_ptr);
+	__ae2fVK_AnnSlpMap_imp(*(mk).m_union.m_alter.m_ptr, &map);
+	__ae2fVK_AnnSlpUnMap_imp(*(mk).m_union.m_alter.m_ptr);
 
-	__ae2fVK_AnnSlpClean(*mk.m_union.m_alter.m_ptr);
+	__ae2fVK_AnnSlpClean_imp(*mk.m_union.m_alter.m_ptr);
 	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
 
 	free(mk.m_union.m_alter.m_ptr);
