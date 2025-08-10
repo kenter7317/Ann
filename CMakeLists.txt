@@ -3,7 +3,7 @@ enable_testing()
 option(ae2f_CXX "" ON)
 
 option(ae2fVK_needed "" OFF)
-option(ae2fVK_need_clspv "" ON)
+option(ae2fVK_need_clspv "" OFF)
 option(ae2f_TEST "" ON)
 option(ae2f_MAC_BUILD "" ON)
 option(ae2f_IS_SHARED "" ON)
@@ -96,11 +96,11 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 
 	ae2f_Macro_one(
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.cl.c
-		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.cl.i
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl.i
 	)
 
 	ae2f_Inc_Run_One(
-		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.cl.i
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl.i
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl
 		"${Core_INCLUDE_DIRS}/"
 		"${VKCore_INCLUDE_DIRS}/"
