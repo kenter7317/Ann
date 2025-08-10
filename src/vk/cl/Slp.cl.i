@@ -182,7 +182,7 @@ __kernel void kFit(__constant const ae2f_float_t* inp, __global ae2f_float_t* gl
 		__ae2f_AnnSlpFetchDeltaOne_imp(
 				(inp + 2 + isz + osz)			// out
 				, ((inp + 2 + isz))			// out_desired
-				, ACT_DERIV, LOSS_DERIV
+				, ACT, LOSS_DERIV
 				, (loc[oidx])				// retdelta
 				, oidx, osz
 				);
