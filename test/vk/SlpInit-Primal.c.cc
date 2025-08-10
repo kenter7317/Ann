@@ -37,8 +37,6 @@ int main() {
 			, vkdev	
 			, vkphydevmemprops
 			, NULL
-			, ae2f_reinterpret_cast(const VkBufferCreateInfo*, 0)
-			, ae2f_reinterpret_cast(const VkMemoryAllocateInfo*, 0)
 
 			, "#define LOSS_DERIV(y, y_desired, i, c) 0\n"
 			, "/** This is also a comment */"

@@ -13,7 +13,7 @@
 #define clspv_restrict restrict
 #include <clspv/Compiler.h>
 
-#if VK_MAX_MEMORY_TYPES >= UCHAR_MAX
+#if VK_MAX_MEMORY_TYPES > UCHAR_MAX
 #error "Sanity check: memory types will not be stored under unsigned char."
 #endif
 
@@ -145,7 +145,175 @@ ae2f_structdef(struct, ae2fVK_AnnSlpMk_t) {
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#define CMDONERR
 #endif
+
+ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkFndMemProp_imp(
+		unsigned char				r_memtypeidx,
+		ae2f_err_t				v_errbit,
+		const unsigned char			memtypeidx_invalid_minus_one,
+		const VkMemoryPropertyFlagBits		vkpropflag_req,
+		const VkPhysicalDeviceMemoryProperties	vkphydevmemprops
+		)
+{
+	assert(VK_MAX_MEMORY_TYPES <= memtypeidx_invalid_minus_one && "Invalid index does not do its thing.");
+	assert((vkphydevmemprops).memoryTypeCount <= VK_MAX_MEMORY_TYPES && "Invalid memory type count.");
+
+	for(
+			(r_memtypeidx) = (vkphydevmemprops).memoryTypeCount;
+			(r_memtypeidx)-- 
+			&& (~((vkphydevmemprops).memoryTypes[(r_memtypeidx)].propertyFlags)
+				& vkpropflag_req)
+			;
+	   );
+
+	if((r_memtypeidx) == (memtypeidx_invalid_minus_one)) {
+		assert(!"Wanted bit has not found is not supported");
+		(v_errbit) |= ae2f_errGlob_IMP_NOT_FOUND;
+		CMDONERR;
+	}
+}
+
+ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatBuf(
+		const size_t			sz,
+		VkResult			r_vkres,
+		VkBuffer			r_vkbuf,
+
+		VkBufferCreateInfo		v_vkbufcreatinfo,
+		ae2f_err_t			v_reterr,
+
+		const VkBufferUsageFlags	vkbufuseflags,
+		const VkSharingMode		vksharemode,
+		const VkDevice			vkdev,
+		ae2f_opt const VkAllocationCallbacks*	vkalloccalls
+		)
+{
+	(v_vkbufcreatinfo).sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	(v_vkbufcreatinfo).pNext = 0;
+	(v_vkbufcreatinfo).usage = (vkbufuseflags);
+	(v_vkbufcreatinfo).pQueueFamilyIndices = 0;
+	(v_vkbufcreatinfo).queueFamilyIndexCount = 0;
+	(v_vkbufcreatinfo).sharingMode = vksharemode;
+	(v_vkbufcreatinfo).flags = 0;
+	(v_vkbufcreatinfo).size = (sz);
+
+	if(((r_vkres) = vkCreateBuffer(
+					vkdev
+					, &(v_vkbufcreatinfo)
+					, vkalloccalls
+					, &(r_vkbuf)
+					)) != VK_SUCCESS
+			)
+	{
+		assert(!"Failed vkCreateBuffer");
+		CMDONERR;
+	}
+
+	unless((r_vkbuf)) {
+		assert(!"vkCreateBuffer went null");
+		(v_reterr) |= ae2f_errGlob_ALLOC_FAILED;
+		CMDONERR;
+	}
+}
+
+ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkAllocVKMem_imp(
+		const size_t			sz,
+		VkResult			r_vkres,
+		VkBuffer			r_vkbuf,
+		VkDeviceMemory			r_vkdevmem,
+
+		ae2f_err_t			v_errbit,
+		VkBufferCreateInfo		v_vkbufcreatinfo,
+		VkMemoryAllocateInfo		v_memallocinfo,
+
+		const VkBufferUsageFlags	vkbufuseflags,
+		const VkSharingMode		vksharemode,
+		const VkDevice			vkdev,
+
+		VkMemoryRequirements		v_vkmemreq,
+
+		ae2f_opt const VkAllocationCallbacks*	vkalloccalls,
+
+		unsigned char				v_memtypeidx,
+		const unsigned char			memtypeidx_invalid_minus_one,
+		const VkMemoryPropertyFlagBits		vkpropflag_req,
+		const VkPhysicalDeviceMemoryProperties	vkphydevmemprops
+		)
+{
+	__ae2fVK_AnnSlpMkCreatBuf(
+			CMDONERR
+			, sz
+			, r_vkres
+			, r_vkbuf
+			, v_vkbufcreatinfo
+			, v_errbit
+			, vkbufuseflags
+			, vksharemode
+			, vkdev
+			, vkalloccalls
+			);
+
+	__ae2fVK_AnnSlpMkFndMemProp_imp(
+			CMDONERR
+			, v_memtypeidx
+			, v_errbit
+			, memtypeidx_invalid_minus_one
+			, vkpropflag_req
+			, vkphydevmemprops
+			);
+
+	vkGetBufferMemoryRequirements(
+			vkdev
+			, r_vkbuf
+			, &(v_vkmemreq)
+			);
+
+	unless((v_vkmemreq).size >= (v_vkbufcreatinfo).size) {
+		assert(!"Buffer size exceeds memory requirements");
+		(v_errbit) |= ae2f_errGlob_IMP_NOT_FOUND;
+		CMDONERR;
+	}
+
+	unless((v_vkmemreq).size <= (vkphydevmemprops).memoryHeaps[(vkphydevmemprops).memoryTypes[v_memtypeidx].heapIndex].size)
+	{
+		assert(!"Requirement size exceeds memory heap size.");
+		(v_errbit) |= ae2f_errGlob_IMP_NOT_FOUND;
+		CMDONERR;
+	}
+
+	(v_memallocinfo).sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	(v_memallocinfo).allocationSize = (v_vkmemreq).size;
+	(v_memallocinfo).memoryTypeIndex = (v_memtypeidx);
+	(v_memallocinfo).pNext = NULL;
+
+	if(((r_vkres) = vkAllocateMemory(
+					vkdev
+					, &(v_memallocinfo)
+					, (vkalloccalls)
+					, &(r_vkdevmem)
+					)) != VK_SUCCESS)
+	{
+		assert(!"vkAllocateMemory has failed.");
+		CMDONERR;
+	}
+
+	unless((r_vkdevmem)) {
+		assert(!"vkAllocateMemory went null.");
+		(v_errbit) |= ae2f_errGlob_ALLOC_FAILED;
+		CMDONERR;
+	}
+
+	if(((r_vkres) = vkBindBufferMemory(
+					vkdev
+					, r_vkbuf
+					, r_vkdevmem
+					, 0
+					)) != VK_SUCCESS)
+	{
+		assert(!"vkBindBufferMemory has failed.");
+		CMDONERR;
+	}
+}
 
 ae2f_MAC() _ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 		VkComputePipelineCreateInfo* const	pipecreat
@@ -204,7 +372,6 @@ ae2f_MAC() _ae2fVK_AnnSlpMkOnePipeLayout_imp(
 	}
 
 	assert((v_mk).m_union.m_alter.m_ptr->m_vkpipelayout[idx]);
-
 }
 
 /**
@@ -244,14 +411,12 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		, ae2f_float_t learningrate_bias
 
 		, const VkDevice					vkdev
-		, const VkPhysicalDeviceMemoryProperties	vkmemprops
-		, ae2f_opt VkAllocationCallbacks* const			vkalloccalls
-		, ae2f_opt const VkBufferCreateInfo* const	vkbufinfo
-		, ae2f_opt const VkMemoryAllocateInfo* const	vkmemallocinfo,
+		, const VkPhysicalDeviceMemoryProperties		vkmemprops
+		, ae2f_opt VkAllocationCallbacks* const			vkalloccalls,
 
 		const char* const					vkcldeclaration
 		, const char* const					vkcldefinition
-		)
+)
 {
 	assert((vkdev) && "Vulkan device null check");
 	(v_mk).m_reterr = ae2f_errGlob_OK;
@@ -281,157 +446,38 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		}
 
 		__ae2f_AnnSlpInitInpSz_imp((v_mk).m_union.m_base.m_alloccount, 0, 0, 0, inc, outc);
-		(v_mk).m_union.m_base.m_alloccount 
-			-= 	sizeof(ae2f_AnnSlp); /** weight, bias, deltacache */
+
+		(v_mk).m_union.m_base.m_alloccount = 
+			(v_mk).m_union.m_base.m_alloccount
+			- sizeof(ae2f_AnnSlp)
+			+ sizeof(ae2f_float_t) * (outc) * 2
+			; /** weight, bias, deltacache */
 
 		(v_mk).m_union.m_alter.m_ptr->m_vkdev = vkdev;
 		(v_mk).m_union.m_alter.m_ptr->m_vkalloccalls = vkalloccalls;
 
-		if(vkbufinfo) {
-			(v_mk).m_vkinfo.m_buf = *(vkbufinfo);
-			unless((vkbufinfo)->sType == VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO) {
-				assert(!"vkbufinfo is not valid");
-				(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
+		/** Allocate the global memory */
+		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
-			}
-
-			unless((vkbufinfo)->size >= (v_mk).m_union.m_base.m_alloccount) {
-				assert(!"Least neeeded buffer size sanity check");
-				(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
-				break;
-			}
-
-			unless((vkbufinfo)->usage & VK_BUFFER_USAGE_STORAGE_BUFFER_BIT) {
-				assert(!"Least usage bit check");
-				(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
-				break;
-			}
-
-			if(((v_mk).m_union.m_alter.m_ptr->m_vkres =
-						vkCreateBuffer(
-							vkdev
-							, vkbufinfo
-							, vkalloccalls
-							, &(v_mk).m_union.m_alter.m_ptr->m_vkbuf
-							)) != VK_SUCCESS) 
-			{
-				assert(!"Failed vkCreateBuffer");
-				break;
-			}
-		} else {
-			memset(&(v_mk).m_vkinfo.m_buf, 0, sizeof((v_mk).m_vkinfo.m_buf));
-			(v_mk).m_vkinfo.m_buf
-				.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			(v_mk).m_vkinfo.m_buf.size = (v_mk).m_union.m_base.m_alloccount;
-			(v_mk).m_vkinfo.m_buf.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
-
-			if(((v_mk).m_union.m_alter.m_ptr->m_vkres =
-						vkCreateBuffer(
-							vkdev
-							, &(v_mk).m_vkinfo.m_buf
-							, vkalloccalls
-							, &(v_mk).m_union.m_alter.m_ptr->m_vkbuf
-							)) != VK_SUCCESS) 
-			{
-				assert(!"Failed vkCreateBuffer");
-				break;
-			}
-		}
-
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkbuf) {
-			assert(!"m_vkbuf went null");
-			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
-		}
-
-		vkGetBufferMemoryRequirements(
-				(vkdev)
+				, (v_mk).m_union.m_base.m_alloccount
+				, (v_mk).m_union.m_alter.m_ptr->m_vkres
 				, (v_mk).m_union.m_alter.m_ptr->m_vkbuf
-				, &(v_mk).m_vkstack.m_memreq
+				, (v_mk).m_union.m_alter.m_ptr->m_vkdevmem
+				, (v_mk).m_reterr
+				, (v_mk).m_vkinfo.m_buf
+				, (v_mk).m_vkinfo.m_alloc
+				, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
+				, VK_SHARING_MODE_EXCLUSIVE
+				, (vkdev)
+				, (v_mk).m_vkstack.m_memreq
+				, (vkalloccalls)
+				, (v_mk).m_union.m_alter.m_i	/* v_memtypeidx */
+				, UCHAR_MAX
+				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+				, vkmemprops
 				);
 
-
-		for(
-				(v_mk).m_union.m_alter.m_i = vkmemprops.memoryTypeCount;
-				(v_mk).m_union.m_alter.m_i-- 
-				&& (~(vkmemprops.memoryTypes[(v_mk).m_union.m_alter.m_i].propertyFlags)
-					& VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-				;
-		   );
-
-
-		if((v_mk).m_union.m_alter.m_i == UCHAR_MAX) {
-			assert(!"VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT is not supported");
-			(v_mk).m_reterr |= ae2f_errGlob_IMP_NOT_FOUND;
-			break;
-		}
-
-		assert((v_mk).m_vkstack.m_memreq.size >= (v_mk).m_vkinfo.m_buf.size);
-
-		unless(
-				(v_mk).m_vkstack.m_memreq.size 
-				<= (vkmemprops).memoryHeaps
-				[(vkmemprops).memoryTypes[(v_mk).m_union.m_alter.m_i].heapIndex]
-				.size
-		      )
-		{
-			assert(!"size is too big");
-			(v_mk).m_reterr |= ae2f_errGlob_NFOUND;
-			break;
-		}
-
-		if(vkmemallocinfo) {
-			(v_mk).m_vkinfo.m_alloc = *(vkmemallocinfo);
-			if((vkmemallocinfo)->allocationSize < (v_mk).m_vkstack.m_memreq.size) {
-				assert(!"allocation size is not enough");
-				(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
-				break;
-			}
-
-			unless((vkmemprops).memoryTypes[(vkmemallocinfo)->memoryTypeIndex].propertyFlags 
-					& VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
-			{
-				assert(!"Memory type does not contain VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT");
-				(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION | ae2f_errGlob_IMP_NOT_FOUND;
-				break;
-			}
-
-		} else {
-			(v_mk).m_vkinfo.m_alloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			(v_mk).m_vkinfo.m_alloc.allocationSize = (v_mk).m_vkstack.m_memreq.size;
-			(v_mk).m_vkinfo.m_alloc.memoryTypeIndex = (v_mk).m_union.m_alter.m_i;
-			(v_mk).m_vkinfo.m_alloc.pNext = 0;
-		}
-
-		if(((v_mk).m_union.m_alter.m_ptr->m_vkres = 
-					vkAllocateMemory(
-						(vkdev)
-						, &(v_mk).m_vkinfo.m_alloc
-						, (v_mk).m_union.m_alter.m_ptr->m_vkalloccalls
-						, &(v_mk).m_union.m_alter.m_ptr->m_vkdevmem
-						)) != VK_SUCCESS)
-		{
-			assert(!"Failed vkAllocateMemory");
-			break;
-		}
-
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkdevmem)
-		{
-			assert(!"m_vkdevmem went null");
-			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
-			break;
-		}
-
-		if(((v_mk).m_union.m_alter.m_ptr->m_vkres =
-					vkBindBufferMemory(
-						(vkdev)
-						, (v_mk).m_union.m_alter.m_ptr->m_vkbuf
-						, (v_mk).m_union.m_alter.m_ptr->m_vkdevmem
-						, 0
-						)) != VK_SUCCESS)
-		{
-			assert(!"Failed vkBindBufferMemory");
-			break;
-		}
+		/** TODO: add the local memory */
 
 		(v_mk).m_vkstack.m_layout.m_bind.binding = 0;
 		(v_mk).m_vkstack.m_layout.m_bind.descriptorType
@@ -626,7 +672,6 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 						, (vkalloccalls)
 						, (v_mk).m_union.m_alter.m_ptr->m_vkpipeline
 						)
-
 		    ) != VK_SUCCESS)
 		{
 			assert(!"vkCreateComputePipelines has failed.");

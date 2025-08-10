@@ -7,12 +7,27 @@
 > GPU acceleration backend is in plan to be shifted to vulkan.  
 > Currently no GPU acceleration is supported.
 
-
 # Dependency
-- C>=90
-- C++>=98
-- cmake
-- ae2f::Core
-- ae2f::Preproc
+## When external libraries has fullly compiled
+- a functional OS
+    - an Unix-based system is Recommended
+    - Windows has been tested to work.
 
+- a C compiler >= 90
+- a builder (ninja, make, etc...)
+- cmake >= 3.20
 
+## When external libraries has not been fetched
+> aka it's the first time configuring it
+- git
+- a functional network
+- a DNS server for github
+
+## When turning the develop mode on (ae2f_DEVEL)
+- a C++ compiler >= 98
+
+## With ae2fVK_needed
+> aka you want GPU accelerated.
+
+## When you don't have `clspv` and its dependencies installed and you're willing to fetch one automatically
+- a C++ compiler >= 13
