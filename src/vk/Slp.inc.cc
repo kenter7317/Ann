@@ -53,41 +53,6 @@ ae2f_structdef(struct, ae2fVK_AnnSlp)
 	VkDeviceMemory	m_vkdevmem;
 	VkAllocationCallbacks* restrict	m_vkalloccalls;
 
-	/**
-	 * @brief
-	 * # Possible scenarioes
-	 *
-	 * Each contains constant pushes and memory layout.	\n
-	 * Buffer for output.
-	 *
-	 * Output size is not important.	\n
-	 * Input size(constant pushes) matters.
-	 *
-	 * # Required constant resources
-	 *
-	 * Predict: \n	
-	 * 	, size_t : InpSz			\n
-	 * 	, ae2f_float_t[Inp]			\n
-	 * 	, ae2f_float_t[Inp][Out] : Weight	\n
-	 * 	, ae2f_float_t[Out] : Bias		\n
-	 *
-	 * Follow: \n
-	 * 	ae2f_float_t[2] : Lr, LrBias	\n
-	 * 	, ae2f_float_t[Inp]		\n
-	 * 	, ae2f_float_t[Out] : Delta	\n
-	 *
-	 * Train: \n
-	 * 	ae2f_float_t[2] : Lr, LrBias	\n
-	 * 	, ae2f_float_t[Inp]		\n
-	 * 	, ae2f_float_t[Out] : Goal
-	 *
-	 * Fit: \n
-	 * 	ae2f_float_t[2] : Lr, LrBias	\n
-	 * 	, ae2f_float_t[Inp]		\n
-	 * 	, ae2f_float_t[Out] : Goal	\n
-	 *	, ae2f_float_t[Out]
-	 *
-	 * */
 	VkDescriptorSetLayout	m_vkdescsetlayout[1];
 	VkPipelineLayout	m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_LEN];
 	VkShaderModule		m_vkshadermodule;
@@ -511,8 +476,6 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 
 		(v_mk).m_vkinfo.m_pipelayoutcreat.pPushConstantRanges
 			= &(v_mk).m_vkstack.m_layout.m_pushconstant;
-
-
 
 		(v_mk).m_vkinfo.m_pipelayoutcreat.pSetLayouts
 			= (v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout;

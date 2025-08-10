@@ -50,7 +50,6 @@ int main() {
         __ae2fVK_AnnSlpMap_imp((*mk.m_union.m_alter.m_ptr), &map);
         __ae2fVK_AnnSlpUnMap_imp((*mk.m_union.m_alter.m_ptr));
 
-
 	__ae2fVK_AnnSlpClean_imp((*mk.m_union.m_alter.m_ptr));
 	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
 	free(mk.m_union.m_alter.m_ptr); /** ? */
