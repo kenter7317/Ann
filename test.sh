@@ -4,8 +4,8 @@
 # $5 	stdcc
 
 makers=("-GNinja" "")
-lstdc=("90" "99" "11" "17" "23")
-lstdcc=("98" "11" "14" "17" "20" "23")
+lstdc=("23")
+lstdcc=("14" "17" "20" "23")
 
 cmake --version
 ninja --version

@@ -1471,7 +1471,7 @@ inline void ae2f_TMP TrainStream(
 
 inline void ae2f_TMP TrainAuto(
 		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp				ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
 		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
 		) noexcept {
 	ae2f_AnnMlpTrainAuto(reterr, this, inp, out_desired);
@@ -1479,7 +1479,7 @@ inline void ae2f_TMP TrainAuto(
 
 inline void ae2f_TMP TrainAutoStream(
 		ae2f_err_t* restrict const ae2f_opt	reterr
-		, const ae2f_float_t* restrict const	inp				ae2f_LP(mlp::m_sz[0])
+		, const ae2f_float_t* restrict const	inp		ae2f_LP(mlp::m_sz[0])
 		, const ae2f_float_t* restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
 		) noexcept {
 	ae2f_AnnMlpTrainAutoStream(reterr, this, inp, out_desired);

@@ -16,6 +16,7 @@ static VkPhysicalDeviceMemoryProperties	vkphydevmemprops;
 
 static VkDevice			vkdev;
 static VkDeviceCreateInfo	vkdevcreat;
+static VkQueue			vkqueue;
 
 static uint32_t find_queue_family(VkPhysicalDevice phydev) {
         uint32_t queueFamilyCount = 0;
@@ -129,6 +130,13 @@ static void Test_VkInit() {
                         , 0
                         , &vkdev
                         );
+
+	vkGetDeviceQueue(
+			vkdev
+			, queueFamilyIndex
+			, 0
+			, &vkqueue
+			);
 
         assert(vkres == VK_SUCCESS && "vkCreateDevice has failed.");
         assert(vkdev && "vkdev is not initialised");

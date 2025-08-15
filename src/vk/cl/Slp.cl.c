@@ -51,25 +51,24 @@
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__constant const void* inp, __global ae2f_float_t* out) {
+__kernel void kPredict(__constant const size_t* inp, __global ae2f_float_t* out) {
 	const size_t 
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
-		, isz = *((__constant const size_t*)inp)
+		, isz = *(inp)
 		;
 
-	ae2f_AnnSlpPredictOne_t v_predict;
-	__ae2f_AnnSlpPredictOne_imp(
-			v_predict
-			, (__CC_P(ae2f_float_t))(((__CC_P(size_t))inp) + 1)
-			, (out[oidx])
-			, ((__CC_P(ae2f_float_t))(((__CC_P(size_t))inp) + 1) + isz)
-			, ((((__CC_P(ae2f_float_t))(((__CC_P(size_t))inp) + 1) + isz) + (isz * osz))[oidx])
-			, ACT
-			, oidx
-			, isz
-			);
-	return;
+	ae2f_float_t __out = 0;
+
+#if 1
+	for(size_t i = isz; i--;) {
+		__out +=  
+			ae2f_reinterpret_cast(__constant const ae2f_float_t*, (inp) + 1)[i] *
+			ae2f_reinterpret_cast(__constant const ae2f_float_t*, (inp) + 1)[isz + oidx * isz + i];
+	}
+#endif
+
+	out[oidx] = ACT(__out);
 }
 
 /**
