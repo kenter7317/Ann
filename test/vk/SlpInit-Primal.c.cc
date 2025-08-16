@@ -38,8 +38,9 @@ int main() {
 			, vkphydevmemprops
 			, NULL
 
-			, "#define LOSS_DERIV(y, y_desired, i, c) 0\n"
-			  "#define ACT(x) ((x) - 3)"
+			, 
+			"#define LOSS_DERIV(y, y_desired, i, c) 0\n"
+			  "#define ACT(x) ((x) - 3)\n"
 			, "/** This is also a comment */"
 			);
 

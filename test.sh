@@ -32,6 +32,8 @@ for stdc in ${lstdc[@]}; do
 							-Dae2f_CXX=$_ae2f_CXX \
 							-Dae2f_IS_SHARED=$_ae2f_IS_SHARED  \
 							-Dae2f_MAC_BUILD=$_ae2f_MAC_BUILD \
+							-Dae2fVK_needed=OFF \
+							-Dae2fVK_need_clspv=OFF \
 							|| { echo "Configuration failed"; exit 1; }
 
 						cmake --build $builddir --config $buildtype || { echo "Build failed"; exit 1; }

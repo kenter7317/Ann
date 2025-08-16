@@ -2,14 +2,13 @@
 #define ae2fVK_Ann_Slp_h
 
 #include "ae2f/Cast.h"
-#include "ae2f/Float.auto.h"
-#include "ae2f/errGlob.h"
 #include <vulkan/vulkan.h>
 #include <ae2f/Ann/Slp.h>
 #include <vulkan/vulkan_core.h>
 #include <ae2f/Pack/Beg.h>
 #include <ae2f/Cmp.h>
 #include <limits.h>
+#include <ae2f/Float.h>
 
 #define clspv_restrict restrict
 #include <clspv/Compiler.h>
@@ -143,9 +142,12 @@ ae2f_structdef(union /*union*/, ae2fVK_AnnSlpMkVKStack_t) {
 };
 
 ae2f_structdef(union, ae2fVK_AnnSlpMkSPtr_t) {
-	char*		m_char;
-	void*		m_void;
-	uint32_t*	m_wrds;
+	char* restrict		m_char;
+	char* 			m_char_r;
+	void* restrict		m_void;
+	uint32_t* restrict	m_wrds;
+	size_t* restrict	m_sz;
+	ae2f_float_t* restrict	m_float;
 };
 
 ae2f_structdef(struct, ae2fVK_AnnSlpMk_t) {
@@ -153,8 +155,7 @@ ae2f_structdef(struct, ae2fVK_AnnSlpMk_t) {
 	ae2fVK_AnnSlpMkVKInfos_t		m_vkinfo;
 	ae2fVK_AnnSlpMkVKStack_t		m_vkstack;
 
-	const char* restrict		m_clsrc[3];
-	size_t				m_clsrc_len[3];
+	ae2fVK_AnnSlpMkSPtr_t		m_clsrc;
 	size_t				m_clout_len;
 	char*				m_unused;
 	ae2fVK_AnnSlpMkSPtr_t		m_clout;
@@ -181,10 +182,19 @@ ae2f_structdef(struct, ae2fVK_AnnSlpPredict_t) {
 	ae2fVK_AnnSlpPredictUnion0_t	m_u0;
 };
 
+
+ae2f_structdef(union, ae2fVK_AnnSlpPredictMapPtr_t) {
+	ae2f_float_t*	m_f;
+	void*		m_v;
+};
+
+ae2f_structdef(struct, ae2fVK_AnnSlpPredictMap_t) {
+	ae2fVK_AnnSlpPredictMapPtr_t	m_map;
+	VkMappedMemoryRange		m_vkmmemr;
+};
+
 typedef VkMappedMemoryRange	
-ae2fVK_AnnSlpPredictUnMapOutput_t
-, ae2fVK_AnnSlpPredictMapOutput_t
-;
+ae2fVK_AnnSlpPredictUnMap_t;
 
 #include <ae2f/Pack/End.h>
 
@@ -564,7 +574,10 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		(v_mk).m_union.m_base.m_alloccount = 
 			(v_mk).m_union.m_base.m_alloccount
 			- sizeof(ae2f_AnnSlp)
-			+ sizeof(ae2f_float_t) * (outc) * 2
+			+ ae2f_CmpGetGt(
+					(sizeof(ae2f_float_t) * (outc) * 2)
+					, (sizeof(ae2f_float_t) * ((outc) + (inc)))
+					)
 			; /** weight, bias, deltacache */
 
 		(v_mk).m_union.m_alter.m_ptr->m_vkdev = vkdev;
@@ -591,7 +604,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				, vkmemprops
 				);
 
-		/** TODO: add the local memory */
+		/** the local memory */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
 				, ((outc) << 2)
@@ -690,7 +703,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				break;
 				, v_mk
 				, ae2fVK_eAnnSlpPipeLayouts_kPredict
-				, (sizeof(size_t) + sizeof(ae2f_float_t) * ((inc) + (outc) + (inc) * (outc)))
+				, sizeof(size_t)
 				, vkalloccalls, vkdev
 				);
 
@@ -703,7 +716,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				break;
 				, v_mk
 				, ae2fVK_eAnnSlpPipeLayouts_kFollow
-				, sizeof(ae2f_float_t) * ((inc) + (outc) + 2)
+				, sizeof(ae2f_float_t) * 2
 				, vkalloccalls, vkdev
 				);
 
@@ -716,7 +729,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				break;
 				, v_mk
 				, ae2fVK_eAnnSlpPipeLayouts_kFit
-				, sizeof(ae2f_float_t) * ((inc) + (outc) * 2 + 2)
+				, sizeof(ae2f_float_t) * 2
 				, vkalloccalls, vkdev
 				);
 
@@ -729,22 +742,29 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		assert((vkcldefinition) && "vkcldefinition is null");
 
 		{
-			/** This must be a single string. */
-			(v_mk).m_clsrc[0] = (vkcldeclaration);
-			(v_mk).m_clsrc[1] =
-#include "cl/Slp.auto.cl.impl"
-				;
-			(v_mk).m_clsrc[2] = (vkcldefinition);
+			__ae2fVK_AnnSlpMkCLSPV_imp(
+					(v_mk).m_clsrc.m_void
+					, (v_mk).m_reterr
+					, vkcldeclaration
+					, vkcldefinition
+					);
+
+			if((v_mk).m_reterr) {
+				assert(!"__ae2fVK_AnnSlpMkCLSPV_imp has failed.");
+				break;
+			}
+
+			assert((v_mk).m_clsrc.m_void);
 
 			(v_mk).m_unused = ae2f_static_cast(char*, NULL);
 			(v_mk).m_clout_len = 0;
 			(v_mk).m_clout.m_void = NULL;
 
 			if(((v_mk).m_vkstack.m_isgood = clspvCompileFromSourcesString(
-							3
+							1
 							, ae2f_reinterpret_cast(const size_t*, NULL)
-							, (v_mk).m_clsrc
-							, ""
+							, ae2f_static_cast(const char* restrict const * restrict, (&(v_mk).m_clsrc.m_char))
+							, "-pod-pushconstant"
 							, &(v_mk).m_clout.m_char
 							, &(v_mk).m_clout_len
 							, &(v_mk).m_unused
@@ -754,8 +774,11 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				(v_mk).m_reterr |= ae2f_errGlob_NFOUND;
 				break;
 			}
+
+			free((v_mk).m_clsrc.m_void);
 		}
 
+		assert((v_mk).m_unused);
 		assert((v_mk).m_union.m_base.m_ptr && "clspvCompileFromSourcesString has done something weird");
 
 		(v_mk).m_vkinfo.m_shadermodulecreat.pNext = NULL;
@@ -787,7 +810,8 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 			break;
 		}
 
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkshadermodule) {
+		unless((v_mk).m_union.m_alter.m_ptr->m_vkshadermodule) 
+		{
 			assert(!"vkCreateShaderModule has produced NULL.");
 			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
 			break;
@@ -897,6 +921,38 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 	}
 }
 
+/** 
+ * @param r_handle must be destroyed by free().
+ * @param i_second_raw must be guaranteed to be a raw stirng. 
+ * */
+ae2f_MAC() _ae2fVK_AnnSlpMkCLSPV_imp(
+		void* restrict		r_handle,
+		ae2f_err_t		ir_err,
+
+		const char* restrict	i_first,
+		const char* restrict	i_second
+		) 
+{
+	if(!((r_handle) = calloc(
+					1
+					, strlen(i_first) + sizeof(
+#include "./cl/Slp.auto.cl.impl"
+						) + strlen(i_second)
+				)))
+	{
+		assert(!"_ae2fVK_AnnSlpMkCLSPV_imp has failed.");
+		(ir_err) |= ae2f_errGlob_ALLOC_FAILED;
+	}
+
+	else {
+		strcpy(ae2f_reinterpret_cast(char*, r_handle), i_first);
+		strcat(ae2f_reinterpret_cast(char*, r_handle),
+#include "./cl/Slp.auto.cl.impl"
+				);
+		strcat(ae2f_reinterpret_cast(char*, r_handle), i_second);
+	}
+}
+
 /** Map's usually for output */
 ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 		ae2f_err_t r_err,
@@ -940,8 +996,8 @@ ae2f_MAC() _ae2fVK_AnnSlpUnMap_imp(ae2fVK_AnnSlp slp) {
 	vkUnmapMemory((slp).m_vkdev, (slp).m_vkglobdevmem);
 }
 
-ae2f_MAC() _ae2fVK_AnnSlpPredictUnMapOutput_imp(
-		ae2fVK_AnnSlpPredictUnMapOutput_t	v_out,
+ae2f_MAC() _ae2fVK_AnnSlpPredictUnMap_imp(
+		ae2fVK_AnnSlpPredictUnMap_t		v_out,
 		ae2fVK_AnnSlp				vi_slp,
 
 		const VkQueue				i_vkqueue
@@ -952,7 +1008,7 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictUnMapOutput_imp(
 	(v_out).memory = (vi_slp).m_vkglobdevmem;
 	(v_out).offset = sizeof(ae2f_float_t) * ((vi_slp).m_slp.m_Slp[0].m_outc * (vi_slp).m_slp.m_Slp[0].m_inc + 1);
 	(v_out).pNext = NULL;
-	(v_out).size = sizeof(ae2f_float_t) * (vi_slp).m_slp.m_Slp[0].m_outc;
+	(v_out).size = sizeof(ae2f_float_t) * ((vi_slp).m_slp.m_Slp[0].m_outc + (vi_slp).m_slp.m_Slp[0].m_inc);
 	(v_out).sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 
 	do {
@@ -966,17 +1022,20 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictUnMapOutput_imp(
 			break;
 		}
 
-		/* __ae2fVK_AnnSlpUnMap_imp(vi_slp); */
+		__ae2fVK_AnnSlpUnMap_imp(vi_slp);
 	} while(0);
 }
 
-ae2f_MAC() _ae2fVK_AnnSlpPredictMapOutput_imp(
-		ae2fVK_AnnSlpPredictMapOutput_t	v_out,
+ae2f_MAC() _ae2fVK_AnnSlpPredictMap_imp(
+		ae2fVK_AnnSlpPredictMap_t	v_map,
 
 		ae2f_err_t	r_err,
 
 		ae2fVK_AnnSlp	slp
-		, ae2f_float_t** restrict const data
+
+		, ae2f_float_t** restrict const ir_ptrinp
+		, ae2f_float_t** restrict const ir_ptrout
+
 		, const VkQueue			i_vkqueue
 		)
 {
@@ -991,31 +1050,42 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictMapOutput_imp(
 						, (slp).m_vkglobdevmem
 						, sizeof(ae2f_float_t) * 
 						((slp).m_slp.m_Slp[0].m_outc * ((slp).m_slp.m_Slp[0].m_inc + 1))
-						, sizeof(ae2f_float_t) * (slp).m_slp.m_Slp[0].m_outc
+						, sizeof(ae2f_float_t) * ((slp).m_slp.m_Slp[0].m_outc + (slp).m_slp.m_Slp[0].m_inc)
 						, 0
-						, ae2f_reinterpret_cast(void** restrict, data)
+						, &(v_map).m_map.m_v
 						)) != VK_SUCCESS)
 		{
 			assert(!"vkMapMemory has failed.");
 			break;
 		}
 
-		unless(*(data)) {
+		unless((v_map).m_map.m_v) {
 			assert(!"vkMapMemory went null.");
 			(r_err) |= ae2f_errGlob_ALLOC_FAILED;
 			break;
 		}
 
-		(v_out).memory = (slp).m_vkglobdevmem;
-		(v_out).offset = sizeof(ae2f_float_t) * ((slp).m_slp.m_Slp[0].m_outc * (slp).m_slp.m_Slp[0].m_inc + 1);
-		(v_out).pNext = NULL;
-		(v_out).size = sizeof(ae2f_float_t) * (slp).m_slp.m_Slp[0].m_outc;
-		(v_out).sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		if(ir_ptrinp) {
+			*(ir_ptrinp) = (v_map).m_map.m_f;
+		}
+
+		if(ir_ptrout) {
+			*(ir_ptrout) = 
+				(v_map).m_map.m_f 
+				+ (slp).m_slp.m_Slp[0].m_inc;
+		}
+
+		(v_map).m_vkmmemr.memory = (slp).m_vkglobdevmem;
+		(v_map).m_vkmmemr.offset = sizeof(ae2f_float_t) * ((slp).m_slp.m_Slp[0].m_outc * (slp).m_slp.m_Slp[0].m_inc + 1);
+		(v_map).m_vkmmemr.pNext = NULL;
+		(v_map).m_vkmmemr.size = sizeof(ae2f_float_t) * ((slp).m_slp.m_Slp[0].m_outc + (slp).m_slp.m_Slp[0].m_inc);
+		(v_map).m_vkmmemr.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
 
 		if (((slp).m_vkres = vkInvalidateMappedMemoryRanges(
 						(slp).m_vkdev
 						, 1
-						, &(v_out))) != VK_SUCCESS)
+						, &(v_map).m_vkmmemr
+						)) != VK_SUCCESS)
 		{
 			assert(!"vkInvalidateMappedMemoryRanges has failed.");
 			break;
@@ -1024,25 +1094,19 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictMapOutput_imp(
 }
 
 ae2f_MAC() _ae2fVK_AnnSlpPredictFree_imp(
-		ae2fVK_AnnSlp iv_slp
-		, ae2fVK_AnnSlpPredictCmd_t iv_cmd
-
+		ae2fVK_AnnSlp iv_slp,
+		ae2fVK_AnnSlpPredictCmd_t iv_cmd
 		)
 {
-	do {
-		if(((iv_slp).m_vkres = vkFreeDescriptorSets(
-						(iv_slp).m_vkdev
-						, (iv_slp).m_vkdescpool[ae2fVK_eAnnSlpDescPools_kPredict]
-						, (iv_cmd).m_vkdescsetcount
-						, (iv_cmd).m_lpvkdescset
-						)) != VK_SUCCESS)
-		{
-			assert(!"vkFreeDescriptorSets has failed.");
-			break;
-		}
+	if(((iv_slp).m_vkres = vkFreeDescriptorSets(
+					(iv_slp).m_vkdev
+					, (iv_slp).m_vkdescpool[ae2fVK_eAnnSlpDescPools_kPredict]
+					, (iv_cmd).m_vkdescsetcount
+					, (iv_cmd).m_lpvkdescset
+					)) != VK_SUCCESS)
+		assert(!"vkFreeDescriptorSets has failed.");
 
-		free((iv_cmd).m_lpvkdescset);
-	} while (0);
+	else free((iv_cmd).m_lpvkdescset);
 }
 
 ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
@@ -1083,7 +1147,7 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 						sizeof(VkDescriptorSet)
 						, (i_vkdescsetalloccount)
 						))
-		      ) 
+		      )
 		{
 			assert(!"Failed allocating (r_cmd).m_lpvkdescset");
 			(iv_err) |= ae2f_errGlob_ALLOC_FAILED;
@@ -1109,16 +1173,19 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_buf
 			.buffer = (iv_slp).m_vkglobbuf;
 
-		/** Offset: Weight + Bias */
+		/** Offset: is not required. */
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_buf
-			.offset = sizeof(ae2f_float_t) * (
-					((iv_slp).m_slp.m_Slp[0].m_inc + 1)
-					* (iv_slp).m_slp.m_Slp[0].m_outc
+			.offset = 0;
+
+		/** Range: Input Output Weight Bias */
+		(v_predict).m_u0.m_vkdescwrdescinfo.m_buf
+			.range = sizeof(ae2f_float_t) * (
+					(iv_slp).m_slp.m_Slp[0].m_inc
+					+ (iv_slp).m_slp.m_Slp[0].m_outc * (iv_slp).m_slp.m_Slp[0].m_inc
+					+ (iv_slp).m_slp.m_Slp[0].m_outc
+					+ (iv_slp).m_slp.m_Slp[0].m_outc
 					);
 
-		/** Range: Output */
-		(v_predict).m_u0.m_vkdescwrdescinfo.m_buf
-			.range = sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc);
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_wrset
 			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_wrset
@@ -1136,7 +1203,6 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_wrset.pNext = NULL;
 		(v_predict).m_u0.m_vkdescwrdescinfo.m_wrset.pImageInfo = NULL;
 
-		/*** TODO: This MUST be in configuration step */
 		vkUpdateDescriptorSets(
 				iv_slp.m_vkdev
 				, 1
@@ -1153,7 +1219,7 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 		if(((iv_slp).m_vkres = vkBeginCommandBuffer(
 						i_vkcmdbuf
 						, &(v_predict).m_u0.m_vkcmdbufbeginfo
-						)) != VK_SUCCESS) 
+						)) != VK_SUCCESS)
 		{
 			assert(!"vkBeginCommandBuffer has failed.");
 			break;
@@ -1181,42 +1247,9 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 				, iv_slp.m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
 				, VK_SHADER_STAGE_COMPUTE_BIT
 				, 0
-				, sizeof(size_t)
+				, sizeof(uint32_t)
 				, &(iv_slp).m_slp.m_Slp[0].m_inc
 				);
-
-		vkCmdPushConstants(
-				i_vkcmdbuf
-				, iv_slp.m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-				, VK_SHADER_STAGE_COMPUTE_BIT
-				, sizeof(size_t)
-				, sizeof(ae2f_float_t) * (iv_slp).m_slp.m_Slp[0].m_inc
-				, i_inp
-				);
-
-		vkCmdPushConstants(
-				i_vkcmdbuf
-				, iv_slp.m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-				, VK_SHADER_STAGE_COMPUTE_BIT
-				, sizeof(size_t)
-				+ sizeof(ae2f_float_t) * (iv_slp).m_slp.m_Slp[0].m_inc
-				, sizeof(ae2f_float_t) * (iv_slp).m_slp.m_Slp[0].m_inc * (iv_slp).m_slp.m_Slp[0].m_outc
-				, (iv_slp).m_slp.m_weight
-				);
-
-		vkCmdPushConstants(
-				i_vkcmdbuf
-				, iv_slp.m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-				, VK_SHADER_STAGE_COMPUTE_BIT
-				, sizeof(size_t)
-				+ sizeof(ae2f_float_t) * (iv_slp).m_slp.m_Slp[0].m_inc
-				+ sizeof(ae2f_float_t) * (iv_slp).m_slp.m_Slp[0].m_inc * (iv_slp).m_slp.m_Slp[0].m_outc
-				, (iv_slp).m_slp.m_Slp[0].m_outc * sizeof(ae2f_float_t)
-				, (iv_slp).m_slp.m_bias
-				);
-
-		typedef char ASSERT_size_t_size_does_not_multiply_four[sizeof(size_t) % 4 ? -1 : 1];
-		typedef char ASSERT_ae2f_float_t_size_does_not_multiply_four[sizeof(ae2f_float_t) % 4 ? -1 : 1];
 
 		vkCmdDispatch(
 				i_vkcmdbuf

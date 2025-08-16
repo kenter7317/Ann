@@ -1,3 +1,4 @@
+
 #include "ae2f/Float.h"
 #define ae2f_NEED_CLASS 0
 
@@ -36,39 +37,42 @@
 #define cast_CC(T, v)	__CAST(__CC, T, v)
 #define cast_CC_P(T, v)	__CAST(__CC_P, T, v)
 
+ae2f_structdef(struct, lr_t) {
+	ae2f_float_t	rate;
+	ae2f_float_t	rate_bias;
+};
+
 /**
  * @brief
  *
  * get_global_id(0) : oidx	\n
  *
- * Constant: \n
- * 	, size_t : InpSz			\n
- * 	, ae2f_float_t[Inp]			\n
- * 	, ae2f_float_t[Inp][Out] : Weight	\n
- * 	, ae2f_float_t[Out] : Bias		\n
- *
  * Global: \n
+ * 	, ae2f_float_t[Out][Inp] : Weight	\n
+ * 	, ae2f_float_t[Out] : Bias		\n
+ * 	, ae2f_float_t[Inp]			\n
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__constant const size_t* inp, __global ae2f_float_t* out) {
-	const size_t 
+__kernel void kPredict(__global ae2f_float_t* glob, uint isz) {
+	const size_t
 		oidx = get_global_id(0)
-		, osz = get_global_size(0)
-		, isz = *(inp)
-		;
+		, osz = get_global_size(0);
 
-	ae2f_float_t __out = 0;
+	ae2f_AnnSlpPredict_t	v_predict;
 
-#if 1
-	for(size_t i = isz; i--;) {
-		__out +=  
-			ae2f_reinterpret_cast(__constant const ae2f_float_t*, (inp) + 1)[i] *
-			ae2f_reinterpret_cast(__constant const ae2f_float_t*, (inp) + 1)[isz + oidx * isz + i];
-	}
-#endif
+	__ae2f_AnnSlpPredictOne_imp(
+			v_predict
+			, (glob + (osz) * (isz + 1))		/** prm_in */
+			, (v_predict).m_ret
+			, glob					/** weight */
+			, (glob + (osz) * (isz))[oidx]		/** Bias */
+			, ACT
+			, oidx
+			, isz
+			);
 
-	out[oidx] = ACT(__out);
+	glob[isz * osz + osz + isz + oidx] = (v_predict).m_ret;
 }
 
 /**
@@ -77,22 +81,20 @@ __kernel void kPredict(__constant const size_t* inp, __global ae2f_float_t* out)
  * get_global_id(0) : oidx	\n
  * get_local_id(0) : iidx	\n
  *
- * Constant: \n
- * 	ae2f_float_t[2] : Lr, LrBias	\n
- * 	, ae2f_float_t[Inp]		\n
- * 	, ae2f_float_t[Out] : Goal
- *
  * Global: \n
- * 	ae2f_float_t[Out][In] : Weights	\n
- * 	, ae2f_float_t[Out] : 	Bias	\n
- * 	, ae2f_float_t[Out]		\n
- * 	, ae2f_float_t[Out] : Delta	\n
+ * 	ae2f_float_t[Out][Inp] : Weights	\n
+ * 	, ae2f_float_t[Out] : 	Bias		\n
+ * 	, ae2f_float_t[Out]			\n
+ * 	, ae2f_float_t[Out] : Delta		\n
+ * 	, ae2f_float_t[Out] : Goal		\n
+ * 	, ae2f_float_t[Inp]			\n
  *
  * Local: \n
  * 	ae2f_float_t[Out]		\n
  * 	, ae2f_float_t[Out] : Delta	\n
  * */
-__kernel void kTrain(__constant const ae2f_float_t* inp, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
+__kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
+#if 0
 	const size_t 
 		oidx = get_global_id(0)
 		, iidx = get_local_id(0)
@@ -139,6 +141,7 @@ __kernel void kTrain(__constant const ae2f_float_t* inp, __global ae2f_float_t* 
 			, isz, iidx, osz, oidx
 			);
 	return;
+#endif
 }
 
 /**
@@ -147,21 +150,19 @@ __kernel void kTrain(__constant const ae2f_float_t* inp, __global ae2f_float_t* 
  * get_global_id(0) : oidx	\n
  * get_local_id(0) : iidx	\n
  *
- * Constant: \n
- * 	ae2f_float_t[2] : Lr, LrBias	\n
- * 	, ae2f_float_t[Inp]		\n
- * 	, ae2f_float_t[Out] : Goal	\n
- *	, ae2f_float_t[Out]		\n
- *
  * Global: \n
  * 	ae2f_float_t[Out][In] : Weights	\n
- * 	, ae2f_float_t[Out] : 	Bias	\n
+ * 	, ae2f_float_t[Out] : Bias	\n
+ * 	, ae2f_float_t[Out] : Goal	\n
+ *	, ae2f_float_t[Out]		\n
+ *	, ae2f_float_t[Inp]		\n
  *
  * Local: \n
  * 	ae2f_float_t[Out] : Delta \n
  *
  * */
-__kernel void kFit(__constant const ae2f_float_t* inp, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
+__kernel void kFit(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
+#if 0
 	const size_t 
 		oidx = get_global_id(0)
 		, iidx = get_local_id(0)
@@ -196,6 +197,7 @@ __kernel void kFit(__constant const ae2f_float_t* inp, __global ae2f_float_t* gl
 			);
 
 	return;
+#endif
 }
 
 /**
@@ -203,16 +205,14 @@ __kernel void kFit(__constant const ae2f_float_t* inp, __global ae2f_float_t* gl
  * get_global_id(0):	oidx
  * get_local_id(0):	iidx
  *
- * Constant: \n
- * 	ae2f_float_t[2] : Lr, LrBias	\n
- * 	, ae2f_float_t[Inp]		\n
- * 	, ae2f_float_t[Out] : Delta	\n
- *
  * Global: \n
  * 	ae2f_float_t[Out][In] : Weights	\n
- * 	, ae2f_float_t[Out] : 	Bias	\n
+ * 	, ae2f_float_t[Out] : Bias	\n
+ * 	, ae2f_float_t[Out] : Delta	\n
+ * 	, ae2f_float_t[Inp]		\n
  * */
-__kernel void kFollow(__constant const ae2f_float_t* inp, __global ae2f_float_t* glob) {
+__kernel void kFollow(lr_t lr, __global ae2f_float_t* glob) {
+#if 0
 	const size_t 
 		oidx = get_global_id(0)
 		, iidx = get_local_id(0)
@@ -237,4 +237,5 @@ __kernel void kFollow(__constant const ae2f_float_t* inp, __global ae2f_float_t*
 	}
 
 	return;
+#endif
 }

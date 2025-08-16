@@ -145,6 +145,8 @@ static void Test_VkInit() {
                         vkphydev
                         , &vkphydevmemprops
                         );
+
+	puts("Test_VkInit has done.");
 }
 
 static void Test_VkEnd() {
