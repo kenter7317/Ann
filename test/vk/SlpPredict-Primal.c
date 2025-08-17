@@ -41,19 +41,19 @@ ae2f_float_t*	map;
 
 int main() {
 	Test_VkInit();
-        memset(&(mk), 0, sizeof(mk));
+	memset(&(mk), 0, sizeof(mk));
 
 	__ae2fVK_AnnSlpMk_imp(
-                        mk,
+			mk,
 			0, 0, 0
-			, 13, 3, 0, 0
+			, 2, 1, 0, 0
 			, Act, ActDeriv, LossDeriv
 			, 0, 0
 			, vkdev
 			, vkphydevmemprops
 			, NULL
 			, 
-			
+
 			"#define LOSS_DERIV(y, y_desired, i, c) 0\n"
 			"#define ACT(x) (1.0 / (1.0 + exp(-x)))\n"
 			, "/** This is also a comment */\n"
@@ -62,8 +62,8 @@ int main() {
 	puts("__ae2fVK_AnnSlpMk_imp is done");
 	fgetc(stdin);
 
-	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 13);
-	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 3);
+	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2);
+	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 1);
 
 	printf("Stateval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
 
@@ -73,18 +73,49 @@ int main() {
 	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
 
 	{
+		ae2f_float_t*	weight;
+		ae2f_float_t*	bias;
+		ae2f_err_t	e;
+		size_t 		i, j;
+
+		ae2fVK_AnnSlpUnMap_t	v_unmap;
+
+		__ae2fVK_AnnSlpWBMap(
+				&e
+				, mk.m_union.m_alter.m_ptr
+				, &weight
+				, &bias
+				, vkqueue
+				);
+
+		assert(ae2f_errGlob_OK == e && "__ae2fVK_AnnSlpWBMap has failed.");
+		assert(weight);
+		assert(bias);
+
+		for(i = 0; i < 2; i++) {
+			bias[0] = ((double)rand() / RAND_MAX) -  0.5;
+			weight[i] = ((double)rand() / RAND_MAX) - 0.5;
+		}
+
+		__ae2fVK_AnnSlpWBUnMap_imp(
+				v_unmap
+				, mk.m_union.m_alter.m_ptr[0]
+				, i_vkqueue
+				);
+	}
+
+	{
 		ae2f_err_t err = 0;
-		ae2fVK_AnnSlpPredictUnMap_t v_unmap;
-		ae2fVK_AnnSlpPredictMap_t v_map;
+		ae2fVK_AnnSlpUnMap_t v_unmap;
+
 		ae2f_float_t
 			*	OutputMapped = NULL,
 			*	InputMapped = NULL
-			;
+				;
 
-		__ae2fVK_AnnSlpPredictMap_imp(
-				v_map
-				, err
-				, mk.m_union.m_alter.m_ptr[0]
+		__ae2fVK_AnnSlpIOMap(
+				&err
+				, mk.m_union.m_alter.m_ptr
 				, (&InputMapped)
 				, (&OutputMapped)
 				, vkqueue
@@ -97,19 +128,19 @@ int main() {
 		assert(InputMapped);
 
 		assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+
 		OutputMapped[0] = 7;
-		OutputMapped[1] = 7;
-		OutputMapped[2] = 7;
 
 		InputMapped[0] = 7;
 		InputMapped[1] = 7;
-		InputMapped[2] = 7;
-		printf("Outputmapped before predict: %f %f %f\n", OutputMapped[0], OutputMapped[1], OutputMapped[2]);
-		printf("Inputmapped before predict: %f %f %f\n", InputMapped[0], InputMapped[1], InputMapped[2]);
-		fgetc(stdin);
-		__ae2fVK_AnnSlpPredictUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0], vkqueue);
 
-		puts("After __ae2fVK_AnnSlpPredictUnMapOutput_imp.");
+		printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
+		printf("Outputmapped before predict: %f\n", OutputMapped[0]);
+
+		fgetc(stdin);
+		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0], vkqueue);
+
+		puts("After __ae2fVK_AnnSlpIOUnMapOutput_imp.");
 		fgetc(stdin);
 	}
 
@@ -166,7 +197,7 @@ int main() {
 		puts("After vkAllocateCommandBuffers.");
 		fgetc(stdin);
 
-		unless((vkcmdbuf)) 
+		unless((vkcmdbuf))
 		{
 			printf("Errval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
 			assert(!"vkAllocateCommandBuffers went null.");
@@ -175,8 +206,8 @@ int main() {
 	}
 
 	{
-		ae2fVK_AnnSlpPredict_t v_predict;
-		ae2f_float_t	inp[] = {1, 2, 3};
+		ae2fVK_AnnSlpGetCmd_t v_predict;
+		ae2f_float_t	inp[] = { 1, 2 };
 		ae2fVK_AnnSlpPredictCmd_t	v_cmd;
 		ae2f_err_t err = 0;
 
@@ -188,7 +219,6 @@ int main() {
 				, vkcmdbuf
 				, inp
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-				, 1
 				, (mk.m_union.m_alter.m_ptr[0])
 				, err
 				);
@@ -220,8 +250,7 @@ int main() {
 				.pCommandBuffers = &vkcmdbuf,
 			};
 
-			ae2fVK_AnnSlpPredictUnMap_t	v_unmap;
-			ae2fVK_AnnSlpPredictMap_t	v_map;
+			ae2fVK_AnnSlpUnMap_t	v_unmap;
 
 			ae2f_float_t
 				*	OutputMapped = NULL,
@@ -289,23 +318,23 @@ int main() {
 			fgetc(stdin);
 
 			/** Check is required, but not planned to write for no */
-			__ae2fVK_AnnSlpPredictMap_imp(
-					v_map
-					, err
-					, mk.m_union.m_alter.m_ptr[0]
+			__ae2fVK_AnnSlpIOMap(
+					&err
+					, mk.m_union.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
 					, vkqueue
 					);
+
 			assert(OutputMapped);
 			assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
-			printf("Inputmapped before predict: %f %f %f\n", InputMapped[0], InputMapped[1], InputMapped[2]);
-			printf("Outputmapped after prediction %f %f %f\n", OutputMapped[0], OutputMapped[1], OutputMapped[2]);
+			printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
+			printf("Outputmapped after prediction %f\n", OutputMapped[0]);
 
-			__ae2fVK_AnnSlpPredictUnMap_imp(
+			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
-					, mk.m_union.m_alter.m_ptr[0]
+					, *mk.m_union.m_alter.m_ptr
 					, vkqueue
 					);
 		}

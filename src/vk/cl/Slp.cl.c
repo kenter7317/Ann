@@ -34,7 +34,7 @@
 #define cast_LO(T, v)	__CAST(__LO, T, v)
 #define cast_LO_P(T, v)	__CAST(__LO_P, T, v)
 
-#define cast_CC(T, v)	__CAST(__CC, T, v)
+#define cast_CC(T, v)	__CAST(__CC, T, v
 #define cast_CC_P(T, v)	__CAST(__CC_P, T, v)
 
 ae2f_structdef(struct, lr_t) {
@@ -86,28 +86,29 @@ __kernel void kPredict(__global ae2f_float_t* glob, uint isz) {
  * 	, ae2f_float_t[Out] : 	Bias		\n
  * 	, ae2f_float_t[Inp]			\n
  * 	, ae2f_float_t[Out]			\n
- * 	, ae2f_float_t[Out] : Goal		\n
  * 	, ae2f_float_t[Out] : Delta		\n
+ * 	, ae2f_float_t[Out] : Goal		\n
  *
  * Local: \n
  * 	ae2f_float_t[Out]		\n
- * 	, ae2f_float_t[Out] : Delta	\n
  * */
 __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
-		, iidx = get_local_id(0)
-		, isz = get_local_id(0)
+		, iidx = get_global_id(1)
+		, isz = get_global_size(1)
 		;
 
+#if 1
 	ae2f_AnnSlpPredict_t	v_predict;
+	ae2f_float_t		delta;
 
 	if(iidx == 0) {
 		__ae2f_AnnSlpPredictOne_imp(
 				v_predict
 				, (glob + (osz) * (isz + 1))		/** prm_in */
-				, (v_predict).m_ret
+				, (v_predict).m_ret			/** result: output */
 				, glob					/** weight */
 				, (glob + (osz) * (isz))[oidx]		/** Bias */
 				, ACT
@@ -123,14 +124,18 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 				, glob + osz * isz + osz + isz + osz + oidx	/** out_desired */ 
 				, ACT_DERIV
 				, LOSS_DERIV
-				, loc[osz + oidx] /** retdelta */
+				, delta /** retdelta */
 				, oidx
 				, osz
 				);
 
+		/** delta */
+		glob[isz * osz + osz + isz + osz + osz + oidx] = delta;
+
+
 		__ae2f_AnnSlpFollowOneB_imp(
 				glob[osz * isz] /** r_bias */
-				, loc[osz + oidx] /** delta */
+				, delta /** delta */
 				, lr.m_bias
 				);
 	}
@@ -147,6 +152,7 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 			, osz
 			, oidx
 			);
+#endif
 
 }
 
@@ -161,34 +167,37 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
  * 	, ae2f_float_t[Out] : Bias	\n
  *	, ae2f_float_t[Inp]		\n
  *	, ae2f_float_t[Out]		\n
+ * 	, ae2f_float_t[Out] : Delta	\n
  * 	, ae2f_float_t[Out] : Goal	\n
  *
- * Local: \n
- * 	ae2f_float_t[Out] : Delta \n
- *
  * */
-__kernel void kFit(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t* loc) {
+__kernel void kFit(lr_t lr, __global ae2f_float_t* glob) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
 		, iidx = get_local_id(0)
-		, isz = get_local_id(0)
+		, isz = get_local_size(0)
 		;
+
+	ae2f_float_t	delta;
 
 	if(iidx == 0) {
 		__ae2f_AnnSlpFetchDeltaOne_imp(
 				glob + osz * isz + osz + isz + oidx /** out */
-				, glob + osz * isz + osz + isz + osz + oidx /** out_desired */ 
+				, glob + osz * isz + osz + isz + osz + osz + oidx /** out_desired */ 
 				, ACT_DERIV
 				, LOSS_DERIV
-				, loc[oidx] /** retdelta */
+				, delta /** retdelta */
 				, oidx
 				, osz
 				);
 
+		/** delta */
+		glob[osz * isz + osz + isz + osz + oidx] = delta;
+
 		__ae2f_AnnSlpFollowOneB_imp(
 				glob[osz * isz] /** r_bias */
-				, loc[oidx] /** delta */
+				, delta /** delta */
 				, lr.m_bias
 				);
 	}
@@ -198,7 +207,7 @@ __kernel void kFit(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t* l
 
 	__ae2f_AnnSlpFollowOneW_imp(
 			(glob + osz * isz + osz)[iidx] /** inp */
-			, (loc[oidx]) /** delta */
+			, delta /** delta */
 			, glob /** weight */
 			, lr.m_weight
 			, isz
@@ -224,7 +233,7 @@ __kernel void kFollow(lr_t lr, __global ae2f_float_t* glob) {
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
 		, iidx = get_local_id(0)
-		, isz = get_local_id(0)
+		, isz = get_local_size(0)
 		;
 
 	__ae2f_AnnSlpFollowOneW_imp(
