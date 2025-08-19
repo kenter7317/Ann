@@ -12,14 +12,15 @@ ae2fVK_AnnSlpMk_t	mk;
 
 size_t			mapinp;
 
-ae2f_float_t FakeAct(ae2f_float_t v) { return 0; }
+void FakeAct(ae2f_float_t*, ae2f_float_t v) {  }
 
-ae2f_float_t FakeLoss (
+void FakeLoss (
+		ae2f_float_t*,
 		const ae2f_float_t* out, 
 		const ae2f_float_t* goal,
 		size_t index,
 		size_t count
-		) { return 0; }
+		) { }
 
 ae2f_float_t*	map;
 
@@ -31,7 +32,7 @@ int main() {
 	__ae2fVK_AnnSlpMk_imp(
 			mk
 			, 0, 0, 0
-			, 3, 3, 0, 0
+			, 2, 1500, 0, 0
 			, FakeAct, FakeAct, FakeLoss
 			, 0, 0
 			, vkdev	
@@ -39,8 +40,8 @@ int main() {
 			, NULL
 
 			, 
-			"#define LOSS_DERIV(y, y_desired, i, c) 0\n"
-			  "#define ACT(x) ((x) - 3)\n"
+			"#define LOSS_DERIV(r, y, y_desired, i, c)\n"
+			  "#define ACT(r, x) *(r) = ((x) - 3)\n"
 			, "/** This is also a comment */"
 			);
 

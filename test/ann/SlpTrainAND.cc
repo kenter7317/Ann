@@ -1,27 +1,28 @@
+#include "ae2f/Float.h"
 #include "ae2f/errGlob.h"
 #include <ae2f/Ann/Slp.h>
 #include <stdio.h>
 #include <math.h>
 
-static ae2f_float_t
-Act(ae2f_float_t x) {
-	return 1.0 / (1.0 + exp(-x));
+static void
+Act(ae2f_float_t* r, ae2f_float_t x) {
+	*r = 1.0 / (1.0 + exp(-x));
 }
 
-static ae2f_float_t
-ActDeriv(ae2f_float_t output) {
+static void
+ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
 	output += 1e-7;
-	return output * (1.0 - output);
+	*r = output * (1.0 - output);
 }
 
 /** Cross entrophy */
-static ae2f_float_t
-LossDeriv(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+static void
+LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
 	ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
 	ae2f_float_t o_i = output[i];
 	// Clip output to avoid log(0) or division by zero
 	o_i = o_i < epsilon ? epsilon : (o_i > 1.0 - epsilon ? 1.0 - epsilon : o_i);
-	return (o_i - target[i]) / (c * o_i * (1.0 - o_i));
+	*r = (o_i - target[i]) / (c * o_i * (1.0 - o_i));
 }
 
 const ae2f_float_t inp[4][2] = { 1, 1, 0, 0, 0, 1, 1, 0 };

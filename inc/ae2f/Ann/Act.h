@@ -16,7 +16,7 @@
 #include <ae2f/Float.h>
 
 /// @brief Customisable activasion function type.
-typedef ae2f_float_t ae2f_AnnAct_t (ae2f_float_t x);
+typedef void ae2f_AnnAct_t (ae2f_float_t* ret, ae2f_float_t x);
 
 /// @brief
 /// Specify the way of calculating loss.
@@ -26,11 +26,12 @@ typedef ae2f_float_t ae2f_AnnAct_t (ae2f_float_t x);
 /// @param out Predicted value
 /// @param goal Expected value (wanted)
 /// @return Calculated loss.
-typedef ae2f_float_t ae2f_AnnLoss_t (
-		const ae2f_float_t* out, 
-		const ae2f_float_t* goal,
-		size_t index,
-		size_t count
+typedef void ae2f_AnnLoss_t (
+		ae2f_float_t*		ret,
+		const ae2f_float_t*	out, 
+		const ae2f_float_t* 	goal,
+		size_t			index,
+		size_t			count
 		);
 
 #endif

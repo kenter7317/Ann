@@ -2,6 +2,7 @@
 #include <vulkan/vulkan_core.h>
 #include "../vk.h"
 #include "ae2f/Cast.h"
+#include "ae2f/Float.h"
 #include "ae2f/errGlob.h"
 
 #include <string.h>
@@ -14,24 +15,18 @@ ae2fVK_AnnSlpMk_t	mk;
 
 size_t			mapinp;
 
-static ae2f_float_t
-Act(ae2f_float_t x) {
-	return 1.0 / (1.0 + exp(-x));
+static void
+Act(ae2f_float_t* r, ae2f_float_t x) {
+	*r = 1.0 / (1.0 + exp(-x));
 }
 
-static ae2f_float_t
-ActDeriv(ae2f_float_t output) {
-	return ((output) + 1e-7) * (1.0 - (output) - 1e-7);
+static void
+ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
+	*r = ((output) + 1e-7) * (1.0 - (output) - 1e-7);
 }
 
-/** Cross entrophy */
-static ae2f_float_t 
-LossDeriv(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
-	return 
-		((((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i]))) - (target)[i]) / 
-		(c * ((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i])) 
-		 * (1.0 - ((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i]))))
-		;
+static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+	*r = ((output[i] - target[i]) / c);
 }
 
 ae2f_float_t*	map;
@@ -53,14 +48,10 @@ int main() {
 			, NULL
 			, 
 
-			"#define ACT_DERIV(output) (((output) + 1e-7) * (1.0 - (output) - 1e-7))\n"
-			"#define ACT(x) (1.0 / (1.0 + exp(-(x))))\n"
-			"#define LOSS_DERIV(output, target, i, c) "
-			" ((((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i]))) - (target)[i]) / "
-			" (c * ((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i])) "
-			"* (1.0 - ((output)[i] < 1e-7 ? 1e-7 : ((output)[i] > 1.0 - 1e-7 ? 1.0 - 1e-7 : (output)[i]))))"
-			"\n\n"
-
+			"#define ACT_DERIV(r, output) *(r) = (((output) + 1e-7) * (1.0 - (output) - 1e-7)); \n"
+			"#define ACT(r, x) *(r) = (1.0 / (1.0 + exp(-(x)))); \n"
+			"#define LOSS_DERIV(r, o, t, i, c) *(r) = ((o)[i] - (t)[i]) / (c);\n"
+			""
 			, "/** This is also a comment */\n"
 			);
 
@@ -118,7 +109,8 @@ int main() {
 
 		ae2f_float_t
 			*	OutputMapped = NULL,
-			*	InputMapped = NULL
+			*	InputMapped = NULL,
+			*	GoalMapped = NULL
 				;
 
 		__ae2fVK_AnnSlpIOMap(
@@ -138,15 +130,20 @@ int main() {
 		assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 		OutputMapped[0] = 7;
-
 		InputMapped[0] = 7;
 		InputMapped[1] = 7;
 
 		printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
 		printf("Outputmapped before predict: %f\n", OutputMapped[0]);
 
-		fgetc(stdin);
 		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0], vkqueue);
+
+		__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped, vkqueue);
+
+		GoalMapped[0] = 0.2222;
+		printf("Goal before predict %f\n", GoalMapped[0]);
+
+		__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr, vkqueue);
 
 		puts("After __ae2fVK_AnnSlpIOUnMapOutput_imp.");
 		fgetc(stdin);
@@ -262,11 +259,12 @@ int main() {
 
 			ae2f_float_t
 				*	OutputMapped = NULL,
-				*	InputMapped = NULL
+				*	InputMapped = NULL,
+				*	GoalMapped = NULL
 					;
 			size_t i;
 
-			for(i = 0; i < 1000; i++) if (vkQueueSubmit(
+			if (vkQueueSubmit(
 						vkqueue
 						, 1
 						, &submit_info
@@ -281,9 +279,6 @@ int main() {
 				assert(!"vkQueueWaitIdle failed");
 				return -1;
 			}
-
-			puts("After vkQueueSubmit");
-			fgetc(stdin);
 
 			/** Check is required, but not planned to write for no */
 			__ae2fVK_AnnSlpIOMap(
@@ -305,9 +300,57 @@ int main() {
 					, *mk.m_union.m_alter.m_ptr
 					, vkqueue
 					);
+
+			for(i = 0; i < 5000; i++)  {
+				if (vkQueueSubmit(
+							vkqueue
+							, 1
+							, &submit_info
+							, VK_NULL_HANDLE
+						 ) != VK_SUCCESS)
+				{
+					assert(!"vkQueueSubmit failed");
+					return -1;
+				}
+
+				if (vkQueueWaitIdle(vkqueue) != VK_SUCCESS) {
+					assert(!"vkQueueWaitIdle failed");
+					return -1;
+				}
+			}
+
+			puts("After vkQueueSubmit");
+			fgetc(stdin);
+
+			/** Check is required, but not planned to write for no */
+			__ae2fVK_AnnSlpIOMap(
+					&err
+					, mk.m_union.m_alter.m_ptr
+					, &InputMapped
+					, &OutputMapped
+					, vkqueue
+					);
+
+			assert(OutputMapped);
+			assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+
+			printf("Inputmapped after predict: %f %f\n", InputMapped[0], InputMapped[1]);
+			printf("Outputmapped after prediction %f\n", OutputMapped[0]);
+
+			__ae2fVK_AnnSlpIOUnMap_imp(
+					v_unmap
+					, *mk.m_union.m_alter.m_ptr
+					, vkqueue
+					);
+
+			__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped, vkqueue);
+
+			printf("Goal after prediction: %f\n", GoalMapped[0]);
+
+			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr, vkqueue);
 		}
 
-	
+
 		__ae2fVK_AnnSlpTrainFree_imp(
 				mk.m_union.m_alter.m_ptr[0]
 				, v_cmd

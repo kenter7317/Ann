@@ -506,12 +506,13 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatDescPool(
  *
  * #define ACT(const ae2f_float_t) -> ae2f_float_t \n
  * #define ACT_DERIV(const ae2f_float_t) -> ae2f_float_t \n
- * #define LOSS_DERIV(
+ * #define LOSS_DERIV( 
+ * 		ae2f_float_t* retval
  * 		const ae2f_float_t* const out
  * 		, const ae2f_float_t* const out_desired
  * 		, const size_t		index
  * 		, const size_t		length_out_goal
- * 		) -> ae2f_float_t
+ * 		);
  *
  * @param vkcldeclaration
  * @param vkcldefinition
@@ -1454,12 +1455,12 @@ ae2f_MAC() _ae2fVK_AnnSlpIOUnMap_imp(
 ae2f_MAC() _ae2fVK_AnnSlpIOMap(
 		ae2f_err_t*			r_err,
 		ae2fVK_AnnSlp*			slp
-		, ae2f_float_t** restrict const ir_ptrinp
-		, ae2f_float_t** restrict const ir_ptrout
+		, ae2f_opt ae2f_float_t** restrict const ir_ptrinp
+		, ae2f_opt ae2f_float_t** restrict const ir_ptrout
 		, const VkQueue			i_vkqueue
 		)
 {
-	ae2f_err_t			v_err = 0;
+	ae2f_err_t		v_err = 0;
 	ae2fVK_AnnSlpMap_t	v_map;
 
 	if(slp) {
@@ -1488,9 +1489,119 @@ ae2f_MAC() _ae2fVK_AnnSlpIOMap(
 	}
 
 	if(r_err) {
-		*(r_err) = (v_err);
+		*(r_err) |= (v_err);
 	}
 }
+
+ae2f_MAC() _ae2fVK_AnnSlpDeltaUnMap_imp(
+		ae2fVK_AnnSlpUnMap_t		v_out,
+		ae2fVK_AnnSlp 				vi_slp,
+
+		const VkQueue				i_vkqueue
+		)
+{
+
+	__ae2fVK_AnnSlpUnMapRanged_imp(
+			v_out
+			, vi_slp
+			, i_vkqueue
+			, sizeof(ae2f_float_t) * 
+			((vi_slp).m_slp.m_Slp[0].m_outc * ((vi_slp).m_slp.m_Slp[0].m_inc + 2) + (vi_slp).m_slp.m_Slp[0].m_inc)
+			, sizeof(ae2f_float_t) * ((vi_slp).m_slp.m_Slp[0].m_outc)
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnSlpDeltaMap(
+		ae2f_err_t*			r_err,
+		ae2fVK_AnnSlp*			slp
+		, ae2f_opt ae2f_float_t** restrict const ir_ptrdelta
+		, const VkQueue			i_vkqueue
+		)
+{
+	ae2f_err_t		v_err = 0;
+	ae2fVK_AnnSlpMap_t	v_map;
+
+	if((slp) && (ir_ptrdelta)) {
+		__ae2fVK_AnnSlpMapRanged_imp(
+				v_map
+				, v_err
+				, slp[0]
+				, i_vkqueue
+				, sizeof(ae2f_float_t) * 
+				((slp)->m_slp.m_Slp[0].m_outc * ((slp)->m_slp.m_Slp[0].m_inc + 2) + (slp)->m_slp.m_Slp[0].m_inc)
+				, sizeof(ae2f_float_t) * ((slp)->m_slp.m_Slp[0].m_outc)
+				);
+	} else {
+		assert(!"Got null pointer from slp");
+		v_err |= ae2f_errGlob_PTR_IS_NULL;
+	}
+
+	if(ae2f_errGlob_OK == v_err) {
+		if(ir_ptrdelta) {
+			*(ir_ptrdelta) = (v_map).m_map.m_f;
+		}
+	}
+
+	if(r_err) {
+		*(r_err) |= (v_err);
+	}
+}
+
+ae2f_MAC() _ae2fVK_AnnSlpGoalUnMap_imp(
+		ae2fVK_AnnSlpUnMap_t		v_out,
+		ae2fVK_AnnSlp 				vi_slp,
+
+		const VkQueue				i_vkqueue
+		)
+{
+
+	__ae2fVK_AnnSlpUnMapRanged_imp(
+			v_out
+			, vi_slp
+			, i_vkqueue
+			, sizeof(ae2f_float_t) * 
+			((vi_slp).m_slp.m_Slp[0].m_outc * ((vi_slp).m_slp.m_Slp[0].m_inc + 3) + (vi_slp).m_slp.m_Slp[0].m_inc)
+			, sizeof(ae2f_float_t) * ((vi_slp).m_slp.m_Slp[0].m_outc)
+			);
+}
+
+
+ae2f_MAC() _ae2fVK_AnnSlpGoalMap(
+		ae2f_err_t*			r_err,
+		ae2fVK_AnnSlp*			slp
+		, ae2f_opt ae2f_float_t** restrict const ir_ptrgoal
+		, const VkQueue			i_vkqueue
+		)
+{
+	ae2f_err_t		v_err = 0;
+	ae2fVK_AnnSlpMap_t	v_map;
+
+	if((slp) && (ir_ptrgoal)) {
+		__ae2fVK_AnnSlpMapRanged_imp(
+				v_map
+				, v_err
+				, slp[0]
+				, i_vkqueue
+				, sizeof(ae2f_float_t) * 
+				((slp)->m_slp.m_Slp[0].m_outc * ((slp)->m_slp.m_Slp[0].m_inc + 3) + (slp)->m_slp.m_Slp[0].m_inc)
+				, sizeof(ae2f_float_t) * ((slp)->m_slp.m_Slp[0].m_outc)
+				);
+	} else {
+		assert(!"Got null pointer from slp");
+		v_err |= ae2f_errGlob_PTR_IS_NULL;
+	}
+
+	if(ae2f_errGlob_OK == v_err) {
+		if(ir_ptrgoal) {
+			*(ir_ptrgoal) = (v_map).m_map.m_f;
+		}
+	}
+
+	if(r_err) {
+		*(r_err) |= (v_err);
+	}
+}
+
 
 ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 		ae2fVK_AnnSlpGetCmd_t			v_predict,

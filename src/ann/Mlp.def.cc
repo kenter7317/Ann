@@ -183,11 +183,12 @@ ae2f_structdef_n(struct, ae2f_AnnMlpPredict_t, ae2f_AnnMlpPredictStream_t) {
 	 * Input, output, and loop counters.
 	 */
 	size_t		m_inc, m_outc, m_i, m_j, m_k, m_depth, m_outc_max;
+
 	/**
 	 * @brief
 	 * Return value.
 	 */
-	ae2f_float_t	m_ret;
+	ae2f_float_t	m_ret, m_tmp;
 };
 
 /**
@@ -394,7 +395,7 @@ ae2f_structdef(struct, ae2f_AnnMlpTrain_t) {
 	 * @brief
 	 * Return value.
 	 */
-	ae2f_float_t				m_ret;
+	ae2f_float_t				m_ret, m_tmp, m_tmp1;
 };
 
 #if ae2f_MAC_BUILD
@@ -530,9 +531,9 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAutoStream(
 #define ae2f_AnnMlpPredict		__ae2f_AnnMlpPredict_C
 #define ae2f_AnnMlpPredictStream	__ae2f_AnnMlpPredictStream_C
 #define ae2f_AnnMlpFollow		__ae2f_AnnMlpFollow_C
-#define ae2f_AnnMlpFollowStream	__ae2f_AnnMlpFollowStream_C
+#define ae2f_AnnMlpFollowStream		__ae2f_AnnMlpFollowStream_C
 #define ae2f_AnnMlpTrain		__ae2f_AnnMlpTrain_C
-#define ae2f_AnnMlpTrainStream	__ae2f_AnnMlpTrainStream_C
+#define ae2f_AnnMlpTrainStream		__ae2f_AnnMlpTrainStream_C
 #define ae2f_AnnMlpTrainAuto		__ae2f_AnnMlpTrainAuto_C
 #define ae2f_AnnMlpTrainAutoStream	__ae2f_AnnMlpTrainAutoStream_C
 
@@ -1030,6 +1031,7 @@ ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 
 /** @brief delta to delta */
 ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
+		ae2f_float_t			v_tmp,
 		size_t				v_send
 		, const ae2f_AnnSlp_t		slp_then
 		, ae2f_float_t* const		retdelta_then
@@ -1041,7 +1043,8 @@ ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
 		)
 {
 	for((v_send) = (slp_then).m_outc; (v_send)--;) {
-		retdelta_then[v_send] = actderiv_then(inp[v_send]) * (deltaseed)[v_send];
+		actderiv_then(&(v_tmp), (inp)[v_send]);
+		(retdelta_then)[v_send] = (v_tmp) * (deltaseed)[v_send];
 	}
 }
 
@@ -1125,7 +1128,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 	/** nxt-delta to then-delta */
 	if((actderiv)[(v_follow).m_k]) {
 		__ae2f_AnnMlpPropagate_imp(
-				(v_follow).m_stack.m_send
+				(v_follow).m_ret
+				, (v_follow).m_stack.m_send
 				, (v_follow)
 				, ((deltacache) + ((v_follow).m_pg_out * ((v_follow).m_k OPER_NEG)))
 				, ((deltacache) + ((v_follow).m_pg_out * ((v_follow).m_k OPER_NEG)))
@@ -1134,7 +1138,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 				);
 	} else {
 		__ae2f_AnnMlpPropagate_imp(
-				(v_follow).m_stack.m_send
+				(v_follow).m_ret
+				, (v_follow).m_stack.m_send
 				, (v_follow)
 				, ((deltacache) + (((v_follow).m_pg_out) * ((v_follow).m_k OPER_NEG)))
 				, ((deltacache) + (((v_follow).m_pg_out) * ((v_follow).m_k OPER_NEG)))
@@ -1148,7 +1153,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		 * out field update (delta is generated)
 		 * */
 		__ae2f_AnnSlpFollow_imp(
-				v_follow
+				(v_follow)
 				, (v_follow)
 				, ((outstream) + (v_follow).m_pg_out * ((v_follow).m_k - 1))
 				, ((deltacache) + (v_follow).m_pg_out * ((v_follow).m_k))
@@ -1178,7 +1183,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		/** nxt-delta to then-delta */
 		if((actderiv)[(v_follow).m_k]) {
 			__ae2f_AnnMlpPropagate_imp(
-					(v_follow).m_stack.m_send
+					(v_follow).m_ret
+					, (v_follow).m_stack.m_send
 					, (v_follow)
 					, ((deltacache) + ((v_follow).m_pg_out * ((v_follow).m_k OPER_NEG)))
 					, ((deltacache) + ((v_follow).m_pg_out * ((v_follow).m_k OPER_NEG)))
@@ -1187,7 +1193,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 					);
 		} else {
 			__ae2f_AnnMlpPropagate_imp(
-					(v_follow).m_stack.m_send
+					(v_follow).m_ret
+					, (v_follow).m_stack.m_send
 					, (v_follow)
 					, ((deltacache) + (((v_follow).m_pg_out) * ((v_follow).m_k OPER_NEG)))
 					, ((deltacache) + (((v_follow).m_pg_out) * ((v_follow).m_k OPER_NEG)))

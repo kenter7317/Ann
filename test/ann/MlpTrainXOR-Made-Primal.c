@@ -1,3 +1,4 @@
+#include "ae2f/Float.h"
 #define ae2f_NEED_CLASS 0
 
 #include <assert.h>
@@ -9,16 +10,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-static ae2f_float_t Act(ae2f_float_t x) {	
-	return 1.0 / (1.0 + exp(-x));
+static void Act(ae2f_float_t* r, ae2f_float_t x) {	
+	*(r) = 1.0 / (1.0 + exp(-x));
 }
 
-static ae2f_float_t ActDeriv(ae2f_float_t output) {
-	return output * (1.0 - output);
+static void ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
+	*r = output * (1.0 - output);
 }
 
-static ae2f_float_t LossDeriv(const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
-	return ((output[i] - target[i]) / c);
+static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+	*r = ((output[i] - target[i]) / c);
 }
 
 const ae2f_float_t inp[4][2] = { 

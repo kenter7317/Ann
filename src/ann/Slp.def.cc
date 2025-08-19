@@ -333,23 +333,38 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
  * @brief
  * Structure for SLP prediction and training data.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpPredict_t, ae2f_AnnSlpTrain_t) {
+ae2f_structdef(struct, ae2f_AnnSlpPredict_t) {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
 
-	/**
-	 * @brief
-	 * Return value.
-	 */
 	ae2f_float_t		m_ret;
+	ae2f_float_t		m_tmp;
 };
 
-ae2f_structdef_n(struct, ae2f_AnnSlpPredictOne_t, ae2f_AnnSlpTrainOne_t) {
+ae2f_structdef(struct, ae2f_AnnSlpTrain_t) {
+	/**
+	 * @brief
+	 * Loop counters and layer sizes.
+	 */
+	size_t			m_i, m_j;
+
+	ae2f_float_t		m_ret;
+	ae2f_float_t		m_tmp, m_tmp1;
+};
+
+ae2f_structdef(struct, ae2f_AnnSlpPredictOne_t) {
 	size_t		m_j;
 	ae2f_float_t	m_ret;
+	ae2f_float_t	m_tmp;
+};
+
+ae2f_structdef(struct, ae2f_AnnSlpTrainOne_t) {
+	size_t		m_j;
+	ae2f_float_t	m_ret;
+	ae2f_float_t	m_tmp, m_tmp1;
 };
 
 /**
@@ -362,6 +377,7 @@ ae2f_structdef_n(struct, ae2f_AnnSlpFollowOne_t, ae2f_AnnSlpFitOne_t) {
 	 * Loop counter.
 	 */
 	size_t			m_j;
+	ae2f_float_t		m_tmp, m_tmp1;
 };
 
 
@@ -375,6 +391,7 @@ ae2f_structdef_n(struct, ae2f_AnnSlpFollow_t, ae2f_AnnSlpFit_t, ae2f_AnnSlpFetch
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
+	ae2f_float_t		m_tmp, m_tmp1;
 };
 
 #include <ae2f/Pack/End.h>
@@ -603,26 +620,26 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 
 #define __ae2f_AnnSlpMk_C __ae2f_AnnSlpMk
 
+/** @param v_predict has m_ret. That is the return value. */
 ae2f_MAC() _ae2f_AnnSlpPredictOne_imp(
-		ae2f_AnnSlpPredictOne_t v_predict
-		, const ae2f_float_t* const prm_in
-		, ae2f_float_t 		r_out
-		, const ae2f_float_t* const weight
+		ae2f_AnnSlpPredictOne_t		v_predict
+		, const ae2f_float_t* const	prm_in
+		, const ae2f_float_t* const	weight
 		, const ae2f_float_t		bias
-		, ae2f_AnnAct_t act_opt
-		, const size_t oidx
+		, ae2f_AnnAct_t			act_opt
+		, const size_t			oidx
 		, const size_t isz
 		)
 {
-		(v_predict).m_ret = 0;
+		(v_predict).m_tmp = 0;
 
 		for((v_predict).m_j = (isz); (v_predict).m_j--; ) {
-			(v_predict).m_ret
+			(v_predict).m_tmp
 				+= (prm_in)[(v_predict).m_j]
 				* ((weight) + (oidx) * (isz))[(v_predict).m_j];
 		}
 
-		(r_out) = (act_opt((v_predict).m_ret + (bias)));
+		act_opt((&(v_predict).m_ret), ((v_predict).m_tmp + (bias)));
 }
 
 ae2f_MAC() _ae2f_AnnSlpPredict_imp(
@@ -640,13 +657,14 @@ ae2f_MAC() _ae2f_AnnSlpPredict_imp(
 		__ae2f_AnnSlpPredictOne_imp(
 				v_predict
 				, prm_in
-				, (out)[(v_predict).m_i]
 				, weight
 				, (bias)[(v_predict).m_i]
 				, act_opt
 				, (v_predict).m_i
 				, (_this).m_inc
 				);
+
+		(out)[(v_predict).m_i] = (v_predict).m_ret;
 	}
 }
 
@@ -836,6 +854,9 @@ ae2f_MAC() _ae2f_AnnSlpFollow_C(
 #endif
 
 ae2f_MAC() _ae2f_AnnSlpFetchDeltaOne_imp(
+		ae2f_float_t			v_fetchdelta_0,
+		ae2f_float_t			v_fetchdelta_1,
+
 		const ae2f_float_t* const	out
 		, const ae2f_float_t* const	out_desired
 
@@ -847,9 +868,13 @@ ae2f_MAC() _ae2f_AnnSlpFetchDeltaOne_imp(
 		, const size_t			osz
 		)
 {
-	(retdelta) =
-		lossderiv(out, out_desired, (oidx), (osz))
-		* actderiv_opt((out)[oidx]);
+	actderiv_opt(&(v_fetchdelta_0), (out)[oidx]);
+	lossderiv((&(v_fetchdelta_1)), (out), (out_desired), (oidx), (osz));
+
+	(retdelta) = 
+		(v_fetchdelta_0) *
+		(v_fetchdelta_1)
+		;
 }
 
 ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
@@ -867,7 +892,8 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
 {
 	for((v_delta).m_i = (slp).m_outc; (v_delta).m_i--; )
 		__ae2f_AnnSlpFetchDeltaOne_imp(
-				out, out_desired
+				(v_delta).m_tmp, (v_delta).m_tmp1
+				, out, out_desired
 				, actderiv_opt, lossderiv
 				, (retdelta)[v_delta.m_i]
 				, (v_delta).m_i
@@ -983,7 +1009,8 @@ ae2f_MAC() _ae2f_AnnSlpFitOne_imp(
 		)
 {
 	__ae2f_AnnSlpFetchDeltaOne_imp(
-			out, out_desired
+			(v_fit).m_tmp, (v_fit).m_tmp1
+			, out, out_desired
 			, actderiv_opt, lossderiv
 			, r_cachedelta
 			, oidx, osz
@@ -1154,13 +1181,14 @@ ae2f_MAC() _ae2f_AnnSlpTrainOne_imp(
 	__ae2f_AnnSlpPredictOne_imp(
 			v_train
 			, inp
-			, (out_cache)[oidx]
 			, weight
 			, v_bias
 			, act
 			, oidx
 			, isz
 			);
+
+	(out_cache)[oidx] = (v_train).m_ret;
 
 	__ae2f_AnnSlpFitOne_imp(
 			v_train
