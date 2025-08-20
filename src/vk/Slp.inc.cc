@@ -2,6 +2,7 @@
 #define ae2fVK_Ann_Slp_h
 
 #include "ae2f/Cast.h"
+#include "ae2f/Float.auto.h"
 #include "ae2f/errGlob.h"
 #include <vulkan/vulkan.h>
 #include <ae2f/Ann/Slp.h>
@@ -165,7 +166,7 @@ ae2f_structdef(struct, ae2fVK_AnnSlpMk_t) {
 };
 
 ae2f_structdef(struct, ae2fVK_AnnSlpPredictUnion0WrDescInfo_t) {
-	VkDescriptorBufferInfo		m_buf;
+	VkDescriptorBufferInfo		m_buf[2];
 	VkWriteDescriptorSet		m_wrset;
 };
 
@@ -1107,10 +1108,14 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 		ae2fVK_AnnSlp		iv_slp,
 		ae2f_err_t		iv_err,
 
+		const uint32_t		i_desccount,
 
+		const VkDeviceSize	i_offglob,
+		const VkDeviceSize	i_szglob,
 
-		const VkDeviceSize	i_off,
-		const VkDeviceSize	i_sz,
+		const VkDeviceSize	i_offloc,
+		const VkDeviceSize	i_szloc,
+
 		const ae2fVK_eAnnSlpDescPools	i_descpool,
 		const ae2fVK_eAnnSlpDescLayouts	i_desclayout,
 		const ae2fVK_eAnnSlpPipes	i_pipe,
@@ -1152,16 +1157,28 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 			break;
 		}
 
-		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[0]
 			.buffer = (iv_slp).m_vkglobbuf;
 
 		/** Offset: is not required. */
-		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf
-			.offset = i_off;
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[0]
+			.offset = i_offglob;
 
 		/** Range: Input Output Weight Bias */
-		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf
-			.range = i_sz;
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[0]
+			.range = i_szglob;
+
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[1]
+			.buffer = (iv_slp).m_vklocbuf;
+
+		/** Offset: is not required. */
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[1]
+			.offset = i_offloc;
+
+		/** Range: Input Output Weight Bias */
+		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf[1]
+			.range = i_szloc;
+
 
 		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_wrset
 			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -1178,10 +1195,10 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 			.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
 		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_wrset
-			.descriptorCount = 1;
+			.descriptorCount = (i_desccount);
 
 		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_wrset
-			.pBufferInfo = &(v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf;
+			.pBufferInfo = (v_getcmd).m_u0.m_vkdescwrdescinfo.m_buf;
 
 		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_wrset.pNext = NULL;
 		(v_getcmd).m_u0.m_vkdescwrdescinfo.m_wrset.pImageInfo = NULL;
@@ -1643,12 +1660,16 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 			, i_vkcmdbufuseflags
 			, iv_slp
 			, iv_err
-			, 0
 
+			, 1
+
+			, 0
 			, sizeof(ae2f_float_t) 
 			* ((iv_slp).m_slp.m_Slp[0].m_outc * ((iv_slp).m_slp.m_Slp[0].m_inc + 2)
 					+ (iv_slp).m_slp.m_Slp[0].m_inc
 			  )
+
+			, 0, sizeof(ae2f_float_t)
 
 			, ae2fVK_eAnnSlpDescPools_kPredict /** i_descpool */
 			, ae2fVK_eAnnSlpDescLayouts_kPredict /** i_desclayout */
@@ -1734,11 +1755,16 @@ ae2f_MAC() _ae2fVK_AnnSlpTrainPerformed_imp(
 		, i_vkcmdbufuseflags
 		, iv_slp
 		, iv_err
-		, 0
 
+		, 2 
+
+		, 0
 		, sizeof(ae2f_float_t) 
 		* ((iv_slp).m_slp.m_Slp[0].m_outc * ((iv_slp).m_slp.m_Slp[0].m_inc + 4)
 				+ (iv_slp).m_slp.m_Slp[0].m_inc)
+
+		, 0
+		, sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc)
 
 		, ae2fVK_eAnnSlpDescPools_kTrain /** i_descpool */
 		, ae2fVK_eAnnSlpDescLayouts_kTrain /** i_desclayout */
