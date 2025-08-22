@@ -608,7 +608,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		/** the local memory */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
-				, sizeof(ae2f_float_t) * ((outc) * (inc))
+				, sizeof(ae2f_float_t) * ((outc))
 				, (v_mk).m_union.m_alter.m_ptr->m_vkres
 				, (v_mk).m_union.m_alter.m_ptr->m_vklocbuf
 				, (v_mk).m_union.m_alter.m_ptr->m_vklocdevmem
@@ -1767,7 +1767,7 @@ ae2f_MAC() _ae2fVK_AnnSlpTrainPerformed_imp(
 				+ (iv_slp).m_slp.m_Slp[0].m_inc)
 
 		, 0
-		, sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc) * ((iv_slp).m_slp.m_Slp[0].m_inc)
+		, sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc)
 
 		, ae2fVK_eAnnSlpDescPools_kTrain /** i_descpool */
 		, ae2fVK_eAnnSlpDescLayouts_kTrain /** i_desclayout */
