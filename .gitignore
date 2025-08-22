@@ -2,6 +2,7 @@
 out/*
 CMakeFiles/*
 build/*
+build-make/*
 .vscode/*
 clinclude/*
 

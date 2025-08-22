@@ -1,14 +1,10 @@
-#include "ae2f/Float.h"
+#include "Slp.h"
 #define ae2f_NEED_CLASS 0
-
-#if defined(__ae2f_MACRO_GENERATED) && __ae2f_MACRO_GENERATED
-#define ae2fVK_clspv_IS_OPENCL_C 1
-#else
-#define barrier(...)
-#endif
-
 #include <ae2fVK/clspv_clkeys.h>
 #include <ae2f/Ann/Slp.h>
+
+#include "./Slp.auto.h"
+#include "./Mlp.auto.h"
 
 #ifndef ACT
 #define ACT(layer_idx, r, x)
@@ -46,10 +42,9 @@ ae2f_structdef(struct, lr_t) {
 #define r_osz		(p_layerszlist)[lidx + 1]
 
 #define lidx_then	(lidx & 1)
-#define lidx_now	((lidx) ^ 1 & 1)
+#define lidx_now	(~(lidx) & 1)
 #define l_inp		((loc) + pgsz * lidx_then)
 #define l_out		((loc) + pgsz * lidx_now)
-
 
 /** For every runners */
 #define ACT_RUN(r, x)		ACT(lidx, r, x)
@@ -74,6 +69,7 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uin
 				, idx
 				, r_isz
 				);
+		_clSlpPredict(l_out, r_inp, );
 
 		l_out[idx] = (v_predict).m_ret;
 	}
@@ -113,6 +109,18 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uin
 	}
 }
 
-__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, uint lsz) {
+__kernel void kTrain(__global void* glob, __local ae2f_float_t* loc, const uint lsz) {
+	if(lsz < 3) {
+		/** ASSERT */
+		return;
+	}
 
+	const size_t
+		oidx = get_global_id(0)
+		, iidx = get_global_id(1)
+		, sz = get_global_size(1);
+
+	for(size_t lidx = 0; lidx < lsz; ++lidx) {
+		_clSlpPredict()
+	}
 }

@@ -1,9 +1,8 @@
 #ifndef ae2fVK_Ann_Slp_h
 #define ae2fVK_Ann_Slp_h
 
-#include "ae2f/Cast.h"
-#include "ae2f/Float.auto.h"
-#include "ae2f/errGlob.h"
+#include <ae2f/Cast.h>
+#include <ae2f/errGlob.h>
 #include <vulkan/vulkan.h>
 #include <ae2f/Ann/Slp.h>
 #include <vulkan/vulkan_core.h>
@@ -142,12 +141,12 @@ ae2f_structdef(union /*union*/, ae2fVK_AnnSlpMkVKStack_t) {
 };
 
 ae2f_structdef(union, ae2fVK_AnnSlpMkSPtr_t) {
-	char* restrict		m_char;
+	char* 			m_char;
 	char* 			m_char_r;
-	void* restrict		m_void;
-	uint32_t* restrict	m_wrds;
-	size_t* restrict	m_sz;
-	ae2f_float_t* restrict	m_float;
+	void* 			m_void;
+	uint32_t* 		m_wrds;
+	size_t* 		m_sz;
+	ae2f_float_t*		m_float;
 };
 
 ae2f_structdef(struct, ae2fVK_AnnSlpMk_t) {
@@ -342,7 +341,8 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkAllocVKMem_imp(
 		CMDONERR;
 	}
 
-	unless((v_vkmemreq).size <= (vkphydevmemprops).memoryHeaps[(vkphydevmemprops).memoryTypes[v_memtypeidx].heapIndex].size)
+	unless((v_vkmemreq).size <= 
+			(vkphydevmemprops).memoryHeaps[(vkphydevmemprops).memoryTypes[v_memtypeidx].heapIndex].size)
 	{
 		assert(!"Requirement size exceeds memory heap size.");
 		(v_errbit) |= ae2f_errGlob_IMP_NOT_FOUND;
@@ -608,7 +608,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		/** the local memory */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
-				, ((outc))
+				, sizeof(ae2f_float_t) * ((outc) * (inc))
 				, (v_mk).m_union.m_alter.m_ptr->m_vkres
 				, (v_mk).m_union.m_alter.m_ptr->m_vklocbuf
 				, (v_mk).m_union.m_alter.m_ptr->m_vklocdevmem
@@ -666,7 +666,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		}
 
 		(v_mk).m_vkstack.m_layout.m_creatinfo.bindingCount = 2;
-		
+
 		if(((v_mk).m_union.m_alter.m_ptr->m_vkres = vkCreateDescriptorSetLayout(
 						vkdev
 						, &(v_mk).m_vkstack.m_layout.m_creatinfo
@@ -767,11 +767,14 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 			if(((v_mk).m_vkstack.m_isgood = clspvCompileFromSourcesString(
 							1
 							, ae2f_reinterpret_cast(const size_t*, NULL)
-							, ae2f_static_cast(
-								const char* restrict const * restrict
+							, ae2f_const_cast(
+								const char** restrict
 								, (&(v_mk).m_clsrc.m_char)
 								)
-							, "-pod-pushconstant"
+							,""
+							"-pod-pushconstant "
+							"-cl-fast-relaxed-math "
+							"-cl-single-precision-constant"
 							, &(v_mk).m_clout.m_char
 							, &(v_mk).m_clout_len
 							, &(v_mk).m_unused
@@ -1764,7 +1767,7 @@ ae2f_MAC() _ae2fVK_AnnSlpTrainPerformed_imp(
 				+ (iv_slp).m_slp.m_Slp[0].m_inc)
 
 		, 0
-		, sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc)
+		, sizeof(ae2f_float_t) * ((iv_slp).m_slp.m_Slp[0].m_outc) * ((iv_slp).m_slp.m_Slp[0].m_inc)
 
 		, ae2fVK_eAnnSlpDescPools_kTrain /** i_descpool */
 		, ae2fVK_eAnnSlpDescLayouts_kTrain /** i_desclayout */

@@ -40,7 +40,7 @@ int main() {
 	__ae2fVK_AnnSlpMk_imp(
 			mk,
 			0, 0, 0
-			, 2, 1, 0, 0
+			, 2000, 1, 0, 0
 			, Act, ActDeriv, LossDeriv
 			, 0, 0
 			, vkdev
@@ -61,7 +61,7 @@ int main() {
 	puts("__ae2fVK_AnnSlpMk_imp is done");
 	fgetc(stdin);
 
-	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2);
+	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2000);
 	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 1);
 
 	printf("Stateval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
@@ -293,7 +293,7 @@ int main() {
 			assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 			printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
-			printf("Outputmapped after prediction %f\n", OutputMapped[0]);
+			printf("Outputmapped before prediction %f\n", OutputMapped[0]);
 
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
@@ -301,7 +301,7 @@ int main() {
 					, vkqueue
 					);
 
-			for(i = 0; i < 5000; i++)  {
+			for(i = 0; i < 1000; i++)  {
 				if (vkQueueSubmit(
 							vkqueue
 							, 1

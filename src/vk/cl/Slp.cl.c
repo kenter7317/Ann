@@ -2,14 +2,8 @@
 #include "ae2f/Float.h"
 #define ae2f_NEED_CLASS 0
 
-#if defined(__ae2f_MACRO_GENERATED) && __ae2f_MACRO_GENERATED
-#define ae2fVK_clspv_IS_OPENCL_C 1
-#else
-#define barrier(...)
-#endif
-
 #include <ae2fVK/clspv_clkeys.h>
-#include <ae2f/Ann/Slp.h>
+#include "./Slp.auto.h"
 
 #ifndef ACT
 #define ACT(r, x)
@@ -93,23 +87,11 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 		, isz = get_global_size(1)
 		;
 
-#if 1
-	ae2f_AnnSlpPredict_t	v_predict;
 	ae2f_float_t		delta = 0, v_tmp = 0, v_tmp1 = 0;
+	_clSlpPredict_Q(loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 
 	if(iidx == 0) {
-		__ae2f_AnnSlpPredictOne_imp(
-				v_predict
-				, p_inp					/** prm_in */
-				, p_weight				/** weight */
-				, p_bias[oidx]				/** Bias */
-				, ACT
-				, oidx
-				, isz
-				);
-
-		/** output */
-		p_out[oidx] = loc[oidx] = (v_predict).m_ret;
+		p_out[oidx] = loc[oidx];
 
 		__ae2f_AnnSlpFetchDeltaOne_imp(
 				v_tmp, v_tmp1
@@ -130,8 +112,6 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 				);
 	}
 
-	barrier(CLK_LOCAL_MEM_FENCE);
-
 	__ae2f_AnnSlpFollowOneW_imp(
 			p_inp[iidx] /** inp */
 			, (delta) /** delta */
@@ -142,7 +122,6 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 			, osz
 			, oidx
 			);
-#endif
 
 }
 
@@ -192,9 +171,6 @@ __kernel void kFit(lr_t lr, __global ae2f_float_t* glob) {
 				, lr.m_bias
 				);
 	}
-
-
-	barrier(CLK_LOCAL_MEM_FENCE);
 
 	__ae2f_AnnSlpFollowOneW_imp(
 			(glob + osz * isz + osz)[iidx] /** inp */

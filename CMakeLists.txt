@@ -7,7 +7,7 @@ option(ae2fVK_need_clspv "" ON)
 option(ae2f_TEST "" ON)
 option(ae2f_MAC_BUILD "" ON)
 option(ae2f_IS_SHARED "" ON)
-option(ae2f_DEVEL ""	OFF)
+option(ae2f_DEVEL ""	ON)
 
 include(cmake/Core.cmake)
 
@@ -44,7 +44,7 @@ if(NOT TARGET ae2f::MMap)
 		${PROJECT_SOURCE_DIR}/inc/ae2f/MMap ".h"
 		${PROJECT_SOURCE_DIR}/Config/MMap.cmake.in inc
 		${mmap-inc}
-	)
+		)
 
 	ae2f_itll(${ae2f__MMap__TENT} ae2f::Core)
 	ae2f_itll(${ae2f__MMap__TENT} ae2f::Preproc)
@@ -61,7 +61,7 @@ if(NOT TARGET ae2f::Ann)
 		${PROJECT_SOURCE_DIR}/inc/ae2f/Ann ".h"
 		${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in inc
 		${Ann-inc}
-	)
+		)
 
 	ae2f_itll(${ae2f__Ann__TENT} ${ae2f__MMap__TENT})
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
@@ -80,7 +80,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	ae2f_Inc_init(
 		100 100 100 ON ON ON
 		"-DINC_LEAVE_NFOUND=OFF"
-	)
+		)
 
 	get_target_property(Core_INCLUDE_DIRS ae2f::Core INCLUDE_DIRECTORIES)
 	get_target_property(VKCore_INCLUDE_DIRS ae2fVK::Core INCLUDE_DIRECTORIES)
@@ -92,12 +92,18 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	ae2f_Macro_one(
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.h
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.h
-	)
+		)
 
+	ae2f_Macro_one(
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.h
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.h
+		)
+
+	# SLP Shader configuring
 	ae2f_Macro_one(
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.cl.c
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl.i
-	)
+		)
 
 	ae2f_Inc_Run_One(
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl.i
@@ -105,22 +111,43 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		"${Core_INCLUDE_DIRS}/"
 		"${VKCore_INCLUDE_DIRS}/"
 		"${PROJECT_SOURCE_DIR}/inc/"
-	)
+		)
 
 	ae2f_FileRaw_Run_One(
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl
 		${PROJECT_SOURCE_DIR}/src/vk/cl/Slp.auto.cl.impl
-	)
+		)
+	# SLP Shader configuring end
+
+	# MLP Shader configuring
+	ae2f_Macro_one(
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.cl.c
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.cl.i
+		)
+
+	ae2f_Inc_Run_One(
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.cl.i
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.cl
+		"${Core_INCLUDE_DIRS}/"
+		"${VKCore_INCLUDE_DIRS}/"
+		"${PROJECT_SOURCE_DIR}/inc/"
+		)
+
+	ae2f_FileRaw_Run_One(
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.cl
+		${PROJECT_SOURCE_DIR}/src/vk/cl/Mlp.auto.cl.impl
+		)
+	# MLP Shader configuring end
 
 	ae2f_Inc_init(
 		100 100 100 ON ON ON
 		"-DINC_LEAVE_NFOUND=ON"
-	)
+		)
 
 	ae2f_Inc_Run_One(
 		${PROJECT_SOURCE_DIR}/src/vk/Slp.inc.cc
 		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.def.cc
-	)
+		)
 
 	ae2f_Macro_Lib_V(
 		ae2fVK Ann "${ae2f_LIBPREFIX}" 
@@ -129,7 +156,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".h"
 		${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in inc
 		${AnnVK-inc} ${AnnVK-src}
-	)
+		)
 
 	ae2f_itll(${ae2fVK__Ann__TENT} ae2f::Ann)
 	ae2f_itll(${ae2fVK__Ann__TENT} ae2fVK::Core)
