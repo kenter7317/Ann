@@ -42,24 +42,14 @@ ae2f_structdef(struct, lr_t) {
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__global ae2f_float_t* glob, uint isz) {
+__kernel void kPredict(__global ae2f_float_t* glob, uint32_t unused) {
 	const size_t
 		oidx = get_global_id(0)
-		, osz = get_global_size(0);
+		, osz = get_global_size(0)
+		, iidx = get_global_id(1)
+		, isz = get_global_size(1);
 
-	ae2f_AnnSlpPredict_t	v_predict;
-
-	__ae2f_AnnSlpPredictOne_imp(
-			v_predict
-			, p_inp					/** prm_in */
-			, p_weight				/** weight */
-			, p_bias[oidx]				/** Bias */
-			, ACT
-			, oidx
-			, isz
-			);
-
-	p_out[oidx] = (v_predict).m_ret;
+	_clSlpPredict_Q(p_out, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 }
 
 /**

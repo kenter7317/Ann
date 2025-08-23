@@ -1651,7 +1651,7 @@ ae2f_MAC() _ae2fVK_AnnSlpPredictPerformed_imp(
 				vkCmdDispatch(
 						i_vkcmdbuf
 						, (iv_slp).m_slp.m_Slp[0].m_outc
-						, 1
+						, (iv_slp).m_slp.m_Slp[0].m_inc
 						, 1
 					     );
 				}

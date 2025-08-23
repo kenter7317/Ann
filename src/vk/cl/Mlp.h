@@ -53,6 +53,25 @@ ae2f_MAC() clMlpPropagate(
 	}
 }
 
+ae2f_MAC() clGetHidDeltaOne_Q(
+		ae2f_float_t* const		r_delta,
+
+		const ae2f_float_t* const	i_weight,
+		const ae2f_float_t* const	i_delta,
+
+		const size_t			i_iidx,
+		const size_t			i_isz,
+		const size_t			i_oidx,
+		const size_t			i_osz
+		)
+{
+	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz))
+		(r_delta)[(i_iidx)] 
+			= work_group_reduce_add(
+					(i_weight)[(i_isz) * (i_oidx) + (i_iidx)]
+					);
+}
+
 ae2f_MAC() clGetHidDeltaOne(
 		ae2f_float_t* const		r_delta,
 
@@ -65,7 +84,7 @@ ae2f_MAC() clGetHidDeltaOne(
 		const size_t			i_osz
 		)
 {
-	if(i_oidx == 0) {
+	if(i_oidx == 0 && (i_iidx) < (i_isz)) {
 		size_t v_oidx = (i_osz);
 		ae2f_float_t	v_ret = 0;
 
@@ -95,5 +114,10 @@ ae2f_MAC() clGetHidDelta_imp(
 }
 
 #define _clGetHidDelta(...) _clGetHidDelta_imp(_clGetHidDeltaOne, __VA_ARGS__)
+#define _clGetHidDelta_Q(...) _clGetHidDelta_imp(_clGetHidDeltaOne_Q, __VA_ARGS__)
+
+ae2f_MAC() clMlpFollow() {
+
+}
 
 #endif

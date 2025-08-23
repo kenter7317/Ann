@@ -5,11 +5,15 @@
 
 #include <ae2f/Ann/Slp.h>
 #include <ae2fVK/clspv_clkeys.h>
+#include "mac.h"
 
 #if !__ae2f_MACRO_GENERATED
 #endif
 
+typedef ae2f_AnnSlpPredict_t _clSlpPredict_t;
+
 ae2f_MAC() clSlpPredict(
+		_clSlpPredict_t	v_predict,
 		ae2f_float_t*	const	  loc,
 
 		const ae2f_float_t* const p_inp,
@@ -23,23 +27,30 @@ ae2f_MAC() clSlpPredict(
 		)
 {
 	if((iidx) == 0 && (oidx) < (osz)) {
-		ae2f_AnnSlpPredict_t	v_predict;
 		__ae2f_AnnSlpPredictOne_imp(
-				v_predict
-				, p_inp					/** prm_in */
-				, p_weight				/** weight */
-				, p_bias[oidx]				/** Bias */
+				(v_predict)
+				, (p_inp)					/** prm_in */
+				, (p_weight)				/** weight */
+				, (p_bias)[oidx]				/** Bias */
 				, ACT
-				, oidx
-				, isz
+				, (oidx)
+				, (isz)
 				);
 
 		(loc)[oidx] = (v_predict).m_ret;
 	}
+
+	barrier(CLK_ALL_MEM_FENCE);
 }
+
+ae2f_structdef(struct, _clSlpPredict_t_Q) {
+	ae2f_float_t	m_sum, m_ret;
+};
 
 /** Quick version, not precise. */
 ae2f_MAC() clSlpPredict_Q(
+		_clSlpPredict_t_Q	v_predict,
+
 		__local ae2f_float_t*	const	  loc,
 
 		const ae2f_float_t* const p_inp,
@@ -52,16 +63,19 @@ ae2f_MAC() clSlpPredict_Q(
 		ae2f_AnnAct_t	ACT
 		)
 {
-	if((oidx) < (osz)) {
-		const ae2f_float_t v_sum = work_group_reduce_add(
-				(p_weight)[(oidx) * (isz) + (iidx) * (p_inp)[iidx]]
+	if((oidx) < (osz) && (iidx) < (isz)) {
+		(v_predict).m_sum = work_group_reduce_add(
+				(p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
 				);
-		barrier(CLK_ALL_MEM_FENCE);
 
 		if((iidx) == 0) {
-			ACT(((loc) + (oidx)), ((v_sum) + (p_bias)[oidx]));
+			ACT((&(v_predict).m_ret), ((v_predict).m_sum + (p_bias)[oidx]));
+			(loc)[oidx] = (v_predict).m_ret;
 		}
 	}
 }
+
+#define clSlpPredict	CL_Q_CVRT(_clSlpPredict)
+#define clSlpPredict_t	CL_Q_CVRT(_clSlpPredict_t)
 
 #endif

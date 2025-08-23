@@ -1,9 +1,7 @@
-#include "Slp.h"
 #define ae2f_NEED_CLASS 0
 #include <ae2fVK/clspv_clkeys.h>
 #include <ae2f/Ann/Slp.h>
 
-#include "./Slp.auto.h"
 #include "./Mlp.auto.h"
 
 #ifndef ACT
@@ -53,60 +51,16 @@ ae2f_structdef(struct, lr_t) {
 
 __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uint lsz) {
 	const size_t
-		idx = get_global_id(0)
+		oidx = get_global_id(0)
+		, iidx = get_global_id(1)
 		, sz = get_global_size(0);
 
-	ae2f_AnnSlpPredictOne_t	v_predict;
 	size_t	lidx = 0;
-
-	if(idx < r_osz) {
-		__ae2f_AnnSlpPredictOne_imp(
-				v_predict
-				, r_inp
-				, r_weight
-				, r_bias
-				, ACT_RUN
-				, idx
-				, r_isz
-				);
-		_clSlpPredict(l_out, r_inp, );
-
-		l_out[idx] = (v_predict).m_ret;
-	}
-
-	barrier(CLK_LOCAL_MEM_FENCE);
-
+	_clSlpPredict(l_out, r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	while(++lidx < lsz - 1) {
-		if(idx < r_osz) {
-			__ae2f_AnnSlpPredictOne_imp(
-					v_predict
-					, l_inp
-					, r_weight
-					, r_bias
-					, ACT_RUN
-					, idx
-					, r_isz
-					);
-
-			l_out[idx] = (v_predict).m_ret;
-		}
-
-		barrier(CLK_LOCAL_MEM_FENCE);
+		_clSlpPredict(l_out, l_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	}
-
-	if(idx < r_osz) {
-		__ae2f_AnnSlpPredictOne_imp(
-				v_predict
-				, l_inp
-				, r_weight
-				, r_bias
-				, ACT_RUN
-				, idx
-				, r_isz
-				);
-
-		r_out[idx] = (v_predict).m_ret;
-	}
+	_clSlpPredict(r_out, l_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
 __kernel void kTrain(__global void* glob, __local ae2f_float_t* loc, const uint lsz) {
