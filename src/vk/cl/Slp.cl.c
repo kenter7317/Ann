@@ -25,10 +25,11 @@
 #define p_delta		((p_out) + osz)
 #define p_goal		((p_delta) + osz)
 
-ae2f_structdef(struct, lr_t) {
+const ae2f_structdef(struct, lr_t) {
 	ae2f_float_t	m_weight;
 	ae2f_float_t	m_bias;
 };
+
 
 /**
  * @brief
@@ -42,14 +43,16 @@ ae2f_structdef(struct, lr_t) {
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__global ae2f_float_t* glob, uint32_t unused) {
+__kernel void kPredict(__global ae2f_float_t* glob, const uint32_t unused) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
 		, iidx = get_global_id(1)
 		, isz = get_global_size(1);
 
-	_clSlpPredict_Q(p_out, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	clSlpPredict_t v_predict;
+
+	clSlpPredict(v_predict, p_out, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 }
 
 /**
@@ -78,7 +81,9 @@ __kernel void kTrain(lr_t lr, __global ae2f_float_t* glob, __local ae2f_float_t*
 		;
 
 	ae2f_float_t		delta = 0, v_tmp = 0, v_tmp1 = 0;
-	_clSlpPredict_Q(loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	clSlpPredict_t		v_predict;
+
+	clSlpPredict(v_predict, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 
 	if(iidx == 0) {
 		p_out[oidx] = loc[oidx];
@@ -163,7 +168,7 @@ __kernel void kFit(lr_t lr, __global ae2f_float_t* glob) {
 	}
 
 	__ae2f_AnnSlpFollowOneW_imp(
-			(glob + osz * isz + osz)[iidx] /** inp */
+			p_inp[iidx] /** inp */
 			, delta /** delta */
 			, p_weight /** weight */
 			, lr.m_weight
@@ -194,7 +199,7 @@ __kernel void kFollow(lr_t lr, __global ae2f_float_t* glob) {
 		;
 
 	__ae2f_AnnSlpFollowOneW_imp(
-			p_weight[iidx] /** inp */
+			p_inp[iidx] /** inp */
 			, p_delta[oidx] /** delta */
 			, p_weight /** weight */
 			, lr.m_weight

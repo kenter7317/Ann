@@ -15,6 +15,16 @@ static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_fl
 	*r = ((output[i] - target[i]) / c);
 }
 
+/** Cross entrophy */
+static void
+LossDerivCROSS(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+	const ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
+	ae2f_float_t o_i = output[i];
+	// Clip output to avoid log(0) or division by zero
+	o_i = o_i < epsilon ? epsilon : (o_i > 1.0 - epsilon ? 1.0 - epsilon : o_i);
+	r[0] = (o_i - target[i]) / (c * o_i * (1.0 - o_i));
+}
+
 const ae2f_float_t inp[4][2] = {
 	{0, 0}, 
 	{0, 1}, 
@@ -35,7 +45,7 @@ int main() {
 	ae2f_AnnMlpMk(err, &mlp, 3
 			, lenv
 			, 0, 0, 0
-			, LossDeriv
+			, LossDerivCROSS
 			, 0, 0, 0, 0
 			, 0.6, 0.5
 
@@ -49,8 +59,8 @@ int main() {
 		mlp->m_bias[i] = ((double)rand() / RAND_MAX) -  0.5;
 		mlp->m_act[i] = Act;
 		mlp->m_actderiv[i] = ActDeriv;
-		for(j = 0; j < 3; j++) {
-			mlp->m_weight[j + i * 3] = ((double)rand() / RAND_MAX) - 0.5;
+		for(j = 0; j < 9; j++) {
+			mlp->m_weight[j + i * 9] = ((double)rand() / RAND_MAX) - 0.5;
 		}
 	}
 
