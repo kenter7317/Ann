@@ -75,7 +75,7 @@ int main() {
             if (err[0]) {
                 printf("[Error in TrainAutoStream]: %d\n", err[0]);
                 ae2f_AnnMlpDel(mlp);
-                return 1;
+                return 1 ;
             }
         }
         if (i % 1000 == 0) {
