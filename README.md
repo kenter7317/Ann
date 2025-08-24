@@ -3,6 +3,9 @@
 
 [![ae2f-workflow](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml/badge.svg?branch=main)](https://github.com/ae2f/Ann/actions/workflows/cmake-test.yml)
 
+> This project has been migrated to [codeberg.org](https://codeberg.org/ae2f/Ann).  
+> You will still be able to access to upstream with github page.
+
 > ANN interfaces with basic implementation for example.  
 > GPU acceleration backend is in plan to be shifted to vulkan.  
 > Currently no GPU acceleration is supported.
