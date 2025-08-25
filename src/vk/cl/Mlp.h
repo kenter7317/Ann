@@ -58,7 +58,7 @@ ae2f_MAC() clMlpRvrse(
 }
 
 ae2f_MAC() clMlpGetHD1_Q(
-		ae2f_float_t* const		r_delta,
+		ae2f_float_t* const		r_delta_then,
 
 		const ae2f_float_t* const	i_weight,
 		const ae2f_float_t* const	i_delta,
@@ -70,14 +70,14 @@ ae2f_MAC() clMlpGetHD1_Q(
 		)
 {
 	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz))
-		(r_delta)[(i_iidx)]
+		(r_delta_then)[(i_iidx)]
 			= work_group_reduce_add(
-					(i_weight)[(i_isz) * (i_oidx) + (i_iidx)]
+					(i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx]
 					);
 }
 
 ae2f_MAC() clMlpGetHD1(
-		ae2f_float_t* const		r_delta,
+		ae2f_float_t* const		r_delta_then,
 
 		const ae2f_float_t* const	i_weight,
 		const ae2f_float_t* const	i_delta,
@@ -93,16 +93,16 @@ ae2f_MAC() clMlpGetHD1(
 		ae2f_float_t	v_ret = 0;
 
 		while((v_oidx)--) {
-			(v_ret) += (i_weight)[(i_isz) * (v_oidx) + (i_iidx)];
+			(v_ret) += (i_weight)[(i_isz) * (v_oidx) + (i_iidx)] * (i_delta)[(v_oidx)];
 		}
 
-		(r_delta)[(i_iidx)] = (v_ret);
+		(r_delta_then)[(i_iidx)] = (v_ret);
 	}
 }
 
 ae2f_MAC() clMlpGetHD(
 		clMlpGetHD1_t		ONE,
-		ae2f_float_t* const		r_delta,
+		ae2f_float_t* const		r_delta_then,
 
 		const ae2f_float_t* const	i_weight,
 		const ae2f_float_t* const	i_delta,
@@ -114,7 +114,7 @@ ae2f_MAC() clMlpGetHD(
 		)
 {
 	if((i_iidx) < (i_isz) && (i_oidx) < (i_osz))
-		ONE(r_delta, i_weight, i_delta, i_iidx, i_isz, i_oidx, i_osz);
+		ONE(r_delta_then, i_weight, i_delta, i_iidx, i_isz, i_oidx, i_osz);
 }
 
 /** @brief GetHidDelta Need no structure. */

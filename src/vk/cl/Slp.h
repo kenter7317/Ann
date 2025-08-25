@@ -3,12 +3,10 @@
 
 #define ae2f_NEED_CLASS 0
 
-#include <ae2f/Ann/Slp.h>
+#include <ae2f/Ann/Slp.core.h>
+#include <ae2f/Ann/Slp.auto.h>
 #include <ae2fVK/clspv_clkeys.h>
 #include "mac.h"
-
-#if !__ae2f_MACRO_GENERATED
-#endif
 
 typedef ae2f_AnnSlpPredict_t _clSlpPredict_t;
 
@@ -39,8 +37,6 @@ ae2f_MAC() clSlpPredict(
 
 		(loc)[oidx] = (v_predict).m_ret;
 	}
-
-	barrier(CLK_ALL_MEM_FENCE);
 }
 
 ae2f_structdef(struct, _clSlpPredict_t_Q) {

@@ -41,7 +41,7 @@ if(NOT TARGET ae2f::MMap)
 		ae2f MMap "${ae2f_LIBPREFIX}" 
 		${PROJECT_SOURCE_DIR}/src/mmap "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/mmap "*.def.c" 
-		${PROJECT_SOURCE_DIR}/inc/ae2f/MMap ".h"
+		${PROJECT_SOURCE_DIR}/inc/ae2f/MMap ".auto.h"
 		${PROJECT_SOURCE_DIR}/Config/MMap.cmake.in inc
 		${mmap-inc}
 		)
@@ -58,7 +58,7 @@ if(NOT TARGET ae2f::Ann)
 		ae2f Ann "${ae2f_LIBPREFIX}" 
 		${PROJECT_SOURCE_DIR}/src/ann "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/ann "*.def.c*" 
-		${PROJECT_SOURCE_DIR}/inc/ae2f/Ann ".h"
+		${PROJECT_SOURCE_DIR}/inc/ae2f/Ann ".auto.h"
 		${PROJECT_SOURCE_DIR}/Config/Ann.cmake.in inc
 		${Ann-inc}
 		)

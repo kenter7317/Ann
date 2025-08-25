@@ -59,7 +59,7 @@ int main() {
 
     // Initial predictions
     for (size_t j = 0; j < 4; j++) {
-        mlp->PredictStream(err, inp[j], output);
+        mlp->Predict(err, inp[j], output);
         if (err[0]) {
             printf("[Error in Predict]: %d\n", err[0]);
             ae2f_AnnMlpDel(mlp);
@@ -82,7 +82,7 @@ int main() {
             printf("\nEpoch %zu:\n", i);
             for (size_t j = 0; j < 4; j++) {
                 output[0] = 0;
-                mlp->PredictStream(err, inp[j], output);
+                mlp->Predict(err, inp[j], output);
                 if (err[0]) {
                     printf("[Error in PredictStream]: %d\n", err[0]);
                     ae2f_AnnMlpDel(mlp);

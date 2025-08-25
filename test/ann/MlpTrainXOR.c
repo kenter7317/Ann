@@ -77,7 +77,7 @@ int main() {
 
 	for(i = 0; i < 9000; i++) {
 		for(j = 0; j < 4; j++) {
-			ae2f_AnnMlpTrainAutoStream(
+			ae2f_AnnMlpTrainAuto(
 					err, mlp, inp[j]
 					, &goal_xor[j]);
 
