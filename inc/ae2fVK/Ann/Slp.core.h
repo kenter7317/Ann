@@ -174,4 +174,7 @@ ae2fVK_AnnSlpUnMap_t;
 
 #include <ae2f/Pack/End.h>
 
+#define __ae2fVK_AnnSlpMkCLSPV_imp(r_handle, ir_err, i_first, i_third) \
+	__ae2fVK_AnnSlpMkCLSPVVerbose_imp(r_handle, ir_err, i_first, ae2fVK_AnnSlpSHADER, i_third)
+
 #endif

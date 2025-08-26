@@ -1,10 +1,10 @@
 #ifndef ae2fVK_Ann_Slp_c
 
 #if !__ae2f_MACRO_GENERATED
-#include <ae2fVK/Ann/Slp.auto.h>
-#include <ae2fVK/Ann/Slp.h>
 #include <ae2f/Macro.h>
 #endif
+
+#include <ae2fVK/Ann/Slp.h>
 
 #define ae2fVK_Ann_Slp_c
 
@@ -512,7 +512,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 			= (v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout;
 
 		__ae2fVK_AnnSlpMkOnePipeLayout_imp(
-				break
+				break;
 				, v_mk
 				, ae2fVK_eAnnSlpPipeLayouts_kPredict
 				, sizeof(size_t)
@@ -743,19 +743,20 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
  * @param r_handle must be destroyed by free().
  * @param i_second_raw must be guaranteed to be a raw stirng. 
  * */
-ae2f_MAC() _ae2fVK_AnnSlpMkCLSPV_imp(
+ae2f_MAC() _ae2fVK_AnnSlpMkCLSPVVerbose_imp(
 		void* restrict		r_handle,
 		ae2f_err_t		ir_err,
 
 		const char* restrict	i_first,
-		const char* restrict	i_second
+		const char* restrict	i_second,
+		const char* restrict	i_third
 		) 
 {
 	if(!((r_handle) = calloc(
 					1
 					, strlen(i_first) + sizeof(
-						ae2fVK_AnnSlpSHADER 
-						) + strlen(i_second)
+						i_second
+						) + strlen(i_third)
 				)))
 	{
 		assert(!"_ae2fVK_AnnSlpMkCLSPV_imp has failed.");
@@ -764,10 +765,8 @@ ae2f_MAC() _ae2fVK_AnnSlpMkCLSPV_imp(
 
 	else {
 		strcpy(ae2f_reinterpret_cast(char*, r_handle), i_first);
-		strcat(ae2f_reinterpret_cast(char*, r_handle),
-				ae2fVK_AnnSlpSHADER
-		      );
 		strcat(ae2f_reinterpret_cast(char*, r_handle), i_second);
+		strcat(ae2f_reinterpret_cast(char*, r_handle), i_third);
 	}
 }
 
@@ -809,7 +808,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 }
 
 ae2f_MAC() _ae2fVK_AnnSlpMapRanged_imp(
-		ae2fVK_AnnSlpMap_t	v_map,
+		ae2fVK_AnnSlpMap_t		v_map,
 		ae2f_err_t			r_err,
 		ae2fVK_AnnSlp			slp,
 
@@ -1382,7 +1381,6 @@ ae2f_MAC() _ae2fVK_AnnSlpGoalUnMap_imp(
 		const VkQueue				i_vkqueue
 		)
 {
-
 	__ae2fVK_AnnSlpUnMapRanged_imp(
 			v_out
 			, vi_slp

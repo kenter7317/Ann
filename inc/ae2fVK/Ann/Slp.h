@@ -23,12 +23,11 @@ ae2f_structdef(struct, ae2fVK_AnnSlp)
 	VkAllocationCallbacks* restrict	m_vkalloccalls;
 
 	VkDescriptorSetLayout	m_vkdescsetlayout[ae2fVK_eAnnSlpDescLayouts_LEN];
-	VkDescriptorPool	m_vkdescpool[2];
+	VkDescriptorPool	m_vkdescpool[ae2fVK_eAnnSlpDescPools_LEN];
 
 	VkPipelineLayout	m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_LEN];
 	VkShaderModule		m_vkshadermodule;
 	VkPipeline		m_vkpipeline[ae2fVK_eAnnSlpPipes_LEN];
 };
-
 
 #endif

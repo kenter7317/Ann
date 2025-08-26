@@ -1,7 +1,6 @@
 #define ae2f_NEED_CLASS 0
-#include <ae2fVK/clspv_clkeys.h>
-#include <ae2f/Ann/Slp.h>
 
+#include <ae2fVK/clspv_clkeys.h>
 #include "./Mlp.auto.h"
 
 #ifndef ACT
@@ -43,8 +42,8 @@ ae2f_structdef(struct, lr_t) {
 #define _r_weight(lidx)	(p_weight + pgsz_sqr * (lidx))
 #define _r_bias(lidx)	(p_bias + pgsz * (lidx))
 #define _r_delta(lidx)	(p_deltastream + pgsz * (lidx))
-#define _r_isz(lidx)	(p_layerszlist)[lidx]
-#define _r_osz(lidx)	(p_layerszlist)[(lidx) + 1]
+#define _r_isz(lidx)	((p_layerszlist)[lidx])
+#define _r_osz(lidx)	((p_layerszlist)[(lidx) + 1])
 
 #define r_inp		_r_inp(lidx)
 #define r_out		_r_out(lidx+1)
@@ -84,7 +83,7 @@ ae2f_structdef(struct, lr_t) {
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uint lsz) {
+__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uint32_t lsz) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -109,7 +108,7 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uin
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const uint lsz) {
+__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const uint32_t lsz) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)

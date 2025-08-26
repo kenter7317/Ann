@@ -78,15 +78,16 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	endif()
 
 	ae2f_Inc_init(
-		100 100 100 ON ON ON
+		100 100 10 ON ON ON
 		"-DINC_LEAVE_NFOUND=OFF"
+		"-DNDEBUG=ON"
 		)
 
 	get_target_property(Core_INCLUDE_DIRS ae2f::Core INCLUDE_DIRECTORIES)
 	get_target_property(VKCore_INCLUDE_DIRS ae2fVK::Core INCLUDE_DIRECTORIES)
 	message("Dir: ${Core_INCLUDE_DIRS}/")
 
-	ae2f_FileRaw_init(ON 1)
+	ae2f_FileRaw_init(ON 1 -DNDEBUG=ON)
 
 
 	ae2f_Macro_one(
@@ -140,8 +141,9 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	# MLP Shader configuring end
 
 	ae2f_Inc_init(
-		100 100 100 ON ON ON
+		100 100 10 ON ON ON
 		"-DINC_LEAVE_NFOUND=ON"
+		"-DNDEBUG=ON"
 		)
 
 	ae2f_Inc_Run_One(
