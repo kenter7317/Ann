@@ -153,7 +153,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		ae2fVK Ann "${ae2f_LIBPREFIX}" 
 		${PROJECT_SOURCE_DIR}/src/vk "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/vk "*.def.c*" 
-		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".h"
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".auto.h"
 		${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in inc
 		${AnnVK-inc} ${AnnVK-src}
 		)

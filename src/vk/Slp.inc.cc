@@ -498,7 +498,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatDescPool(
 
 /**
  * @brief
- * Make slp with cl compute shader.
+ * Make slp with OpenCL compute shader.
  *
  * @details
  * The shader itself is incomplete. \n
