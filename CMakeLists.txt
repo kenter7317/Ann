@@ -149,6 +149,11 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.def.cc
 		)
 
+	ae2f_Inc_Run_One(
+		${PROJECT_SOURCE_DIR}/src/vk/Mlp.inc.cc
+		${PROJECT_SOURCE_DIR}/src/vk/Mlp.auto.def.cc
+		)
+
 	ae2f_Macro_Lib_V(
 		ae2fVK Ann "${ae2f_LIBPREFIX}" 
 		${PROJECT_SOURCE_DIR}/src/vk "*.imp.c" 

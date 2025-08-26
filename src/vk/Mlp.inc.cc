@@ -1,11 +1,18 @@
+#include "ae2f/errGlob.h"
+#include <vulkan/vulkan_core.h>
 #ifndef ae2fVK_Ann_Mlp_h
+
+#if __ae2f_MACRO_GENERATED
 #define ae2fVK_Ann_Mlp_h
+#endif
 
 #include <ae2fVK/Ann/Mlp.h>
 #include <ae2fVK/Ann/Mlp.core.h>
+#include <assert.h>
 
 #if !__ae2f_MACRO_GENERATED
 #include <ae2f/Macro.h>
+#include <ae2fVK/Ann/Mlp.auto.h>
 #endif
 
 /**
@@ -31,7 +38,7 @@
  * @param vkcldefinition
  * */
 ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
-		ae2fVK_AnnSlpMk_t	v_mk
+		ae2fVK_AnnMlpMk_t	v_mk
 
 		, ae2f_float_t* const iv_weight_opt
 		, ae2f_float_t* const iv_bias_opt
@@ -59,8 +66,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 		, ae2f_opt const char* const				i_vkcldefinition
 ) 
 {
-	(v_mk).m_reterr = 0;
-	(v_mk).
+	(v_mk).m_reterr = ae2f_errGlob_OK;
+	assert(i_len_count > 2);
 }
 
 #endif
