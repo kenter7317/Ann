@@ -1,10 +1,10 @@
-#include "ae2f/Float.h"
 #define ae2f_NEED_CLASS 0
 
 #include <assert.h>
 #include <ae2f/Ann/Act.h>
 
 #include <ae2f/Ann/Mlp.h>
+#include <ae2f/Ann/Slp.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>

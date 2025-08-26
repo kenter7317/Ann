@@ -1,6 +1,6 @@
-#include "ae2f/Call.h"
-#include "ae2f/Cast.h"
 #include <ae2f/Ann/Mlp.h>
+#include <assert.h>
+#include <stdlib.h>
 
 ae2f_SHAREDEXPORT void ae2f_AnnMlpMk(
 		ae2f_err_t* restrict const		reterr

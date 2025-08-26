@@ -15,6 +15,12 @@
 #include <ae2fVK/Ann/Mlp.auto.h>
 #endif
 
+#if __ae2f_MACRO_GENERATED
+
+
+
+#endif
+
 /**
  * @brief
  * Make MLP with OpenCL compute shader.
@@ -46,6 +52,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 
 		, const uint32_t	i_len_count
 		, const uint32_t* const	i_len
+		, const uint32_t* const	i_len_swap
 
 		, ae2f_opt const size_t	i_prm_offset
 		, ae2f_opt const size_t	i_extra
@@ -68,6 +75,24 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 {
 	(v_mk).m_reterr = ae2f_errGlob_OK;
 	assert(i_len_count > 2);
+
+	/** __ae2f_AnnMlpMk_imp(
+			v_mk
+			, i_len_count
+			, i_len
+			, szswap_opt
+			, act
+			, actderiv
+			, lossderiv
+			, deltastream
+			, outcache
+			, weight
+			, bias
+			, learningrate
+			, learningrate_bias
+			, offset
+			, extra
+			); */
 }
 
 #endif

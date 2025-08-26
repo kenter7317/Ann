@@ -2,6 +2,7 @@
 
 #include <ae2f/Ann/Act.h>
 #include <ae2f/Ann/Mlp.h>
+#include <ae2f/Ann/Slp.h>
 
 #include <assert.h>
 #include <stdio.h>

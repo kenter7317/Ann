@@ -1,3 +1,5 @@
+#define ae2f_MAC_BUILD 0
+
 #include "ae2f/Float.h"
 #include <ae2f/Ann/Mlp.h>
 #include <stdio.h>
