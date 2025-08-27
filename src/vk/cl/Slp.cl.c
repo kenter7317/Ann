@@ -1,8 +1,9 @@
-
-#include "ae2f/Float.h"
 #define ae2f_NEED_CLASS 0
 
-#include <ae2fVK/clspv_clkeys.h>
+#if __ae2f_MACRO_GENERATED
+#define ae2fVK_clspv_IS_OPENCL 1
+#endif
+
 #include "./Slp.auto.h"
 
 #ifndef ACT

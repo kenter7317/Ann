@@ -5,6 +5,7 @@
 #include <vulkan/vulkan.h>
 
 #include "./Mlp.core.h"
+#include "./Mlp.auto.h"
 
 ae2f_structdef(struct, ae2fVK_AnnMlp) {
 	ae2f_AnnMlp	m_mlp;

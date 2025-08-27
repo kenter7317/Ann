@@ -86,7 +86,6 @@ int main() {
 				, mk.m_union.m_alter.m_ptr
 				, &weight
 				, &bias
-				, vkqueue
 				);
 
 		assert(ae2f_errGlob_OK == e && "__ae2fVK_AnnSlpWBMap has failed.");
@@ -101,7 +100,6 @@ int main() {
 		__ae2fVK_AnnSlpWBUnMap_imp(
 				v_unmap
 				, mk.m_union.m_alter.m_ptr[0]
-				, i_vkqueue
 				);
 	}
 
@@ -119,7 +117,6 @@ int main() {
 				, mk.m_union.m_alter.m_ptr
 				, (&InputMapped)
 				, (&OutputMapped)
-				, vkqueue
 				);
 
 		puts("Before OutputMapped written");
@@ -139,7 +136,7 @@ int main() {
 		printf("Outputmapped before predict: %f\n", OutputMapped[0]);
 
 		fgetc(stdin);
-		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0], vkqueue);
+		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0]);
 
 		puts("After __ae2fVK_AnnSlpIOUnMapOutput_imp.");
 		fgetc(stdin);
@@ -324,7 +321,6 @@ int main() {
 					, mk.m_union.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
-					, vkqueue
 					);
 
 			assert(OutputMapped);
@@ -336,7 +332,6 @@ int main() {
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
 					, *mk.m_union.m_alter.m_ptr
-					, vkqueue
 					);
 		}
 

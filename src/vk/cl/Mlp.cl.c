@@ -1,6 +1,9 @@
 #define ae2f_NEED_CLASS 0
 
-#include <ae2fVK/clspv_clkeys.h>
+#if __ae2f_MACRO_GENERATED
+#define ae2fVK_clspv_IS_OPENCL 1
+#endif
+
 #include "./Mlp.auto.h"
 
 #ifndef ACT
@@ -15,12 +18,6 @@
 #define LOSS_DERIV(layer_idx, r, y, y_desired, i, c)
 #endif
 
-
-ae2f_structdef(struct, lr_t) {
-	ae2f_float_t	m_weight;
-	ae2f_float_t	m_bias;
-};
-
 #define pgsz		sz
 #define pgsz_sqr	(pgsz * pgsz)
 
@@ -30,8 +27,9 @@ ae2f_structdef(struct, lr_t) {
 /** count of layer. */
 #define llsz		(lsz - 1)
 
-#define p_layerszlist	ae2f_reinterpret_cast(__global uint32_t*, glob)
-#define p_weight	ae2f_reinterpret_cast(__global ae2f_float_t*, p_layerszlist + lsz)
+
+#define p_layerszlist	CAST(__global uint32_t*, glob)
+#define p_weight	CAST(__global ae2f_float_t*, p_layerszlist + lsz)
 #define p_bias		(p_weight + pgsz_sqr * (llsz))
 #define p_outstream	(p_bias + pgsz * (llsz))
 #define p_inp		p_outstream

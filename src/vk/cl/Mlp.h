@@ -1,17 +1,7 @@
 #ifndef Mlp_h
 #define Mlp_h
 
-#if !(defined(__ae2f_MACRO_GENERATED) && (__ae2f_MACRO_GENERATED))
-#include "./Mlp.auto.h"
-
-#undef	ae2f_MAC
-#define	ae2f_MAC() inline void
-
-/** Dummy function. Unused. */
-void Dummy() {}
-
-#endif
-
+#include "./Slp.auto.h"
 
 typedef void clMlpGetHD1_t(
 		ae2f_float_t* const		r_delta,
@@ -116,5 +106,6 @@ ae2f_MAC() clMlpGetHD(
 
 /** @brief GetHidDelta Need no structure. */
 #define clMlpGetHD(...)	_clMlpGetHD(CL_Q_CVRT(_clMlpGetHD1), __VA_ARGS__)
+
 
 #endif

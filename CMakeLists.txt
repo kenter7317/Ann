@@ -152,8 +152,8 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		)
 
 	ae2f_Inc_Run_One(
-		${PROJECT_SOURCE_DIR}/src/vk/Mlp.inc.cc
-		${PROJECT_SOURCE_DIR}/src/vk/Mlp.auto.def.cc
+		${PROJECT_SOURCE_DIR}/src/vk/MlpSHADER.inc.c
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/MlpSHADER.auto.h
 		)
 
 	ae2f_Macro_Lib_V(
@@ -163,6 +163,8 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".auto.h"
 		${PROJECT_SOURCE_DIR}/Config/VK-Ann.cmake.in inc
 		${AnnVK-inc} ${AnnVK-src}
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/Mlp.core.h
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/Slp.core.h
 		)
 
 	ae2f_itll(${ae2fVK__Ann__TENT} ae2f::Ann)

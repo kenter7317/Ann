@@ -1,12 +1,9 @@
 #ifndef mac_h
 #define mac_h
 
-#if !__ae2f_MACRO_GENERATED
-#define ae2f_MAC() void
-#endif
+#define ae2f_MAC()	void
+#define	CAST(t, x)	((t)(x))
 
-#include <ae2f/Float.h>
-#include <stddef.h>
 
 /** Quick Pattern */
 #if CL_Q

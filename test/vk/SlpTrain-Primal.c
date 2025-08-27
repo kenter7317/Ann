@@ -84,7 +84,6 @@ int main() {
 				, mk.m_union.m_alter.m_ptr
 				, &weight
 				, &bias
-				, vkqueue
 				);
 
 		assert(ae2f_errGlob_OK == e && "__ae2fVK_AnnSlpWBMap has failed.");
@@ -99,7 +98,6 @@ int main() {
 		__ae2fVK_AnnSlpWBUnMap_imp(
 				v_unmap
 				, mk.m_union.m_alter.m_ptr[0]
-				, i_vkqueue
 				);
 	}
 
@@ -118,7 +116,6 @@ int main() {
 				, mk.m_union.m_alter.m_ptr
 				, (&InputMapped)
 				, (&OutputMapped)
-				, vkqueue
 				);
 
 		puts("Before OutputMapped written");
@@ -136,14 +133,14 @@ int main() {
 		printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
 		printf("Outputmapped before predict: %f\n", OutputMapped[0]);
 
-		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0], vkqueue);
+		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0]);
 
-		__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped, vkqueue);
+		__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped);
 
 		GoalMapped[0] = 0.2222;
 		printf("Goal before predict %f\n", GoalMapped[0]);
 
-		__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr, vkqueue);
+		__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr);
 
 		puts("After __ae2fVK_AnnSlpIOUnMapOutput_imp.");
 		fgetc(stdin);
@@ -286,7 +283,6 @@ int main() {
 					, mk.m_union.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
-					, vkqueue
 					);
 
 			assert(OutputMapped);
@@ -298,7 +294,6 @@ int main() {
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
 					, *mk.m_union.m_alter.m_ptr
-					, vkqueue
 					);
 
 			for(i = 0; i < 1000; i++)  {
@@ -328,7 +323,6 @@ int main() {
 					, mk.m_union.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
-					, vkqueue
 					);
 
 			assert(OutputMapped);
@@ -340,14 +334,13 @@ int main() {
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
 					, *mk.m_union.m_alter.m_ptr
-					, vkqueue
 					);
 
-			__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped, vkqueue);
+			__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped);
 
 			printf("Goal after prediction: %f\n", GoalMapped[0]);
 
-			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr, vkqueue);
+			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr);
 		}
 
 
