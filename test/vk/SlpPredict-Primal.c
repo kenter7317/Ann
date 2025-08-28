@@ -150,6 +150,7 @@ int main() {
 		vkcmdpoolcreatinfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 		vkcmdpoolcreatinfo.pNext = NULL;
 		vkcmdpoolcreatinfo.queueFamilyIndex = 0;
+		vkcmdpoolcreatinfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 
 		if((((mk).m_union.m_alter.m_ptr->m_vkres) = vkCreateCommandPool(
 						vkdev

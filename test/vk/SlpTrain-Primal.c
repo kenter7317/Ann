@@ -209,7 +209,6 @@ int main() {
 
 	{
 		ae2fVK_AnnSlpGetCmd_t v_predict;
-		ae2f_float_t	inp[] = { 1, 2 };
 		ae2fVK_AnnSlpPredictCmd_t	v_cmd;
 		ae2f_err_t err = 0;
 
@@ -219,7 +218,7 @@ int main() {
 				v_predict
 				, v_cmd
 				, vkcmdbuf
-				, inp
+				, NULL /** useless */
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
 				, (mk.m_union.m_alter.m_ptr[0])
 				, err

@@ -25,7 +25,7 @@ ae2f_structdef(struct, ae2fVK_AnnMlp) {
 	VkPipeline		m_vkpipeline[ae2fVK_eAnnMlpPipes_LEN];
 };
 
-#define __ae2fVK_AnnMlpMapRanged_imp	__ae2fVK_AnnSlpMapRanged_imp
-#define __ae2fVK_AnnMlpUnMapRanged_imp	__ae2fVK_AnnSlpUnMapRanged_imp
+#define __ae2fVK_AnnMlpMapRangedGeneric_imp	__ae2fVK_AnnSlpMapRangedGeneric_imp
+#define __ae2fVK_AnnMlpUnMapRanged_imp		__ae2fVK_AnnSlpUnMapRanged_imp
 
 #endif

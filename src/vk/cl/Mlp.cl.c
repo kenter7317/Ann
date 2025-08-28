@@ -15,7 +15,7 @@
 #endif
 
 #ifndef LOSS_DERIV
-#define LOSS_DERIV(layer_idx, r, y, y_desired, i, c)
+#define LOSS_DERIV(r, y, y_desired, i, c)
 #endif
 
 #define pgsz		sz
@@ -29,11 +29,13 @@
 
 
 #define p_layerszlist	CAST(__global uint32_t*, glob)
-#define p_weight	CAST(__global ae2f_float_t*, p_layerszlist + lsz)
-#define p_bias		(p_weight + pgsz_sqr * (llsz))
-#define p_outstream	(p_bias + pgsz * (llsz))
+#define p_outstream	(CAST(__global ae2f_float_t*, p_layerszlist + lsz) + pgsz * (llsz))
 #define p_inp		p_outstream
-#define p_deltastream	(p_outstream + (lsz) * pgsz)
+#define p_weight	(p_outstream + (lsz * pgsz))
+#define p_bias		(p_weight + pgsz_sqr * (llsz))
+#define p_deltastream	(p_bias + (llsz) * pgsz)
+#define p_goal		(p_deltastream + llsz * pgsz)
+
 
 #define _r_inp(lidx)	(p_outstream + pgsz * (lidx))
 #define _r_out(lidx)	(p_outstream + pgsz * ((lidx) + 1))
@@ -69,11 +71,9 @@
 /** For every runners */
 #define ACT_RUN(r, x)			ACT(lidx, r, x)
 #define ACT_DERIV_RUN(r, x)		ACT_DERIV(lidx, r, x)
-#define LOSS_DERIV_RUN(r, x)		LOSS_DERIV(lidx, r, x)
 
 #define ACT_RUN_THEN(r, x)		ACT((lidx - 1), r, x)
 #define ACT_DERIV_RUN_THEN(r, x)	ACT_DERIV((lidx - 1), r, x)
-#define LOSS_DERIV_RUN_THEN(r, x)	LOSS_DERIV((lidx - 1), r, x)
 
 
 /**
@@ -270,7 +270,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, const l
 	}
 
 	size_t		lidx = 0;
-	ae2f_float_t	v_tmp;
+	ae2f_float_t	v_tmp, v_tmp1;
 
 	const size_t
 		oidx = get_global_id(0)
@@ -289,6 +289,21 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, const l
 
 	/** lidx == llsz - 1 */
 	_clSlpPredict(v_predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+
+	if(oidx < r_osz) {
+		__ae2f_AnnSlpFetchDeltaOne_imp(
+				v_tmp
+				, v_tmp1
+				, l_out()
+				, p_goal
+				, ACT_DERIV_RUN
+				, LOSS_DERIV 
+				, l_delta[oidx]
+				, oidx
+				, r_osz
+				);
+	}
+
 	barrier(CLK_ALL_MEM_FENCE);
 
 	++lidx;

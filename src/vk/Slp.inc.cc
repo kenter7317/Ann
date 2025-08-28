@@ -313,6 +313,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatDescPool(
 	(v_vkdescpoolcreatinfo).flags = (i_vkdescpoolcreatflags);
 	(v_vkdescpoolcreatinfo).poolSizeCount = 1;
 	(v_vkdescpoolcreatinfo).pPoolSizes = &(v_vkdescpoolsz);
+	(v_vkdescpoolcreatinfo).maxSets = 1; /** I actually forgot to initialise this? lol;; */
 
 	if(((r_vkres) = vkCreateDescriptorPool(
 					(i_vkdev)
@@ -839,6 +840,69 @@ ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 	} while(0);
 }
 
+#if !__ae2f_MACRO_GENERATED
+#define T int
+#endif
+
+ae2f_MAC(T,) _ae2fVK_AnnSlpMapRangedGeneric_imp(
+		VkMappedMemoryRange	v_vkmapmemrange,
+		ae2fVK_AnnSlp		iv_slp,
+
+		ae2f_err_t		r_err,
+		T*			r_ptr,
+
+		const VkDeviceSize	i_off,
+		const VkDeviceSize	i_sz
+		)
+{
+	assert((iv_slp).m_vkres == VK_SUCCESS);
+	assert((iv_slp).m_vkdev);
+	assert((iv_slp).m_vkglobdevmem);
+	assert((r_err) == ae2f_errGlob_OK && "Previous status is bad.");
+
+	do {
+		if(((iv_slp).m_vkres = vkMapMemory(
+						(iv_slp).m_vkdev
+						, (iv_slp).m_vkglobdevmem
+						, (v_vkmapmemrange).offset = (i_off)
+						,  (v_vkmapmemrange).size = (i_sz)
+						,0
+						, ae2f_reinterpret_cast(void**, &(r_ptr))
+						)
+					) != VK_SUCCESS)
+		{
+			assert(!"vkMapMemory has failed.");
+			break;
+		}
+
+		unless((r_ptr)) {
+			assert(!"vkMapMemory went null.");
+			(r_err) |= ae2f_errGlob_ALLOC_FAILED;
+			break;
+		}
+
+		(v_vkmapmemrange).memory = (iv_slp).m_vkglobdevmem;
+		(v_vkmapmemrange).pNext = NULL;
+		(v_vkmapmemrange).sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+
+		if (((iv_slp).m_vkres = vkInvalidateMappedMemoryRanges(
+						(iv_slp).m_vkdev
+						, 1
+						, &(v_vkmapmemrange)
+						)) != VK_SUCCESS)
+		{
+			assert(!"vkInvalidateMappedMemoryRanges has failed.");
+			break;
+		}
+	} while(0);
+
+	unless((iv_slp).m_vkres == VK_SUCCESS) {
+		(r_err) |= ae2f_errGlob_NFOUND;
+	}
+}
+
+#undef T
+
 ae2f_MAC() _ae2fVK_AnnSlpMapRanged_imp(
 		ae2fVK_AnnSlpMap_t		v_map,
 		ae2f_err_t			r_err,
@@ -847,47 +911,15 @@ ae2f_MAC() _ae2fVK_AnnSlpMapRanged_imp(
 		const VkDeviceSize		i_sz
 		)
 {
-	assert((slp).m_vkres == VK_SUCCESS);
-	assert((slp).m_vkdev);
-	assert((slp).m_vkglobdevmem);
-	assert(r_err == ae2f_errGlob_OK && "Previous status is bad.");
-
-	do {
-		if (((slp).m_vkres = vkMapMemory(
-						(slp).m_vkdev
-						, (slp).m_vkglobdevmem
-						, i_off
-						, i_sz
-						, 0
-						, &(v_map).m_map.m_v
-						)) != VK_SUCCESS)
-		{
-			assert(!"vkMapMemory has failed.");
-			break;
-		}
-
-		unless((v_map).m_map.m_v) {
-			assert(!"vkMapMemory went null.");
-			(r_err) |= ae2f_errGlob_ALLOC_FAILED;
-			break;
-		}
-
-		(v_map).m_vkmmemr.memory = (slp).m_vkglobdevmem;
-		(v_map).m_vkmmemr.offset = (i_off);
-		(v_map).m_vkmmemr.pNext = NULL;
-		(v_map).m_vkmmemr.size = (i_sz);
-		(v_map).m_vkmmemr.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-
-		if (((slp).m_vkres = vkInvalidateMappedMemoryRanges(
-						(slp).m_vkdev
-						, 1
-						, &(v_map).m_vkmmemr
-						)) != VK_SUCCESS)
-		{
-			assert(!"vkInvalidateMappedMemoryRanges has failed.");
-			break;
-		}
-	} while(0);
+	__ae2fVK_AnnSlpMapRangedGeneric_imp(
+			ae2f_float_t
+			, (v_map).m_vkmmemr
+			, slp
+			, r_err
+			, (v_map).m_map.m_f
+			, i_off
+			, i_sz
+			);
 }
 
 ae2f_MAC() _ae2fVK_AnnSlpUnMap_imp(const ae2fVK_AnnSlp slp) {
@@ -928,6 +960,7 @@ ae2f_MAC() _ae2fVK_AnnSlpUnMapRanged_imp(
 
 #if !__ae2f_MACRO_GENERATED
 #define COMMANDONRECORDING
+#include <stdio.h>
 #endif
 
 /**
@@ -977,6 +1010,10 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 
 	(v_getcmd).m_u0.m_vkdescsetallocinfo.pNext = NULL;
 
+	assert((iv_slp).m_vkdev);
+	assert((v_getcmd).m_u0.m_vkdescsetallocinfo.pSetLayouts);
+	assert((v_getcmd).m_u0.m_vkdescsetallocinfo.pSetLayouts[i_desclayout]);
+	assert((v_getcmd).m_u0.m_vkdescsetallocinfo.descriptorPool);
 
 	do {
 		if (((iv_slp).m_vkres = vkAllocateDescriptorSets(
@@ -985,6 +1022,9 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 						, &(r_cmd).m_lpvkdescset
 						)) != VK_SUCCESS)
 		{
+			printf("vkres: %d\n", (iv_slp).m_vkres);
+			printf("HELKJDFSLKJSDF\n");
+			assert((r_cmd).m_lpvkdescset);
 			assert(!"vkAllocateDescriptorSets has failed.");
 			break;
 		}
@@ -1091,6 +1131,8 @@ ae2f_MAC(COMMANDONRECORDING, ) _ae2fVK_AnnSlpGetCmd_imp(
 	if(((iv_slp).m_vkres != VK_SUCCESS))
 		(iv_err) |= ae2f_errGlob_NFOUND;
 }
+
+#undef COMMANDONRECORDING
 
 ae2f_MAC() _ae2fVK_AnnSlpClean_imp(
 		const ae2fVK_AnnSlp	block

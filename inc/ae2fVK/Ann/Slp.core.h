@@ -169,8 +169,7 @@ ae2f_structdef(struct, ae2fVK_AnnSlpMap_t) {
 	VkMappedMemoryRange		m_vkmmemr;
 };
 
-typedef VkMappedMemoryRange	
-ae2fVK_AnnSlpUnMap_t;
+typedef VkMappedMemoryRange	ae2fVK_AnnSlpUnMap_t, ae2fVK_AnnSlpMapRangedGeneric_t;
 
 #include <ae2f/Pack/End.h>
 

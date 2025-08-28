@@ -5,13 +5,12 @@
 #endif
 
 #include <ae2fVK/Ann/Mlp.h>
-#include <ae2fVK/Ann/Mlp.core.h>
+#include <ae2fVK/Ann/Mlp.auto.h>
 #include <ae2fVK/Ann/MlpSHADER.auto.h>
 #include <ae2fVK/Ann/Slp.auto.h>
 
 #if !__ae2f_MACRO_GENERATED
 #include <ae2f/Macro.h>
-#include <ae2fVK/Ann/Mlp.auto.h>
 #endif
 
 #if !__ae2f_MACRO_GENERATED || !ae2f_MAC_BUILD
@@ -132,6 +131,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 						((v_mk).m_U0.m_mk.m_mkbase->m_depth - 1) *
 						((v_mk).m_U0.m_mk.m_mkbase->m_outc + 2)
 						+ (v_mk).m_U0.m_mk.m_mkbase->m_depth
+						+ 1
 						))
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkres
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkglobbuf
@@ -152,10 +152,13 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 
 		{
 			(v_mk).m_U2.m_i = (v_mk).m_U0.m_mk.m_mkbase->m_depth * sizeof(uint32_t);
-			__ae2fVK_AnnMlpMapRanged_imp(
-					(v_mk).m_U1.m_map /* v_map */
+
+			__ae2fVK_AnnMlpMapRangedGeneric_imp(
+					void
+					, (v_mk).m_U1.m_map.m_vkmmemr
+					, (*(v_mk).m_U0.m_mkswap.m_mkbase)
 					, (v_mk).m_ret.m_err
-					, *(v_mk).m_U0.m_mkswap.m_mkbase
+					, (v_mk).m_U1.m_map.m_map.m_v
 					, 0
 					, (v_mk).m_U2.m_i
 					);
@@ -495,6 +498,10 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				, 2
 				);
 
+		assert((v_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool[ae2fVK_eAnnMlpDescPools_ONLY]);
+		assert((v_mk).m_ret.m_err == ae2f_errGlob_OK);
+		assert((v_mk).m_U0.m_mkswap.m_mkbase->m_vkres == VK_SUCCESS);
+
 		if((v_mk).m_ret.m_err) {
 			assert(!"__ae2fVK_AnnSlpMkCreatDescPool has failed.");
 			break;
@@ -598,5 +605,282 @@ ae2f_MAC() _ae2fVK_AnnMlpClean_imp(ae2fVK_AnnMlp v_mlp) {
 			, (v_mlp).m_vkalloccalls
 			);
 }
+
+ae2f_MAC() _ae2fVK_AnnMlpMapGoal_imp(
+		ae2fVK_AnnMlpMapRangedGeneric_t	v_map,
+		ae2fVK_AnnMlp			iv_mlp,
+		ae2f_err_t			r_err,
+		ae2f_float_t*			r_ptr
+		)
+{
+	__ae2fVK_AnnSlpMapRangedGeneric_imp(
+			ae2f_float_t
+			, v_map
+			, iv_mlp
+			, r_err
+			, r_ptr
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpUnMapGoal_imp(
+		ae2fVK_AnnMlpUnMap_t	v_unmap,
+		ae2fVK_AnnMlp		iv_mlp
+		)
+{
+	__ae2fVK_AnnSlpUnMapRanged_imp(
+			v_unmap
+			, iv_mlp
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpMapOutStream_imp(
+		ae2fVK_AnnMlpMapRangedGeneric_t	v_map,
+		ae2fVK_AnnMlp			iv_mlp,
+		ae2f_err_t			r_err,
+		ae2f_float_t*			r_ptr
+		)
+{
+	__ae2fVK_AnnSlpMapRangedGeneric_imp(
+			ae2f_float_t
+			, v_map
+			, iv_mlp
+			, r_err
+			, r_ptr
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpUnMapOutStream_imp(
+		ae2fVK_AnnMlpUnMap_t	v_unmap,
+		ae2fVK_AnnMlp		iv_mlp
+		) 
+{
+	__ae2fVK_AnnSlpUnMapRanged_imp(
+			v_unmap
+			, iv_mlp
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpMapWB_imp(
+		ae2fVK_AnnMlpMapRangedGeneric_t	v_map,
+		ae2fVK_AnnMlp			iv_mlp,
+		ae2f_err_t			r_err,
+		ae2f_float_t*			r_ptrweight,
+		ae2f_float_t*			r_ptrbias
+		)
+{
+	__ae2fVK_AnnSlpMapRangedGeneric_imp(
+			ae2f_float_t
+			, v_map
+			, iv_mlp
+			, r_err
+			, r_ptrweight
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
+			);
+	do {
+		if(r_err) {
+			assert(!"__ae2fVK_AnnSlpMapRangedGeneric_imp has failed.");
+			break;
+		}
+
+		unless(r_ptrweight) {
+			assert(!"__ae2fVK_AnnSlpMapRangedGeneric_imp went null.");
+			break;
+		}
+
+		r_ptrbias = 
+			(r_ptrweight) + 
+			((iv_mlp).m_mlp.m_depth - 1) * 
+			(iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_outc;
+
+	} while(0);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpUnMapWB_imp(
+		ae2fVK_AnnMlpUnMap_t	v_unmap,
+		ae2fVK_AnnMlp		iv_mlp
+		) 
+{
+	__ae2fVK_AnnSlpUnMapRanged_imp(
+			v_unmap
+			, iv_mlp
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpPredictPerformed_imp(
+		ae2fVK_AnnSlpGetCmd_t			v_predict,
+
+		ae2fVK_AnnSlpCmd_t			r_cmd,
+
+		const VkCommandBuffer			i_vkcmdbuf,
+		const ae2f_float_t*			i_inp,
+		const VkCommandBufferUsageFlagBits	i_vkcmdbufuseflags,
+
+		ae2fVK_AnnMlp				iv_mlp,
+		ae2f_err_t				iv_err
+		) 
+{
+	__ae2fVK_AnnSlpGetCmd_imp(
+			ae2f_CastMerge(
+				{
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, 0
+						, sizeof(uint32_t)
+						, &(iv_mlp).m_mlp.m_depth
+						);
+
+				vkCmdDispatch(
+						i_vkcmdbuf
+						, (iv_mlp).m_mlp.m_outc
+						, (iv_mlp).m_mlp.m_outc
+						, 1
+					     );
+				}
+				)
+			, v_predict
+			, r_cmd
+			, i_vkcmdbuf
+			, i_inp
+			, i_vkcmdbufuseflags
+			, iv_mlp
+			, iv_err
+
+			, 1
+
+			, 0, 0
+			+ sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+			+ sizeof(ae2f_float_t) * ((iv_mlp).m_mlp.m_outc) * ((iv_mlp).m_mlp.m_depth * 2 + 1)
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+
+			, 0, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * 2
+
+			, ae2fVK_eAnnMlpDescPools_ONLY /** i_descpool */
+			, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
+			, ae2fVK_eAnnMlpPipes_kPredict /** i_pipe */
+			, ae2fVK_eAnnMlpPipeLayouts_kPredict /** i_pipelayout */
+			);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpPerformedFree_imp(
+		ae2fVK_AnnMlp		iv_mlp,
+		ae2fVK_AnnSlpCmd_t	iv_cmd
+		)
+{
+	if(((iv_mlp).m_vkres = vkFreeDescriptorSets(
+					(iv_mlp).m_vkdev
+					, (iv_mlp).m_vkdescpool[ae2fVK_eAnnMlpDescPools_ONLY]
+					, 1
+					, &(iv_cmd).m_lpvkdescset
+					)) != VK_SUCCESS)
+		assert(!"vkFreeDescriptorSets has failed.");
+
+	assert((iv_mlp).m_vkres == VK_SUCCESS);
+}
+
+ae2f_MAC() _ae2fVK_AnnMlpTrainPerformed_imp(
+		ae2fVK_AnnSlpGetCmd_t			v_getcmd,
+
+		ae2fVK_AnnSlpCmd_t			r_cmd,
+
+		const VkCommandBuffer			i_vkcmdbuf,
+		const ae2f_float_t*			i_inp,
+		const VkCommandBufferUsageFlagBits	i_vkcmdbufuseflags,
+
+		ae2fVK_AnnMlp				iv_mlp,
+		ae2f_err_t				iv_err
+		) 
+{
+
+	__ae2fVK_AnnSlpGetCmd_imp(
+			ae2f_CastMerge(
+				{
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, 0
+						, sizeof(uint32_t)
+						, &(iv_mlp).m_mlp.m_depth
+						);
+
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, sizeof(uint32_t)
+						, sizeof(ae2f_float_t)
+						, &(iv_mlp).m_mlp.m_learningrate
+						);
+
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, sizeof(uint32_t) + sizeof(ae2f_float_t)
+						, sizeof(ae2f_float_t)
+						, &(iv_mlp).m_mlp.m_learningrate_bias
+						);
+
+				vkCmdDispatch(
+						i_vkcmdbuf
+						, (iv_mlp).m_mlp.m_outc
+						, (iv_mlp).m_mlp.m_outc
+						, 1
+					     );
+				}
+	)
+		, v_getcmd
+		, r_cmd
+		, i_vkcmdbuf
+		, i_inp
+		, i_vkcmdbufuseflags
+		, iv_mlp
+		, iv_err
+
+		, 2
+
+		, 0
+		, (sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth)
+		+ (sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (
+					((iv_mlp).m_mlp.m_depth - 1) *
+					((iv_mlp).m_mlp.m_outc + 2)
+					+ (iv_mlp).m_mlp.m_depth
+					+ 1
+					))
+
+		, 0, ((
+					(iv_mlp).m_mlp.m_outc * 
+					((iv_mlp).m_mlp.m_depth + 2)
+		      ) * sizeof(ae2f_float_t))
+
+
+		, ae2fVK_eAnnMlpDescPools_ONLY /** i_descpool */
+		, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
+		, ae2fVK_eAnnMlpPipes_kTrainAuto /** i_pipe */
+		, ae2fVK_eAnnMlpPipeLayouts_kTrain /** i_pipelayout */
+		);
+}
+
+#define __ae2fVK_AnnMlpPredictPerformedFree_imp	__ae2fVK_AnnMlpPerformedFree_imp
+#define __ae2fVK_AnnMlpTrainPerformedFree_imp	__ae2fVK_AnnMlpPerformedFree_imp
 
 #endif
