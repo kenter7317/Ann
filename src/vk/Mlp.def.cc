@@ -123,16 +123,12 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 		(v_mk).m_U0.m_mkswap.m_mkbase->m_vkdev = (i_vkdev);
 		(v_mk).m_U0.m_mkswap.m_mkbase->m_vkalloccalls = (iv_vkalloccalls);
 
+		assert((v_mk).m_U0.m_mk.m_outc == (v_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc);
+
 		/** Global memory allocation */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break
-				, (sizeof(uint32_t) * (v_mk).m_U0.m_mk.m_mkbase->m_depth)
-				+ (sizeof(ae2f_float_t) * (v_mk).m_U0.m_mk.m_mkbase->m_outc * (
-						((v_mk).m_U0.m_mk.m_mkbase->m_depth - 1) *
-						((v_mk).m_U0.m_mk.m_mkbase->m_outc + 2)
-						+ (v_mk).m_U0.m_mk.m_mkbase->m_depth
-						+ 1
-						))
+				, __ae2fVK_AnnMlpGlobMemSz(i_len_count, (v_mk).m_U0.m_mk.m_outc)
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkres
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkglobbuf
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkglobdevmem /** r_vkdevmem */
@@ -151,7 +147,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				);
 
 		{
-			(v_mk).m_U2.m_i = (v_mk).m_U0.m_mk.m_mkbase->m_depth * sizeof(uint32_t);
+			(v_mk).m_U2.m_i = (i_len_count) * sizeof(uint32_t);
 
 			__ae2fVK_AnnMlpMapRangedGeneric_imp(
 					void
@@ -168,7 +164,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				__ae2fVK_AnnMlpUnMapRanged_imp(
 						(v_mk).m_U1.m_unmap
 						, *(v_mk).m_U0.m_mkswap.m_mkbase
-						, 0, ((v_mk).m_U0.m_mk.m_mkbase->m_depth * sizeof(uint32_t))
+						, 0, ((i_len_count) * sizeof(uint32_t))
 						);
 				break;
 			}
@@ -178,6 +174,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				(v_mk).m_ret.m_err |= ae2f_errGlob_ALLOC_FAILED;
 			}
 
+			(v_mk).m_U2.m_i = (i_len_count);
 			while((v_mk).m_U2.m_i--) {
 				ae2f_reinterpret_cast(uint32_t*, (v_mk).m_U1.m_map.m_map.m_v)[(v_mk).m_U2.m_i]
 					= (i_len)[(v_mk).m_U2.m_i];
@@ -186,7 +183,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 			__ae2fVK_AnnMlpUnMapRanged_imp(
 					(v_mk).m_U1.m_unmap
 					, *(v_mk).m_U0.m_mkswap.m_mkbase
-					, 0, ((v_mk).m_U0.m_mk.m_mkbase->m_depth * sizeof(uint32_t))
+					, 0, ((i_len_count) * sizeof(uint32_t))
 					);
 		}
 
@@ -584,12 +581,12 @@ ae2f_MAC() _ae2fVK_AnnMlpClean_imp(ae2fVK_AnnMlp v_mlp) {
 			(v_mlp).m_vkdev
 			, (v_mlp).m_vkglobdevmem
 			, (v_mlp).m_vkalloccalls
-			);
+		    );
 	vkFreeMemory(
 			(v_mlp).m_vkdev
 			, (v_mlp).m_vklocdevmem
 			, (v_mlp).m_vkalloccalls
-			);
+		    );
 
 	vkDestroyPipelineLayout(
 			(v_mlp).m_vkdev
@@ -619,10 +616,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMapGoal_imp(
 			, iv_mlp
 			, r_err
 			, r_ptr
-			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
-			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc
+			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
+			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc) 
 			);
 }
 
@@ -634,10 +629,8 @@ ae2f_MAC() _ae2fVK_AnnMlpUnMapGoal_imp(
 	__ae2fVK_AnnSlpUnMapRanged_imp(
 			v_unmap
 			, iv_mlp
-			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
-			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc
+			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
+			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc) 
 			);
 }
 
@@ -654,8 +647,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMapOutStream_imp(
 			, iv_mlp
 			, r_err
 			, r_ptr
-			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			, __ae2fVK_AnnMlpOutStreamOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
+			, __ae2fVK_AnnMlpOutStreamSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
 			);
 }
 
@@ -686,8 +679,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMapWB_imp(
 			, iv_mlp
 			, r_err
 			, r_ptrweight
-			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+			, sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth /** size vector */
+			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth /** ostream */
 			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
 			);
 	do {
@@ -859,19 +852,9 @@ ae2f_MAC() _ae2fVK_AnnMlpTrainPerformed_imp(
 		, 2
 
 		, 0
-		, (sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth)
-		+ (sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (
-					((iv_mlp).m_mlp.m_depth - 1) *
-					((iv_mlp).m_mlp.m_outc + 2)
-					+ (iv_mlp).m_mlp.m_depth
-					+ 1
-					))
+		, __ae2fVK_AnnMlpGlobMemSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
 
-		, 0, ((
-					(iv_mlp).m_mlp.m_outc * 
-					((iv_mlp).m_mlp.m_depth + 2)
-		      ) * sizeof(ae2f_float_t))
-
+		, 0, (((iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_depth + 2)) * sizeof(ae2f_float_t))
 
 		, ae2fVK_eAnnMlpDescPools_ONLY /** i_descpool */
 		, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */

@@ -120,4 +120,46 @@ typedef VkMappedMemoryRange	ae2fVK_AnnMlpUnMap_t, ae2fVK_AnnMlpMapRangedGeneric_
 
 #include <ae2f/Pack/End.h>
 
+#define __ae2fVK_AnnMlpMapRangedGeneric_imp	__ae2fVK_AnnSlpMapRangedGeneric_imp
+#define __ae2fVK_AnnMlpUnMapRanged_imp		__ae2fVK_AnnSlpUnMapRanged_imp
+
+
+#define __ae2fVK_AnnMlpMdlSz(i_depth, ...) \
+	((sizeof(uint32_t) * (i_depth)))
+
+#define __ae2fVK_AnnMlpMdlOff(...) 0
+
+#define __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc) \
+	((sizeof(ae2f_float_t)) * (i_depth) * (i_outc)) /** outstream */ 
+
+#define __ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpMdlOff(i_depth, i_outc) + __ae2fVK_AnnMlpMdlSz(i_depth, i_outc))
+
+#define __ae2fVK_AnnMlpWeightSz(i_depth, i_outc) \
+	((sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc) * (i_outc)) /** weight */
+
+#define __ae2fVK_AnnMlpWeightOff(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc) + __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc))
+
+#define __ae2fVK_AnnMlpBiasSz(i_depth, i_outc) \
+	(sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc) /** bias */
+
+#define __ae2fVK_AnnMlpBiasOff(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpWeightOff(i_depth, i_outc) + __ae2fVK_AnnMlpWeightSz(i_depth, i_outc))
+
+#define __ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc) \
+	(((sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc))) /** deltastream */
+
+#define __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpBiasSz(i_depth, i_outc) + __ae2fVK_AnnMlpBiasOff(i_depth, i_outc))
+
+#define __ae2fVK_AnnMlpGoalSz(i_depth, i_outc) \
+	(sizeof(ae2f_float_t)) * (i_outc) /** goal */
+
+#define __ae2fVK_AnnMlpGoalOff(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc) + __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc))
+
+#define __ae2fVK_AnnMlpGlobMemSz(i_depth, i_outc) \
+	(__ae2fVK_AnnMlpGoalOff(i_depth, i_outc) + __ae2fVK_AnnMlpGoalSz(i_depth, i_outc))
+
 #endif

@@ -20,20 +20,26 @@ static size_t	s_lpModelLen[] = {2, 4, 4, 1};
 int main() {
 	Test_VkInit();
 
-	// __ae2fVK_AnnMlpMk_imp(v_mk, iv_weight_opt, iv_bias_opt, iv_outstream_opt, iv_deltastream_opt, i_len_count, i_len, i_len_swap, i_prm_offset, i_extra, i_act, i_actderiv, i_lossderiv, i_learningrate, i_learningrate_bias, i_vkdev, i_vkmemprops, iv_vkalloccalls, i_vkcldeclaration, i_vkcldefinition)
 	__ae2fVK_AnnMlpMk_imp(
 			s_mk
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
-			, 4, s_lpModelLen, NULL_GENERIC(size_t)
+			, sizeof(s_lpModelLen) / sizeof(s_lpModelLen[0])
+			, s_lpModelLen
+			, NULL_GENERIC(size_t)
 			, 0, 0
 			, NULL_GENERIC(ae2f_AnnAct_t*), NULL_GENERIC(ae2f_AnnAct_t*)
 			, LossDummy
-			, 0.2, 0.2, vkdev, vkphydevmemprops 
+			, 0.1, 0.1, vkdev, vkphydevmemprops 
 			, NULL_GENERIC(VkAllocationCallbacks)
-			, "", ""
+			, ""
+			"#define CL_Q 1\n"
+			"#define ACT_DERIV(lidx, r, output) { *(r) = (((output) + 1e-7) * (1.0 - (output) - 1e-7)); } \n"
+			"#define ACT(lidx, r, x) { *(r) = (1.0 / (1.0 + exp(-(x)))); } \n"
+			"#define LOSS_DERIV(r, o, t, i, c) { *(r) = ((o)[i] - (t)[i]) / (c); } \n"
+			, "\n"
 			);
 
 	{
@@ -52,10 +58,10 @@ int main() {
 
 		while(i--) {
 			size_t j = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc;
+			const size_t k1 = j;
 			while(j--) {
-				const size_t k1 = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc;
 				size_t k = k1;
-				s_ptr1[k1 * i + j] = 0.5;
+				s_ptr1[k1 * i + j] = 0.2;
 				while(k--) {
 					s_ptr0[k1 * k1 * i + k1 * k + j] = 0.5;
 				}
@@ -77,7 +83,7 @@ int main() {
 				);
 
 		assert(s_ptr0);
-		s_ptr0[0] = 0.2862;
+		s_ptr0[0] = 0.2;
 		printf("Goal has set: %f\n", s_ptr0[0]);
 
 		__ae2fVK_AnnMlpUnMapGoal_imp(
@@ -94,8 +100,15 @@ int main() {
 				, s_ptr0
 				);
 
-		s_ptr0[0] = 13;
-		s_ptr0[1] = 11;
+		s_ptr0[0] = 12;
+		s_ptr0[1] = 13;
+
+		const size_t
+			a_depth = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_depth
+			, a_outc = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc;
+
+
+		printf("OUT INIT FOR TEST: %f\n", (s_ptr0[(a_depth - 1) * a_outc] = 4));
 
 		__ae2fVK_AnnMlpUnMapOutStream_imp(s_mapranged, *(s_mk).m_U0.m_mkswap.m_mkbase);
 	}
@@ -161,9 +174,6 @@ int main() {
 		assert((s_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool[0]);
 		assert(vkdev);
 
-
-		(vkResetDescriptorPool((vkdev), s_mk.m_U0.m_mkswap.m_mkbase->m_vkdescpool[0], 0));
-
 		__ae2fVK_AnnMlpTrainPerformed_imp(
 				s_getcmd
 				, cmd
@@ -181,7 +191,43 @@ int main() {
 		};
 		size_t i;
 
-		for(i = 0; i < 1000; i++)  {
+		if (vkQueueSubmit(
+					vkqueue
+					, 1
+					, &submit_info
+					, VK_NULL_HANDLE
+				 ) != VK_SUCCESS)
+		{
+			assert(!"vkQueueSubmit failed");
+			return -1;
+		}
+
+		if (vkQueueWaitIdle(vkqueue) != VK_SUCCESS) {
+			assert(!"vkQueueWaitIdle failed");
+			return -1;
+		}
+
+		{
+			__ae2fVK_AnnMlpMapOutStream_imp(
+					s_mapranged
+					, *(s_mk).m_U0.m_mkswap.m_mkbase
+					, s_mk.m_ret.m_err
+					, s_ptr0
+					);
+
+			const size_t
+				a_depth = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_depth
+				, a_outc = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc;
+
+			printf("OUT: %f\n", s_ptr0[(a_depth - 1) * (a_outc)]);
+			printf("IN: %f %f\n", s_ptr0[0], s_ptr0[1]);
+
+
+			__ae2fVK_AnnMlpUnMapOutStream_imp(s_mapranged, *(s_mk).m_U0.m_mkswap.m_mkbase);
+		}
+
+
+		for(i = 0; i < 10000; i++)  {
 			if (vkQueueSubmit(
 						vkqueue
 						, 1
@@ -205,7 +251,6 @@ int main() {
 				);
 	}
 
-
 	{
 		__ae2fVK_AnnMlpMapOutStream_imp(
 				s_mapranged
@@ -218,7 +263,7 @@ int main() {
 			a_depth = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_depth
 			, a_outc = (s_mk).m_U0.m_mkswap.m_mkbase->m_mlp.m_outc;
 
-		printf("OUT: %f\n", s_ptr0[(a_depth) * a_outc]);
+		printf("OUT: %f\n", s_ptr0[(a_depth - 1) * (a_outc)]);
 		printf("IN: %f %f\n", s_ptr0[0], s_ptr0[1]);
 
 

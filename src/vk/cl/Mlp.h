@@ -38,7 +38,7 @@ ae2f_MAC() clMlpRvrse(
 		const ae2f_float_t* const	i_deltaseed
 		)
 {
-	if((i_iidx) < (i_isz) && (i_oidx) == 0) {
+	if((i_iidx) < (i_isz) && !(i_oidx)) {
 		i_actderiv_then(&(v_tmp), (i_inp)[i_iidx]);
 		(r_delta_then)[i_iidx] = (v_tmp) * (i_deltaseed)[i_iidx];
 	}
@@ -56,11 +56,12 @@ ae2f_MAC() clMlpGetHD1_Q(
 		const size_t			i_osz
 		)
 {
-	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz))
+	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz)) {
 		(r_delta_then)[(i_iidx)]
 			= work_group_reduce_add(
 					(i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx]
 					);
+	}
 }
 
 ae2f_MAC() clMlpGetHD1(
@@ -85,6 +86,8 @@ ae2f_MAC() clMlpGetHD1(
 
 		(r_delta_then)[(i_iidx)] = (v_ret);
 	}
+
+	barrier(CLK_ALL_MEM_FENCE);
 }
 
 ae2f_MAC() clMlpGetHD(
@@ -100,8 +103,9 @@ ae2f_MAC() clMlpGetHD(
 		const size_t			i_osz
 		)
 {
-	if((i_iidx) < (i_isz) && (i_oidx) < (i_osz))
+	if((i_iidx) < (i_isz) && (i_oidx) < (i_osz)) {
 		ONE(r_delta_then, i_weight, i_delta, i_iidx, i_isz, i_oidx, i_osz);
+	}
 }
 
 /** @brief GetHidDelta Need no structure. */
