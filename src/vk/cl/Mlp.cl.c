@@ -137,23 +137,39 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 	clSlpPredict(v_predict, r_out, l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
-const ae2f_structdef(struct, lrlsz_t)
-{
-	uint32_t	m_lsz;
-	ae2f_float_t	m_weight;
-	ae2f_float_t	m_bias;
+#pragma pack(push, 1)
+
+ae2f_structdef(union, lrlszel_t) {
+	ae2f_float_t	m_f;
+	uint32_t	m_u;
 };
 
-typedef char STATIC_ASSERT_lrlsz_size_check[sizeof(uint32_t) + sizeof(ae2f_float_t) * 2 == sizeof(lrlsz_t) ? 1 : -1];
+const ae2f_structdef(struct, lrlsz_t)
+{
+	lrlszel_t m_lsz, m_weight, m_bias;
+};
+
+typedef char STATIC_ASSERT_LRLSZEL_SZ[
+	sizeof(lrlszel_t) == (sizeof(uint32_t) > sizeof(ae2f_float_t) ? sizeof(uint32_t) : sizeof(ae2f_float_t))
+	? 1 : -1
+];
+
+typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) == sizeof(lrlszel_t) * 3 ? 1 : -1];
+
+#pragma pack(pop)
 
 /**
  * @brief loc
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, const lrlsz_t lr) {
+__kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
 #undef	lsz
-#define lsz	lr.m_lsz
+#undef	m_weight
+#undef	m_bias
+#define lsz		lr.m_lsz.m_u
+#define m_weight	m_weight.m_f
+#define m_bias		m_bias.m_f
 	if(lsz < 3) {
 		/** ASSERT */
 		return;
@@ -264,8 +280,6 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, const lrls
 					);
 		}
 	}
-
-#undef lsz
 }
 
 /**
@@ -273,8 +287,14 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, const lrls
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, const lrlsz_t lr) {
-#define lsz	lr.m_lsz
+__kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
+
+#undef	lsz
+#undef	m_weight
+#undef	m_bias
+#define lsz		lr.m_lsz.m_u
+#define m_weight	m_weight.m_f
+#define m_bias		m_bias.m_f
 	if(lsz < 3) {
 		/** ASSERT */
 		return;

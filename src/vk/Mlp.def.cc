@@ -819,7 +819,7 @@ ae2f_MAC() _ae2fVK_AnnMlpTrainPerformed_imp(
 						i_vkcmdbuf
 						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
 						, VK_SHADER_STAGE_COMPUTE_BIT
-						, sizeof(uint32_t)
+						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t))
 						, sizeof(ae2f_float_t)
 						, &(iv_mlp).m_mlp.m_learningrate
 						);
@@ -828,7 +828,7 @@ ae2f_MAC() _ae2fVK_AnnMlpTrainPerformed_imp(
 						i_vkcmdbuf
 						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
 						, VK_SHADER_STAGE_COMPUTE_BIT
-						, sizeof(uint32_t) + sizeof(ae2f_float_t)
+						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 2
 						, sizeof(ae2f_float_t)
 						, &(iv_mlp).m_mlp.m_learningrate_bias
 						);
