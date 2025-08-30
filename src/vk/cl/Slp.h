@@ -8,7 +8,7 @@
 #include <ae2f/Ann/Slp.auto.h>
 #include "mac.h"
 
-typedef ae2f_AnnSlpPredict_t _clSlpPredict_t;
+typedef ae2f_AnnSlpPredictOne_t _clSlpPredict_t;
 
 ae2f_MAC() clSlpPredict(
 		_clSlpPredict_t	v_predict,
@@ -25,17 +25,16 @@ ae2f_MAC() clSlpPredict(
 		)
 {
 	if((iidx) == 0 && (oidx) < (osz)) {
-		__ae2f_AnnSlpPredictOne_imp(
-				(v_predict)
-				, (p_inp)					/** prm_in */
-				, (p_weight)				/** weight */
-				, (p_bias)[oidx]				/** Bias */
-				, ACT
-				, (oidx)
-				, (isz)
-				);
+		_clSlpPredict_t	_v_predict;
+		(_v_predict).m_tmp = 0;
+		for((_v_predict).m_j = (isz); (_v_predict).m_j--;) {
+			(_v_predict).m_tmp 
+				+= p_inp[(_v_predict).m_j] * p_weight[(_v_predict).m_j + (isz) * (oidx)];
+		}
 
-		(loc)[oidx] = (v_predict).m_ret;
+		(_v_predict).m_tmp += (p_bias)[oidx];
+		ACT(&(_v_predict).m_ret, (_v_predict).m_tmp);
+		(loc)[oidx] = (_v_predict).m_ret;
 	}
 }
 

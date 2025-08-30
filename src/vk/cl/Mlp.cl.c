@@ -154,7 +154,7 @@ typedef char STATIC_ASSERT_LRLSZEL_SZ[
 	? 1 : -1
 ];
 
-typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) == sizeof(lrlszel_t) * 3 ? 1 : -1];
+typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 3 ? 1 : -1];
 
 #pragma pack(pop)
 
@@ -317,12 +317,12 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 
 	for(; lidx < llsz - 1; lidx++) {
 		clSlpPredict(v_predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-		barrier(CLK_LOCAL_MEM_FENCE);
+		barrier(CLK_ALL_MEM_FENCE);
 	}
 
 	/** lidx == llsz - 1 */
 	clSlpPredict(v_predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-	barrier(CLK_LOCAL_MEM_FENCE);
+	barrier(CLK_ALL_MEM_FENCE);
 
 	if(oidx < r_osz && iidx == 0) {
 		r_out[oidx] = l_out()[oidx];

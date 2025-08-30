@@ -86,8 +86,6 @@ ae2f_MAC() clMlpGetHD1(
 
 		(r_delta_then)[(i_iidx)] = (v_ret);
 	}
-
-	barrier(CLK_ALL_MEM_FENCE);
 }
 
 ae2f_MAC() clMlpGetHD(

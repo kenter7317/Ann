@@ -15,12 +15,8 @@
 #define CMDONERR
 #endif
 
-#if __ae2f_MACRO_GENERATED
+#include <ae2fVK/Ann/SlpSHADER.auto.h>
 
-#define ae2fVK_AnnSlpSHADER \
-#include "./cl/Slp.auto.cl.impl"
-
-#endif
 
 ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkFndMemProp_imp(
 		unsigned char				r_memtypeidx,
@@ -265,30 +261,9 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp(
 	}
 }
 
-/**
- * @def __ae2fVK_AnnSlpMkOnePipeLayout_imp
- *
- * @brief Make one pipeline layout with given push-constant size.
- *
- * @tparam CMDONERR
- * Break logic code for exception handeling.
- *
- * @param v_mk			: {ae2fVK_AnnSlpMk_t&}
- * @param i_idx			: {const ae2fVK_eAnnSlpPipeLayouts}
- * @param i_szrequired		: {const size_t}
- * @param iv_vkalloccalls	: {const VkAllocationCallbacks* const}
- * @param i_vkdev		: {const VkDevice}
- * */
-#define __ae2fVK_AnnSlpMkOnePipeLayout_imp(CMDONERR, v_mk, i_idx, i_szrequired, iv_vkalloccalls, i_vkdev) \
-	__ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp( \
-			CMDONERR \
-			, (v_mk).m_vkstack.m_layout.m_pushconstant \
-			, (v_mk).m_vkinfo.m_pipelayoutcreat \
-			, (v_mk).m_reterr \
-			, (v_mk).m_union.m_alter.m_ptr \
-			, (i_idx), (i_szrequired), (iv_vkalloccalls), (i_vkdev) \
-			);
 
+
+/** FIXME: Make this available API and make apis with it. */
 ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatDescPool(
 		VkDescriptorPoolCreateInfo		v_vkdescpoolcreatinfo,
 		VkDescriptorPoolSize			v_vkdescpoolsz,
@@ -313,7 +288,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatDescPool(
 	(v_vkdescpoolcreatinfo).flags = (i_vkdescpoolcreatflags);
 	(v_vkdescpoolcreatinfo).poolSizeCount = 1;
 	(v_vkdescpoolcreatinfo).pPoolSizes = &(v_vkdescpoolsz);
-	(v_vkdescpoolcreatinfo).maxSets = 1; /** I actually forgot to initialise this? lol;; */
+	(v_vkdescpoolcreatinfo).maxSets = 2; 
 
 	if(((r_vkres) = vkCreateDescriptorPool(
 					(i_vkdev)
@@ -382,11 +357,10 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 	assert((lossderiv) && "lossderiv must be specified.");
 
 	(v_mk).m_reterr = ae2f_errGlob_OK;
-	(v_mk).m_clout.m_void = NULL;
 
 	do {
 		__ae2f_AnnSlpMk_imp(
-				(v_mk).m_union.m_base, (weight_opt)
+				(v_mk).m_U0.m_base, (weight_opt)
 				, (bias_opt), (cache_opt)
 				, (inc), (outc)
 				, ((prm_offset) + sizeof(ae2fVK_AnnSlp) - sizeof(ae2f_AnnSlp))
@@ -395,22 +369,22 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				, (learningrate), (learningrate_bias)
 				);
 
-		if((v_mk).m_union.m_base.m_ptr->m_Slp[0].m_inc > UINT32_MAX) {
+		if((v_mk).m_U0.m_base.m_ptr->m_Slp[0].m_inc > UINT32_MAX) {
 			assert(!"Input size is too large");
 			(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
 			break;
 		}
 
-		if((v_mk).m_union.m_base.m_ptr->m_Slp[0].m_outc > UINT32_MAX) {
+		if((v_mk).m_U0.m_base.m_ptr->m_Slp[0].m_outc > UINT32_MAX) {
 			assert(!"Output size is too large");
 			(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
 			break;
 		}
 
-		__ae2f_AnnSlpInitInpSz_imp((v_mk).m_union.m_base.m_alloccount, 0, 0, 0, inc, outc);
+		__ae2f_AnnSlpInitInpSz_imp((v_mk).m_U0.m_base.m_alloccount, 0, 0, 0, inc, outc);
 
-		(v_mk).m_union.m_base.m_alloccount = 
-			(v_mk).m_union.m_base.m_alloccount
+		(v_mk).m_U0.m_base.m_alloccount = 
+			(v_mk).m_U0.m_base.m_alloccount
 			- sizeof(ae2f_AnnSlp)
 			+ ae2f_CmpGetGt(
 					(sizeof(ae2f_float_t) * (outc) * 2)
@@ -418,25 +392,25 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				       )
 			; /** weight, bias, deltacache */
 
-		(v_mk).m_union.m_alter.m_ptr->m_vkdev = vkdev;
-		(v_mk).m_union.m_alter.m_ptr->m_vkalloccalls = vkalloccalls;
+		(v_mk).m_U0.m_alter.m_ptr->m_vkdev = vkdev;
+		(v_mk).m_U0.m_alter.m_ptr->m_vkalloccalls = vkalloccalls;
 
 		/** Allocate the global memory */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
-				, (v_mk).m_union.m_base.m_alloccount
-				, (v_mk).m_union.m_alter.m_ptr->m_vkres
-				, (v_mk).m_union.m_alter.m_ptr->m_vkglobbuf
-				, (v_mk).m_union.m_alter.m_ptr->m_vkglobdevmem
+				, (v_mk).m_U0.m_base.m_alloccount
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkres
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkglobbuf
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkglobdevmem
 				, (v_mk).m_reterr
-				, (v_mk).m_vkinfo.m_buf
-				, (v_mk).m_vkinfo.m_alloc
+				, (v_mk).m_U1.m_vkbufcreatinfo
+				, (v_mk).m_U1.m_vkmemallocinfo
 				, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 				, VK_SHARING_MODE_EXCLUSIVE
 				, (vkdev)
-				, (v_mk).m_vkstack.m_memreq
+				, (v_mk).m_U2.m_vkmemreqs
 				, (vkalloccalls)
-				, (v_mk).m_union.m_alter.m_i	/* v_memtypeidx */
+				, (v_mk).m_U0.m_alter.m_i	/* v_memtypeidx */
 				, UCHAR_MAX
 				, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 				, vkmemprops
@@ -446,126 +420,129 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
 				, sizeof(ae2f_float_t) * ((outc))
-				, (v_mk).m_union.m_alter.m_ptr->m_vkres
-				, (v_mk).m_union.m_alter.m_ptr->m_vklocbuf
-				, (v_mk).m_union.m_alter.m_ptr->m_vklocdevmem
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkres
+				, (v_mk).m_U0.m_alter.m_ptr->m_vklocbuf
+				, (v_mk).m_U0.m_alter.m_ptr->m_vklocdevmem
 				, (v_mk).m_reterr
-				, (v_mk).m_vkinfo.m_buf
-				, (v_mk).m_vkinfo.m_alloc
+				, (v_mk).m_U1.m_vkbufcreatinfo
+				, (v_mk).m_U1.m_vkmemallocinfo
 				, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 				, VK_SHARING_MODE_EXCLUSIVE
 				, (vkdev)
-				, (v_mk).m_vkstack.m_memreq
+				, (v_mk).m_U2.m_vkmemreqs
 				, (vkalloccalls)
-				, (v_mk).m_union.m_alter.m_i	/* v_memtypeidx */
+				, (v_mk).m_U0.m_alter.m_i	/* v_memtypeidx */
 				, UCHAR_MAX
 				, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 				, vkmemprops
 				);
 
-		(v_mk).m_vkstack.m_layout.m_bind[0].binding = 0;
-		(v_mk).m_vkstack.m_layout.m_bind[0].descriptorType
+		(v_mk).m_U2.m_S0.m_glob.binding = 0;
+
+		(v_mk).m_U2.m_S0.m_glob.descriptorType
 			= VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		(v_mk).m_vkstack.m_layout.m_bind[0].descriptorCount = 1;
-		(v_mk).m_vkstack.m_layout.m_bind[0].stageFlags
-			= VK_SHADER_STAGE_COMPUTE_BIT;
-		(v_mk).m_vkstack.m_layout.m_bind[0].pImmutableSamplers = NULL;
 
-		(v_mk).m_vkstack.m_layout.m_bind[1]
-			= (v_mk).m_vkstack.m_layout.m_bind[0];
-		(v_mk).m_vkstack.m_layout.m_bind[1].binding = 1;
+		(v_mk).m_U2.m_S0.m_glob.descriptorCount = 1;
 
-		(v_mk).m_vkstack.m_layout.m_creatinfo.pBindings
-			= (v_mk).m_vkstack.m_layout.m_bind;
-		(v_mk).m_vkstack.m_layout.m_creatinfo.bindingCount = 1;
-		(v_mk).m_vkstack.m_layout.m_creatinfo.flags
-			= 0;
+		(v_mk).m_U2.m_S0.m_glob.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+		(v_mk).m_U2.m_S0.m_glob.pImmutableSamplers = NULL;
 
-		(v_mk).m_vkstack.m_layout.m_creatinfo.pNext = NULL;
+		(v_mk).m_U2.m_S0.m_loc = (v_mk).m_U2.m_S0.m_glob;
+		(v_mk).m_U2.m_S0.m_loc.binding = 1;
 
-		(v_mk).m_vkstack.m_layout.m_creatinfo.sType
+
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.pBindings = (v_mk).m_U2.m_vkdescsetlayoutbind;
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.bindingCount = 1;
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.flags = 0;
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.pNext = NULL;
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.sType
 			= VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 
-		if(((v_mk).m_union.m_alter.m_ptr->m_vkres = vkCreateDescriptorSetLayout(
+		if(((v_mk).m_U0.m_alter.m_ptr->m_vkres = vkCreateDescriptorSetLayout(
 						vkdev
-						, &(v_mk).m_vkstack.m_layout.m_creatinfo
+						, &(v_mk).m_U1.m_vkdescsetlayoutcreatinfo
 						, (vkalloccalls)
-						, (v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout
+						, &(v_mk).m_U0.m_alter.m_ptr->m_vkdescsetlayout
+						[ae2fVK_eAnnSlpDescLayouts_kPredict]
 						)) != VK_SUCCESS) {
 			assert(!"vkCreateDescriptorSetLayout 0 has failed");
 			break;
 		}
 
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout[0]) {
+		unless((v_mk).m_U0.m_alter.m_ptr->m_vkdescsetlayout[0]) {
 			assert(!"vkCreateDescriptorSetLayout 0 went null");
 			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
 			break;
 		}
 
-		(v_mk).m_vkstack.m_layout.m_creatinfo.bindingCount = 2;
+		(v_mk).m_U1.m_vkdescsetlayoutcreatinfo.bindingCount = 2;
 
-		if(((v_mk).m_union.m_alter.m_ptr->m_vkres = vkCreateDescriptorSetLayout(
+		if(((v_mk).m_U0.m_alter.m_ptr->m_vkres = vkCreateDescriptorSetLayout(
 						vkdev
-						, &(v_mk).m_vkstack.m_layout.m_creatinfo
+						, &(v_mk).m_U1.m_vkdescsetlayoutcreatinfo
 						, (vkalloccalls)
-						, (v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout + 1
+						, &(v_mk).m_U0.m_alter.m_ptr->m_vkdescsetlayout
+						[ae2fVK_eAnnSlpDescLayouts_kTrain]
 						)) != VK_SUCCESS) {
 			assert(!"vkCreateDescriptorSetLayout 1 has failed");
 			break;
 		}
 
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout[1]) {
+		unless((v_mk).m_U0.m_alter.m_ptr->m_vkdescsetlayout[1]) {
 			assert(!"vkCreateDescriptorSetLayout 1 went null");
 			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
 			break;
 		}
 
-		memset(
-				&(v_mk).m_vkinfo.m_pipelayoutcreat
-				, 0, sizeof((v_mk).m_vkinfo.m_pipelayoutcreat)
-		      );
+		(v_mk).m_U1.m_vkpushconstrange.offset = 0;
+		(v_mk).m_U1.m_vkpushconstrange.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
-		(v_mk).m_vkstack.m_layout.m_pushconstant.offset = 0;
-		(v_mk).m_vkstack.m_layout.m_pushconstant.stageFlags
-			= VK_SHADER_STAGE_COMPUTE_BIT;
-
-		(v_mk).m_vkinfo.m_pipelayoutcreat.sType 
+		(v_mk).m_U2.m_vkpipelayoutcreatinfo.sType 
 			= VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		(v_mk).m_vkinfo.m_pipelayoutcreat.setLayoutCount = 1;
-		(v_mk).m_vkinfo.m_pipelayoutcreat.pushConstantRangeCount = 1;
+		(v_mk).m_U2.m_vkpipelayoutcreatinfo.setLayoutCount = 1;
+		(v_mk).m_U2.m_vkpipelayoutcreatinfo.pushConstantRangeCount = 1;
+		(v_mk).m_U2.m_vkpipelayoutcreatinfo.pPushConstantRanges
+			= &(v_mk).m_U1.m_vkpushconstrange;
+		(v_mk).m_U2.m_vkpipelayoutcreatinfo.pSetLayouts
+			= (v_mk).m_U0.m_alter.m_ptr->m_vkdescsetlayout;
 
-		(v_mk).m_vkinfo.m_pipelayoutcreat.pPushConstantRanges
-			= &(v_mk).m_vkstack.m_layout.m_pushconstant;
-
-		(v_mk).m_vkinfo.m_pipelayoutcreat.pSetLayouts
-			= (v_mk).m_union.m_alter.m_ptr->m_vkdescsetlayout;
-
-		__ae2fVK_AnnSlpMkOnePipeLayout_imp(
-				break;
-				, v_mk
+		__ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp(
+				break, 
+				(v_mk).m_U1.m_vkpushconstrange
+				, (v_mk).m_U2.m_vkpipelayoutcreatinfo
+				, (v_mk).m_reterr
+				, (v_mk).m_U0.m_alter.m_ptr
 				, ae2fVK_eAnnSlpPipeLayouts_kPredict
 				, sizeof(size_t)
-				, vkalloccalls, vkdev
+				, vkalloccalls
+				, vkdev
 				);
 
-		if ((v_mk).m_union.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
+		if ((v_mk).m_U0.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
 			assert(!"__ae2fVK_AnnSlpMkOnePipeLayout_imp 0 has failed.");
 			break;
 		}
 
-		__ae2fVK_AnnSlpMkOnePipeLayout_imp(
-				break;
-				, v_mk
-				, ae2fVK_eAnnSlpPipeLayouts_kFollow
+		__ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp(
+				break, 
+				(v_mk).m_U1.m_vkpushconstrange
+				, (v_mk).m_U2.m_vkpipelayoutcreatinfo
+				, (v_mk).m_reterr
+				, (v_mk).m_U0.m_alter.m_ptr
+				, ae2fVK_eAnnSlpPipeLayouts_kTrain
 				, sizeof(ae2f_float_t) * 2
-				, vkalloccalls, vkdev
+				, vkalloccalls
+				, vkdev
 				);
 
-		if ((v_mk).m_union.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
+		if ((v_mk).m_U0.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
 			assert(!"__ae2fVK_AnnSlpMkOnePipeLayout_imp 1 has failed.");
 			break;
 		}
 
+		/***
+		 *
+		 * FIXME: You need to know if this is truely needed.
 		__ae2fVK_AnnSlpMkOnePipeLayout_imp(
 				break;
 				, v_mk
@@ -574,20 +551,21 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				, vkalloccalls, vkdev
 				);
 
-		if ((v_mk).m_union.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
+		if ((v_mk).m_U0.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
 			assert(!"__ae2fVK_AnnSlpMkOnePipeLayout_imp 2 has failed.");
 			break;
-		}
+		} */
 
 		assert((vkcldeclaration) && "vkcldeclaration is null");
 		assert((vkcldefinition) && "vkcldefinition is null");
 
 		{
-			__ae2fVK_AnnSlpMkCLSPV_imp(
-					(v_mk).m_clsrc.m_void
+			__ae2fVK_AnnSlpMkCLSPVVerbose_imp(
+					(v_mk).m_U3.m_openclsrc_v
 					, (v_mk).m_reterr
-					, vkcldeclaration
-					, vkcldefinition
+					, (vkcldeclaration)
+					, ae2fVK_AnnSlpSHADER
+					, (vkcldefinition)
 					);
 
 			if((v_mk).m_reterr) {
@@ -595,102 +573,113 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				break;
 			}
 
-			assert((v_mk).m_clsrc.m_void);
+			assert((v_mk).m_U3.m_openclsrc);
 
-			(v_mk).m_unused = ae2f_static_cast(char*, NULL);
-			(v_mk).m_clout_len = 0;
-			(v_mk).m_clout.m_void = NULL;
+			(v_mk).m_U2.m_log = ae2f_static_cast(char*, NULL);
+			(v_mk).m_U1.m_spirv = NULL;
+			(v_mk).m_U0.m_spirv_len = 0;
 
-			if(((v_mk).m_vkstack.m_isgood = clspvCompileFromSourcesString(
+			assert((v_mk).m_U0.m_alter.m_ptr);
+
+			switch(clspvCompileFromSourcesString(
 							1
 							, ae2f_reinterpret_cast(const size_t*, NULL)
 							, ae2f_const_cast(
 								const char** restrict
-								, (&(v_mk).m_clsrc.m_char)
+								, (&(v_mk).m_U3.m_openclsrc)
 								)
 							,""
 							"-pod-pushconstant "
 							"-cl-fast-relaxed-math "
 							"-cl-single-precision-constant"
-							, &(v_mk).m_clout.m_char
-							, &(v_mk).m_clout_len
-							, &(v_mk).m_unused
-							)) != CLSPV_SUCCESS)
+							, &(v_mk).m_U1.m_spirv_c
+							, &(v_mk).m_U0.m_spirv_len
+							, &(v_mk).m_U2.m_log
+							))
 			{
-				assert(!"clspvCompileFromSourcesString has failed.");
-				(v_mk).m_reterr |= ae2f_errGlob_NFOUND;
-				break;
+				case CLSPV_ERROR:
+					(v_mk).m_reterr |= ae2f_errGlob_NFOUND;
+					assert(!"clspvCompileFromSourcesString has failed.");
+
+					break;
+				case CLSPV_OUT_OF_HOST_MEM:
+					(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
+					assert(!"clspvCompileFromSourcesString has failed its allocation.");
+
+					break;
+
+				case CLSPV_INVALID_ARG:
+					(v_mk).m_reterr |= ae2f_errGlob_WRONG_OPERATION;
+					assert(!"clspvCompileFromSourcesString found arguments invalid.");
+
+					break;
+
+				case CLSPV_SUCCESS: break;
 			}
 
-			free((v_mk).m_clsrc.m_void);
+			free((v_mk).m_U3.m_openclsrc);
+			free((v_mk).m_U2.m_log);
 		}
 
-		assert((v_mk).m_unused);
-		assert((v_mk).m_union.m_base.m_ptr && "clspvCompileFromSourcesString has done something weird");
+		assert((v_mk).m_U0.m_base.m_ptr && "clspvCompileFromSourcesString has done something weird");
 
-		(v_mk).m_vkinfo.m_shadermodulecreat.pNext = NULL;
-		(v_mk).m_vkinfo.m_shadermodulecreat.codeSize
-			= (v_mk).m_clout_len;
-
-		(v_mk).m_vkinfo.m_shadermodulecreat.pCode
-			= (v_mk).m_clout.m_wrds;
-
-		(v_mk).m_vkinfo.m_shadermodulecreat.pNext = NULL;
-		(v_mk).m_vkinfo.m_shadermodulecreat.flags
-			= 0;
-
-		(v_mk).m_vkinfo.m_shadermodulecreat.sType
+		(v_mk).m_U2.m_vkshadermodcreatinfo.pNext = NULL;
+		(v_mk).m_U2.m_vkshadermodcreatinfo.codeSize
+			= (v_mk).m_U0.m_spirv_len;
+		(v_mk).m_U2.m_vkshadermodcreatinfo.pCode
+			= (v_mk).m_U1.m_spirv_u32;
+		(v_mk).m_U2.m_vkshadermodcreatinfo.flags = 0;
+		(v_mk).m_U2.m_vkshadermodcreatinfo.sType
 			= VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 
-		assert((v_mk).m_vkinfo.m_shadermodulecreat.codeSize);
-		assert((v_mk).m_vkinfo.m_shadermodulecreat.pCode);
-
-		if(((v_mk).m_union.m_alter.m_ptr->m_vkres = vkCreateShaderModule(
+		if(((v_mk).m_U0.m_alter.m_ptr->m_vkres = vkCreateShaderModule(
 						vkdev
-						, &(v_mk).m_vkinfo.m_shadermodulecreat
+						, &(v_mk).m_U2.m_vkshadermodcreatinfo
 						, (vkalloccalls)
-						, &(v_mk).m_union.m_alter.m_ptr->m_vkshadermodule
+						, &(v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule
 						)) != VK_SUCCESS)
 		{
 			assert(!"vkCreateShaderModule has failed.");
 			break;
 		}
 
-		unless((v_mk).m_union.m_alter.m_ptr->m_vkshadermodule) 
+		unless((v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule) 
 		{
 			assert(!"vkCreateShaderModule has produced NULL.");
 			(v_mk).m_reterr |= ae2f_errGlob_ALLOC_FAILED;
 			break;
 		}
 
+		free((v_mk).m_U1.m_spirv);
+
 		__ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 				break
 				, (v_mk).m_reterr
-				, (v_mk).m_pipecreat
-				, (v_mk).m_union.m_alter.m_ptr->m_vkpipelayout
-				, (v_mk).m_union.m_alter.m_ptr->m_vkshadermodule
+				, (v_mk).m_U2.m_vkcomputepipecreatinfo
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkpipelayout
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule
 				, "kFollow"
 				, (ae2fVK_eAnnSlpPipes_kFollow)
-				, (ae2fVK_eAnnSlpPipeLayouts_kFollow)
+				, (ae2fVK_eAnnSlpPipeLayouts_kTrain)
 				);
 
 		__ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 				break
 				, (v_mk).m_reterr
-				, (v_mk).m_pipecreat
-				, (v_mk).m_union.m_alter.m_ptr->m_vkpipelayout
-				, (v_mk).m_union.m_alter.m_ptr->m_vkshadermodule
+				, (v_mk).m_U2.m_vkcomputepipecreatinfo
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkpipelayout
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule
 				, "kFit"
 				, (ae2fVK_eAnnSlpPipes_kFit)
-				, (ae2fVK_eAnnSlpPipeLayouts_kFit)
+				, (ae2fVK_eAnnSlpPipeLayouts_kTrain)
 				);
 
 		__ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 				break
 				, (v_mk).m_reterr
-				, (v_mk).m_pipecreat
-				, (v_mk).m_union.m_alter.m_ptr->m_vkpipelayout
-				, (v_mk).m_union.m_alter.m_ptr->m_vkshadermodule
+				, (v_mk).m_U2.m_vkcomputepipecreatinfo
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkpipelayout
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule
 				, "kPredict"
 				, ae2fVK_eAnnSlpPipes_kPredict
 				, ae2fVK_eAnnSlpPipeLayouts_kPredict
@@ -699,22 +688,22 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		__ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 				break
 				, (v_mk).m_reterr
-				, (v_mk).m_pipecreat
-				, (v_mk).m_union.m_alter.m_ptr->m_vkpipelayout
-				, (v_mk).m_union.m_alter.m_ptr->m_vkshadermodule
+				, (v_mk).m_U2.m_vkcomputepipecreatinfo
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkpipelayout
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkshadermodule
 				, "kTrain"
 				, (ae2fVK_eAnnSlpPipes_kTrain)
 				, (ae2fVK_eAnnSlpPipeLayouts_kTrain)
 				);
 
-		if (((v_mk).m_union.m_alter.m_ptr->m_vkres
+		if (((v_mk).m_U0.m_alter.m_ptr->m_vkres
 					= vkCreateComputePipelines(
 						(vkdev)
 						, VK_NULL_HANDLE
 						, ae2fVK_eAnnSlpPipes_LEN
-						, (v_mk).m_pipecreat
+						, (v_mk).m_U2.m_vkcomputepipecreatinfo
 						, (vkalloccalls)
-						, (v_mk).m_union.m_alter.m_ptr->m_vkpipeline
+						, (v_mk).m_U0.m_alter.m_ptr->m_vkpipeline
 						)
 		    ) != VK_SUCCESS)
 		{
@@ -725,14 +714,14 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 
 		__ae2fVK_AnnSlpMkCreatDescPool(
 				break
-				, (v_mk).m_vkstack.m_creatdescpool.m_creatinfo /** v_vkcreatinfo */
-				, (v_mk).m_vkstack.m_creatdescpool.m_sz
+				, (v_mk).m_U1.m_vkdescpoolcreatinfo /** v_vkcreatinfo */
+				, (v_mk).m_U2.m_vkdescpoolsz
 
-				, (v_mk).m_union.m_alter.m_ptr->m_vkdescpool[
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkdescpool[
 				ae2fVK_eAnnSlpDescPools_kPredict
 				] /** r_vkdescpool */
 				, (v_mk).m_reterr
-				, (v_mk).m_union.m_alter.m_ptr->m_vkres
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkres
 
 				, (vkdev) /** i_vkdev */ 
 				, (vkalloccalls) /** i_vkptrAlloc */
@@ -743,14 +732,14 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 
 		__ae2fVK_AnnSlpMkCreatDescPool(
 				break
-				, (v_mk).m_vkstack.m_creatdescpool.m_creatinfo /** v_vkcreatinfo */
-				, (v_mk).m_vkstack.m_creatdescpool.m_sz
+				, (v_mk).m_U1.m_vkdescpoolcreatinfo /** v_vkcreatinfo */
+				, (v_mk).m_U2.m_vkdescpoolsz
 
-				, (v_mk).m_union.m_alter.m_ptr->m_vkdescpool[
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkdescpool[
 				ae2fVK_eAnnSlpDescPools_kTrain
 				] /** r_vkdescpool */
 				, (v_mk).m_reterr
-				, (v_mk).m_union.m_alter.m_ptr->m_vkres
+				, (v_mk).m_U0.m_alter.m_ptr->m_vkres
 
 				, (vkdev) /** i_vkdev */ 
 				, (vkalloccalls) /** i_vkptrAlloc */
@@ -760,13 +749,8 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 				);
 	} while(0);
 
-	clspvFreeOutputBuildObjs(
-			(v_mk).m_clout.m_char
-			, (v_mk).m_unused
-			);
-
 	assert((v_mk).m_reterr == ae2f_errGlob_OK && "Returned error flag has set up");
-	if((v_mk).m_union.m_alter.m_ptr->m_vkres) {
+	if((v_mk).m_U0.m_alter.m_ptr->m_vkres) {
 		assert(!"Vulkan result check for validation");
 		(v_mk).m_reterr |= ae2f_errGlob_NFOUND | ae2f_errGlob_ALLOC_FAILED;
 	}
@@ -869,7 +853,7 @@ ae2f_MAC(T,) _ae2fVK_AnnSlpMapRangedGeneric_imp(
 						,0
 						, ae2f_reinterpret_cast(void**, &(r_ptr))
 						)
-					) != VK_SUCCESS)
+		   ) != VK_SUCCESS)
 		{
 			assert(!"vkMapMemory has failed.");
 			break;
@@ -964,6 +948,8 @@ ae2f_MAC() _ae2fVK_AnnSlpUnMapRanged_imp(
 #endif
 
 /**
+ * FIXME: make this gets external `VkDescriptorSetLayout`.
+ * 
  * @param COMMANDONRECORDING 
  * You will need to push constant and dispatch later on there.
  * */

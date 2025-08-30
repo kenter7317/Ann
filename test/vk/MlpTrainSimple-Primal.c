@@ -83,7 +83,7 @@ int main() {
 				);
 
 		assert(s_ptr0);
-		s_ptr0[0] = 0.2;
+		s_ptr0[0] = 0.281236;
 		printf("Goal has set: %f\n", s_ptr0[0]);
 
 		__ae2fVK_AnnMlpUnMapGoal_imp(
@@ -169,7 +169,7 @@ int main() {
 	}
 
 	{
-		ae2fVK_AnnSlpCmd_t	cmd;
+		ae2fVK_AnnSlpCmd_t	cmd, cmd2;
 		
 		assert((s_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool[0]);
 		assert(vkdev);
@@ -184,6 +184,20 @@ int main() {
 				, (s_mk).m_ret.m_err
 				);
 
+		__ae2fVK_AnnMlpTrainPerformed_imp(
+				s_getcmd
+				, cmd2
+				, vkcmdbuf
+				, NULL
+				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+				, (*(s_mk).m_U0.m_mkswap.m_mkbase)
+				, (s_mk).m_ret.m_err
+				);
+
+		__ae2fVK_AnnMlpPerformedFree_imp(
+				(*(s_mk).m_U0.m_mkswap.m_mkbase)
+				, cmd2
+				);
 		VkSubmitInfo submit_info = {
 			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			.commandBufferCount = 1,
@@ -224,6 +238,7 @@ int main() {
 
 
 			__ae2fVK_AnnMlpUnMapOutStream_imp(s_mapranged, *(s_mk).m_U0.m_mkswap.m_mkbase);
+
 		}
 
 

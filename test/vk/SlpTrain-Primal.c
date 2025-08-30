@@ -55,21 +55,21 @@ int main() {
 			, "/** This is also a comment */\n"
 			);
 
-	mk.m_union.m_alter.m_ptr->m_slp.m_learningrate = 0.6;
-	mk.m_union.m_alter.m_ptr->m_slp.m_learningrate_bias = 0.5;
+	mk.m_U0.m_alter.m_ptr->m_slp.m_learningrate = 0.6;
+	mk.m_U0.m_alter.m_ptr->m_slp.m_learningrate_bias = 0.5;
 
 	puts("__ae2fVK_AnnSlpMk_imp is done");
 	fgetc(stdin);
 
-	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2000);
-	assert(mk.m_union.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 1);
+	assert(mk.m_U0.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2000);
+	assert(mk.m_U0.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 1);
 
-	printf("Stateval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
+	printf("Stateval: %d\n", (mk).m_U0.m_alter.m_ptr->m_vkres);
 
-	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
+	assert(mk.m_U0.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
 	assert(mk.m_reterr == ae2f_errGlob_OK);
 
-	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
+	assert(mk.m_U0.m_alter.m_ptr->m_vkres == VK_SUCCESS);
 
 	{
 		ae2f_float_t*	weight;
@@ -81,7 +81,7 @@ int main() {
 
 		__ae2fVK_AnnSlpWBMap(
 				&e
-				, mk.m_union.m_alter.m_ptr
+				, mk.m_U0.m_alter.m_ptr
 				, &weight
 				, &bias
 				);
@@ -97,7 +97,7 @@ int main() {
 
 		__ae2fVK_AnnSlpWBUnMap_imp(
 				v_unmap
-				, mk.m_union.m_alter.m_ptr[0]
+				, mk.m_U0.m_alter.m_ptr[0]
 				);
 	}
 
@@ -113,7 +113,7 @@ int main() {
 
 		__ae2fVK_AnnSlpIOMap(
 				&err
-				, mk.m_union.m_alter.m_ptr
+				, mk.m_U0.m_alter.m_ptr
 				, (&InputMapped)
 				, (&OutputMapped)
 				);
@@ -124,7 +124,7 @@ int main() {
 		assert(OutputMapped);
 		assert(InputMapped);
 
-		assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+		assert((mk.m_U0.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 		OutputMapped[0] = 7;
 		InputMapped[0] = 7;
@@ -133,14 +133,14 @@ int main() {
 		printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
 		printf("Outputmapped before predict: %f\n", OutputMapped[0]);
 
-		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_union.m_alter.m_ptr[0]);
+		__ae2fVK_AnnSlpIOUnMap_imp(v_unmap, mk.m_U0.m_alter.m_ptr[0]);
 
-		__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped);
+		__ae2fVK_AnnSlpGoalMap(&err, mk.m_U0.m_alter.m_ptr, &GoalMapped);
 
 		GoalMapped[0] = 0.2222;
 		printf("Goal before predict %f\n", GoalMapped[0]);
 
-		__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr);
+		__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_U0.m_alter.m_ptr);
 
 		puts("After __ae2fVK_AnnSlpIOUnMapOutput_imp.");
 		fgetc(stdin);
@@ -155,14 +155,14 @@ int main() {
 		vkcmdpoolcreatinfo.pNext = NULL;
 		vkcmdpoolcreatinfo.queueFamilyIndex = 0;
 
-		if((((mk).m_union.m_alter.m_ptr->m_vkres) = vkCreateCommandPool(
+		if((((mk).m_U0.m_alter.m_ptr->m_vkres) = vkCreateCommandPool(
 						vkdev
 						, &vkcmdpoolcreatinfo
 						, NULL
 						, &vkcmdpool
 						)) != VK_SUCCESS)
 		{
-			printf("Errval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
+			printf("Errval: %d\n", (mk).m_U0.m_alter.m_ptr->m_vkres);
 			assert(!"vkCreateCommandPool has failed.");
 			return -1;
 		}
@@ -184,14 +184,14 @@ int main() {
 		vkcmdallocinfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		vkcmdallocinfo.commandPool = vkcmdpool;
 
-		if((mk.m_union.m_alter.m_ptr->m_vkres = 
+		if((mk.m_U0.m_alter.m_ptr->m_vkres = 
 					vkAllocateCommandBuffers(
 						(vkdev)
 						, &vkcmdallocinfo
 						, &vkcmdbuf
 						)) != VK_SUCCESS)
 		{
-			printf("Errval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
+			printf("Errval: %d\n", (mk).m_U0.m_alter.m_ptr->m_vkres);
 			assert(!"vkAllocateCommandBuffers has failed.");
 			return -1;
 		}
@@ -201,7 +201,7 @@ int main() {
 
 		unless((vkcmdbuf))
 		{
-			printf("Errval: %d\n", (mk).m_union.m_alter.m_ptr->m_vkres);
+			printf("Errval: %d\n", (mk).m_U0.m_alter.m_ptr->m_vkres);
 			assert(!"vkAllocateCommandBuffers went null.");
 			return -1;
 		}
@@ -220,7 +220,7 @@ int main() {
 				, vkcmdbuf
 				, NULL /** useless */
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-				, (mk.m_union.m_alter.m_ptr[0])
+				, (mk.m_U0.m_alter.m_ptr[0])
 				, err
 				);
 
@@ -231,7 +231,7 @@ int main() {
 			if (err & ae2f_errGlob_NFOUND)
 				printf(
 						"Vulkan state number %d: \n"
-						, mk.m_union.m_alter.m_ptr->m_vkres
+						, mk.m_U0.m_alter.m_ptr->m_vkres
 				      );
 
 			printf("Error value %x, \n", err);
@@ -279,20 +279,20 @@ int main() {
 			/** Check is required, but not planned to write for no */
 			__ae2fVK_AnnSlpIOMap(
 					&err
-					, mk.m_union.m_alter.m_ptr
+					, mk.m_U0.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
 					);
 
 			assert(OutputMapped);
-			assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+			assert((mk.m_U0.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 			printf("Inputmapped before predict: %f %f\n", InputMapped[0], InputMapped[1]);
 			printf("Outputmapped before prediction %f\n", OutputMapped[0]);
 
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
-					, *mk.m_union.m_alter.m_ptr
+					, *mk.m_U0.m_alter.m_ptr
 					);
 
 			for(i = 0; i < 1000; i++)  {
@@ -319,42 +319,42 @@ int main() {
 			/** Check is required, but not planned to write for no */
 			__ae2fVK_AnnSlpIOMap(
 					&err
-					, mk.m_union.m_alter.m_ptr
+					, mk.m_U0.m_alter.m_ptr
 					, &InputMapped
 					, &OutputMapped
 					);
 
 			assert(OutputMapped);
-			assert((mk.m_union.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+			assert((mk.m_U0.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 			printf("Inputmapped after predict: %f %f\n", InputMapped[0], InputMapped[1]);
 			printf("Outputmapped after prediction %f\n", OutputMapped[0]);
 
 			__ae2fVK_AnnSlpIOUnMap_imp(
 					v_unmap
-					, *mk.m_union.m_alter.m_ptr
+					, *mk.m_U0.m_alter.m_ptr
 					);
 
-			__ae2fVK_AnnSlpGoalMap(&err, mk.m_union.m_alter.m_ptr, &GoalMapped);
+			__ae2fVK_AnnSlpGoalMap(&err, mk.m_U0.m_alter.m_ptr, &GoalMapped);
 
 			printf("Goal after prediction: %f\n", GoalMapped[0]);
 
-			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_union.m_alter.m_ptr);
+			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_U0.m_alter.m_ptr);
 		}
 
 
 		__ae2fVK_AnnSlpTrainFree_imp(
-				mk.m_union.m_alter.m_ptr[0]
+				mk.m_U0.m_alter.m_ptr[0]
 				, v_cmd
 				);
 	}
 
-	__ae2fVK_AnnSlpClean_imp((*mk.m_union.m_alter.m_ptr));
+	__ae2fVK_AnnSlpClean_imp((*mk.m_U0.m_alter.m_ptr));
 	vkFreeCommandBuffers(vkdev, vkcmdpool, 1, &vkcmdbuf);
 	vkDestroyCommandPool(vkdev, vkcmdpool, NULL);
 
-	memset(mk.m_union.m_alter.m_ptr, 0, sizeof(*mk.m_union.m_alter.m_ptr));
-	free(mk.m_union.m_alter.m_ptr);
+	memset(mk.m_U0.m_alter.m_ptr, 0, sizeof(*mk.m_U0.m_alter.m_ptr));
+	free(mk.m_U0.m_alter.m_ptr);
 
 	memset(&mk, 0, sizeof(mk));
 	Test_VkEnd();

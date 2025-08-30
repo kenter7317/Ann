@@ -45,22 +45,22 @@ int main() {
 			, "/** This is also a comment */"
 			);
 
-	assert(mk.m_union.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
+	assert(mk.m_U0.m_alter.m_ptr && "__ae2fVK_AnnSlpMk_imp has failed");
 	assert(mk.m_reterr == ae2f_errGlob_OK);
 
-	__ae2fVK_AnnSlpMap_imp(mk.m_reterr, *(mk).m_union.m_alter.m_ptr, &map);
+	__ae2fVK_AnnSlpMap_imp(mk.m_reterr, *(mk).m_U0.m_alter.m_ptr, &map);
 	map[0] = 1;
 	map[1] = 2;
 	map[2] = 3;
-	__ae2fVK_AnnSlpUnMap_imp(*(mk).m_union.m_alter.m_ptr);
+	__ae2fVK_AnnSlpUnMap_imp(*(mk).m_U0.m_alter.m_ptr);
 
-	__ae2fVK_AnnSlpClean_imp(*mk.m_union.m_alter.m_ptr);
-	assert(mk.m_union.m_alter.m_ptr->m_vkres == VK_SUCCESS);
+	__ae2fVK_AnnSlpClean_imp(*mk.m_U0.m_alter.m_ptr);
+	assert(mk.m_U0.m_alter.m_ptr->m_vkres == VK_SUCCESS);
 
-	free(mk.m_union.m_alter.m_ptr);
+	free(mk.m_U0.m_alter.m_ptr);
 	
 	Test_VkEnd();
-	mk.m_union.m_alter.m_ptr = 0;
+	mk.m_U0.m_alter.m_ptr = 0;
 
 	return 0;
 }

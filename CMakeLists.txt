@@ -77,6 +77,8 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		set(AnnVK-src "")
 	endif()
 
+	ae2f_Macro_init(1 100 100)
+
 	ae2f_Inc_init(
 		100 100 10 ON ON ON
 		"-DINC_LEAVE_NFOUND=OFF"
@@ -147,8 +149,8 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		)
 
 	ae2f_Inc_Run_One(
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.inc.cc
-		${PROJECT_SOURCE_DIR}/src/vk/Slp.auto.def.cc
+		${PROJECT_SOURCE_DIR}/src/vk/SlpSHADER.inc.c
+		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/SlpSHADER.auto.h
 		)
 
 	ae2f_Inc_Run_One(
