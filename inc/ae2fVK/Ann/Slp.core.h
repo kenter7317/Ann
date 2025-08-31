@@ -50,14 +50,6 @@ typedef enum ae2fVK_eAnnSlpDescLayouts {
 	ae2fVK_eAnnSlpDescLayouts_LEN
 } ae2fVK_eAnnSlpDescLayouts;
 
-/**
- * @brief
- * A command, descriptor set for one task.
- * */
-ae2f_structdef_n(struct, ae2fVK_AnnSlpCmd_t, ae2fVK_AnnSlpPredictCmd_t) {
-	VkDescriptorSet		m_lpvkdescset;
-};
-
 
 ae2f_structdef(struct, ae2fVK_AnnSlp);
 ae2f_structdef(struct, ae2fVK_AnnSlpMkAlter_t) {
@@ -92,7 +84,6 @@ ae2f_structdef(union, ae2fVK_AnnSlpMkU1_t) {
 	VkBufferCreateInfo		m_vkbufcreatinfo;
 	VkDescriptorSetLayoutCreateInfo	m_vkdescsetlayoutcreatinfo;
 	VkPushConstantRange		m_vkpushconstrange;
-	VkDescriptorPoolCreateInfo	m_vkdescpoolcreatinfo;
 
 	/***/
 	void*				m_spirv;
@@ -118,7 +109,6 @@ ae2f_structdef(union, ae2fVK_AnnSlpMkU2_t) {
 	char*				m_log;
 	VkShaderModuleCreateInfo	m_vkshadermodcreatinfo;
 	VkComputePipelineCreateInfo	m_vkcomputepipecreatinfo[ae2fVK_eAnnSlpPipes_LEN];
-	VkDescriptorPoolSize		m_vkdescpoolsz;
 };
 
 typedef char STATIC_ASSERT_ae2fVK_AnnSlpMkU2_vkdescsetlayoutbind_sz[
@@ -154,24 +144,40 @@ ae2f_structdef(union, ae2fVK_AnnSlpPredictUnion0_t) {
 	VkCommandBufferBeginInfo		m_vkcmdbufbeginfo;
 };
 
-ae2f_structdef(struct, ae2fVK_AnnSlpGetCmd_t) {
+ae2f_structdef(struct, ae2fVK_AnnSlpDescPoolCmdMk_t) {
 	/** Temporary buffer 1 */
 	ae2fVK_AnnSlpPredictUnion0_t	m_u0;
 };
 
-
-ae2f_structdef(union, ae2fVK_AnnSlpMapPtr_t) {
-	ae2f_float_t*	m_f;
-	void*		m_v;
-};
-
-ae2f_structdef(struct, ae2fVK_AnnSlpMap_t) {
-	ae2fVK_AnnSlpMapPtr_t		m_map;
-	VkMappedMemoryRange		m_vkmmemr;
-};
-
 typedef VkMappedMemoryRange	ae2fVK_AnnSlpUnMap_t, ae2fVK_AnnSlpMapRangedGeneric_t;
 
+ae2f_structdef(struct, ae2fVK_AnnSlpCreatDescPoolU0_t)
+{
+		VkDescriptorPoolCreateInfo		m_vkdescpoolcreatinfo;
+		VkDescriptorPoolSize			m_vkdescpoolsz;
+};
+
+ae2f_structdef(struct, ae2fVK_AnnSlpCreatDescPool_t)
+{
+	ae2fVK_AnnSlpCreatDescPoolU0_t	m_U0;
+};
+
 #include <ae2f/Pack/End.h>
+
+#define __ae2fVK_AnnSlpWeightSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_inp) * (i_out))
+#define __ae2fVK_AnnSlpBiasSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
+#define __ae2fVK_AnnSlpInpSz(i_inp, ...)	(sizeof(ae2f_float_t) * (i_inp))
+#define __ae2fVK_AnnSlpOutSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
+#define __ae2fVK_AnnSlpDeltaSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
+#define __ae2fVK_AnnSlpGoalSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
+
+#define __ae2fVK_AnnSlpWeightOff(i_inp, i_out)	0
+#define __ae2fVK_AnnSlpBiasOff(i_inp, i_out)	(__ae2fVK_AnnSlpWeightSz(i_inp, i_out) + __ae2fVK_AnnSlpWeightOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpInpOff(i_inp, i_out)	(__ae2fVK_AnnSlpBiasSz(i_inp, i_out) + __ae2fVK_AnnSlpBiasOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpOutOff(i_inp, i_out)	(__ae2fVK_AnnSlpInpSz(i_inp, i_out) + __ae2fVK_AnnSlpInpOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpDeltaOff(i_inp, i_out)	(__ae2fVK_AnnSlpOutSz(i_inp, i_out) + __ae2fVK_AnnSlpOutOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpGoalOff(i_inp, i_out)	(__ae2fVK_AnnSlpDeltaSz(i_inp, i_out) + __ae2fVK_AnnSlpDeltaOff(i_inp, i_out))
+
+#define __ae2fVK_AnnSlpGlobSz(i_inp, i_out)	(__ae2fVK_AnnSlpGoalSz(i_inp, i_out) + __ae2fVK_AnnSlpGoalOff(i_inp, i_out))
 
 #endif

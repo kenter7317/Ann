@@ -6,6 +6,7 @@
 
 #include "./Mlp.core.h"
 #include "./Mlp.auto.h"
+#include "./MlpPool.auto.h"
 
 ae2f_structdef(struct, ae2fVK_AnnMlp) {
 	ae2f_AnnMlp	m_mlp;
@@ -18,11 +19,14 @@ ae2f_structdef(struct, ae2fVK_AnnMlp) {
 	VkAllocationCallbacks* restrict	m_vkalloccalls;
 
 	VkDescriptorSetLayout	m_vkdescsetlayout[ae2fVK_eAnnMlpDescLayouts_LEN];
-	VkDescriptorPool	m_vkdescpool[ae2fVK_eAnnMlpDescPools_LEN];
-
 	VkPipelineLayout	m_vkpipelayout[ae2fVK_eAnnMlpPipeLayouts_LEN];
 	VkShaderModule		m_vkshadermodule;
 	VkPipeline		m_vkpipeline[ae2fVK_eAnnMlpPipes_LEN];
 };
+
+typedef ae2fVK_AnnSlpDescPool ae2fVK_AnnMlpDescPool;
+typedef ae2fVK_AnnSlpDescPoolCmd ae2fVK_AnnMlpDescPoolCmd;
+
+typedef ae2fVK_AnnSlpCreatDescPool_t ae2fVK_AnnMlpCreatDescPool_t;
 
 #endif

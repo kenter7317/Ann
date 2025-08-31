@@ -205,21 +205,35 @@ int main() {
 	}
 
 	{
-		ae2fVK_AnnSlpGetCmd_t v_predict;
-		ae2f_float_t	inp[] = { 1, 2 };
-		ae2fVK_AnnSlpPredictCmd_t	v_cmd;
+		ae2fVK_AnnSlpCreatDescPool_t	v_poolmk;
+		ae2fVK_AnnSlpDescPoolCmdMk_t	v_cmdmk;
+
+		ae2fVK_AnnSlpDescPool		v_descpool;
+		ae2fVK_AnnSlpDescPoolCmd	v_descpoolcmd;
+
+
 		ae2f_err_t err = 0;
 
 		puts("Before __ae2fVK_AnnSlpPredictPerformed_imp");
 
-		__ae2fVK_AnnSlpPredictPerformed_imp(
-				v_predict
-				, v_cmd
-				, vkcmdbuf
-				, inp
+		/** Getting pool */
+		__ae2fVK_AnnSlpDescPoolMk_imp(
+				v_poolmk
+				, v_descpool
+				, err
+				, (mk.m_U0.m_alter.m_ptr[0])
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+				, 1
+				);
+
+		/** Getting predict command */
+		__ae2fVK_AnnSlpDescPoolCmdMkPredict_imp(
+				v_cmdmk
 				, (mk.m_U0.m_alter.m_ptr[0])
 				, err
+				, v_descpool
+				, v_descpoolcmd
+				, vkcmdbuf
 				);
 
 		puts("After __ae2fVK_AnnSlpPredictPerformed_imp");
@@ -237,7 +251,7 @@ int main() {
 			return -1;
 		}
 
-		unless((v_cmd).m_lpvkdescset) {
+		unless((v_descpoolcmd).m_vkdescset) {
 			assert(!"__ae2fVK_AnnSlpPredictPerformed_imp went null.");
 			return -1;
 		}
@@ -336,9 +350,15 @@ int main() {
 					);
 		}
 
-		__ae2fVK_AnnSlpPredictFree_imp(
+		__ae2fVK_AnnSlpDescPoolCmdClean_imp(
 				mk.m_U0.m_alter.m_ptr[0]
-				, v_cmd
+				, v_descpool
+				, v_descpoolcmd
+				);
+
+		__ae2fVK_AnnSlpDescPoolClean_imp(
+				mk.m_U0.m_alter.m_ptr[0]
+				, v_descpool
 				);
 	}
 

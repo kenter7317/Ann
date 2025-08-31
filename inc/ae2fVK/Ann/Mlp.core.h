@@ -72,14 +72,13 @@ ae2f_structdef(union, ae2fVK_AnnMlpMkU1_t) {
 	VkMemoryAllocateInfo		m_vkmemallocinfo;
 	VkDescriptorSetLayoutBinding	m_vkdescsetlayoutbind[ae2fVK_eAnnMlpDescLayouts_LEN];
 	VkPushConstantRange		m_vkpushconstrange;
-	ae2fVK_AnnSlpMap_t		m_map;
+	ae2fVK_AnnSlpMapRangedGeneric_t	m_map;
 	ae2fVK_AnnSlpUnMap_t		m_unmap;
 
 	const char*			m_clsrc;
 	void*				m_clsrc_v;
 
 	VkComputePipelineCreateInfo	m_vkcomputepipecreatinfo[ae2fVK_eAnnMlpPipes_LEN];
-	VkDescriptorPoolCreateInfo	m_vkdescpoolcreatinfo;
 };
 
 ae2f_structdef(union, ae2fVK_AnnMlpMkU2_t) {
@@ -88,11 +87,12 @@ ae2f_structdef(union, ae2fVK_AnnMlpMkU2_t) {
 	VkPipelineLayoutCreateInfo	m_vkpipelayoutcreatinfo;
 	VkDeviceSize			m_i;
 	VkShaderModuleCreateInfo	m_vkshadermodcreatinfo;
-	VkDescriptorPoolSize		m_vkdescpoolsz;
 };
 
 ae2f_structdef(union, ae2fVK_AnnMlpMkU3_t) {
 	size_t	m_vkmemtypeidx;
+	ae2f_float_t*	m_mapped;
+
 	char*	m_cllog;
 };
 
@@ -112,16 +112,11 @@ ae2f_structdef(struct, ae2fVK_AnnMlpMk_t) {
 	ae2fVK_AnnMlpMkU4_t	m_U4;
 };
 
-typedef ae2fVK_AnnSlpMap_t ae2fVK_AnnMlpMap_t;
-typedef ae2fVK_AnnSlpUnMap_t ae2fVK_AnnMlpUnMap_t;
-
-
-typedef VkMappedMemoryRange	ae2fVK_AnnMlpUnMap_t, ae2fVK_AnnMlpMapRangedGeneric_t;
-
 #include <ae2f/Pack/End.h>
 
-#define __ae2fVK_AnnMlpMapRangedGeneric_imp	__ae2fVK_AnnSlpMapRangedGeneric_imp
-#define __ae2fVK_AnnMlpUnMapRanged_imp		__ae2fVK_AnnSlpUnMapRanged_imp
+typedef ae2fVK_AnnSlpUnMap_t ae2fVK_AnnMlpUnMap_t;
+typedef VkMappedMemoryRange		ae2fVK_AnnMlpUnMap_t, ae2fVK_AnnMlpMapRangedGeneric_t;
+typedef ae2fVK_AnnSlpDescPoolCmdMk_t	ae2fVK_AnnMlpDescPoolCmdMk_t;
 
 
 #define __ae2fVK_AnnMlpMdlSz(i_depth, ...) \
@@ -161,5 +156,15 @@ typedef VkMappedMemoryRange	ae2fVK_AnnMlpUnMap_t, ae2fVK_AnnMlpMapRangedGeneric_
 
 #define __ae2fVK_AnnMlpGlobMemSz(i_depth, i_outc) \
 	(__ae2fVK_AnnMlpGoalOff(i_depth, i_outc) + __ae2fVK_AnnMlpGoalSz(i_depth, i_outc))
+
+
+#define __ae2fVK_AnnMlpDescPoolMk_imp		__ae2fVK_AnnSlpDescPoolMk_imp
+#define __ae2fVK_AnnMlpDescPoolClean_imp	__ae2fVK_AnnSlpDescPoolClean_imp
+
+#define __ae2fVK_AnnMlpDescPoolCmdMk_imp	__ae2fVK_AnnSlpDescPoolCmdMk_imp
+#define __ae2fVK_AnnMlpDescPoolCmdClean_imp	__ae2fVK_AnnSlpDescPoolCmdClean_imp
+
+#define __ae2fVK_AnnMlpMapRangedGeneric_imp	__ae2fVK_AnnSlpMapRangedGeneric_imp
+#define __ae2fVK_AnnMlpUnMapRanged_imp		__ae2fVK_AnnSlpUnMapRanged_imp
 
 #endif

@@ -150,11 +150,11 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 			(v_mk).m_U2.m_i = (i_len_count) * sizeof(uint32_t);
 
 			__ae2fVK_AnnMlpMapRangedGeneric_imp(
-					void
-					, (v_mk).m_U1.m_map.m_vkmmemr
+					ae2f_float_t
+					, (v_mk).m_U1.m_map
 					, (*(v_mk).m_U0.m_mkswap.m_mkbase)
 					, (v_mk).m_ret.m_err
-					, (v_mk).m_U1.m_map.m_map.m_v
+					, (v_mk).m_U3.m_mapped
 					, 0
 					, (v_mk).m_U2.m_i
 					);
@@ -169,14 +169,14 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				break;
 			}
 
-			unless((v_mk).m_U1.m_map.m_map.m_v) {
+			unless((v_mk).m_U3.m_mapped) {
 				assert(!"__ae2fVK_AnnMlpMapRanged_imp went null");
 				(v_mk).m_ret.m_err |= ae2f_errGlob_ALLOC_FAILED;
 			}
 
 			(v_mk).m_U2.m_i = (i_len_count);
 			while((v_mk).m_U2.m_i--) {
-				ae2f_reinterpret_cast(uint32_t*, (v_mk).m_U1.m_map.m_map.m_v)[(v_mk).m_U2.m_i]
+				ae2f_reinterpret_cast(uint32_t*, (v_mk).m_U3.m_mapped)[(v_mk).m_U2.m_i]
 					= (i_len)[(v_mk).m_U2.m_i];
 			}
 
@@ -480,22 +480,6 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 			break;
 		}
 
-		__ae2fVK_AnnSlpMkCreatDescPool(
-				break
-				, (v_mk).m_U1.m_vkdescpoolcreatinfo
-				, (v_mk).m_U2.m_vkdescpoolsz
-				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool
-				[ae2fVK_eAnnMlpDescPools_ONLY]
-				, (v_mk).m_ret.m_err
-				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkres
-				, i_vkdev
-				, (iv_vkalloccalls)
-				, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT /** i_vkdescpoolcreatflags */
-				, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER /** i_vkdesctype */
-				, 2
-				);
-
-		assert((v_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool[ae2fVK_eAnnMlpDescPools_ONLY]);
 		assert((v_mk).m_ret.m_err == ae2f_errGlob_OK);
 		assert((v_mk).m_U0.m_mkswap.m_mkbase->m_vkres == VK_SUCCESS);
 
@@ -523,13 +507,6 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 }
 
 ae2f_MAC() _ae2fVK_AnnMlpClean_imp(ae2fVK_AnnMlp v_mlp) {
-	vkDestroyDescriptorPool(
-			(v_mlp).m_vkdev
-			, (v_mlp).m_vkdescpool
-			[ae2fVK_eAnnMlpDescPools_ONLY]
-			, (v_mlp).m_vkalloccalls
-			);
-
 	vkDestroyBuffer(
 			(v_mlp).m_vkdev
 			, (v_mlp).m_vklocbuf
@@ -715,155 +692,4 @@ ae2f_MAC() _ae2fVK_AnnMlpUnMapWB_imp(
 			, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_outc + 1) * ((iv_mlp).m_mlp.m_depth - 1)
 			);
 }
-
-ae2f_MAC() _ae2fVK_AnnMlpPredictPerformed_imp(
-		ae2fVK_AnnSlpGetCmd_t			v_predict,
-
-		ae2fVK_AnnSlpCmd_t			r_cmd,
-
-		const VkCommandBuffer			i_vkcmdbuf,
-		const ae2f_float_t*			i_inp,
-		const VkCommandBufferUsageFlagBits	i_vkcmdbufuseflags,
-
-		ae2fVK_AnnMlp				iv_mlp,
-		ae2f_err_t				iv_err
-		) 
-{
-	__ae2fVK_AnnSlpGetCmd_imp(
-			ae2f_CastMerge(
-				{
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, 0
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_depth
-						);
-
-				vkCmdDispatch(
-						i_vkcmdbuf
-						, (iv_mlp).m_mlp.m_outc
-						, (iv_mlp).m_mlp.m_outc
-						, 1
-					     );
-				}
-				)
-			, v_predict
-			, r_cmd
-			, i_vkcmdbuf
-			, i_inp
-			, i_vkcmdbufuseflags
-			, iv_mlp
-			, iv_err
-
-			, 1
-
-			, 0, 0
-			+ sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * ((iv_mlp).m_mlp.m_outc) * ((iv_mlp).m_mlp.m_depth * 2 + 1)
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
-
-			, 0, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * 2
-
-			, ae2fVK_eAnnMlpDescPools_ONLY /** i_descpool */
-			, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
-			, ae2fVK_eAnnMlpPipes_kPredict /** i_pipe */
-			, ae2fVK_eAnnMlpPipeLayouts_kPredict /** i_pipelayout */
-			);
-}
-
-ae2f_MAC() _ae2fVK_AnnMlpPerformedFree_imp(
-		ae2fVK_AnnMlp		iv_mlp,
-		ae2fVK_AnnSlpCmd_t	iv_cmd
-		)
-{
-	if(((iv_mlp).m_vkres = vkFreeDescriptorSets(
-					(iv_mlp).m_vkdev
-					, (iv_mlp).m_vkdescpool[ae2fVK_eAnnMlpDescPools_ONLY]
-					, 1
-					, &(iv_cmd).m_lpvkdescset
-					)) != VK_SUCCESS)
-		assert(!"vkFreeDescriptorSets has failed.");
-
-	assert((iv_mlp).m_vkres == VK_SUCCESS);
-}
-
-ae2f_MAC() _ae2fVK_AnnMlpTrainPerformed_imp(
-		ae2fVK_AnnSlpGetCmd_t			v_getcmd,
-
-		ae2fVK_AnnSlpCmd_t			r_cmd,
-
-		const VkCommandBuffer			i_vkcmdbuf,
-		const ae2f_float_t*			i_inp,
-		const VkCommandBufferUsageFlagBits	i_vkcmdbufuseflags,
-
-		ae2fVK_AnnMlp				iv_mlp,
-		ae2f_err_t				iv_err
-		) 
-{
-
-	__ae2fVK_AnnSlpGetCmd_imp(
-			ae2f_CastMerge(
-				{
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, 0
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_depth
-						);
-
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t))
-						, sizeof(ae2f_float_t)
-						, &(iv_mlp).m_mlp.m_learningrate
-						);
-
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 2
-						, sizeof(ae2f_float_t)
-						, &(iv_mlp).m_mlp.m_learningrate_bias
-						);
-
-				vkCmdDispatch(
-						i_vkcmdbuf
-						, (iv_mlp).m_mlp.m_outc
-						, (iv_mlp).m_mlp.m_outc
-						, 1
-					     );
-				}
-	)
-		, v_getcmd
-		, r_cmd
-		, i_vkcmdbuf
-		, i_inp
-		, i_vkcmdbufuseflags
-		, iv_mlp
-		, iv_err
-
-		, 2
-
-		, 0
-		, __ae2fVK_AnnMlpGlobMemSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
-
-		, 0, (((iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_depth + 2)) * sizeof(ae2f_float_t))
-
-		, ae2fVK_eAnnMlpDescPools_ONLY /** i_descpool */
-		, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
-		, ae2fVK_eAnnMlpPipes_kTrainAuto /** i_pipe */
-		, ae2fVK_eAnnMlpPipeLayouts_kTrain /** i_pipelayout */
-		);
-}
-
-#define __ae2fVK_AnnMlpPredictPerformedFree_imp	__ae2fVK_AnnMlpPerformedFree_imp
-#define __ae2fVK_AnnMlpTrainPerformedFree_imp	__ae2fVK_AnnMlpPerformedFree_imp
-
 #endif

@@ -5,7 +5,6 @@ static ae2fVK_AnnMlpMk_t			s_mk;
 static ae2fVK_AnnMlpMapRangedGeneric_t		s_mapranged;
 static ae2f_float*				s_ptr0;
 static ae2f_float*				s_ptr1;
-static ae2fVK_AnnSlpGetCmd_t			s_getcmd;
 
 static void	ActDummy(ae2f_float*, ae2f_float);
 static void	LossDummy(ae2f_float* a, const ae2f_float* b, const ae2f_float* c, size_t d, size_t e)
@@ -168,36 +167,36 @@ int main() {
 		}
 	}
 
-	{
-		ae2fVK_AnnSlpCmd_t	cmd, cmd2;
-		
-		assert((s_mk).m_U0.m_mkswap.m_mkbase->m_vkdescpool[0]);
-		assert(vkdev);
+	{	
+		ae2fVK_AnnMlpCreatDescPool_t	v_poolmk;
+		ae2fVK_AnnMlpDescPoolCmdMk_t	v_cmdmk;
 
-		__ae2fVK_AnnMlpTrainPerformed_imp(
-				s_getcmd
-				, cmd
-				, vkcmdbuf
-				, NULL
+		ae2fVK_AnnMlpDescPool		v_descpool;
+		ae2fVK_AnnMlpDescPoolCmd	v_descpoolcmd;
+
+		/** Getting pool */
+		__ae2fVK_AnnMlpDescPoolMk_imp(
+				v_poolmk
+				, v_descpool
+				, s_mk.m_ret.m_err
+				, (s_mk.m_U0.m_mkswap.m_mkbase[0])
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-				, (*(s_mk).m_U0.m_mkswap.m_mkbase)
-				, (s_mk).m_ret.m_err
+				, 1
 				);
 
-		__ae2fVK_AnnMlpTrainPerformed_imp(
-				s_getcmd
-				, cmd2
+		/** Getting predict command */
+		__ae2fVK_AnnMlpDescPoolCmdMkTrain_imp(
+				v_cmdmk
+				, (s_mk.m_U0.m_mkswap.m_mkbase[0])
+				, s_mk.m_ret.m_err
+				, v_descpool
+				, v_descpoolcmd
 				, vkcmdbuf
-				, NULL
-				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
-				, (*(s_mk).m_U0.m_mkswap.m_mkbase)
-				, (s_mk).m_ret.m_err
 				);
 
-		__ae2fVK_AnnMlpPerformedFree_imp(
-				(*(s_mk).m_U0.m_mkswap.m_mkbase)
-				, cmd2
-				);
+		assert(s_mk.m_ret.m_err == ae2f_errGlob_OK);
+
+
 		VkSubmitInfo submit_info = {
 			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			.commandBufferCount = 1,
@@ -260,9 +259,15 @@ int main() {
 			}
 		}
 
-		__ae2fVK_AnnMlpPerformedFree_imp(
-				(*(s_mk).m_U0.m_mkswap.m_mkbase)
-				, cmd
+		__ae2fVK_AnnMlpDescPoolCmdClean_imp(
+				s_mk.m_U0.m_mkswap.m_mkbase[0]
+				, v_descpool
+				, v_descpoolcmd
+				);
+
+		__ae2fVK_AnnMlpDescPoolClean_imp(
+				s_mk.m_U0.m_mkswap.m_mkbase[0]
+				, v_descpool
 				);
 	}
 

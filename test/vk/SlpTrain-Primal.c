@@ -40,7 +40,7 @@ int main() {
 	__ae2fVK_AnnSlpMk_imp(
 			mk,
 			0, 0, 0
-			, 2000, 1, 0, 0
+			, 2, 1, 0, 0
 			, Act, ActDeriv, LossDeriv
 			, 0, 0
 			, vkdev
@@ -61,7 +61,7 @@ int main() {
 	puts("__ae2fVK_AnnSlpMk_imp is done");
 	fgetc(stdin);
 
-	assert(mk.m_U0.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2000);
+	assert(mk.m_U0.m_alter.m_ptr->m_slp.m_Slp[0].m_inc == 2);
 	assert(mk.m_U0.m_alter.m_ptr->m_slp.m_Slp[0].m_outc == 1);
 
 	printf("Stateval: %d\n", (mk).m_U0.m_alter.m_ptr->m_vkres);
@@ -99,7 +99,7 @@ int main() {
 				v_unmap
 				, mk.m_U0.m_alter.m_ptr[0]
 				);
-	}
+	} puts("WB init done");
 
 	{
 		ae2f_err_t err = 0;
@@ -125,6 +125,9 @@ int main() {
 		assert(InputMapped);
 
 		assert((mk.m_U0.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
+
+		puts("Before IOMap Writting")
+			;
 
 		OutputMapped[0] = 7;
 		InputMapped[0] = 7;
@@ -208,20 +211,34 @@ int main() {
 	}
 
 	{
-		ae2fVK_AnnSlpGetCmd_t v_predict;
-		ae2fVK_AnnSlpPredictCmd_t	v_cmd;
+		ae2fVK_AnnSlpCreatDescPool_t	v_poolmk;
+		ae2fVK_AnnSlpDescPoolCmdMk_t	v_cmdmk;
+
+		ae2fVK_AnnSlpDescPool		v_descpool;
+		ae2fVK_AnnSlpDescPoolCmd	v_descpoolcmd;
+
 		ae2f_err_t err = 0;
 
 		puts("Before __ae2fVK_AnnSlpPredictPerformed_imp");
 
-		__ae2fVK_AnnSlpTrainPerformed_imp(
-				v_predict
-				, v_cmd
-				, vkcmdbuf
-				, NULL /** useless */
+		/** Getting pool */
+		__ae2fVK_AnnSlpDescPoolMk_imp(
+				v_poolmk
+				, v_descpool
+				, err
+				, (mk.m_U0.m_alter.m_ptr[0])
 				, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+				, 1
+				);
+
+		/** Getting train command */
+		__ae2fVK_AnnSlpDescPoolCmdMkTrain_imp(
+				v_cmdmk
 				, (mk.m_U0.m_alter.m_ptr[0])
 				, err
+				, v_descpool
+				, v_descpoolcmd
+				, vkcmdbuf
 				);
 
 		puts("After __ae2fVK_AnnSlpPredictPerformed_imp");
@@ -239,7 +256,7 @@ int main() {
 			return -1;
 		}
 
-		unless((v_cmd).m_lpvkdescset) {
+		unless((v_descpoolcmd).m_vkdescset) {
 			assert(!"__ae2fVK_AnnSlpPredictPerformed_imp went null.");
 			return -1;
 		}
@@ -342,10 +359,15 @@ int main() {
 			__ae2fVK_AnnSlpGoalUnMap_imp(v_unmap, *mk.m_U0.m_alter.m_ptr);
 		}
 
-
-		__ae2fVK_AnnSlpTrainFree_imp(
+		__ae2fVK_AnnSlpDescPoolCmdClean_imp(
 				mk.m_U0.m_alter.m_ptr[0]
-				, v_cmd
+				, v_descpool
+				, v_descpoolcmd
+				);
+
+		__ae2fVK_AnnSlpDescPoolClean_imp(
+				mk.m_U0.m_alter.m_ptr[0]
+				, v_descpool
 				);
 	}
 
