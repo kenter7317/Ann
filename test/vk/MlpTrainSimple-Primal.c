@@ -12,7 +12,7 @@ static void	LossDummy(ae2f_float* a, const ae2f_float* b, const ae2f_float* c, s
 	return;
 }
 
-static size_t	s_lpModelLen[] = {2, 4, 4, 1};
+static size_t	s_lpModelLen[] = {2, 4, 4, 4, 1};
 
 #define	NULL_GENERIC(T)	((T*)NULL)
 
