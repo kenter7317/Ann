@@ -28,6 +28,9 @@ ae2f_structdef(struct, ae2f_AnnMlp_t)
 	 * Possible greatest output size.
 	 */
 	size_t	m_outc;
+
+	/** @brief possible greatest weight page size */
+	size_t	m_weightc;
 };
 
 /**
@@ -104,6 +107,8 @@ ae2f_structdef(struct, ae2f_AnnMlpInit_t) {
 	 * Maximum output count among all layers.
 	 */
 	size_t m_outc;
+	size_t m_weightc;
+
 	/**
 	 * @brief
 	 * Loop counter.
@@ -121,6 +126,10 @@ ae2f_structdef(struct, ae2f_AnnMlpMk_t) {
 	 * Maximum output count among all layers.
 	 */
 	size_t m_outc;
+
+	/** @brief Maximum weight page size */
+	size_t m_weightc;
+
 	/**
 	 * @brief
 	 * Loop counter.

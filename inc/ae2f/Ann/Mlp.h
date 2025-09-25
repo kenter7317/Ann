@@ -34,7 +34,10 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 	 * @brief
 	 * Possible greatest output size.
 	 */
-	size_t			m_outc; 
+	size_t			m_outc;
+
+	/** Possible greatest weight page size */
+	size_t			m_weightc;
 
 	/**
 	 * @brief
@@ -83,12 +86,12 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 	 * @brief
 	 * Learning rate for weights.
 	 */
-	ae2f_float_t					m_learningrate, 
+	ae2f_float_t					m_learningrate;
 	/**
 	 * @brief
 	 * Learning rate for biases.
 	 */
-							m_learningrate_bias;
+	ae2f_float_t					m_learningrate_bias;
 
 #if ae2f_WhenCXX(!)0
 #undef	ae2f_TMP
@@ -175,17 +178,17 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpMk(
 		, ae2f_float_t const	learningrate_bias
 
 		, ae2f_opt const size_t	offset
-		, ae2f_opt const size_t	extra
+, ae2f_opt const size_t	extra
+) noexcept;
+
+ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpDel(
+		ae2f_AnnMlp* restrict const block
 		) noexcept;
 
-	ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpDel(
-			ae2f_AnnMlp* restrict const block
-			) noexcept;
-
-	/**
-	 * @brief
-	 * Predict the output from mlp.
-	 * */
+/**
+ * @brief
+ * Predict the output from mlp.
+ * */
 ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpPredict(
 		ae2f_opt ae2f_err_t* restrict		reterr
 		, const ae2f_AnnMlp* restrict const	mlp

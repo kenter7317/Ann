@@ -128,7 +128,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 		/** Global memory allocation */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break
-				, __ae2fVK_AnnMlpGlobMemSz(i_len_count, (v_mk).m_U0.m_mk.m_outc)
+				, __ae2fVK_AnnMlpGlobMemSz(i_len_count, (v_mk).m_U0.m_mk.m_outc, (v_mk).m_U0.m_mk.m_weightc)
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkres
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkglobbuf
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkglobdevmem /** r_vkdevmem */
@@ -593,8 +593,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMapGoal_imp(
 			, iv_mlp
 			, r_err
 			, r_ptr
-			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
-			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc) 
+			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc)
+			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc) 
 			);
 }
 
@@ -606,8 +606,8 @@ ae2f_MAC() _ae2fVK_AnnMlpUnMapGoal_imp(
 	__ae2fVK_AnnSlpUnMapRanged_imp(
 			v_unmap
 			, iv_mlp
-			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
-			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc) 
+			, __ae2fVK_AnnMlpGoalOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc)
+			, __ae2fVK_AnnMlpGoalSz((iv_mlp).m_map.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc) 
 			);
 }
 
@@ -624,8 +624,8 @@ ae2f_MAC() _ae2fVK_AnnMlpMapOutStream_imp(
 			, iv_mlp
 			, r_err
 			, r_ptr
-			, __ae2fVK_AnnMlpOutStreamOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
-			, __ae2fVK_AnnMlpOutStreamSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
+			, __ae2fVK_AnnMlpOutStreamOff((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc)
+			, __ae2fVK_AnnMlpOutStreamSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc)
 			);
 }
 

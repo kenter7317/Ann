@@ -112,15 +112,24 @@ ae2f_MAC() _ae2f_AnnMlpMk_imp(
 	assert((lossderiv) && "Loss deriv must be initialised");
 	assert((depth) > 2 && "Depth must be greater than 2");
 
-	(v_mk).m_outc = 2;
+	(v_mk).m_outc = 1;
+	(v_mk).m_weightc = 1;
 	for((v_mk).m_i = (depth); (v_mk).m_i--; ) {
 		assert((szvector)[(v_mk).m_i] && "Zero value is permitted");
 		(v_mk).m_outc < (szvector)[(v_mk).m_i] && ((v_mk).m_outc = (szvector)[(v_mk).m_i]);
+		if((v_mk).m_i == (depth) - 1) continue;
+		(v_mk).m_weightc = 
+			(v_mk).m_weightc < (szvector)[(v_mk).m_i] * (szvector)[(v_mk).m_i + 1] ?
+			(szvector)[(v_mk).m_i] * (szvector)[(v_mk).m_i + 1] :
+			(v_mk).m_weightc
+			;
+			
 	}
 
 	__ae2f_AnnMlpSz_imp(
 			(v_mk).m_i
 			, (v_mk).m_outc
+			, (v_mk).m_weightc
 			, depth, szswap_opt
 			, act, actderiv
 			, deltastream, outcache
@@ -136,6 +145,7 @@ ae2f_MAC() _ae2f_AnnMlpMk_imp(
 				, (v_mk).m_i
 				, depth
 				, (v_mk).m_outc
+				, (v_mk).m_weightc
 				, szvector
 				, (szswap_opt) ? (szswap_opt) : ae2f_reinterpret_cast(
 					size_t*
@@ -189,6 +199,7 @@ ae2f_MAC() _ae2f_AnnMlpMk_imp(
 ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		size_t			ret_sz
 		, const size_t		outc
+		, const size_t		weightc
 		, const size_t		depth
 		, ae2f_opt const size_t* const		szswap
 		, ae2f_opt ae2f_AnnAct_t** const	act
@@ -207,8 +218,9 @@ ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		* ((depth)) * (outc)
 		* (/**/
 				!(deltastream) + !(outcache) + !(bias)
-				+ ((!(weight)) * (outc))
 		  );
+	(ret_sz) += sizeof(ae2f_float_t)
+		* (!(weight) * (weightc) * (depth));
 }
 
 ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
@@ -216,6 +228,7 @@ ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
 		, size_t			v_init
 		, const size_t			depth
 		, const size_t			outsz
+		, const size_t			weightsz
 
 		, const size_t* const		szvector
 		, size_t*	const		szswap_opt
@@ -236,6 +249,7 @@ ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
 	assert((depth) >= 2 && "At lest you need input and output layer");
 	(v_mlp).m_depth = (depth);
 	(v_mlp).m_outc = (outsz);
+	(v_mlp).m_weightc = (weightsz);
 
 	assert((lossderiv) && "loss deriv is null");
 	(v_mlp).m_lossderiv = lossderiv;
@@ -279,15 +293,22 @@ ae2f_MAC() _ae2f_AnnMlpInit_imp(
 		)
 {
 	(v_init).m_outc = 0;
+	(v_init).m_weightc = 0;
 
 	assert((szvector) && "Size vector is null");
 	for((v_init).m_i = (depth); (v_init).m_i--; ) {
 		assert((szvector)[(v_init).m_i] && "Zero value is permitted");
 		(v_init).m_outc < (szvector)[(v_init).m_i] && ((v_init).m_outc = (szvector)[(v_init).m_i]);
+		if((v_init).m_i == (depth) - 1) continue;
+
+		(v_init).m_weightc =
+			(v_init).m_weightc < (szvector)[(v_init).m_i] * (szvector)[(v_init).m_i + 1] ?
+			(szvector)[(v_init).m_i] * (szvector)[(v_init).m_i + 1] :
+			(v_init).m_weightc;
 	}
 
 	__ae2f_AnnMlpInitWithOutSz_imp(
-			v_mlp, (v_init).m_i, depth, (v_mlp).m_outc
+			v_mlp, (v_init).m_i, depth, (v_mlp).m_outc, (v_mlp).m_weightc
 			, szvector, szswap_opt, act, actderiv, lossderiv
 			, deltastream, outcache, weight, bias, learningrate, learningrate_bias
 			);
@@ -376,10 +397,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 					, (v_predict)
 					, ((outcache) + (((v_predict).m_k OPER_NEG) * (v_predict).m_outc_max))
 					, ((outcache) + (((v_predict).m_k OPER_NONE) * (v_predict).m_outc_max))
-					, (weight) + ((v_predict).m_k) * (
-						(v_predict).m_outc_max
-						* (v_predict).m_outc_max
-						)
+					, (weight) + ((v_predict).m_k) * ((mlp).m_weightc)
 					, (bias) + ((v_predict).m_k) * (v_predict).m_outc_max
 					, (act_opt)[(v_predict).m_k]
 					);
@@ -396,9 +414,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 							* (v_predict).m_outc_max
 							))
 					, (weight) 
-					+ (((v_predict).m_k) 
-						* (v_predict).m_outc_max 
-						* (v_predict).m_outc_max)
+					+ (((v_predict).m_k) * (mlp).m_weightc)
 					, (bias) + ((v_predict).m_k) * (v_predict).m_outc_max
 					,
 					);
@@ -425,7 +441,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 				, (v_predict)
 				, ((outcache) + ((((v_predict).m_k OPER_NEG)) * (v_predict).m_outc_max))
 				, (out)
-				, ((weight) + ((v_predict).m_k) * (v_predict).m_outc_max * (v_predict).m_outc_max)
+				, ((weight) + ((v_predict).m_k) * (mlp).m_weightc)
 				, ((bias) + ((v_predict).m_k) * (v_predict).m_outc_max)
 				,
 				);
@@ -553,8 +569,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 	(v_follow).m_k = (mlp).m_depth - 2;
 
 	/** permanent */
-	(v_follow).m_pg_weight = (v_follow).m_pg_out = (mlp).m_outc;
-	(v_follow).m_pg_weight *= (v_follow).m_pg_out;
+	(v_follow).m_pg_out = (mlp).m_outc;
+	(v_follow).m_pg_weight = (mlp).m_weightc;
 
 	(v_follow).m_outc = (lenv)[(v_follow).m_k + 1];
 	(v_follow).m_inc = (lenv)[(v_follow).m_k];

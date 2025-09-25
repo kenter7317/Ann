@@ -19,7 +19,9 @@
 #endif
 
 #define pgsz		sz
-#define pgsz_sqr	(pgsz * pgsz)
+
+#define weightsz	weightsz
+#define pgsz_sqr	weightsz
 
 /** length of `p_layerszlist` */
 #define lsz		lsz
@@ -84,13 +86,22 @@
 #define ACT_RUN_THEN(r, x)		ACT((lidx - 1), r, x)
 #define ACT_DERIV_RUN_THEN(r, x)	ACT_DERIV((lidx - 1), r, x)
 
+typedef const struct sz2_t {
+	uint32_t	m_lsz;
+	uint32_t	m_wsz;
+} sz2_t;
+
+#undef	lsz
+#undef	weightsz
+#define lsz		push.m_lsz
+#define weightsz	push.m_wsz
 
 /**
  * @brief loc
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uint32_t lsz) {
+__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -115,7 +126,7 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, const uin
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const uint32_t lsz) {
+__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -137,8 +148,6 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 	clSlpPredict(v_predict, r_out, l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
-#pragma pack(push, 1)
-
 ae2f_structdef(union, lrlszel_t) {
 	ae2f_float_t	m_f;
 	uint32_t	m_u;
@@ -146,7 +155,7 @@ ae2f_structdef(union, lrlszel_t) {
 
 const ae2f_structdef(struct, lrlsz_t)
 {
-	lrlszel_t m_lsz, m_weight, m_bias;
+	lrlszel_t m_lsz, m_weight, m_bias, m_wsz;
 };
 
 typedef char STATIC_ASSERT_LRLSZEL_SZ[
@@ -154,9 +163,16 @@ typedef char STATIC_ASSERT_LRLSZEL_SZ[
 	? 1 : -1
 ];
 
-typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 3 ? 1 : -1];
+typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 4 ? 1 : -1];
 
-#pragma pack(pop)
+#undef	lsz
+#undef	m_weight
+#undef	m_bias
+#undef	weightsz
+#define lsz		lr.m_lsz.m_u
+#define m_weight	m_weight.m_f
+#define m_bias		m_bias.m_f
+#define weightsz	lr.m_wsz.m_u
 
 /**
  * @brief loc
@@ -164,12 +180,6 @@ typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 3 ? 
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
 __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
-#undef	lsz
-#undef	m_weight
-#undef	m_bias
-#define lsz		lr.m_lsz.m_u
-#define m_weight	m_weight.m_f
-#define m_bias		m_bias.m_f
 	if(lsz < 3) {
 		/** ASSERT */
 		return;
@@ -288,13 +298,6 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
 __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
-
-#undef	lsz
-#undef	m_weight
-#undef	m_bias
-#define lsz		lr.m_lsz.m_u
-#define m_weight	m_weight.m_f
-#define m_bias		m_bias.m_f
 	if(lsz < 3) {
 		/** ASSERT */
 		return;
@@ -404,6 +407,4 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 					);
 		}
 	}
-
-#undef lsz
 }

@@ -42,7 +42,9 @@ ae2f_structdef(struct, ae2fVK_AnnMlpMkU0Swap_t) {
 	 * @brief
 	 * Maximum output count among all layers.
 	 */
-	size_t m_outc;
+	size_t	m_outc;
+	size_t	m_weightc;
+
 	/**
 	 * @brief
 	 * Loop counter.
@@ -124,38 +126,38 @@ typedef ae2fVK_AnnSlpDescPoolCmdMk_t	ae2fVK_AnnMlpDescPoolCmdMk_t;
 
 #define __ae2fVK_AnnMlpMdlOff(...) 0
 
-#define __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc) \
+#define __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc, i_weightc) \
 	((sizeof(ae2f_float_t)) * (i_depth) * (i_outc)) /** outstream */ 
 
-#define __ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpMdlOff(i_depth, i_outc) + __ae2fVK_AnnMlpMdlSz(i_depth, i_outc))
+#define __ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpMdlOff(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpMdlSz(i_depth, i_outc, i_weightc))
 
-#define __ae2fVK_AnnMlpWeightSz(i_depth, i_outc) \
-	((sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc) * (i_outc)) /** weight */
+#define __ae2fVK_AnnMlpWeightSz(i_depth, i_outc, i_weightc) \
+	((sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_weightc)) /** weight */
 
-#define __ae2fVK_AnnMlpWeightOff(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc) + __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc))
+#define __ae2fVK_AnnMlpWeightOff(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpOutStreamOff(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpOutStreamSz(i_depth, i_outc, i_weightc))
 
-#define __ae2fVK_AnnMlpBiasSz(i_depth, i_outc) \
+#define __ae2fVK_AnnMlpBiasSz(i_depth, i_outc, i_weightc) \
 	(sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc) /** bias */
 
-#define __ae2fVK_AnnMlpBiasOff(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpWeightOff(i_depth, i_outc) + __ae2fVK_AnnMlpWeightSz(i_depth, i_outc))
+#define __ae2fVK_AnnMlpBiasOff(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpWeightOff(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpWeightSz(i_depth, i_outc, i_weightc))
 
-#define __ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc) \
+#define __ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc, i_weightc) \
 	(((sizeof(ae2f_float_t)) * ((i_depth) - 1) * (i_outc))) /** deltastream */
 
-#define __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpBiasSz(i_depth, i_outc) + __ae2fVK_AnnMlpBiasOff(i_depth, i_outc))
+#define __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpBiasSz(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpBiasOff(i_depth, i_outc, i_weightc))
 
-#define __ae2fVK_AnnMlpGoalSz(i_depth, i_outc) \
+#define __ae2fVK_AnnMlpGoalSz(i_depth, i_outc, i_weightc) \
 	(sizeof(ae2f_float_t)) * (i_outc) /** goal */
 
-#define __ae2fVK_AnnMlpGoalOff(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc) + __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc))
+#define __ae2fVK_AnnMlpGoalOff(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpDeltaStreamSz(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpDeltaStreamOff(i_depth, i_outc, i_weightc))
 
-#define __ae2fVK_AnnMlpGlobMemSz(i_depth, i_outc) \
-	(__ae2fVK_AnnMlpGoalOff(i_depth, i_outc) + __ae2fVK_AnnMlpGoalSz(i_depth, i_outc))
+#define __ae2fVK_AnnMlpGlobMemSz(i_depth, i_outc, i_weightc) \
+	(__ae2fVK_AnnMlpGoalOff(i_depth, i_outc, i_weightc) + __ae2fVK_AnnMlpGoalSz(i_depth, i_outc, i_weightc))
 
 
 #define __ae2fVK_AnnMlpDescPoolMk_imp		__ae2fVK_AnnSlpDescPoolMk_imp

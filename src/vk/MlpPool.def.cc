@@ -37,6 +37,15 @@ ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkPredict_imp(
 						, &(iv_mlp).m_mlp.m_depth
 						);
 
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, sizeof(uint32_t)
+						, sizeof(uint32_t)
+						, &(iv_mlp).m_mlp.m_weightc
+						);
+
 				vkCmdDispatch(
 						i_vkcmdbuf
 						, (iv_mlp).m_mlp.m_outc
@@ -111,6 +120,15 @@ ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkTrain_imp(
 						, &(iv_mlp).m_mlp.m_learningrate_bias
 						);
 
+				vkCmdPushConstants(
+						i_vkcmdbuf
+						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+						, VK_SHADER_STAGE_COMPUTE_BIT
+						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 3
+						, sizeof(uint32_t)
+						, &(iv_mlp).m_mlp.m_weightc
+						);
+
 				vkCmdDispatch(
 						i_vkcmdbuf
 						, (iv_mlp).m_mlp.m_outc
@@ -128,7 +146,7 @@ ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkTrain_imp(
 		, 2
 
 		, 0
-		, __ae2fVK_AnnMlpGlobMemSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc)
+		, __ae2fVK_AnnMlpGlobMemSz((iv_mlp).m_mlp.m_depth, (iv_mlp).m_mlp.m_outc, (iv_mlp).m_mlp.m_weightc)
 
 		, 0, (((iv_mlp).m_mlp.m_outc * ((iv_mlp).m_mlp.m_depth + 2)) * sizeof(ae2f_float_t))
 
