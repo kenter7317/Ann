@@ -1,7 +1,3 @@
-#if ae2f_MAC_BUILD
-#ifndef ae2f_MMap_imp_h
-#define ae2f_MMap_imp_h
-
 #include <ae2f/Call.h>
 #include <ae2f/MMap/MMap.h>
 #include <string.h>
@@ -48,5 +44,3 @@ void ae2f_mMMapDel(ae2f_mMMap* del) {
 	__ae2f_mMMapDel(del);
 }
 
-#endif
-#endif
