@@ -1,4 +1,15 @@
+#pragma OPENCL EXTENSION cl-fast-relaxed-math : enable
+#pragma OPENCL EXTENSION -pod-pushconstant : enable
+#pragma OPENCL EXTENSION -cl-fast-relaxed-math : enable
+
 #define ae2f_NEED_CLASS 0
+
+#define host_float_t ae2f_float
+
+#ifdef ae2f_float_t
+#define ae2f_Float_h
+#include <ae2f/Float.auto.h>
+#endif
 
 #if __ae2f_MACRO_GENERATED
 #define ae2fVK_clspv_IS_OPENCL 1
@@ -32,7 +43,7 @@
 /** @brief lsz * sizeof(uint32_t) */
 #define p_layerszlist	CAST(__global uint32_t*, glob)
 /** @brief sizeof(ae2f_float_t) * lsz * pgsz */
-#define p_outstream	(CAST(__global ae2f_float_t*, p_layerszlist + lsz))
+#define p_outstream	(CAST(__global host_float_t*, p_layerszlist + lsz))
 #define p_inp		p_outstream
 
 /** @brief sizeof(ae2f_float_t) * pgsz_sqr * llsz */
@@ -75,9 +86,10 @@
 #define l_inp(O_R)	(((loc) + pgsz * ((lidx) O_R)))
 #define l_out(O_R)	(((loc) + pgsz * ((lidx + 1) O_R)))
 
-#define lp_deltastream	((loc) + pgsz * ((lsz)))
+#define lp_deltastream	((loc) + pgsz * ((2/* lsz */)))
 #define l_delta		(lp_deltastream + pgsz * ((lidx) & 1))
 #define l_delta_then	(lp_deltastream + pgsz * (!((lidx) & 1)))
+#define l_tmpoutc	(lp_deltastream + (pgsz << 1))
 
 /** For every runners */
 #define ACT_RUN(r, x)			ACT(lidx, r, x)
@@ -149,7 +161,7 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 }
 
 ae2f_structdef(union, lrlszel_t) {
-	ae2f_float_t	m_f;
+	host_float_t	m_f;
 	uint32_t	m_u;
 };
 
@@ -159,7 +171,7 @@ const ae2f_structdef(struct, lrlsz_t)
 };
 
 typedef char STATIC_ASSERT_LRLSZEL_SZ[
-	sizeof(lrlszel_t) == (sizeof(uint32_t) > sizeof(ae2f_float_t) ? sizeof(uint32_t) : sizeof(ae2f_float_t))
+	sizeof(lrlszel_t) == (sizeof(uint32_t) > sizeof(host_float_t) ? sizeof(uint32_t) : sizeof(host_float_t))
 	? 1 : -1
 ];
 
@@ -366,23 +378,23 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 						, lr.m_bias
 						);
 			}
-
-			clMlpGetHD(
-					l_delta_then
-					, r_weight_then
-					, l_delta
-					, iidx, r_isz
-					, oidx, r_osz
-				  );
-
-			_clMlpRvrse(
-					v_tmp
-					, l_delta_then
-					, oidx, iidx
-					, r_isz, ACT_DERIV_RUN_THEN
-					, l_inp(), l_delta_then
-				   );
 		}
+
+		clMlpGetHD(
+				l_delta_then
+				, r_weight_then
+				, l_delta
+				, iidx, r_isz
+				, oidx, r_osz
+			  );
+
+		_clMlpRvrse(
+				v_tmp
+				, l_delta_then
+				, oidx, iidx
+				, r_isz, ACT_DERIV_RUN_THEN
+				, l_inp(), l_delta_then
+			   );
 
 		/** Needs to be procedural */
 		barrier(CLK_ALL_MEM_FENCE);

@@ -7,6 +7,7 @@
 #define ae2f_Ann_Slp_h
 
 #include "./Slp.core.h"
+#include "./Act.h"
 #include <ae2f/Pack/Beg.h>
 
 /**

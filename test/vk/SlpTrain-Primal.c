@@ -42,12 +42,12 @@ int main() {
 			0, 0, 0
 			, 2, 1, 0, 0
 			, Act, ActDeriv, LossDeriv
-			, 0, 0
+			, 0.01, 0.01
 			, vkdev
 			, vkphydevmemprops
 			, NULL
 			, 
-			"// #define CL_Q 0\n"
+			"#define CL_Q 0\n"
 			"#define ACT_DERIV(r, output) *(r) = (((output) + 1e-7) * (1.0 - (output) - 1e-7)); \n"
 			"#define ACT(r, x) *(r) = (1.0 / (1.0 + exp(-(x)))); \n"
 			"#define LOSS_DERIV(r, o, t, i, c) *(r) = ((o)[i] - (t)[i]) / (c);\n"

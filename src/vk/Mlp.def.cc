@@ -9,8 +9,10 @@
 #include <ae2fVK/Ann/MlpSHADER.auto.h>
 #include <ae2fVK/Ann/Slp.auto.h>
 
-#if !__ae2f_MACRO_GENERATED
+#if __ae2f_MACRO_GENERATED
+#else
 #include <ae2f/Macro.h>
+typedef ae2f_float_t cllocfloat_t;
 #endif
 
 #if !__ae2f_MACRO_GENERATED || !ae2f_MAC_BUILD
@@ -19,6 +21,51 @@
 #include <string.h>
 #include <assert.h>
 #endif 
+
+
+ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
+		ae2fVK_AnnMlpMk_t	v_mk,
+
+		ae2f_opt ae2f_float_t* const iv_weight_opt,
+		ae2f_opt ae2f_float_t* const iv_bias_opt,
+		ae2f_opt ae2f_float_t* const iv_outstream_opt,
+		ae2f_opt ae2f_float_t* const iv_deltastream_opt,
+
+		const uint32_t	i_len_count,
+		const size_t* const	i_len,
+		ae2f_opt size_t* const i_len_swap,
+
+		ae2f_opt const size_t	i_prm_offset,
+		ae2f_opt const size_t	i_extra,
+
+		ae2f_opt ae2f_AnnAct_t** const i_act,
+		ae2f_opt ae2f_AnnAct_t** const i_actderiv,
+
+		ae2f_AnnLoss_t* const i_lossderiv,
+
+		ae2f_float_t i_learningrate,
+		ae2f_float_t i_learningrate_bias,
+
+		const VkDevice					i_vkdev,
+		const VkPhysicalDeviceMemoryProperties		i_vkmemprops,
+
+		ae2f_opt VkAllocationCallbacks* const		iv_vkalloccalls,
+
+		ae2f_opt const char* const			i_vkcldeclaration,
+		ae2f_opt const char* const			i_vkcldefinition
+		)
+{
+	__ae2fVK_AnnMlpMk_imp_V(
+			ae2f_float_t, v_mk
+			, iv_weight_opt, iv_bias_opt, iv_outstream_opt, iv_deltastream_opt
+			, i_len_count, i_len, i_len_swap
+			, i_prm_offset, i_extra
+			, i_act, i_actderiv, i_lossderiv
+			, i_learningrate, i_learningrate_bias
+			, i_vkdev, i_vkmemprops, iv_vkalloccalls
+			, i_vkcldeclaration, i_vkcldefinition
+			);
+}
 
 /**
  * @brief
@@ -42,7 +89,7 @@
  * @param vkcldeclaration
  * @param vkcldefinition
  * */
-ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
+ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnMlpMk_imp_V(
 		ae2fVK_AnnMlpMk_t	v_mk,
 
 		ae2f_opt ae2f_float_t* const iv_weight_opt,
@@ -193,7 +240,7 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 				, ((
 						(v_mk).m_U0.m_mk.m_mkbase->m_outc * 
 						((v_mk).m_U0.m_mk.m_mkbase->m_depth + 2)
-				   ) * sizeof(ae2f_float_t))
+				   ) * sizeof(cllocfloat_t))
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vkres
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vklocbuf
 				, (v_mk).m_U0.m_mkswap.m_mkbase->m_vklocdevmem	/** r_vkdevmem */

@@ -17,7 +17,6 @@
 
 #include <ae2fVK/Ann/SlpSHADER.auto.h>
 
-
 ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkFndMemProp_imp(
 		unsigned char				r_memtypeidx,
 		ae2f_err_t				v_errbit,
@@ -334,6 +333,44 @@ ae2f_MAC() _ae2fVK_AnnSlpCreatDescPoolVerbose_imp(
 	}
 }
 
+ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
+		ae2fVK_AnnSlpMk_t	v_mk
+		, ae2f_float_t* const weight_opt
+		, ae2f_float_t* const bias_opt
+		, ae2f_float_t* const cache_opt
+		, const uint32_t	inc
+		, const uint32_t	outc
+		, ae2f_opt const size_t	prm_offset
+		, ae2f_opt const size_t	extra
+		, ae2f_opt ae2f_AnnAct_t* const act
+		, ae2f_opt ae2f_AnnAct_t* const actderiv
+		, ae2f_AnnLoss_t* const lossderiv
+		, ae2f_float_t learningrate
+		, ae2f_float_t learningrate_bias
+
+		, const VkDevice					vkdev
+		, const VkPhysicalDeviceMemoryProperties		vkmemprops
+		, ae2f_opt VkAllocationCallbacks* const			vkalloccalls,
+
+		ae2f_opt const char* const				vkcldeclaration
+		, ae2f_opt const char* const				vkcldefinition
+) {
+	__ae2fVK_AnnSlpMk_imp_V(
+			ae2f_float_t
+			, v_mk, weight_opt, bias_opt, cache_opt
+			, inc, outc, prm_offset
+			, extra, act, actderiv, lossderiv
+			, learningrate, learningrate_bias
+			, vkdev, vkmemprops, vkalloccalls
+			, vkcldeclaration, vkcldefinition
+			);
+}
+
+#if __ae2f_MACRO_GENERATED
+#else
+typedef ae2f_float_t cllocfloat_t;
+#endif
+
 /**
  * @brief
  * Make slp with OpenCL compute shader.
@@ -356,7 +393,7 @@ ae2f_MAC() _ae2fVK_AnnSlpCreatDescPoolVerbose_imp(
  * @param vkcldeclaration
  * @param vkcldefinition
  * */
-ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
+ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
 		ae2fVK_AnnSlpMk_t	v_mk
 		, ae2f_float_t* const weight_opt
 		, ae2f_float_t* const bias_opt
@@ -434,7 +471,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		/** the local memory */
 		__ae2fVK_AnnSlpMkAllocVKMem_imp(
 				break;
-				, sizeof(ae2f_float_t) * ((outc))
+				, sizeof(cllocfloat_t) * ((outc))
 				, (v_mk).m_U0.m_alter.m_ptr->m_vkres
 				, (v_mk).m_U0.m_alter.m_ptr->m_vklocbuf
 				, (v_mk).m_U0.m_alter.m_ptr->m_vklocdevmem
@@ -604,9 +641,6 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 							, (&(v_mk).m_U3.m_openclsrc)
 							)
 						,""
-						"-pod-pushconstant "
-						"-cl-fast-relaxed-math "
-						"-cl-single-precision-constant"
 						, &(v_mk).m_U1.m_spirv_c
 						, &(v_mk).m_U0.m_spirv_len
 						, &(v_mk).m_U2.m_log

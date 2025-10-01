@@ -8,35 +8,44 @@
 #include <ae2f/Ann/Slp.auto.h>
 #include "mac.h"
 
-typedef ae2f_AnnSlpPredictOne_t _clSlpPredict_t;
+
+#if 1
+
+ae2f_structdef(struct, _clSlpPredict_t) {
+	ae2f_float_t	m_sum, m_ret;
+};
 
 ae2f_MAC() clSlpPredict(
 		_clSlpPredict_t	v_predict,
-		ae2f_float_t*	const	  loc,
-
-		const ae2f_float_t* const p_inp,
-		const ae2f_float_t* const p_weight,
-		const ae2f_float_t* const p_bias,
-
+		__local ae2f_float_t* const loc,
+		const __global ae2f_float_t* const p_inp,
+		const __global ae2f_float_t* const p_weight,
+		const __global ae2f_float_t* const p_bias,
 		const size_t iidx, const size_t isz, 
 		const size_t oidx, const size_t osz,
-
-		ae2f_AnnAct_t	ACT
+		ae2f_AnnAct_t ACT
 		)
 {
-	if((iidx) == 0 && (oidx) < (osz)) {
-		_clSlpPredict_t	_v_predict;
-		(_v_predict).m_tmp = 0;
-		for((_v_predict).m_j = (isz); (_v_predict).m_j--;) {
-			(_v_predict).m_tmp 
-				+= p_inp[(_v_predict).m_j] * p_weight[(_v_predict).m_j + (isz) * (oidx)];
-		}
+	if((oidx) < (osz) && (iidx) < (isz)) {
+		if(!(iidx)) (loc)[oidx] = 0;
+		barrier(CLK_ALL_MEM_FENCE);
 
-		(_v_predict).m_tmp += (p_bias)[oidx];
-		ACT(&(_v_predict).m_ret, (_v_predict).m_tmp);
-		(loc)[oidx] = (_v_predict).m_ret;
+		(void)atomic_add(
+				&(loc)[oidx]
+				, (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
+				);
+
+		if(!(iidx)) {
+			(v_predict).m_sum = (loc)[oidx];
+			ACT((&(v_predict).m_ret), ((v_predict).m_sum + (p_bias)[oidx]));
+			(loc)[oidx] = (v_predict).m_ret;
+		}
 	}
+
+	barrier(CLK_ALL_MEM_FENCE);
 }
+
+#endif
 
 ae2f_structdef(struct, _clSlpPredict_t_Q) {
 	ae2f_float_t	m_sum, m_ret;
@@ -63,7 +72,7 @@ ae2f_MAC() clSlpPredict_Q(
 				(p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
 				);
 
-		if((iidx) == 0) {
+		if(!(iidx)) {
 			ACT((&(v_predict).m_ret), ((v_predict).m_sum + (p_bias)[oidx]));
 			(loc)[oidx] = (v_predict).m_ret;
 		}

@@ -164,20 +164,42 @@ ae2f_structdef(struct, ae2fVK_AnnSlpCreatDescPool_t)
 
 #include <ae2f/Pack/End.h>
 
-#define __ae2fVK_AnnSlpWeightSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_inp) * (i_out))
-#define __ae2fVK_AnnSlpBiasSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
-#define __ae2fVK_AnnSlpInpSz(i_inp, ...)	(sizeof(ae2f_float_t) * (i_inp))
-#define __ae2fVK_AnnSlpOutSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
-#define __ae2fVK_AnnSlpDeltaSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
-#define __ae2fVK_AnnSlpGoalSz(i_inp, i_out)	(sizeof(ae2f_float_t) * (i_out))
+#define __ae2fVK_AnnSlpWeightSz_V(CLFLOAT, i_inp, i_out)	(sizeof(CLFLOAT) * (i_inp) * (i_out))
+#define __ae2fVK_AnnSlpBiasSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
+#define __ae2fVK_AnnSlpInpSz_V(CLFLOAT, i_inp, ...)		(sizeof(CLFLOAT) * (i_inp))
+#define __ae2fVK_AnnSlpOutSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
+#define __ae2fVK_AnnSlpDeltaSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
+#define __ae2fVK_AnnSlpGoalSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
+
+#define __ae2fVK_AnnSlpWeightOff_V(CLFLOAT, i_inp, i_out)	0
+#define __ae2fVK_AnnSlpBiasOff_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpWeightSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpWeightOff_V(CLFLOAT, i_inp, i_out))
+#define __ae2fVK_AnnSlpInpOff_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpBiasSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpBiasOff_V(CLFLOAT, i_inp, i_out))
+#define __ae2fVK_AnnSlpOutOff_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpInpSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpInpOff_V(CLFLOAT, i_inp, i_out))
+#define __ae2fVK_AnnSlpDeltaOff_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpOutSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpOutOff_V(CLFLOAT, i_inp, i_out))
+#define __ae2fVK_AnnSlpGoalOff_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpDeltaSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpDeltaOff_V(CLFLOAT, i_inp, i_out))
+
+#define __ae2fVK_AnnSlpGlobSz_V(CLFLOAT, i_inp, i_out)	\
+	(__ae2fVK_AnnSlpGoalSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpGoalOff_V(CLFLOAT, i_inp, i_out))
+
+#define __ae2fVK_AnnSlpWeightSz(i_inp, i_out)	__ae2fVK_AnnSlpWeightSz_V(ae2f_float_t, i_inp, i_out)	
+#define __ae2fVK_AnnSlpBiasSz(i_inp, i_out)	__ae2fVK_AnnSlpBiasSz_V(ae2f_float_t, i_inp, i_out) 
+#define __ae2fVK_AnnSlpInpSz(i_inp, ...)	__ae2fVK_AnnSlpInpSz_V(ae2f_float_t, i_inp, i_out) 
+#define __ae2fVK_AnnSlpOutSz(i_inp, i_out)	__ae2fVK_AnnSlpOutSz_V(ae2f_float_t, i_inp, i_out) 
+#define __ae2fVK_AnnSlpDeltaSz(i_inp, i_out)	__ae2fVK_AnnSlpDeltaSz_V(ae2f_float_t, i_inp, i_out) 
+#define __ae2fVK_AnnSlpGoalSz(i_inp, i_out)	__ae2fVK_AnnSlpGoalSz_V(ae2f_float_t, i_inp, i_out)
 
 #define __ae2fVK_AnnSlpWeightOff(i_inp, i_out)	0
-#define __ae2fVK_AnnSlpBiasOff(i_inp, i_out)	(__ae2fVK_AnnSlpWeightSz(i_inp, i_out) + __ae2fVK_AnnSlpWeightOff(i_inp, i_out))
-#define __ae2fVK_AnnSlpInpOff(i_inp, i_out)	(__ae2fVK_AnnSlpBiasSz(i_inp, i_out) + __ae2fVK_AnnSlpBiasOff(i_inp, i_out))
-#define __ae2fVK_AnnSlpOutOff(i_inp, i_out)	(__ae2fVK_AnnSlpInpSz(i_inp, i_out) + __ae2fVK_AnnSlpInpOff(i_inp, i_out))
-#define __ae2fVK_AnnSlpDeltaOff(i_inp, i_out)	(__ae2fVK_AnnSlpOutSz(i_inp, i_out) + __ae2fVK_AnnSlpOutOff(i_inp, i_out))
-#define __ae2fVK_AnnSlpGoalOff(i_inp, i_out)	(__ae2fVK_AnnSlpDeltaSz(i_inp, i_out) + __ae2fVK_AnnSlpDeltaOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpBiasOff(i_inp, i_out)	__ae2fVK_AnnSlpBiasOff_V(ae2f_float_t, i_inp, i_out)
+#define __ae2fVK_AnnSlpInpOff(i_inp, i_out)	__ae2fVK_AnnSlpInpOff_V(ae2f_float_t, i_inp, i_out)
+#define __ae2fVK_AnnSlpOutOff(i_inp, i_out)	__ae2fVK_AnnSlpOutOff_V(ae2f_float_t, i_inp, i_out) 
+#define __ae2fVK_AnnSlpDeltaOff(i_inp, i_out)	__ae2fVK_AnnSlpDeltaOff_V(ae2f_float_t, i_inp, i_out)
+#define __ae2fVK_AnnSlpGoalOff(i_inp, i_out)	__ae2fVK_AnnSlpGoalOff_V(ae2f_float_t, i_inp, i_out)
 
-#define __ae2fVK_AnnSlpGlobSz(i_inp, i_out)	(__ae2fVK_AnnSlpGoalSz(i_inp, i_out) + __ae2fVK_AnnSlpGoalOff(i_inp, i_out))
+#define __ae2fVK_AnnSlpGlobSz(i_inp, i_out)	__ae2fVK_AnnSlpGlobSz_V(ae2f_float_t, i_inp, i_out)
 
 #endif

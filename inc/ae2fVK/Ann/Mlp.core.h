@@ -98,6 +98,7 @@ ae2f_structdef(union, ae2fVK_AnnMlpMkU3_t) {
 	char*	m_cllog;
 };
 
+
 ae2f_structdef(struct, ae2fVK_AnnMlpMkU4_t) {
 	ClspvError	m_clspverror;
 };
