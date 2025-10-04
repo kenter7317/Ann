@@ -12,16 +12,6 @@
 #include <ae2f/Macro.h>
 #endif
 
-ae2f_MAC() ae2f_AnnMhattnForward(
-
-
-		const size_t	prm_mdldist,
-		const size_t	prm_seqlen,
-		const size_t	prm_i,
-		const size_t	prm_j,
-		const size_t	prm_k
-		) {}
-
 /**
  * @brief
  * 
@@ -60,59 +50,49 @@ ae2f_MAC() ae2f_AnnMhattnForward_imp(
 		ae2f_float_t* const			ret_attno
 )
 {
-	/** Matrix multiplication */
+	/** 
+	 * Matrix multiplication.
+	 * Output shall be 
+	 * */
 	for((ref_mem).m_i = (prm_seqlen) * ((prm_mhattn).m_mdldist); (ref_mem).m_i--;) {
 		(ref_qcache)[(ref_mem).m_i] = 0;
 		(ref_kcache)[(ref_mem).m_i] = 0;
 		(ref_vcache)[(ref_mem).m_i] = 0;
 
-		for((ref_mem).m_j = (prm_mhattn).m_mdldist; (ref_mem).m_j;) {
+		for((ref_mem).m_j = (prm_mhattn).m_mdldist; (ref_mem).m_j--;) {
 			(ref_qcache)[(ref_mem).m_i]
-				+= (prm_qry)[ae2f_AnnUtilIdx2(
-						((ref_mem).m_i / (prm_mhattn).m_mdldist)
-						, prm_seqlen
-						, (ref_mem).m_j
-						, (prm_mhattn).m_mdldist)
-				]
-				* (prm_wqry)[ae2f_AnnUtilIdx2( /**/
-						(ref_mem).m_j
+				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+						prm_qry
+						, prm_wqry
 						, (prm_mhattn).m_mdldist
-						, (ref_mem).m_i % (prm_mhattn).m_mdldist
-						, (prm_mhattn).m_mdldist)
-				];
+						, prm_seqlen
+						, (ref_mem).m_i / (prm_mhattn).m_mdldist
+						, (ref_mem).m_j
+						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						);
 
 			(ref_kcache)[(ref_mem).m_i]
-				+= (prm_key)[ae2f_AnnUtilIdx2(
-						((ref_mem).m_i / (prm_mhattn).m_mdldist)
-						, prm_seqlen
-						, (ref_mem).m_j
-						, (prm_mhattn).m_mdldist)
-				]
-				* (prm_wkey)[ae2f_AnnUtilIdx2( /**/
-						(ref_mem).m_j
+				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+						prm_key
+						, prm_wkey
 						, (prm_mhattn).m_mdldist
-						, (ref_mem).m_i % (prm_mhattn).m_mdldist
-						, (prm_mhattn).m_mdldist)
-				];
+						, prm_seqlen
+						, (ref_mem).m_i / (prm_mhattn).m_mdldist
+						, (ref_mem).m_j
+						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						);
 
 			(ref_vcache)[(ref_mem).m_i]
-				+= (prm_val)[ae2f_AnnUtilIdx2(
-						((ref_mem).m_i / (prm_mhattn).m_mdldist)
-						, prm_seqlen
-						, (ref_mem).m_j
-						, (prm_mhattn).m_mdldist)
-				]
-				* (prm_wval)[ae2f_AnnUtilIdx2( /**/
-						(ref_mem).m_j
+				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+						prm_val
+						, prm_wval
 						, (prm_mhattn).m_mdldist
-						, (ref_mem).m_i % (prm_mhattn).m_mdldist
-						, (prm_mhattn).m_mdldist)
-				];
+						, prm_seqlen
+						, (ref_mem).m_i / (prm_mhattn).m_mdldist
+						, (ref_mem).m_j
+						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						);
 		}
-	}
-
-	for((ref_mem).m_i = (prm_mhattn).m_headc; (ref_mem).m_i--;) {
-
 	}
 }
 

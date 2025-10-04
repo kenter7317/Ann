@@ -42,7 +42,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
  * @param m_i1		{const size_t}	< prm_seqlen
  * @param m_i0		{const size_t}	< kdist
  * */
-#define ae2f_AnnMhattnHeadSplit(	\
+#define ae2f_AnnMhattnHeadSplit_imp(	\
 		prm_mhattn,		\
 		prm_seqlen,		\
 		m_i2,			\
@@ -62,7 +62,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
  * @param m_i1		{const size_t}	< prm_seqlen
  * @param m_i0		{const size_t}	< m_mdldist
  * */
-#define ae2f_AnnMhattnHeadConcat(	\
+#define ae2f_AnnMhattnHeadConcat_imp(	\
 		prm_mhattn,		\
 		prm_seqlen,		\
 		m_i1,			\
@@ -74,6 +74,34 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
 			, (m_i0) % ae2f_AnnMhattnKDist(prm_mhattn)	\
 			, ae2f_AnnMhattnKDist(prm_mhattn)		\
 			)
+
+/**
+ * @brief
+ *
+ * @details
+ * Original implementation by @kenter7317.
+ * Macrofied by @dalmurii.
+ *
+ * @param prm_seq	{const ae2f_float_t* const} (prm_seqlen, prm_mdldist)
+ * @param prm_w		{const ae2f_float_t* const} (prm_mdldist, prm_mdldist)
+ * @param prm_mdldist	{const size_t}
+ * @param prm_seqlen	{const size_t}
+ * @param prm_i		{const size_t} < prm_seqlen
+ * @param prm_j		{const size_t} < prm_mdldist
+ * @param prm_k		{const size_t} < prm_mdldist
+ * */
+#define ae2f_AnnMhattnForwardSeqConvOne_imp(		\
+		prm_seq,				\
+		prm_w,					\
+		prm_mdldist,				\
+		prm_seqlen,				\
+		prm_i,					\
+		prm_j,					\
+		prm_k  					\
+		)					\
+		((prm_seq)[ae2f_AnnUtilIdx2(prm_i, prm_seqlen, prm_j, prm_mdldist)] *	\
+		 (prm_w)[ae2f_AnnUtilIdx2(prm_j, prm_mdldist, prm_k, prm_mdldist)])
+
 
 #if ae2f_NEED_CLASS
 
