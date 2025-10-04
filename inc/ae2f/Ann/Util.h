@@ -19,6 +19,10 @@
 	ae2f_structdef(union, ae2f_AnnUtilPtr2Name(A_t, B_t)) \
 { A_t* a; B_t* b; }
 
+#define ae2f_AnnUtilIdx1(idx0, sz0)				(idx0)
+#define ae2f_AnnUtilIdx2(idx1, sz1, idx0, sz0)			((idx1) * (sz0) + (idx0))
+#define ae2f_AnnUtilIdx3(idx2, sz2, idx1, sz1, idx0, sz0)	((idx2) * (sz1) + (idx1) * (sz0) + (idx0))
+
 #include <ae2f/Pack/End.h>
 
 #endif
