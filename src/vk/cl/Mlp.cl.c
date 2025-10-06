@@ -240,7 +240,7 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
 		   );
 
 	/** Needs to be procedural */
-	barrier(CLK_ALL_MEM_FENCE);
+	/* barrier(CLK_ALL_MEM_FENCE); */
 
 
 	while(--lidx) {
@@ -280,7 +280,7 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
 			   );
 
 		/** Needs to be procedural */
-		barrier(CLK_LOCAL_MEM_FENCE);
+		/** barrier(CLK_LOCAL_MEM_FENCE); */
 	}
 
 	if(oidx < r_osz && iidx < r_isz) {
@@ -328,17 +328,16 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 	if(iidx < r_isz && oidx == 0)
 		l_inp()[iidx] = r_inp[iidx];
 
-	barrier(CLK_ALL_MEM_FENCE);
+	// barrier(CLK_LOCAL_MEM_FENCE);
 
 	for(; lidx < llsz - 1; lidx++) {
 		clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-		barrier(CLK_ALL_MEM_FENCE);
+		// barrier(CLK_GLOBAL_MEM_FENCE);
 	}
 
 	/** lidx == llsz - 1 */
 	clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-
-	barrier(CLK_ALL_MEM_FENCE);
+	// barrier(CLK_LOCAL_MEM_FENCE);
 
 	if(oidx < r_osz && iidx == 0) {
 		r_out[oidx] = l_out()[oidx];
@@ -353,13 +352,12 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 				);
 	}
 
-	barrier(CLK_ALL_MEM_FENCE);
-
 	/** lidx == llsz */
 	++lidx;
 
 	/** lidx == llsz - 1 */
 	while(--lidx) {
+		// barrier(CLK_GLOBAL_MEM_FENCE);
 		if(oidx < r_osz && iidx < r_isz) {
 			tmp0 = l_delta[oidx];
 			__ae2f_AnnSlpFollowOneW_imp(
@@ -370,7 +368,6 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 					, r_isz, iidx
 					, r_osz, oidx
 					);
-
 			if(iidx == 0) {
 				__ae2f_AnnSlpFollowOneB_imp(
 						r_bias[oidx]
@@ -397,7 +394,6 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 			   );
 
 		/** Needs to be procedural */
-		barrier(CLK_ALL_MEM_FENCE);
 	}
 
 	/** lidx == 0 */
