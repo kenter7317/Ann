@@ -48,7 +48,7 @@ int main() {
 			, vkphydevmemprops
 			, NULL
 			, 
-
+			"#define CL_Q 1\n"
 			"#define LOSS_DERIV(r, y, y_desired, i, c)  \n"
 			"#define ACT(r, y, i, c) { (*(r) = (1.0 / (1.0 + exp(-y[i])))); } \n"
 			, "/** This is also a comment */\n"
@@ -122,7 +122,6 @@ int main() {
 		assert((mk.m_U0.m_alter.m_ptr[0].m_vkres) == VK_SUCCESS);
 
 		OutputMapped[0] = 7;
-
 		InputMapped[0] = 7;
 		InputMapped[1] = 7;
 

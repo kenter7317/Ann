@@ -166,18 +166,22 @@ ae2f_structdef(struct, ae2fVK_AnnSlpCreatDescPool_t)
 
 #define __ae2fVK_AnnSlpWeightSz_V(CLFLOAT, i_inp, i_out)	(sizeof(CLFLOAT) * (i_inp) * (i_out))
 #define __ae2fVK_AnnSlpBiasSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
-#define __ae2fVK_AnnSlpInpSz_V(CLFLOAT, i_inp, ...)		(sizeof(CLFLOAT) * (i_inp))
+#define __ae2fVK_AnnSlpInpSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_inp))
 #define __ae2fVK_AnnSlpOutSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
 #define __ae2fVK_AnnSlpDeltaSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
 #define __ae2fVK_AnnSlpGoalSz_V(CLFLOAT, i_inp, i_out)		(sizeof(CLFLOAT) * (i_out))
 
 #define __ae2fVK_AnnSlpWeightOff_V(CLFLOAT, i_inp, i_out)	0
+
 #define __ae2fVK_AnnSlpBiasOff_V(CLFLOAT, i_inp, i_out)	\
 	(__ae2fVK_AnnSlpWeightSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpWeightOff_V(CLFLOAT, i_inp, i_out))
+
 #define __ae2fVK_AnnSlpInpOff_V(CLFLOAT, i_inp, i_out)	\
 	(__ae2fVK_AnnSlpBiasSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpBiasOff_V(CLFLOAT, i_inp, i_out))
+
 #define __ae2fVK_AnnSlpOutOff_V(CLFLOAT, i_inp, i_out)	\
 	(__ae2fVK_AnnSlpInpSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpInpOff_V(CLFLOAT, i_inp, i_out))
+
 #define __ae2fVK_AnnSlpDeltaOff_V(CLFLOAT, i_inp, i_out)	\
 	(__ae2fVK_AnnSlpOutSz_V(CLFLOAT, i_inp, i_out) + __ae2fVK_AnnSlpOutOff_V(CLFLOAT, i_inp, i_out))
 #define __ae2fVK_AnnSlpGoalOff_V(CLFLOAT, i_inp, i_out)	\

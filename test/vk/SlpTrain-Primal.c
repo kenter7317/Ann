@@ -35,7 +35,7 @@ int main() {
 			0, 0, 0
 			, 2, 1, 0, 0
 			, ActDummy, ActDummy, LossDeriv
-			, 0.01, 0.01
+			, 0.1, 0.1
 			, vkdev
 			, vkphydevmemprops
 			, NULL
@@ -122,7 +122,7 @@ int main() {
 		puts("Before IOMap Writting")
 			;
 
-		OutputMapped[0] = 7;
+		OutputMapped[0] = 4;
 		InputMapped[0] = 7;
 		InputMapped[1] = 7;
 
@@ -305,7 +305,7 @@ int main() {
 					, *mk.m_U0.m_alter.m_ptr
 					);
 
-			for(i = 0; i < 1000; i++)  {
+			for(i = 0; i < 8000; i++)  {
 				if (vkQueueSubmit(
 							vkqueue
 							, 1

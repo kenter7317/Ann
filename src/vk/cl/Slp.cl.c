@@ -33,7 +33,7 @@
 #define p_weight	glob
 #define p_bias		(glob + (osz * isz))
 #define p_inp		((p_bias) + (osz))
-#define p_out		((p_inp) + isz)
+#define p_out		((p_inp) + (isz))
 #define p_delta		((p_out) + osz)
 #define p_goal		((p_delta) + osz)
 
@@ -63,8 +63,17 @@ __kernel void kPredict(__global host_float_t* glob, const uint32_t unused) {
 		, isz = get_global_size(1);
 
 	clSlpPredict_t v_predict;
-
-	clSlpPredict(v_predict, p_out, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	clSlpPredict(v_predict
+			, p_out
+			, p_inp
+			, p_weight
+			, p_bias
+			, iidx
+			, isz
+			, oidx
+			, osz
+			, ACT
+			);
 }
 
 /**
@@ -118,9 +127,11 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 				);
 	}
 
+	delta = p_delta[oidx];
+
 	__ae2f_AnnSlpFollowOneW_imp(
 			p_inp[iidx] /** inp */
-			, (delta) /** delta */
+			, delta /** delta */
 			, glob /** weight */
 			, lr.m_weight
 			, isz
@@ -177,6 +188,7 @@ __kernel void kFit(lr_t lr, __global host_float_t* glob) {
 				);
 	}
 
+	delta = p_delta[oidx];
 	__ae2f_AnnSlpFollowOneW_imp(
 			p_inp[iidx] /** inp */
 			, delta /** delta */

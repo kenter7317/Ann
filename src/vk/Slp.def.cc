@@ -592,22 +592,6 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
 			break;
 		}
 
-		/***
-		 *
-		 * FIXME: You need to know if this is truely needed.
-		 __ae2fVK_AnnSlpMkOnePipeLayout_imp(
-		 break;
-		 , v_mk
-		 , ae2fVK_eAnnSlpPipeLayouts_kFit
-		 , sizeof(ae2f_float_t) * 2
-		 , vkalloccalls, vkdev
-		 );
-
-		 if ((v_mk).m_U0.m_alter.m_ptr->m_vkres != VK_SUCCESS) {
-		 assert(!"__ae2fVK_AnnSlpMkOnePipeLayout_imp 2 has failed.");
-		 break;
-		 } */
-
 		assert((vkcldeclaration) && "vkcldeclaration is null");
 		assert((vkcldefinition) && "vkcldefinition is null");
 
@@ -1106,7 +1090,7 @@ ae2f_MAC() _ae2fVK_AnnSlpWBMap(
 		if(ir_ptrbias) {
 			*(ir_ptrbias) = 
 				*(ir_ptrweight)
-				+ __ae2fVK_AnnSlpWeightSz((slp)->m_slp.m_Slp[0].m_inc, (slp)->m_slp.m_Slp[0].m_outc);
+				+ (slp)->m_slp.m_Slp[0].m_inc * (slp)->m_slp.m_Slp[0].m_outc;
 		}
 	}
 
@@ -1146,7 +1130,6 @@ ae2f_MAC() _ae2fVK_AnnSlpIOMap(
 	assert(ir_ptrinp);
 
 	if((slp) && (ir_ptrinp)) {
-
 		__ae2fVK_AnnSlpMapRangedGeneric_imp(
 				ae2f_float_t
 				, v_map
@@ -1166,7 +1149,7 @@ ae2f_MAC() _ae2fVK_AnnSlpIOMap(
 		if(ir_ptrout) {
 			*(ir_ptrout) = 
 				(*(ir_ptrinp))
-				+ __ae2fVK_AnnSlpInpSz((slp)->m_slp.m_Slp[0].m_inc, (slp)->m_slp.m_Slp[0].m_outc);
+				+ ((slp)->m_slp.m_Slp[0].m_inc);
 		}
 	}
 
