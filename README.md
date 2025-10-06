@@ -8,7 +8,11 @@
 
 > ANN interfaces with basic implementation for example.  
 > GPU acceleration backend is in plan to be shifted to vulkan.  
-> Currently no GPU acceleration is supported.
+
+# Supported GPU Acceleration
+> GPU acceleration via vulkan is now being implemented.  
+> Here is the list of supported gpu acceleration.
+- Slp/Mlp
 
 # Dependency
 ## When external libraries has fullly compiled
