@@ -19,6 +19,7 @@ ae2f_MAC() _ae2f_AnnSlpInitInpSz_imp(
 		, ae2f_float_t* const	weight_opt
 		, ae2f_float_t* const	bias_opt
 		, ae2f_float_t* const	cache_opt
+		, ae2f_float_t* const	cacheact_opt
 		, const size_t		inc
 		, const size_t		outc
 		)
@@ -28,6 +29,7 @@ ae2f_MAC() _ae2f_AnnSlpInitInpSz_imp(
 		+ 	((weight_opt) ? 0 : (inc) * (outc)) * sizeof(ae2f_float_t)
 		+	((bias_opt) ? 0 : (outc)) * sizeof(ae2f_float_t)
 		+	((cache_opt) ? 0 : (outc) * sizeof(ae2f_float_t))
+		+	((cacheact_opt) ? 0 : (outc) * sizeof(ae2f_float_t))
 		;
 }
 
@@ -42,7 +44,7 @@ ae2f_MAC() _ae2f_AnnSlpInit_imp(
 	/* Calculate maximum input size */
 	unless(incmax_opt) {
 		__ae2f_AnnSlpInitInpSz_imp(
-				v_init, 0, 0, 0, inc, outc
+				v_init, 0, 0, 0, 0, inc, outc
 				);
 		(_this).m_inc	=	(inc);
 	} else {
@@ -97,12 +99,13 @@ ae2f_MAC() _ae2f_AnnSlpInit(
 #define __ae2f_AnnSlpInit_C __ae2f_AnnSlpInit
 
 #if ae2f_NEED_CLASS
-ae2f_MAC() _ae2f_AnnSlpMk_imp(
+ae2f_MAC() _ae2f_AnnSlpMkVerbose_imp(
 		ae2f_AnnSlpMk_t v_mk,
 
 		ae2f_float_t* const weight_opt,
 		ae2f_float_t* const bias_opt,
 		ae2f_float_t* const cache_opt,
+		ae2f_float_t* const cacheact_opt,
 
 		const size_t inc,
 		const size_t outc,
@@ -117,7 +120,7 @@ ae2f_MAC() _ae2f_AnnSlpMk_imp(
 		ae2f_float_t learningrate_bias
 		)
 {
-	__ae2f_AnnSlpInitInpSz_imp(v_mk.m_stack, weight_opt, bias_opt, cache_opt, inc, outc);
+	__ae2f_AnnSlpInitInpSz_imp(v_mk.m_stack, weight_opt, bias_opt, cache_opt, cacheact_opt, inc, outc);
 	if((v_mk.m_ptr = ae2f_reinterpret_cast(
 					ae2f_AnnSlp*
 					, calloc((v_mk).m_stack + (offset_opt) + (extra_opt), 1)))
@@ -144,9 +147,16 @@ ae2f_MAC() _ae2f_AnnSlpMk_imp(
 		}
 
 		if(cache_opt) {
-			(v_mk).m_ptr->m_cache = (cache_opt);
+			(v_mk).m_ptr->m_cachedelta = (cache_opt);
 		} else {
-			(v_mk).m_ptr->m_cache = (v_mk).m_fieldptr.a;
+			(v_mk).m_ptr->m_cachedelta = (v_mk).m_fieldptr.a;
+			(v_mk).m_fieldptr.a += (outc);
+		}
+
+		if(cacheact_opt) {
+			(v_mk).m_ptr->m_cacheact = (cacheact_opt);
+		} else {
+			(v_mk).m_ptr->m_cacheact = (v_mk).m_fieldptr.a;
 		}
 
 		__ae2f_AnnSlpInit_imp(
@@ -219,33 +229,13 @@ ae2f_MAC() _ae2f_AnnSlpMk(
 
 #define __ae2f_AnnSlpMk_C __ae2f_AnnSlpMk
 
-/** @param v_predict has m_ret. That is the return value. */
-ae2f_MAC() _ae2f_AnnSlpPredictOne_imp(
-		ae2f_AnnSlpPredictOne_t		v_predict
-		, const ae2f_float_t* const	prm_in
-		, const ae2f_float_t* const	weight
-		, const ae2f_float_t		bias
-		, ae2f_AnnAct_t			act_opt
-		, const size_t			oidx
-		, const size_t isz
-		)
-{
-	(v_predict).m_tmp = 0;
-
-	for((v_predict).m_j = (isz); (v_predict).m_j--; ) {
-		(v_predict).m_tmp
-			+= (prm_in)[(v_predict).m_j]
-			* ((weight) + (oidx) * (isz))[(v_predict).m_j];
-	}
-
-	act_opt((&(v_predict).m_ret), ((v_predict).m_tmp + (bias)));
-}
 
 ae2f_MAC() _ae2f_AnnSlpPredict_imp(
 		ae2f_AnnSlpPredict_t v_predict
 		, const ae2f_AnnSlp_t _this
 		, const ae2f_float_t* const prm_in
 		, ae2f_float_t* const out
+		, ae2f_float_t* const out_cache
 		, const ae2f_float_t* const weight
 		, const ae2f_float_t* const bias
 		, ae2f_AnnAct_t act_opt
@@ -253,17 +243,19 @@ ae2f_MAC() _ae2f_AnnSlpPredict_imp(
 {
 	for((v_predict).m_i = (_this).m_outc; (v_predict).m_i--; )
 	{
-		__ae2f_AnnSlpPredictOne_imp(
-				v_predict
-				, prm_in
-				, weight
-				, (bias)[(v_predict).m_i]
-				, act_opt
-				, (v_predict).m_i
-				, (_this).m_inc
-				);
+		(v_predict).m_ret = 0;
 
-		(out)[(v_predict).m_i] = (v_predict).m_ret;
+		for((v_predict).m_j = (_this).m_inc; (v_predict).m_j--; ) {
+			(v_predict).m_ret
+				+= (prm_in)[(v_predict).m_j]
+				* ((weight) + (v_predict).m_i * (_this).m_inc)[(v_predict).m_j];
+		}
+
+		(out_cache)[(v_predict).m_i] = (v_predict).m_ret + (bias)[(v_predict).m_i];
+	}
+
+	for((v_predict).m_i = (_this).m_outc; (v_predict).m_i--;) {
+		act_opt(&(out)[(v_predict).m_i], (out_cache), (v_predict).m_i, (_this).m_outc);
 	}
 }
 
@@ -272,6 +264,7 @@ ae2f_MAC() _ae2f_AnnSlpPredict(
 		, const ae2f_AnnSlp_t* const _this
 		, const ae2f_float_t* const prm_in
 		, ae2f_float_t* const out
+		, ae2f_float_t* const out_cache
 
 		, const ae2f_float_t* const weight
 		, const ae2f_float_t* const bias
@@ -288,14 +281,14 @@ ae2f_MAC() _ae2f_AnnSlpPredict(
 		if(act_opt) {
 			__ae2f_AnnSlpPredict_imp(
 					(v_predict)
-					, *(_this), (prm_in), out
+					, *(_this), (prm_in), out, out_cache
 					, weight, bias, act_opt
 					);
 		} else {
 			__ae2f_AnnSlpPredict_imp(
 					(v_predict)
-					, *(_this), prm_in, out
-					, weight, bias, 
+					, *(_this), (prm_in), out, out_cache
+					, weight, bias, ae2f_AnnAct_PASS 
 					);
 		}
 	}
@@ -315,6 +308,7 @@ ae2f_MAC() _ae2f_AnnSlpPredict_C(
 		__ae2f_AnnSlpPredict(
 				err_opt, (_this)->m_Slp
 				, prm_in, out
+				, (_this)->m_cacheact
 				, (_this)->m_weight
 				, (_this)->m_bias
 				, (_this)->m_act
@@ -362,7 +356,7 @@ ae2f_MAC() _ae2f_AnnSlpFollowOne_imp(
 		, ae2f_float_t v_bias
 		)
 {
-	for((v_follow).m_j = 0; (v_follow).m_j < (inp_sz); ++(v_follow).m_j) {
+	for((v_follow).m_j = (inp_sz); (v_follow).m_j--; ) {
 		((weight) + (inp_sz) * (out_idx))[(v_follow).m_j]
 			-= (delta) * (prm_in)[(v_follow).m_j] * (learningrate);
 	}
@@ -453,27 +447,26 @@ ae2f_MAC() _ae2f_AnnSlpFollow_C(
 #endif
 
 ae2f_MAC() _ae2f_AnnSlpFetchDeltaOne_imp(
-		ae2f_float_t			v_fetchdelta_0,
-		ae2f_float_t			v_fetchdelta_1,
+		ae2f_float_t		ret,
 
-		const ae2f_float_t* const	out
-		, const ae2f_float_t* const	out_desired
+		ae2f_float_t* const	ref_tmp0,
+		ae2f_float_t* const	ref_tmp1,
 
-		, ae2f_AnnAct_t			actderiv_opt
-		, ae2f_AnnLoss_t		lossderiv
+		const ae2f_float_t* const	prm_out,
+		const ae2f_float_t* const	prm_out_desired,
 
-		, ae2f_float_t			retdelta
-		, const size_t			oidx
-		, const size_t			osz
+		const size_t			prm_oidx,
+		const size_t			prm_osz,
+
+
+		ae2f_AnnAct_t			prm_actderiv,
+		ae2f_AnnLoss_t			prm_lossderiv
 		)
 {
-	actderiv_opt(&(v_fetchdelta_0), (out)[oidx]);
-	lossderiv((&(v_fetchdelta_1)), (out), (out_desired), (oidx), (osz));
+	prm_actderiv(ref_tmp0, prm_out, prm_oidx, prm_osz);
+	prm_lossderiv(ref_tmp1, prm_out, prm_out_desired, prm_oidx, prm_osz);
 
-	(retdelta) = 
-		(v_fetchdelta_0) *
-		(v_fetchdelta_1)
-		;
+	(ret) = *(ref_tmp0) * *(ref_tmp1);
 }
 
 ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
@@ -488,16 +481,26 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_imp(
 
 		, ae2f_float_t* const		retdelta
 		)
-{
+{	
 	for((v_delta).m_i = (slp).m_outc; (v_delta).m_i--; )
-		__ae2f_AnnSlpFetchDeltaOne_imp(
-				(v_delta).m_tmp, (v_delta).m_tmp1
-				, out, out_desired
-				, actderiv_opt, lossderiv
-				, (retdelta)[v_delta.m_i]
+	{
+		actderiv_opt(
+				&(v_delta).m_tmp1
+				, (out)
 				, (v_delta).m_i
 				, (slp).m_outc
 				);
+
+		lossderiv(
+				&(v_delta).m_tmp
+				, (out)
+				, (out_desired)
+				, (v_delta).m_i, (slp).m_outc
+				);
+
+		(retdelta)[(v_delta).m_i]
+			= (v_delta).m_tmp * (v_delta).m_tmp1;
+	}
 }
 
 ae2f_MAC() _ae2f_AnnSlpFetchDelta(
@@ -534,7 +537,7 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta(
 		__ae2f_AnnSlpFetchDelta_imp(
 				v_delta, (*(slp))
 				, out, out_desired
-				, , lossderiv
+				, ae2f_AnnActDeriv_PASS, lossderiv
 				, retdelta
 				);
 	}
@@ -558,8 +561,8 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 	else unless((slp)->m_lossderiv)
 		(err) && (*(err) |= ae2f_errGlob_IMP_NOT_FOUND);
 	else {
+		ae2f_AnnSlpFetchDelta_t v_delta;
 		if((slp)->m_actderiv) {
-			ae2f_AnnSlpFetchDelta_t v_delta;
 			__ae2f_AnnSlpFetchDelta_imp(
 					v_delta, (slp)->m_Slp[0]
 					, out, out_desired
@@ -567,11 +570,10 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 					, retdelta
 					);
 		} else {
-			ae2f_AnnSlpFetchDelta_t v_delta;
 			__ae2f_AnnSlpFetchDelta_imp(
 					v_delta, (slp)->m_Slp[0]
 					, out, out_desired
-					, , (slp)->m_lossderiv
+					, ae2f_AnnActDeriv_PASS, (slp)->m_lossderiv
 					, retdelta
 					);
 		}
@@ -583,54 +585,15 @@ ae2f_MAC() _ae2f_AnnSlpFetchDelta_C(
 	typedef char NO_ae2f_NEED_CLASS[-1]
 #endif
 
-ae2f_MAC() _ae2f_AnnSlpFitOne_imp(
-		ae2f_AnnSlpFitOne_t	v_fit
-
-		, const ae2f_float_t* const inp
-		, const ae2f_float_t* const out
-		, const ae2f_float_t* const out_desired
-		, ae2f_float_t* const weight
-
-		, ae2f_float_t r_bias
-		, ae2f_float_t r_cachedelta
-
-		, ae2f_AnnAct_t			actderiv_opt
-		, ae2f_AnnLoss_t		lossderiv
-
-		, const ae2f_float_t	learningrate
-		, const ae2f_float_t	learningrate_bias
-
-		, const size_t iidx
-		, const size_t oidx
-
-		, const size_t isz
-, const size_t osz
-)
-{
-	__ae2f_AnnSlpFetchDeltaOne_imp(
-			(v_fit).m_tmp, (v_fit).m_tmp1
-			, out, out_desired
-			, actderiv_opt, lossderiv
-			, r_cachedelta
-			, oidx, osz
-			);
-
-
-	__ae2f_AnnSlpFollowOne_imp(
-			v_fit, inp, r_cachedelta, weight
-			, learningrate, learningrate_bias
-			, isz, oidx, r_bias
-			);
-}
 
 ae2f_MAC() _ae2f_AnnSlpFit_imp(
 		ae2f_AnnSlpFit_t v_fit
 
 		, const ae2f_AnnSlp_t slp
 
-		, const ae2f_float_t* const inp
-		, const ae2f_float_t* const out
-		, const ae2f_float_t* const out_desired
+		, const ae2f_float_t* const	inp
+		, const ae2f_float_t* const	out
+		, const ae2f_float_t* const	out_desired
 
 		, ae2f_float_t* const weights
 		, ae2f_float_t* const bias
@@ -711,7 +674,7 @@ ae2f_MAC() _ae2f_AnnSlpFit(
 					, weights
 					, bias
 					, cachedelta
-					, 
+					, ae2f_AnnActDeriv_PASS
 					, lossderiv
 					, learningrate
 					, learningrate_bias
@@ -740,7 +703,7 @@ ae2f_MAC() _ae2f_AnnSlpFit_C(
 				, prm_out_desired
 				, (_this)->m_weight
 				, (_this)->m_bias
-				, (_this)->m_cache
+				, (_this)->m_cachedelta
 				, (_this)->m_actderiv
 				, (_this)->m_lossderiv
 				, (_this)->m_learningrate
@@ -754,59 +717,12 @@ ae2f_MAC() _ae2f_AnnSlpFit_C(
 	typedef char NO_ae2f_NEED_CLASS[-1]
 #endif
 
-ae2f_MAC() _ae2f_AnnSlpTrainOne_imp(
-		ae2f_AnnSlpTrainOne_t	v_train
-
-		, ae2f_opt ae2f_AnnAct_t		act
-		, ae2f_opt ae2f_AnnAct_t		actderiv
-		, ae2f_AnnLoss_t			lossderiv
-
-		, const ae2f_float_t* const	inp
-		, ae2f_float_t* const		out_cache
-		, const ae2f_float_t* const	out_desired
-
-		, ae2f_float_t*	const		weight
-		, ae2f_float_t			v_bias
-		, ae2f_float_t			r_cachedelta
-
-		, const ae2f_float_t		learningrate
-		, const ae2f_float_t		learningrate_bias
-
-		, const size_t			oidx
-		, const size_t			osz
-		, const size_t			isz
-)
-{
-	__ae2f_AnnSlpPredictOne_imp(
-			v_train
-			, inp
-			, weight
-			, v_bias
-			, act
-			, oidx
-			, isz
-			);
-
-	(out_cache)[oidx] = (v_train).m_ret;
-
-	__ae2f_AnnSlpFitOne_imp(
-			v_train
-			, inp
-			, out_cache, out_desired
-			, weight
-			, v_bias
-			, r_cachedelta
-			, actderiv, lossderiv
-			, learningrate, learningrate_bias
-			, iidx, oidx, isz, osz
-			);
-}
-
 ae2f_MAC() _ae2f_AnnSlpTrain_imp(
 		ae2f_AnnSlpTrain_t			v_train
 		, const ae2f_AnnSlp_t		slp
 
 		, const ae2f_float_t* const	inp
+		, ae2f_float_t* const		out
 		, ae2f_float_t* const		out_cache
 		, const ae2f_float_t* const	out_desired
 
@@ -822,12 +738,26 @@ ae2f_MAC() _ae2f_AnnSlpTrain_imp(
 		, const ae2f_float_t		learningrate_bias
 		)
 {
-	__ae2f_AnnSlpPredict_imp(v_train, slp, inp, out_cache, weights, bias, act);
+	__ae2f_AnnSlpPredict_imp(
+			v_train
+			, slp
+			, inp
+			, out
+			, out_cache
+			, weights
+			, bias
+			, act
+			);
 	__ae2f_AnnSlpFit_imp(
-			v_train, slp, inp, out_cache, out_desired
-			, weights, bias, cachedelta
-			, actderiv, lossderiv
-			, learningrate, learningrate_bias
+			v_train, slp, inp
+			, out, out_desired
+			, weights
+			, bias
+			, cachedelta
+			, actderiv
+			, lossderiv
+			, learningrate
+			, learningrate_bias
 			);
 }
 
@@ -844,11 +774,11 @@ ae2f_MAC() _ae2f_AnnSlpTrain_C(
 	else {
 		__ae2f_AnnSlpTrain(
 				err, (slp)->m_Slp, inp
-				, (slp)->m_cache
+				, (slp)->m_cacheact
 				, out_desired
 				, (slp)->m_weight
 				, (slp)->m_bias
-				, (slp)->m_cache
+				, (slp)->m_cachedelta
 				, (slp)->m_act
 				, (slp)->m_actderiv
 				, (slp)->m_lossderiv
@@ -897,16 +827,16 @@ ae2f_MAC() _ae2f_AnnSlpTrain(
 		if (act) {
 			if(actderiv) {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
+						v_train, (*slp), inp, out_cache, out_cache
 						, out_desired, weights, bias
 						, cachedelta, act, actderiv, lossderiv
 						, learningrate, learningrate_bias
 						);
 			} else {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
+						v_train, (*slp), inp, out_cache, out_cache
 						, out_desired, weights, bias
-						, cachedelta, act, , lossderiv
+						, cachedelta, act, ae2f_AnnActDeriv_PASS, lossderiv
 						, learningrate, learningrate_bias
 						);
 
@@ -914,16 +844,16 @@ ae2f_MAC() _ae2f_AnnSlpTrain(
 		} else {
 			if(actderiv) {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
+						v_train, (*slp), inp, out_cache, out_cache
 						, out_desired, weights, bias
-						, cachedelta, , actderiv, lossderiv
+						, cachedelta, ae2f_AnnAct_PASS, actderiv, lossderiv
 						, learningrate, learningrate_bias
 						);
 			} else {
 				__ae2f_AnnSlpTrain_imp(
-						v_train, (*slp), inp, out_cache
+						v_train, (*slp), inp, out_cache, out_cache
 						, out_desired, weights, bias
-						, cachedelta, , , lossderiv
+						, cachedelta, ae2f_AnnAct_PASS, ae2f_AnnActDeriv_PASS, lossderiv
 						, learningrate, learningrate_bias
 						);
 

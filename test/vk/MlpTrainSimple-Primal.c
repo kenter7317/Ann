@@ -35,8 +35,8 @@ int main() {
 			, NULL_GENERIC(VkAllocationCallbacks)
 			, ""
 			"#define CL_Q 1\n"
-			"#define ACT_DERIV(lidx, r, output) { *(r) = (((output) + 1e-7) * (1.0 - (output) - 1e-7)); } \n"
-			"#define ACT(lidx, r, x) { *(r) = (1.0 / (1.0 + exp(-(x)))); } \n"
+			"#define ACT_DERIV(lidx, r, x, i, c) { *(r) = (((x)[i] + 1e-7) * (1.0 - (x)[i] - 1e-7)); } \n"
+			"#define ACT(lidx, r, x, i, c) { *(r) = (1.0 / (1.0 + exp(-(x[i])))); } \n"
 			"#define LOSS_DERIV(r, o, t, i, c) { *(r) = ((o)[i] - (t)[i]) / (c); } \n"
 			, "\n"
 			);

@@ -18,15 +18,15 @@
 #include "./Mlp.auto.h"
 
 #ifndef ACT
-#define ACT(layer_idx, r, x)
+#define ACT(layer_idx, r, y, i, c) *(r) = (y)[i]
 #endif
 
 #ifndef ACT_DERIV
-#define ACT_DERIV(layer_idx, r, x)
+#define ACT_DERIV(layer_idx, r, y, i, c) *(r) = 1 
 #endif
 
 #ifndef LOSS_DERIV
-#define LOSS_DERIV(r, y, y_desired, i, c)
+#define LOSS_DERIV(r, y, y_desired, i, c) *(r) = (y)[i] - (y_desired)[i]
 #endif
 
 #define pgsz		sz
@@ -57,7 +57,6 @@
 
 /** @brief sizeof(ae2f_float_t) * pgsz */
 #define p_goal		(p_deltastream + llsz * pgsz)
-
 
 #define _r_inp(lidx)	(p_outstream + pgsz * (lidx))
 #define _r_out(lidx)	(p_outstream + pgsz * ((lidx) + 1))
@@ -92,11 +91,11 @@
 #define l_tmpoutc	(lp_deltastream + (pgsz << 1))
 
 /** For every runners */
-#define ACT_RUN(r, x)			ACT(lidx, r, x)
-#define ACT_DERIV_RUN(r, x)		ACT_DERIV(lidx, r, x)
+#define ACT_RUN(r, y, i, c)			ACT(lidx, r, y, i, c)
+#define ACT_DERIV_RUN(r, y, i, c)		ACT_DERIV(lidx, r, y, i, c)
 
-#define ACT_RUN_THEN(r, x)		ACT((lidx - 1), r, x)
-#define ACT_DERIV_RUN_THEN(r, x)	ACT_DERIV((lidx - 1), r, x)
+#define ACT_RUN_THEN(r, y, i, c)		ACT((lidx - 1), r, y, i, c)
+#define ACT_DERIV_RUN_THEN(r, y, i, c)	ACT_DERIV((lidx - 1), r, y, i, c)
 
 typedef const struct sz2_t {
 	uint32_t	m_lsz;
@@ -192,11 +191,6 @@ typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 4 ? 
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
 __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
-	if(lsz < 3) {
-		/** ASSERT */
-		return;
-	}
-
 	size_t		lidx = llsz - 1;
 	ae2f_float_t	v_tmp;
 
@@ -204,6 +198,11 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
 		, sz = get_global_size(0);
+
+	if(lsz < 3) {
+		/** ASSERT */
+		return;
+	}
 
 	if(oidx < r_osz && iidx < r_isz) {
 		__ae2f_AnnSlpFollowOneW_imp(
@@ -310,20 +309,21 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
 __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
-	if(lsz < 3) {
-		/** ASSERT */
-		return;
-	}
+#define tmp0	predict.m_tmp
+#define tmp1	predict.m_ret
 
 	size_t		lidx = 0;
-	ae2f_float_t	v_tmp, v_tmp1;
-
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
 		, sz = get_global_size(0);
 
-	clSlpPredict_t	v_predict;
+	ae2f_AnnSlpPredictOne_t	predict;
+
+	if(lsz < 3) {
+		/** ASSERT */
+		return;
+	}
 
 	if(iidx < r_isz && oidx == 0)
 		l_inp()[iidx] = r_inp[iidx];
@@ -331,26 +331,25 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 	barrier(CLK_ALL_MEM_FENCE);
 
 	for(; lidx < llsz - 1; lidx++) {
-		clSlpPredict(v_predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+		clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 		barrier(CLK_ALL_MEM_FENCE);
 	}
 
 	/** lidx == llsz - 1 */
-	clSlpPredict(v_predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+
 	barrier(CLK_ALL_MEM_FENCE);
 
 	if(oidx < r_osz && iidx == 0) {
 		r_out[oidx] = l_out()[oidx];
 		__ae2f_AnnSlpFetchDeltaOne_imp(
-				v_tmp
-				, v_tmp1
+				l_delta[oidx]
+				, &tmp0, &tmp1
 				, l_out()
 				, p_goal
+				, oidx, r_osz
 				, ACT_DERIV_RUN
 				, LOSS_DERIV 
-				, l_delta[oidx]
-				, oidx
-				, r_osz
 				);
 	}
 
@@ -362,9 +361,10 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 	/** lidx == llsz - 1 */
 	while(--lidx) {
 		if(oidx < r_osz && iidx < r_isz) {
+			tmp0 = l_delta[oidx];
 			__ae2f_AnnSlpFollowOneW_imp(
 					l_inp()[iidx]
-					, l_delta[oidx]
+					, tmp0
 					, r_weight
 					, lr.m_weight
 					, r_isz, iidx
@@ -374,7 +374,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 			if(iidx == 0) {
 				__ae2f_AnnSlpFollowOneB_imp(
 						r_bias[oidx]
-						, l_delta[oidx]
+						, tmp0
 						, lr.m_bias
 						);
 			}
@@ -389,7 +389,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 			  );
 
 		_clMlpRvrse(
-				v_tmp
+				tmp0
 				, l_delta_then
 				, oidx, iidx
 				, r_isz, ACT_DERIV_RUN_THEN
@@ -402,9 +402,11 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 
 	/** lidx == 0 */
 	if(oidx < r_osz && iidx < r_isz) {
+		tmp0 = l_delta[oidx];
+
 		__ae2f_AnnSlpFollowOneW_imp(
 				l_inp()[iidx]
-				, l_delta[oidx]
+				, tmp0
 				, r_weight
 				, lr.m_weight
 				, r_isz, iidx
@@ -414,7 +416,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 		if(iidx == 0) {
 			__ae2f_AnnSlpFollowOneB_imp(
 					r_bias[oidx]
-					, l_delta[oidx]
+					, tmp0
 					, lr.m_bias
 					);
 		}

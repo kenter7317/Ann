@@ -7,13 +7,13 @@
 static ae2f_AnnAct_t Act, ActDeriv;
 
 static void
-Act(ae2f_float_t* r, ae2f_float_t x) {
-	r[0] = 1.0 / (1.0 + exp(-x));
+Act(ae2f_float_t* r, const ae2f_float_t* x, size_t i, size_t c) {
+	r[0] = 1.0 / (1.0 + exp(-x[i]));
 }
 
 static void
-ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-	output += 1e-7;
+ActDeriv(ae2f_float_t* r, const ae2f_float_t* _output, size_t i, size_t c) {
+	const ae2f_float_t output = _output[i] + 1e-7;
 	r[0] = output * (1.0 - output);
 }
 
@@ -22,6 +22,8 @@ static ae2f_AnnLoss_t LossDeriv;
 /** Cross entrophy */
 static void
 LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
+	printf("output: %f, goal: %f\n", output[i], target[i]);
+
 	const ae2f_float_t epsilon = 1e-7; // Small value to prevent division by zero
 	ae2f_float_t o_i = output[i];
 	// Clip output to avoid log(0) or division by zero

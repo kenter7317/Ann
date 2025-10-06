@@ -36,6 +36,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
  * @brief
  * Index redirector from [m_headc, prm_seqlen, kdist] to [prm_seqlen, m_mdldist]
  *
+ * @returns		{const size_t}
  * @param prm_mhattn	{const ae2f_AnnMhattn_t&}
  * @param prm_seqlen	{const size_t}
  * @param m_i2		{const size_t}	< m_headc
@@ -57,6 +58,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
  * @brief
  * Index redirector from [prm_seqlen, m_mdldist] to [m_headc, prm_seqlen, kdist]
  *
+ * @returns		{const size_t}
  * @param prm_mhattn	{const ae2f_AnnMhattn_t&}
  * @param prm_seqlen	{const size_t}
  * @param m_i1		{const size_t}	< prm_seqlen

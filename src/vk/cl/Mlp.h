@@ -39,7 +39,7 @@ ae2f_MAC() clMlpRvrse(
 		)
 {
 	if((i_iidx) < (i_isz) && !(i_oidx)) {
-		i_actderiv_then(&(v_tmp), (i_inp)[i_iidx]);
+		i_actderiv_then(&(v_tmp), (i_inp), i_iidx, i_isz);
 		(r_delta_then)[i_iidx] = (v_tmp) * (i_deltaseed)[i_iidx];
 	}
 }

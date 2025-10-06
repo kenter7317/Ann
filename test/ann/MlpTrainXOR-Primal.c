@@ -10,12 +10,12 @@
 #include <stdlib.h>
 #include <time.h>
 
-static void Act(ae2f_float* r, ae2f_float_t x) {	
-	*r = 1.0 / (1.0 + exp(-x));
+static void Act(ae2f_float* r, const ae2f_float_t* x, size_t i, size_t c) {	
+	*r = 1.0 / (1.0 + exp(-x[i]));
 }
 
-static void ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-	*r = output * (1.0 - output);
+static void ActDeriv(ae2f_float_t* r, const ae2f_float_t* output, size_t i, size_t c) {
+	*r = output[i] * (1.0 - output[i]);
 }
 
 static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
@@ -121,8 +121,10 @@ int main() {
 					);
 
 			__ae2f_AnnSlpFetchDelta_imp(
-					__test_stack.m_fetch, slplast, output, &goal_xor[i],
-					ActDeriv, LossDeriv, &mlp_deltastream[MLP_OUT_GREATEST] 
+					__test_stack.m_fetch, slplast
+					, output
+					, &goal_xor[i]
+					, ActDeriv, LossDeriv, &mlp_deltastream[MLP_OUT_GREATEST] 
 					);
 
 			__ae2f_AnnMlpFollow_imp(

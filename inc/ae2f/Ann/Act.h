@@ -14,9 +14,18 @@
 
 #include <stddef.h>
 #include <ae2f/Float.h>
+#include <ae2f/Guide.h>
 
 /// @brief Customisable activasion function type.
-typedef void ae2f_AnnAct_t (ae2f_float_t* ret, ae2f_float_t x);
+typedef void ae2f_AnnAct_t (
+		ae2f_float_t*				ret
+		, ae2f_LP(count) const ae2f_float_t*	out
+		, const size_t				index
+		, const size_t				count
+		);
+
+#define ae2f_AnnAct_PASS(r, o, i, c)		*(r) = (o)[i]
+#define ae2f_AnnActDeriv_PASS(r, o, i, c)	
 
 /// @brief
 /// Specify the way of calculating loss.
@@ -27,11 +36,13 @@ typedef void ae2f_AnnAct_t (ae2f_float_t* ret, ae2f_float_t x);
 /// @param goal Expected value (wanted)
 /// @return Calculated loss.
 typedef void ae2f_AnnLoss_t (
-		ae2f_float_t*		ret,
-		const ae2f_float_t*	out, 
-		const ae2f_float_t* 	goal,
-		size_t			index,
-		size_t			count
+		ae2f_float_t* 				ret,
+		ae2f_LP(count) const ae2f_float_t*	out, 
+		ae2f_LP(count) const ae2f_float_t* 	goal,
+		const size_t				index,
+		const size_t				count
 		);
+
+#define ae2f_AnnLossDeriv_PASS(r, o, g, i, c)	*(r) = (o)[i] * (1.0 - (g)[i]);
 
 #endif

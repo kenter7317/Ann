@@ -12,7 +12,7 @@ ae2fVK_AnnSlpMk_t	mk;
 
 size_t			mapinp;
 
-void FakeAct(ae2f_float_t*, ae2f_float_t v) {  }
+void FakeAct(ae2f_float_t*, const ae2f_float_t*, size_t, size_t) {  }
 
 void FakeLoss (
 		ae2f_float_t*,
@@ -41,7 +41,7 @@ int main() {
 
 			, 
 			"#define LOSS_DERIV(r, y, y_desired, i, c)\n"
-			  "#define ACT(r, x) *(r) = ((x) - 3)\n"
+			  "#define ACT(r, x, i, c) *(r) = ((x)[i] - 3)\n"
 			, "/** This is also a comment */"
 			);
 

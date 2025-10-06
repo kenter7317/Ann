@@ -33,7 +33,10 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 	 * @brief
 	 * Cache for layer outputs.
 	 */
-	ae2f_float_t* restrict m_cache;
+	ae2f_float_t* restrict m_cachedelta;
+
+	/** @brief cache for activation input */
+	ae2f_float_t* restrict m_cacheact;
 
 	/**
 	 * @brief
@@ -265,7 +268,6 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
 #define ae2f_AnnSlpTrain	__ae2f_AnnSlpTrain_C
 #define ae2f_AnnSlpFetchDelta	__ae2f_AnnSlpFetchDelta_C
 
-
 #endif /** macbuild */
 #endif
 
@@ -303,6 +305,12 @@ ae2f_structdef(struct, ae2f_AnnSlpMk_t) {
 #endif
 
 #include "./Slp.auto.h"
+
+#define __ae2f_AnnSlpMk_imp(v_mk, p_weight_opt, p_bias_opt, p_cache_opt, ...)	\
+	__ae2f_AnnSlpMkVerbose_imp(						\
+			v_mk, p_weight_opt, p_bias_opt, p_cache_opt		\
+			, ae2f_reinterpret_cast(ae2f_float_t* const, NULL)	\
+			, __VA_ARGS__)
 
 #if ae2f_WhenCXX(!)0 && !defined(ae2f_Ann_Slp_cc) && ae2f_NEED_CLASS
 #define ae2f_Ann_Slp_cc

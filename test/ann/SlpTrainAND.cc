@@ -5,13 +5,13 @@
 #include <math.h>
 
 static void
-Act(ae2f_float_t* r, ae2f_float_t x) {
-	*r = 1.0 / (1.0 + exp(-x));
+Act(ae2f_float_t* r, const ae2f_float_t* x, size_t i, size_t c) {
+	*r = 1.0 / (1.0 + exp(-x[i]));
 }
 
 static void
-ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-	output += 1e-7;
+ActDeriv(ae2f_float_t* r, const ae2f_float_t* _output, size_t i, size_t c) {
+	const ae2f_float_t output = _output[i] - 1e-7;
 	*r = output * (1.0 - output);
 }
 

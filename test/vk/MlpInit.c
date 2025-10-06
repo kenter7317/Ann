@@ -2,8 +2,6 @@
 #include "../vk.h"
 
 static ae2fVK_AnnMlpMk_t s_mk;
-
-static void	ActDummy(ae2f_float*, ae2f_float);
 static void	LossDummy(ae2f_float* a, const ae2f_float* b, const ae2f_float* c, size_t d, size_t e)
 {
 	return;
@@ -15,8 +13,6 @@ static size_t	s_lpModelLen[] = {2, 4, 4, 1};
 
 int main() {
 	Test_VkInit();
-
-	
 
 	__ae2fVK_AnnMlpMk_imp(
 			s_mk

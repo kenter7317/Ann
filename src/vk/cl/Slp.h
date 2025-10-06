@@ -36,8 +36,9 @@ ae2f_MAC() clSlpPredict(
 				);
 
 		if(!(iidx)) {
-			(v_predict).m_sum = (loc)[oidx];
-			ACT((&(v_predict).m_ret), ((v_predict).m_sum + (p_bias)[oidx]));
+			(loc)[oidx] += (p_bias)[oidx];
+			ACT((&(v_predict).m_ret), (loc), oidx, osz);
+			barrier(CLK_ALL_MEM_FENCE);
 			(loc)[oidx] = (v_predict).m_ret;
 		}
 	}
@@ -68,12 +69,13 @@ ae2f_MAC() clSlpPredict_Q(
 		)
 {
 	if((oidx) < (osz) && (iidx) < (isz)) {
-		(v_predict).m_sum = work_group_reduce_add(
+		(loc)[oidx] = work_group_reduce_add(
 				(p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
-				);
+				) + (p_bias)[oidx];
 
 		if(!(iidx)) {
-			ACT((&(v_predict).m_ret), ((v_predict).m_sum + (p_bias)[oidx]));
+			ACT((&(v_predict).m_ret), loc, oidx, osz);
+			barrier(CLK_ALL_MEM_FENCE);
 			(loc)[oidx] = (v_predict).m_ret;
 		}
 	}

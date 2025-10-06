@@ -16,14 +16,7 @@ ae2fVK_AnnSlpMk_t	mk;
 size_t			mapinp;
 
 static void
-Act(ae2f_float_t* r, ae2f_float_t x) {
-	*r = 1.0 / (1.0 + exp(-x));
-}
-
-static void
-ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-	*r = ((output) + 1e-7) * (1.0 - (output) - 1e-7);
-}
+ActDummy(ae2f_float_t* _0, const ae2f_float_t* _1, size_t _2, size_t _3) {};
 
 static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {
 	*r = ((output[i] - target[i]) / c);
@@ -41,15 +34,15 @@ int main() {
 			mk,
 			0, 0, 0
 			, 2, 1, 0, 0
-			, Act, ActDeriv, LossDeriv
+			, ActDummy, ActDummy, LossDeriv
 			, 0.01, 0.01
 			, vkdev
 			, vkphydevmemprops
 			, NULL
 			, 
 			"#define CL_Q 0\n"
-			"#define ACT_DERIV(r, output) *(r) = (((output) + 1e-7) * (1.0 - (output) - 1e-7)); \n"
-			"#define ACT(r, x) *(r) = (1.0 / (1.0 + exp(-(x)))); \n"
+			"#define ACT_DERIV(r, x, i, c) *(r) = (((x)[i] + 1e-7) * (1.0 - (x)[i] - 1e-7)); \n"
+			"#define ACT(r, x, i, c) *(r) = (1.0 / (1.0 + exp(-(x[i])))); \n"
 			"#define LOSS_DERIV(r, o, t, i, c) *(r) = ((o)[i] - (t)[i]) / (c);\n"
 			""
 			, "/** This is also a comment */\n"

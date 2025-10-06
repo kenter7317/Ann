@@ -18,15 +18,15 @@
 #include "./Slp.auto.h"
 
 #ifndef ACT
-#define ACT(r, x)
+#define ACT(r, y, i, c)		*(r) = (y)[i];
 #endif
 
 #ifndef ACT_DERIV
-#define ACT_DERIV(r, x)
+#define ACT_DERIV(r, y, i, c)		1
 #endif
 
 #ifndef LOSS_DERIV
-#define LOSS_DERIV(r, y, y_desired, i, c)
+#define LOSS_DERIV(r, y, y_desired, i, c) *(r) = (y)[i] - (y_desired)[i];
 #endif
 
 /** Magic numbers */
@@ -92,7 +92,7 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 		, isz = get_global_size(1)
 		;
 
-	ae2f_float_t		delta = 0, v_tmp = 0, v_tmp1 = 0;
+	ae2f_float_t		delta, v_tmp = 0, v_tmp1 = 0;
 	clSlpPredict_t		v_predict;
 
 	clSlpPredict(v_predict, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
@@ -101,16 +101,15 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 		p_out[oidx] = loc[oidx];
 
 		__ae2f_AnnSlpFetchDeltaOne_imp(
-				v_tmp, v_tmp1
+				delta
+				, &v_tmp, &v_tmp1
 				, loc						/** out */
 				, p_goal					/** out_desired */ 
-				, ACT_DERIV, LOSS_DERIV
-				, delta
 				, oidx, osz
+				, ACT_DERIV, LOSS_DERIV
 				);
 
-		/** delta */
-		p_delta[oidx] = (delta);
+		p_delta[oidx] = delta;
 
 		__ae2f_AnnSlpFollowOneB_imp(
 				p_bias[oidx] /** r_bias */
@@ -159,14 +158,13 @@ __kernel void kFit(lr_t lr, __global host_float_t* glob) {
 
 	if(iidx == 0) {
 		__ae2f_AnnSlpFetchDeltaOne_imp(
-				v_tmp, v_tmp1
+				delta /** retdelta */
+				, &v_tmp, &v_tmp1
 				, p_out /** out */
 				, p_goal /** out_desired */ 
+				, oidx, osz
 				, ACT_DERIV
 				, LOSS_DERIV
-				, delta /** retdelta */
-				, oidx
-				, osz
 				);
 
 		/** delta */

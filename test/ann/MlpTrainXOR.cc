@@ -3,12 +3,12 @@
 #include <cstdio>
 #include <math.h>
 
-static void Act(ae2f_float_t* r, ae2f_float_t x) {    
-    *r = 1.0 / (1.0 + exp(-x));
+static void Act(ae2f_float_t* r, const ae2f_float_t* x, size_t i, size_t) {    
+    *r = 1.0 / (1.0 + exp(-x[i]));
 }
 
-static void ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-    *r = output * (1.0 - output);
+static void ActDeriv(ae2f_float_t* r, const ae2f_float_t* output, size_t i, size_t) {
+    *r = output[i] * (1.0 - output[i]);
 }
 
 static void LossDerivCROSS(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* target, size_t i, size_t c) {

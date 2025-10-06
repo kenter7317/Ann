@@ -48,7 +48,7 @@ ae2f_structdef_n(struct, ae2f_AnnMlpPredict_t, ae2f_AnnMlpPredictStream_t) {
 	 * @brief
 	 * Return value.
 	 */
-	ae2f_float_t	m_ret, m_tmp;
+	ae2f_float_t	m_ret;
 };
 
 /**

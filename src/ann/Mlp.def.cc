@@ -360,6 +360,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 				, (v_predict)
 				, inp
 				, ((outcache) + (0 OPER_NONE) * (v_predict).m_outc_max)
+				, ((outcache) + (0 OPER_NONE) * (v_predict).m_outc_max)
 				, weight
 				, bias
 				, (act_opt)[0]
@@ -369,7 +370,8 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 				(v_predict)
 				, (v_predict)
 				, inp
-				, (outcache + (0 OPER_NONE) * (v_predict).m_outc_max)
+				, ((outcache) + (0 OPER_NONE) * (v_predict).m_outc_max)
+				, ((outcache) + (0 OPER_NONE) * (v_predict).m_outc_max)
 				, weight
 				, bias
 				,
@@ -397,6 +399,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 					, (v_predict)
 					, ((outcache) + (((v_predict).m_k OPER_NEG) * (v_predict).m_outc_max))
 					, ((outcache) + (((v_predict).m_k OPER_NONE) * (v_predict).m_outc_max))
+					, ((outcache) + (((v_predict).m_k OPER_NONE) * (v_predict).m_outc_max))
 					, (weight) + ((v_predict).m_k) * ((mlp).m_weightc)
 					, (bias) + ((v_predict).m_k) * (v_predict).m_outc_max
 					, (act_opt)[(v_predict).m_k]
@@ -407,6 +410,10 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 					, (v_predict)
 					, ((outcache) + (
 							((v_predict).m_k OPER_NEG)
+							* (v_predict).m_outc_max
+							))
+					, ((outcache) + (
+							((v_predict).m_k OPER_NONE)
 							* (v_predict).m_outc_max
 							))
 					, ((outcache) + (
@@ -431,6 +438,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 				, (v_predict)
 				, ((outcache) + ((((v_predict).m_k OPER_NEG)) * (v_predict).m_outc_max))
 				, (out)
+				, (out)
 				, (weight) + ((v_predict).m_k) * (v_predict).m_outc_max * (v_predict).m_outc_max
 				, (bias) + ((v_predict).m_k) * (v_predict).m_outc_max
 				, (act_opt)[(v_predict).m_k]
@@ -440,6 +448,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 				(v_predict)
 				, (v_predict)
 				, ((outcache) + ((((v_predict).m_k OPER_NEG)) * (v_predict).m_outc_max))
+				, (out)
 				, (out)
 				, ((weight) + ((v_predict).m_k) * (mlp).m_weightc)
 				, ((bias) + ((v_predict).m_k) * (v_predict).m_outc_max)
@@ -525,7 +534,7 @@ ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
 		)
 {
 	for((v_send) = (slp_then).m_outc; (v_send)--;) {
-		actderiv_then(&(v_tmp), (inp)[v_send]);
+		actderiv_then(&(v_tmp), inp, v_send, (slp_then).m_outc);
 		(retdelta_then)[v_send] = (v_tmp) * (deltaseed)[v_send];
 	}
 }
@@ -800,7 +809,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 	} else {
 		__ae2f_AnnSlpFetchDelta_imp(
 				(v_train), (v_train), (out), (out_desired)
-				, /** actderiv */
+				, ae2f_AnnActDeriv_PASS
 				, (lossderiv)
 				, (&((deltacache)[(mlp).m_outc * (((mlp).m_depth - 2) OPER_NONE)]))
 				);

@@ -15,15 +15,9 @@ ae2fVK_AnnSlpMk_t	mk;
 
 size_t			mapinp;
 
-static void
-Act(ae2f_float_t* r, ae2f_float_t x) {
-	*r = 1.0 / (1.0 + exp(-x));
-}
 
 static void
-ActDeriv(ae2f_float_t* r, ae2f_float_t output) {
-	output += 1e-7;
-	*r = output * (1.0 - output);
+ActDummy(ae2f_float_t* r, const ae2f_float_t* output, size_t i, size_t c) {
 }
 
 /** Cross entrophy */
@@ -48,7 +42,7 @@ int main() {
 			mk,
 			0, 0, 0
 			, 2, 1, 0, 0
-			, Act, ActDeriv, LossDeriv
+			, ActDummy, ActDummy, LossDeriv
 			, 0, 0
 			, vkdev
 			, vkphydevmemprops
@@ -56,7 +50,7 @@ int main() {
 			, 
 
 			"#define LOSS_DERIV(r, y, y_desired, i, c)  \n"
-			"#define ACT(r, x) { (*(r) = (1.0 / (1.0 + exp(-x)))); } \n"
+			"#define ACT(r, y, i, c) { (*(r) = (1.0 / (1.0 + exp(-y[i])))); } \n"
 			, "/** This is also a comment */\n"
 			);
 
