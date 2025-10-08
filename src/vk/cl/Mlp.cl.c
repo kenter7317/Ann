@@ -41,9 +41,9 @@
 #define llsz		(lsz - 1)
 
 /** @brief lsz * sizeof(uint32_t) */
-#define p_layerszlist	CAST(__global uint32_t*, glob)
+#define p_layerszlist	CAST(__global volatile uint32_t*, glob)
 /** @brief sizeof(ae2f_float_t) * lsz * pgsz */
-#define p_outstream	(CAST(__global host_float_t*, p_layerszlist + lsz))
+#define p_outstream	(CAST(__global volatile host_float_t*, p_layerszlist + lsz))
 #define p_inp		p_outstream
 
 /** @brief sizeof(ae2f_float_t) * pgsz_sqr * llsz */
@@ -112,7 +112,7 @@ typedef const struct sz2_t {
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t push) {
+__kernel void kPredict(__global volatile void* glob, __local volatile ae2f_float_t* loc, sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -138,7 +138,7 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t pus
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const sz2_t push) {
+__kernel void kPredictStream(__global volatile void* glob, __local volatile ae2f_float_t* loc, const sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -194,7 +194,7 @@ typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 4 ? 
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
+__kernel void kFollow(__global volatile void* glob, __local volatile ae2f_float_t* loc, lrlsz_t lr) {
 	size_t		lidx = llsz - 1;
 	ae2f_float_t	v_tmp;
 
@@ -312,7 +312,7 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
+__kernel void kTrainAuto(__global volatile void* glob, __local volatile ae2f_float_t* loc, lrlsz_t lr) {
 	size_t		lidx = 0;
 	const size_t
 		oidx = get_global_id(0)

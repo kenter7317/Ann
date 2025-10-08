@@ -55,7 +55,7 @@ const ae2f_structdef(struct, lr_t) {
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__global host_float_t* glob, const uint32_t unused) {
+__kernel void kPredict(__global volatile host_float_t* glob, const uint32_t unused) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
@@ -93,7 +93,7 @@ __kernel void kPredict(__global host_float_t* glob, const uint32_t unused) {
  * Local: \n
  * 	ae2f_float_t[Out]		\n
  * */
-__kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t* loc) {
+__kernel void kTrain(lr_t lr, __global volatile host_float_t* glob, __local volatile ae2f_float_t* loc) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
@@ -158,7 +158,7 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
  * 	, ae2f_float_t[Out] : Goal	\n
  *
  * */
-__kernel void kFit(lr_t lr, __global host_float_t* glob) {
+__kernel void kFit(lr_t lr, __global volatile host_float_t* glob) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
@@ -214,7 +214,7 @@ __kernel void kFit(lr_t lr, __global host_float_t* glob) {
  * 	, ae2f_float_t[Inp]		\n
  * 	, ae2f_float_t[Out] : Delta	\n
  * */
-__kernel void kFollow(lr_t lr, __global host_float_t* glob) {
+__kernel void kFollow(lr_t lr, __global volatile host_float_t* glob) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
