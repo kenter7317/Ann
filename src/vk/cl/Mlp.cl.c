@@ -119,16 +119,17 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t pus
 		, sz = get_global_size(0);
 
 	size_t	lidx = 0;
-	clSlpPredict_t	v_predict;
+	ae2f_float_t	predict;
 
-	clSlpPredict(v_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-	barrier(CLK_ALL_MEM_FENCE);
+	clSlpPredict(predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 
 	while(++lidx < llsz - 1) {
-		clSlpPredict(v_predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-		barrier(CLK_ALL_MEM_FENCE);
+		if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = predict;
+		clSlpPredict(predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	}
-	clSlpPredict(v_predict, r_out, l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+
+	if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = predict;
+	clSlpPredict(r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
 
@@ -144,19 +145,22 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 		, sz = get_global_size(0);
 
 	size_t	lidx = 0;
-	clSlpPredict_t	v_predict;
+	ae2f_float_t	v_predict;
 
 	clSlpPredict(v_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-	barrier(CLK_ALL_MEM_FENCE);
+	
 
 	while(++lidx < llsz - 1) {
+		if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = v_predict;
 		clSlpPredict(v_predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-		if(oidx < r_osz && iidx == 0) 
-			r_out[oidx] = l_out(&1)[oidx];
-		barrier(CLK_ALL_MEM_FENCE);
+
+		if(oidx < r_osz && !iidx)
+			r_out[oidx] = v_predict;
 	}
 
-	clSlpPredict(v_predict, r_out, l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+
+	if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = v_predict;
+	clSlpPredict(r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
 ae2f_structdef(union, lrlszel_t) {
@@ -309,41 +313,37 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
 __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
-#define tmp0	predict.m_tmp
-#define tmp1	predict.m_ret
-
 	size_t		lidx = 0;
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
 		, sz = get_global_size(0);
 
-	ae2f_AnnSlpPredictOne_t	predict;
+	ae2f_float_t	tmp0;
+	ae2f_float_t	tmp1;
+	ae2f_float_t	tmp2;
 
 	if(lsz < 3) {
-		/** ASSERT */
 		return;
 	}
 
 	if(iidx < r_isz && oidx == 0)
 		l_inp()[iidx] = r_inp[iidx];
 
-	// barrier(CLK_LOCAL_MEM_FENCE);
-
 	for(; lidx < llsz - 1; lidx++) {
-		clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-		// barrier(CLK_GLOBAL_MEM_FENCE);
+		clSlpPredict(l_out()[oidx], l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	}
 
 	/** lidx == llsz - 1 */
-	clSlpPredict(predict, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
-	// barrier(CLK_LOCAL_MEM_FENCE);
+	clSlpPredict(tmp2, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 
 	if(oidx < r_osz && iidx == 0) {
-		r_out[oidx] = l_out()[oidx];
+		r_out[oidx] = tmp2;
+		l_out()[oidx] = tmp2;
+
 		__ae2f_AnnSlpFetchDeltaOne_imp(
-				l_delta[oidx]
-				, &tmp0, &tmp1
+				tmp0
+				, &tmp2, &tmp1
 				, l_out()
 				, p_goal
 				, oidx, r_osz
@@ -357,9 +357,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 
 	/** lidx == llsz - 1 */
 	while(--lidx) {
-		// barrier(CLK_GLOBAL_MEM_FENCE);
 		if(oidx < r_osz && iidx < r_isz) {
-			tmp0 = l_delta[oidx];
 			__ae2f_AnnSlpFollowOneW_imp(
 					l_inp()[iidx]
 					, tmp0
@@ -368,7 +366,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 					, r_isz, iidx
 					, r_osz, oidx
 					);
-			if(iidx == 0) {
+			unless(iidx) {
 				__ae2f_AnnSlpFollowOneB_imp(
 						r_bias[oidx]
 						, tmp0
@@ -392,14 +390,12 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 				, r_isz, ACT_DERIV_RUN_THEN
 				, l_inp(), l_delta_then
 			   );
-
+		tmp0 = l_delta_then[iidx];
 		/** Needs to be procedural */
 	}
 
 	/** lidx == 0 */
 	if(oidx < r_osz && iidx < r_isz) {
-		tmp0 = l_delta[oidx];
-
 		__ae2f_AnnSlpFollowOneW_imp(
 				l_inp()[iidx]
 				, tmp0
@@ -409,7 +405,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 				, r_osz, oidx
 				);
 
-		if(iidx == 0) {
+		unless(iidx) {
 			__ae2f_AnnSlpFollowOneB_imp(
 					r_bias[oidx]
 					, tmp0

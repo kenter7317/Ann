@@ -1,6 +1,7 @@
 #include <ae2fVK/Ann/Mlp.h>
 #include "../vk.h"
 #include <CL/cl_platform.h>
+#include <time.h>
 
 static ae2fVK_AnnMlpMk_t			s_mk;
 static ae2fVK_AnnMlpMapRangedGeneric_t		s_mapranged;
@@ -36,7 +37,7 @@ int main() {
 			, 0.1, 0.1, vkdev, vkphydevmemprops 
 			, NULL_GENERIC(VkAllocationCallbacks)
 			, ""
-			"#define CL_Q 0\n"
+			"#define CL_Q 1\n"
 			"#define ACT_DERIV(lidx, r, x, i, c) { *(r) = (((x)[i] + 1e-7) * (1.0 - (x)[i] - 1e-7)); } \n"
 			"#define ACT(lidx, r, x, i, c) { *(r) = (1.0 / (1.0 + exp(-(x[i])))); } \n"
 			"#define LOSS_DERIV(r, o, t, i, c) { *(r) = ((o)[i] - (t)[i]) / (c); } \n"
@@ -245,8 +246,10 @@ int main() {
 
 		}
 
-
-		for(i = 0; i < 10000; i++)  {
+		clock_t curr;
+		curr = clock();
+		
+		for(i = 0; i < 10000; i++) {
 			if (vkQueueSubmit(
 						vkqueue
 						, 1
@@ -263,6 +266,8 @@ int main() {
 				return -1;
 			}
 		}
+
+		printf("TIME ELAPSED: %lf\n", ((double)(clock() - curr)) / ((double)CLOCKS_PER_SEC));
 
 		__ae2fVK_AnnMlpDescPoolCmdClean_imp(
 				s_mk.m_U0.m_mkswap.m_mkbase[0]
