@@ -13,7 +13,7 @@ static void	LossDummy(ae2f_float* a, const ae2f_float* b, const ae2f_float* c, s
 	return;
 }
 
-static size_t	s_lpModelLen[] = {2, 14, 3, 2, 1};
+static size_t	s_lpModelLen[] = {2, 10, 3, 12, 1};
 
 #define	NULL_GENERIC(T)	((T*)NULL)
 
@@ -21,7 +21,7 @@ int main() {
 	Test_VkInit();
 
 	__ae2fVK_AnnMlpMk_imp_V(
-			double
+			cl_half
 			, s_mk
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
