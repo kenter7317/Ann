@@ -35,7 +35,7 @@ void ae2f_mMMapInit(
 		, const size_t* const lens
 		, ae2f_err_t* const opt_ret_err
 		, size_t* const opt_ret_sz
-		) noexcept;
+		) ae2f_noexcept;
 
 
 ae2f_extern ae2f_SHAREDCALL
@@ -44,7 +44,7 @@ void ae2f_mMMapMk(
 		const size_t* const lens,
 		ae2f_err_t* const opt_ret_err,
 		ae2f_FREE(free, ae2f_mMMapDel) ae2f_mMMap** const ret_mmap
-		) noexcept;
+		) ae2f_noexcept;
 
 ae2f_extern ae2f_SHAREDCALL 
 void ae2f_mMMapFieldIdx(
@@ -176,7 +176,7 @@ ae2f_MAC() _ae2f_mMMapSz(const size_t dim, const size_t* const lens
 constextendedfun size_t _ae2f_mMMapSz(
 		size_t dim, 
 		const size_t* lens
-		) noexcept
+		) ae2f_noexcept
 {
 	if(!(lens)) {
 		return -1;
@@ -260,7 +260,7 @@ constextendedfun size_t _ae2f_mMMapFieldIdx(
 		const ae2f_mMMap* mmap,
 		size_t dim,
 		const size_t* idxs
-		) noexcept
+		) ae2f_noexcept
 {
 	if(!idxs) return -1;
 	if(!mmap) return -1;
