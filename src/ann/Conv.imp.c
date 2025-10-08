@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #define ae2f_AnnConv1dSz(in_f, in_g, pad, stride) \
 	(((((pad << 1) + *ae2f_mMMapDimLen(in_f, const)) \
@@ -129,7 +130,7 @@ ae2f_err_t ae2f_AnnCnnPool1d(
 		const size_t window,
 		const size_t stride,
 		ae2f_eAnnCnnPool type
-		) noexcept
+		) ae2f_noexcept
 {
 	if(!stride) return ae2f_errGlob_WRONG_OPERATION;
 
@@ -299,10 +300,10 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 		ae2f_float_t res = 0;
 		switch (type & 0b11) {
 			case ae2f_eAnnCnnPool_MAX:
-				res = -__FLT_MAX__;
+				res = -FLT_MAX;
 				break;
 			case ae2f_eAnnCnnPool_MIN:
-				res = __FLT_MAX__;
+				res = FLT_MAX;
 				break;
 		}
 

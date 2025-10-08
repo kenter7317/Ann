@@ -15,7 +15,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpInit(
 		const size_t offset_opt,
 		ae2f_err_t* restrict  const err_opt,
 		size_t* restrict const initsz_opt
-		) noexcept
+		) ae2f_noexcept
 __ae2f_AnnSlpInit_C(
 		_this
 		, inc, outc
@@ -40,7 +40,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpMk(
 		ae2f_float_t					learningrate,
 		ae2f_float_t					learningrate_bias,
 		ae2f_opt ae2f_err_t* restrict const			err_opt
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnSlpMk_C(
 			weight_opt, bias_opt, cache_opt
 			, inc, outc
@@ -53,7 +53,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpMk(
 
 
 ae2f_SHAREDEXPORT void ae2f_AnnSlpDel(ae2f_AnnSlp* restrict const slp) 
-	noexcept
+	ae2f_noexcept
 { __ae2f_AnnSlpDel(slp); }
 
 ae2f_SHAREDEXPORT void ae2f_AnnSlpPredict(
@@ -61,7 +61,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpPredict(
 		, const ae2f_AnnSlp* restrict const _this
 		, const ae2f_float_t* restrict const prm_in
 		, ae2f_float_t* restrict const out
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnSlpPredict_C(
 			err_opt, _this
@@ -75,7 +75,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpFollow(
 		, const ae2f_AnnSlp* restrict const _this
 		, const ae2f_float_t* restrict const prm_in
 		, const ae2f_float_t* restrict const delta
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnSlpFollow_C(reterr_opt, _this, prm_in, delta);
 }
 
@@ -85,7 +85,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpFit(
 		, ae2f_LP(_this::inc) const ae2f_float_t* restrict const prm_inp
 		, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out
 		, ae2f_LP(_this::outc) const ae2f_float_t* restrict const prm_out_desired
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnSlpFit_C(
 			reterr_opt, _this
@@ -102,7 +102,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpFetchDelta(
 		, ae2f_LP(slp::outc) const ae2f_float_t* restrict const	out_desired
 
 		, ae2f_LP(slp::outc) ae2f_float_t* restrict const	retdelta
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnSlpFetchDelta_C(err, slp, out, out_desired, retdelta);
 }
@@ -112,7 +112,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnSlpTrain(
 		, ae2f_AnnSlp* restrict					slp
 		, ae2f_LP(slp::inc)	const ae2f_float_t* restrict	inp
 		, ae2f_LP(slp::outc)	const ae2f_float_t* restrict	out_desired
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnSlpTrain_C(err, slp, inp, out_desired);
 }

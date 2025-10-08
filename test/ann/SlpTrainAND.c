@@ -31,7 +31,7 @@ LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* targe
 	r[0] = (o_i - target[i]) / (c * o_i * (1.0 - o_i));
 }
 
-const ae2f_float_t inp[4][2] = { 1, 1, 0, 0, 0, 1, 1, 0 };
+const ae2f_float_t prm_inp[4][2] = { 1, 1, 0, 0, 0, 1, 1, 0 };
 const ae2f_float_t goal_andor[4][2] = {
 	{1, 1},
 	{0, 0},
@@ -76,14 +76,14 @@ int tryand() {
 		}
 
 		for(i = 0; i < 3000; ++i) {
-			for(j = 0; j < sizeof(inp) / sizeof(inp[0]); ++j) {
-				ae2f_AnnSlpTrain(&err, slp, inp[j], goal_andor[j]);
+			for(j = 0; j < sizeof(prm_inp) / sizeof(prm_inp[0]); ++j) {
+				ae2f_AnnSlpTrain(&err, slp, prm_inp[j], goal_andor[j]);
 				if(err) break;
 			}
 		}
 
-		for(j = 0; j < sizeof(inp) / sizeof(inp[0]); ++j) {
-			ae2f_AnnSlpPredict(&err, slp, inp[j], output);
+		for(j = 0; j < sizeof(prm_inp) / sizeof(prm_inp[0]); ++j) {
+			ae2f_AnnSlpPredict(&err, slp, prm_inp[j], output);
 			if(err) break;
 
 			printf("Got %f, %f\n", *output, output[1]);

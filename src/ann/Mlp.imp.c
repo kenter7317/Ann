@@ -24,7 +24,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpMk(
 
 		, const size_t		offset
 		, const size_t		extra
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnMlpMk_C(
 			reterr
@@ -39,7 +39,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpMk(
 
 ae2f_SHAREDEXPORT void ae2f_AnnMlpDel(
 		ae2f_AnnMlp* restrict const block
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnMlpDel_C(block);
 }
 
@@ -48,7 +48,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpPredict(
 		, const ae2f_AnnMlp* restrict const	mlp
 		, const ae2f_float_t* restrict const	inp
 		, ae2f_float_t* restrict const		out
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnMlpPredict_C(reterr, mlp, inp, out);
 }
@@ -58,7 +58,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpPredictStream(
 		, const ae2f_AnnMlp* restrict const	mlp
 		, const ae2f_float_t* restrict const	inp
 		, ae2f_float_t* restrict const		out
-		) noexcept
+		) ae2f_noexcept
 {
 	__ae2f_AnnMlpPredictStream_C(reterr, mlp, inp, out);
 }
@@ -90,7 +90,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpTrain(
 		, const ae2f_float_t* restrict const	inp
 		, ae2f_float_t* restrict const		out
 		, const ae2f_float_t* restrict const	out_desired
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnMlpTrain_C(reterr, mlp, inp, out, out_desired);
 }
 
@@ -100,7 +100,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpTrainStream(
 		, const ae2f_float_t* restrict const	inp
 		, ae2f_float_t* restrict const		out
 		, const ae2f_float_t* restrict const	out_desired
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnMlpTrainStream_C(reterr, mlp, inp, out, out_desired);
 }
 
@@ -109,7 +109,7 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpTrainAuto(
 		, ae2f_AnnMlp* restrict const		mlp
 		, const ae2f_float_t* restrict const	inp
 		, const ae2f_float_t* restrict const	out_desired
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnMlpTrainAuto_C(reterr, mlp, inp, out_desired);
 }
 
@@ -118,6 +118,6 @@ ae2f_SHAREDEXPORT void ae2f_AnnMlpTrainAutoStream(
 		, ae2f_AnnMlp* restrict const		mlp
 		, const ae2f_float_t* restrict const	inp
 		, const ae2f_float_t* restrict const	out_desired
-		) noexcept {
+		) ae2f_noexcept {
 	__ae2f_AnnMlpTrainAutoStream_C(reterr, mlp, inp, out_desired);
 }

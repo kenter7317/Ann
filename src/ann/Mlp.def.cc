@@ -490,18 +490,17 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 
 #endif
 
-
-#define	__ae2f_AnnMlpPredictStream_imp(...) \
-	__ae2f_AnnMlpPredictPrimal_imp(-1, , __VA_ARGS__)
+#define	__ae2f_AnnMlpPredictStream_imp(v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt) \
+	__ae2f_AnnMlpPredictPrimal_imp(-1, , v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt)
 
 #define __ae2f_AnnMlpPredictStream_C(reterr, mlp, inp, out) \
 	__ae2f_AnnMlpPredictPrimal(-1, , reterr, mlp, inp, out)
 
-#define __ae2f_AnnMlpPredict_imp(...) \
-	__ae2f_AnnMlpPredictPrimal_imp(&1 ? 0 : 1, &1, __VA_ARGS__)
+#define __ae2f_AnnMlpPredict_imp(v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt) \
+	__ae2f_AnnMlpPredictPrimal_imp(&1 ? 0 : 1, &1, v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt)
 
-#define	__ae2f_AnnMlpPredict_C(...) \
-	__ae2f_AnnMlpPredictPrimal(&1 ? 0 : 1, &1, __VA_ARGS__)
+#define	__ae2f_AnnMlpPredict_C(reterr, mlp, inp, delta) \
+	__ae2f_AnnMlpPredictPrimal(&1 ? 0 : 1, &1, reterr, mlp, inp, delta)
 
 ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 		ae2f_AnnMlpHidDeltaSingle_t	v_single
@@ -539,12 +538,12 @@ ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
 	}
 }
 
-#define __ae2f_AnnMlpFollowStream_imp(...) \
-	__ae2f_AnnMlpFollowPrimal_imp(-1,ae2f_NONE,__VA_ARGS__)
+#define __ae2f_AnnMlpFollowStream_imp(v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv) \
+	__ae2f_AnnMlpFollowPrimal_imp(-1,,v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv)
 
 
-#define	__ae2f_AnnMlpFollow_imp(...) \
-	__ae2f_AnnMlpFollowPrimal_imp(&1 ? 0 : 1,&1, __VA_ARGS__)
+#define	__ae2f_AnnMlpFollow_imp(v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv) \
+	__ae2f_AnnMlpFollowPrimal_imp(&1 ? 0 : 1,&1, v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv)
 
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		ae2f_AnnMlpFollow_t			v_follow
@@ -757,11 +756,11 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 
 #endif
 
-#define	__ae2f_AnnMlpFollow_C(...) \
-	__ae2f_AnnMlpFollowPrimal(&1 ? 0 : 1,&1, __VA_ARGS__)
+#define	__ae2f_AnnMlpFollow_C(reterr, mlp, inp, delta) \
+	__ae2f_AnnMlpFollowPrimal(&1 ? 0 : 1,&1, reterr, mlp, inp, delta)
 
-#define	__ae2f_AnnMlpFollowStream_C(...) \
-	__ae2f_AnnMlpFollowPrimal(-1, , __VA_ARGS__)
+#define	__ae2f_AnnMlpFollowStream_C(reterr, mlp, inp, delta) \
+	__ae2f_AnnMlpFollowPrimal(-1, , reterr, mlp, inp, delta)
 
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 		ae2f_AnnMlpTrain_t			v_train
@@ -898,11 +897,11 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainAutoPrimal(
 #define	__ae2f_AnnMlpTrainStream_C(reterr, mlp, inp, out, out_desired) \
 	__ae2f_AnnMlpTrainPrimal(&1 ? 0 : 1, ae2f_NONE, reterr, mlp, inp, out, out_desired)
 
-#define	__ae2f_AnnMlpTrain_imp(...) \
-	__ae2f_AnnMlpTrainPrimal_imp(&1 ? 0 : 1, &1, __VA_ARGS__) 
+#define	__ae2f_AnnMlpTrain_imp(v_train, mlp, inp, out, goal, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, act, actderiv, lossderiv) \
+	__ae2f_AnnMlpTrainPrimal_imp(&1 ? 0 : 1, &1, v_train, mlp, inp, out, goal, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, act, actderiv, lossderiv) 
 
-#define	__ae2f_AnnMlpTrainStream_imp(...) \
-	__ae2f_AnnMlpTrainPrimal_imp(-1, ae2f_NONE, __VA_ARGS__)
+#define	__ae2f_AnnMlpTrainStream_imp(v_train, mlp, inp, out, goal, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, act, actderiv, lossderiv) \
+	__ae2f_AnnMlpTrainPrimal_imp(-1, ae2f_NONE, v_train, mlp, inp, out, goal, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, act, actderiv, lossderiv)
 
 
 /** @see __ae2f_AnnMlpTrainAutoPrimal */

@@ -19,7 +19,7 @@
 ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t
 ae2f_AnnCnnConv1d(const ae2f_float_t *infv, size_t infc,
                   const ae2f_float_t *ingv, size_t ingc, ae2f_float_t *outv,
-                  size_t *opt_outc, size_t stride, size_t pad) noexcept;
+                  size_t *opt_outc, size_t stride, size_t pad) ae2f_noexcept;
 
 /**
  * @brief
@@ -38,7 +38,7 @@ ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnConv(
     size_t dim, const ae2f_float_t *infv, const size_t *infc, size_t infcc,
     const ae2f_float_t *ingv, const size_t *ingc, size_t ingcc,
     ae2f_float_t *outv, size_t *outc_opt, size_t outcc,
-    const size_t *stride_opt, const size_t *pad_opt) noexcept;
+    const size_t *stride_opt, const size_t *pad_opt) ae2f_noexcept;
 
 /**
  * @brief
@@ -79,7 +79,7 @@ typedef enum ae2f_eAnnCnnPool {
 ae2f_extern ae2f_SHAREDCALL ae2f_err_t
 ae2f_AnnCnnPool1d(const ae2f_float_t *inv, const size_t inc, ae2f_float_t *outv,
                   size_t *opt_outc, const size_t window_opt,
-                  const size_t stride_opt, ae2f_eAnnCnnPool) noexcept;
+                  const size_t stride_opt, ae2f_eAnnCnnPool) ae2f_noexcept;
 
 /**
  * @brief
@@ -92,13 +92,13 @@ ae2f_extern ae2f_SHAREDCALL ae2f_err_t
 ae2f_AnnCnnPool_imp(size_t dim, const ae2f_float_t *inv, const size_t *inc,
                     size_t incc, ae2f_float_t *outv, size_t *opt_outc,
                     size_t outcc, const size_t *window_opt,
-                    const size_t *stride_opt, ae2f_eAnnCnnPool type) noexcept;
+                    const size_t *stride_opt, ae2f_eAnnCnnPool type) ae2f_noexcept;
 
 ae2f_extern ae2f_SHAREDCALL ae2f_err_t
 ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
                 size_t incc, ae2f_float_t *outv, size_t *opt_outc, size_t outcc,
                 const size_t *window_opt, size_t windowcc,
-                const size_t *stride_opt, ae2f_eAnnCnnPool type) noexcept;
+                const size_t *stride_opt, ae2f_eAnnCnnPool type) ae2f_noexcept;
 
 #include <ae2f/Pack/End.h>
 

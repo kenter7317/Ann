@@ -61,40 +61,40 @@ ae2f_structdef(union, ae2f_AnnMlpInitMkPtr_t) {
 	 * @brief
 	 * Pointer to an MLP structure.
 	 */
-	ae2f_AnnMlp* restrict	m_mlp;
+	ae2f_AnnMlp* ae2f_restrict	m_mlp;
 	/**
 	 * @brief
 	 * Pointer to a size_t array.
 	 */
-	size_t* restrict	m_sz;
+	size_t* ae2f_restrict	m_sz;
 	/**
 	 * @brief
 	 * Pointer to a float array.
 	 */
-	ae2f_float_t* restrict	m_f;
+	ae2f_float_t* ae2f_restrict	m_f;
 	/**
 	 * @brief
 	 * Generic void pointer.
 	 */
-	void* restrict		m_void;
+	void* ae2f_restrict		m_void;
 	/**
 	 * @brief
 	 * Generic pointer to a pointer.
 	 */
-	void** restrict		m_ptr;
+	void** ae2f_restrict		m_ptr;
 	/**
 	 * @brief
 	 * Pointer to an array of activation functions.
 	 */
-	ae2f_AnnAct_t** restrict	m_Act;
+	ae2f_AnnAct_t** ae2f_restrict	m_Act;
 	/**
 	 * @brief
 	 * Pointer to an array of loss functions.
 	 */
-	ae2f_AnnLoss_t** restrict	m_Loss;
+	ae2f_AnnLoss_t** ae2f_restrict	m_Loss;
 
 	/** for 1-byte padding */
-	char* restrict		m_byte;
+	char* ae2f_restrict		m_byte;
 };
 
 /**
@@ -144,7 +144,7 @@ ae2f_structdef(struct, ae2f_AnnMlpMk_t) {
 	 * @brief
 	 * Base pointer to the created MLP.
 	 */
-	ae2f_AnnMlp* restrict	m_mkbase;
+	ae2f_AnnMlp* ae2f_restrict	m_mkbase;
 };
 
 /**

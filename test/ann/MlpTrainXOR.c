@@ -27,7 +27,7 @@ LossDerivCROSS(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_float_t* 
 	r[0] = (o_i - target[i]) / (c * o_i * (1.0 - o_i));
 }
 
-const ae2f_float_t inp[4][2] = {
+const ae2f_float_t prm_inp[4][2] = {
 	{0, 0}, 
 	{0, 1}, 
 	{1, 0},
@@ -72,15 +72,15 @@ int main() {
 	}
 
 	for(j = 0; j < 4; j++) {
-		ae2f_AnnMlpPredict(err, mlp, inp[j], output);
+		ae2f_AnnMlpPredict(err, mlp, prm_inp[j], output);
 		assert(!err[0] && "err from predict");
-		printf("%f %f -> %f\n", inp[j][0], inp[j][1], output[0]);
+		printf("%f %f -> %f\n", prm_inp[j][0], prm_inp[j][1], output[0]);
 	}
 
 	for(i = 0; i < 9000; i++) {
 		for(j = 0; j < 4; j++) {
 			ae2f_AnnMlpTrainAuto(
-					err, mlp, inp[j]
+					err, mlp, prm_inp[j]
 					, &goal_xor[j]);
 
 			assert(!err[0] && "err from TrainAutoStream");
@@ -88,9 +88,9 @@ int main() {
 	}
 
 	for(j = 0; j < 4; j++) {
-		ae2f_AnnMlpPredict(err, mlp, inp[j], output);
+		ae2f_AnnMlpPredict(err, mlp, prm_inp[j], output);
 		assert(!err[0] && "err from predict");
-		printf("%f %f -> %f\n", inp[j][0], inp[j][1], output[0]);
+		printf("%f %f -> %f\n", prm_inp[j][0], prm_inp[j][1], output[0]);
 	}
 
 	ae2f_AnnMlpDel(mlp);

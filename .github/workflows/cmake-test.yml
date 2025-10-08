@@ -15,6 +15,12 @@ jobs:
         conf: [Release, Debug]
 
         include:
+          - os: windows-latest
+            c: -G"Visual Studio 17 2022"
+
+          - os: windows-11-arm
+            c: -G"Visual Studio 17 2022"
+
           - os: ubuntu-latest
             bash: bash
 

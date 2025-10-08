@@ -22,7 +22,7 @@ static void LossDeriv(ae2f_float_t* r, const ae2f_float_t* output, const ae2f_fl
 	*r = ((output[i] - target[i]) / c);
 }
 
-const ae2f_float_t inp[4][2] = { 
+const ae2f_float_t prm_inp[4][2] = { 
 	{0, 0}, 
 	{0, 1}, 
 	{1, 0},
@@ -82,21 +82,21 @@ int main() {
 	srand(0);
 
 	puts("Initializing weights randomly with correct memory layout");
-	// Layer 0: 2 inputs -> 3 neurons
+	// Layer 0: 2 prm_inputs -> 3 neurons
 	size_t weight_base_l0 = 0 * MLP_WEIGHT_STRIDE;
 	size_t bias_base_l0 = 0 * MLP_BIAS_STRIDE;
 	for (i = 0; i < mlp_szv[1]; i++) { // 3 output neurons
-		for (k = 0; k < mlp_szv[0]; k++) { // 2 input weights
+		for (k = 0; k < mlp_szv[0]; k++) { // 2 prm_input weights
 			mlp_weights[weight_base_l0 + i * mlp_szv[0] + k] = ((double)rand() / RAND_MAX) - 0.5;
 		}
 		mlp_bias[bias_base_l0 + i] = ((double)rand() / RAND_MAX) - 0.5;
 	}
 
-	// Layer 1: 3 inputs -> 1 neuron
+	// Layer 1: 3 prm_inputs -> 1 neuron
 	size_t weight_base_l1 = 1 * MLP_WEIGHT_STRIDE;
 	size_t bias_base_l1 = 1 * MLP_BIAS_STRIDE;
 	for (i = 0; i < mlp_szv[2]; i++) { // 1 output neuron
-		for (k = 0; k < mlp_szv[1]; k++) { // 3 input weights
+		for (k = 0; k < mlp_szv[1]; k++) { // 3 prm_input weights
 			mlp_weights[weight_base_l1 + i * mlp_szv[1] + k] = ((double)rand() / RAND_MAX) - 0.5;
 		}
 		mlp_bias[bias_base_l1 + i] = ((double)rand() / RAND_MAX) - 0.5;
@@ -105,18 +105,18 @@ int main() {
 	puts("See first output (before training)");
 	for(i = 0; i < 4; ++i) {
 		__ae2f_AnnMlpPredictStream_imp(
-				__test_stack.m_predictsteam, mlp, inp[i], output, mlp_szv,
+				__test_stack.m_predictsteam, mlp, prm_inp[i], output, mlp_szv,
 				mlp_weights, mlp_bias, mlp_outstream, mlp_acts
 				);
 		printf("Initial Output for [%d, %d]: %f (goal: %d)\n"
-				, (int)inp[i][0], (int)inp[i][1], output[0], (int)goal_xor[i]);
+				, (int)prm_inp[i][0], (int)prm_inp[i][1], output[0], (int)goal_xor[i]);
 	}
 
 	puts("Training...");
 	for(j = 0; j < 9000; ++j) {
 		for(i = 0; i < 4; ++i) {
 			__ae2f_AnnMlpPredictStream_imp(
-					__test_stack.m_predictsteam, mlp, inp[i], output, mlp_szv,
+					__test_stack.m_predictsteam, mlp, prm_inp[i], output, mlp_szv,
 					mlp_weights, mlp_bias, mlp_outstream, mlp_acts
 					);
 
@@ -128,7 +128,7 @@ int main() {
 					);
 
 			__ae2f_AnnMlpFollow_imp(
-					__test_stack.m_propagate, mlp, inp[i]
+					__test_stack.m_propagate, mlp, prm_inp[i]
 					, &mlp_deltastream[MLP_OUT_GREATEST],
 					mlp_szv, mlp_outstream, mlp_deltastream,
 					mlp_weights, mlp_bias,
@@ -142,11 +142,11 @@ int main() {
 	puts("See last output after training");
 	for(i = 0; i < 4; ++i) {
 		__ae2f_AnnMlpPredictStream_imp(
-				__test_stack.m_predictsteam, mlp, inp[i], output, mlp_szv,
+				__test_stack.m_predictsteam, mlp, prm_inp[i], output, mlp_szv,
 				mlp_weights, mlp_bias, mlp_outstream, mlp_acts
 				);
 		printf("Final Output for [%d, %d]: %f (goal: %d)\n"
-				, (int)inp[i][0], (int)inp[i][1], output[0], (int)goal_xor[i]
+				, (int)prm_inp[i][0], (int)prm_inp[i][1], output[0], (int)goal_xor[i]
 		      );
 	}
 
