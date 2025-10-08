@@ -62,8 +62,8 @@ __kernel void kPredict(__global host_float_t* glob, const uint32_t unused) {
 		, iidx = get_global_id(1)
 		, isz = get_global_size(1);
 
-	clSlpPredict_t v_predict;
-	clSlpPredict(v_predict
+	clSlpPredict(
+			p_out[oidx]
 			, p_out
 			, p_inp
 			, p_weight
@@ -102,12 +102,12 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 		;
 
 	ae2f_float_t		delta, v_tmp = 0, v_tmp1 = 0;
-	clSlpPredict_t		v_predict;
 
-	clSlpPredict(v_predict, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	clSlpPredict(v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 
 	if(iidx == 0) {
-		p_out[oidx] = loc[oidx];
+		p_out[oidx] = v_tmp;
+		loc[oidx] = v_tmp;
 
 		__ae2f_AnnSlpFetchDeltaOne_imp(
 				delta
@@ -118,19 +118,20 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 				, ACT_DERIV, LOSS_DERIV
 				);
 
-		p_delta[oidx] = delta;
-
 		__ae2f_AnnSlpFollowOneB_imp(
 				p_bias[oidx] /** r_bias */
 				, delta /** delta */
 				, lr.m_bias
 				);
+
+		p_delta[oidx] = delta;
 	}
 
 	delta = p_delta[oidx];
+	v_tmp = p_inp[iidx];
 
 	__ae2f_AnnSlpFollowOneW_imp(
-			p_inp[iidx] /** inp */
+			v_tmp
 			, delta /** delta */
 			, glob /** weight */
 			, lr.m_weight
@@ -179,13 +180,14 @@ __kernel void kFit(lr_t lr, __global host_float_t* glob) {
 				);
 
 		/** delta */
-		p_delta[oidx] = delta;
 
 		__ae2f_AnnSlpFollowOneB_imp(
 				p_bias[oidx]	/** r_bias */
 				, delta		/** delta */
 				, lr.m_bias
 				);
+
+		p_delta[oidx] = delta;
 	}
 
 	delta = p_delta[oidx];

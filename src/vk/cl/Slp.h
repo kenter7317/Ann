@@ -11,12 +11,8 @@
 
 #if 1
 
-ae2f_structdef(struct, _clSlpPredict_t) {
-	ae2f_float_t	m_sum, m_ret;
-};
-
 ae2f_MAC() clSlpPredict(
-		_clSlpPredict_t	v_predict,
+		ae2f_float_t	ret,
 		__local ae2f_float_t* const loc,
 		const __global ae2f_float_t* const p_inp,
 		const __global ae2f_float_t* const p_weight,
@@ -27,17 +23,16 @@ ae2f_MAC() clSlpPredict(
 		)
 {
 	if((oidx) < (osz) && (iidx) < (isz)) {
-		if(!(iidx)) (loc)[oidx] = 0;
+		unless((iidx)) (loc)[oidx] = 0;
 
 		(void)atomic_add(
 				&(loc)[oidx]
 				, (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
 				);
 
-		if(!(iidx)) {
+		unless(iidx) {
 			(loc)[oidx] += (p_bias)[oidx];
-			ACT((&(v_predict).m_ret), (loc), oidx, osz);
-			(loc)[oidx] = (v_predict).m_ret;
+			ACT(&(ret), (loc), oidx, osz);
 		}
 	}
 
@@ -45,14 +40,10 @@ ae2f_MAC() clSlpPredict(
 
 #endif
 
-ae2f_structdef(struct, _clSlpPredict_t_Q) {
-	ae2f_float_t	m_sum, m_ret;
-};
 
 /** Quick version, not precise. */
 ae2f_MAC() clSlpPredict_Q(
-		_clSlpPredict_t_Q	v_predict,
-
+		ae2f_float_t			ret,
 		__local ae2f_float_t*	const	  loc,
 
 		const ae2f_float_t* const p_inp,
@@ -70,10 +61,9 @@ ae2f_MAC() clSlpPredict_Q(
 				(p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
 				);
 
-		if(!(iidx)) {
+		unless(iidx) {
 			(loc)[oidx] += (p_bias)[oidx];
-			ACT((&(v_predict).m_ret), loc, oidx, osz);
-			(loc)[oidx] = (v_predict).m_ret;
+			ACT((&(ret)), loc, oidx, osz);
 		}
 	}
 }
