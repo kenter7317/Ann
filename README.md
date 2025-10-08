@@ -11,6 +11,7 @@
 
 # Supported GPU Acceleration
 > GPU acceleration via vulkan is now being implemented.  
+> Configuring the project with `-Dae2fVK_needed=ON` will fetch vulkan as backend.  
 > Here is the list of supported gpu acceleration.
 - Slp/Mlp
 
