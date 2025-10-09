@@ -114,10 +114,10 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
 ae2f_structdef(struct, ae2f_AnnMhattn) {
 
 	/** Weights */
-	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	restrict m_wqry;
-	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	restrict m_wkey;
-	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	restrict m_wval;
-	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	restrict m_wout;
+	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	ae2f_restrict m_wqry;
+	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	ae2f_restrict m_wkey;
+	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	ae2f_restrict m_wval;
+	ae2f_LP(m_mdldist, m_mdldist)	ae2f_float_t*	ae2f_restrict m_wout;
 
 	/** @brief Model distance */
 	size_t		m_mdldist;

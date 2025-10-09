@@ -1,6 +1,5 @@
 #include <ae2fVK/Ann/Mlp.h>
 #include "../vk.h"
-#include <CL/cl_platform.h>
 #include <time.h>
 
 static ae2fVK_AnnMlpMk_t			s_mk;
@@ -22,7 +21,7 @@ int main() {
 	Test_VkInit();
 
 	__ae2fVK_AnnMlpMk_imp_V(
-			cl_half
+			short
 			, s_mk
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)

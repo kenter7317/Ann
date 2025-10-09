@@ -621,7 +621,7 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
 						1
 						, ae2f_reinterpret_cast(const size_t*, NULL)
 						, ae2f_const_cast(
-							const char** restrict
+							const char** ae2f_restrict
 							, (&(v_mk).m_U3.m_openclsrc)
 							)
 						,""
@@ -758,12 +758,12 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
  * @param i_second_raw must be guaranteed to be a raw stirng. 
  * */
 ae2f_MAC() _ae2fVK_AnnSlpMkCLSPVVerbose_imp(
-		void* restrict		r_handle,
+		void* ae2f_restrict		r_handle,
 		ae2f_err_t		ir_err,
 
-		const char* restrict	i_first,
-		const char* restrict	i_second,
-		const char* restrict	i_third
+		const char* ae2f_restrict	i_first,
+		const char* ae2f_restrict	i_second,
+		const char* ae2f_restrict	i_third
 		) 
 {
 	if(!((r_handle) = calloc(
@@ -789,7 +789,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 		ae2f_err_t r_err,
 
 		ae2fVK_AnnSlp	slp,
-		ae2f_float_t** restrict const data
+		ae2f_float_t** ae2f_restrict const data
 		)
 {
 	if((slp).m_vkres != VK_SUCCESS) {
@@ -806,7 +806,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 						, (slp).m_vkglobdevmem
 						, 0, VK_WHOLE_SIZE
 						, 0
-						, ae2f_reinterpret_cast(void** restrict, data)
+						, ae2f_reinterpret_cast(void** ae2f_restrict, data)
 					       )) != VK_SUCCESS) 
 		{
 			assert(!"vkMapMemory has failed.");
@@ -1061,8 +1061,8 @@ ae2f_MAC() _ae2fVK_AnnSlpWBUnMap_imp(
 ae2f_MAC() _ae2fVK_AnnSlpWBMap(
 		ae2f_err_t*			r_err,
 		ae2fVK_AnnSlp*			slp
-		, ae2f_float_t** restrict const ir_ptrweight
-		, ae2f_float_t** restrict const ir_ptrbias
+		, ae2f_float_t** ae2f_restrict const ir_ptrweight
+		, ae2f_float_t** ae2f_restrict const ir_ptrbias
 		)
 {
 	ae2f_err_t			v_err = 0;
@@ -1120,8 +1120,8 @@ ae2f_MAC() _ae2fVK_AnnSlpIOUnMap_imp(
 ae2f_MAC() _ae2fVK_AnnSlpIOMap(
 		ae2f_err_t*			r_err,
 		ae2fVK_AnnSlp*			slp
-		, ae2f_opt ae2f_float_t** restrict const ir_ptrinp
-		, ae2f_opt ae2f_float_t** restrict const ir_ptrout
+		, ae2f_opt ae2f_float_t** ae2f_restrict const ir_ptrinp
+		, ae2f_opt ae2f_float_t** ae2f_restrict const ir_ptrout
 		)
 {
 	ae2f_err_t		v_err = 0;
@@ -1176,7 +1176,7 @@ ae2f_MAC() _ae2fVK_AnnSlpDeltaUnMap_imp(
 ae2f_MAC() _ae2fVK_AnnSlpDeltaMap(
 		ae2f_err_t*			r_err,
 		ae2fVK_AnnSlp*			slp
-		, ae2f_opt ae2f_float_t** restrict const ir_ptrdelta
+		, ae2f_opt ae2f_float_t** ae2f_restrict const ir_ptrdelta
 		)
 {
 	ae2f_err_t			v_err = 0;
@@ -1219,7 +1219,7 @@ ae2f_MAC() _ae2fVK_AnnSlpGoalUnMap_imp(
 ae2f_MAC() _ae2fVK_AnnSlpGoalMap(
 		ae2f_err_t*			r_err,
 		ae2fVK_AnnSlp*			slp
-		, ae2f_opt ae2f_float_t** restrict const ir_ptrgoal
+		, ae2f_opt ae2f_float_t** ae2f_restrict const ir_ptrgoal
 		)
 {
 	ae2f_err_t			v_err = 0;

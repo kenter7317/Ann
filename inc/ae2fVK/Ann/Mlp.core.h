@@ -59,7 +59,7 @@ ae2f_structdef(struct, ae2fVK_AnnMlpMkU0Swap_t) {
 	 * @brief
 	 * Base pointer to the created MLP.
 	 */
-	ae2fVK_AnnMlp* restrict	m_mkbase;
+	ae2fVK_AnnMlp* ae2f_restrict	m_mkbase;
 };
 
 ae2f_structdef(union, ae2fVK_AnnMlpMkU0_t) {

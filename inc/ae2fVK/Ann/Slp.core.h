@@ -10,7 +10,7 @@
 #include <limits.h>
 #include <ae2f/Float.h>
 
-#define clspv_restrict restrict
+#define clspv_restrict ae2f_restrict
 #include <clspv/Compiler.h>
 
 #if VK_MAX_MEMORY_TYPES > UCHAR_MAX
@@ -64,7 +64,7 @@ ae2f_structdef(struct, ae2fVK_AnnSlpMkAlter_t) {
 	 * @brief
 	 * Pointer to the created SLP.
 	 */
-	ae2fVK_AnnSlp* restrict m_ptr;
+	ae2fVK_AnnSlp* ae2f_restrict m_ptr;
 
 	unsigned char		m_i;
 

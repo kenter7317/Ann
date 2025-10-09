@@ -21,7 +21,7 @@ ae2f_structdef(struct, ae2fVK_AnnSlp)
 	VkBuffer	m_vkglobbuf, m_vklocbuf;
 	VkDeviceMemory	m_vkglobdevmem, m_vklocdevmem;
 
-	VkAllocationCallbacks* restrict	m_vkalloccalls;
+	VkAllocationCallbacks* ae2f_restrict	m_vkalloccalls;
 
 	VkDescriptorSetLayout	m_vkdescsetlayout[ae2fVK_eAnnSlpDescLayouts_LEN];
 

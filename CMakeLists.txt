@@ -20,7 +20,7 @@ project(MMap VERSION 0.0.0 LANGUAGES C CXX)
 
 if(ae2f_MAC_BUILD)
 	function(ae2f_itll tar)
-		target_link_libraries(${tar} ${ARGN})
+    target_link_libraries(${tar} ${ARGN})
 	endfunction()
 else()
 	function(ae2f_itll tar)
@@ -170,7 +170,6 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		)
 
 	ae2f_itll(${ae2fVK__Ann__TENT} ae2f::Ann)
-	ae2f_itll(${ae2fVK__Ann__TENT} ae2fVK::Core)
-
+  ae2f_itll(${ae2fVK__Ann__TENT} ae2fVK::Core)
 	ae2f_CoreTestTent(${ae2fVK__Ann__TENT} "test/vk")
 endif()
