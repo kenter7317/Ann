@@ -24,7 +24,7 @@ jobs:
       id: sync
       uses: aormsby/Fork-Sync-With-Upstream-action@v2.1
       with:
-        upstream_repository: aormsby/hugo-deploy-to-pages
+        upstream_repository: ae2f/Ann
         upstream_branch: main
         target_branch: main
 
