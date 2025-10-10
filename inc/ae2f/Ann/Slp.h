@@ -9,6 +9,8 @@
 #include "./Slp.core.h"
 #include "./Act.h"
 #include <ae2f/Pack/Beg.h>
+#include <assert.h>
+#include <stdlib.h>
 
 /**
  * @brief
@@ -257,7 +259,7 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
 
 #endif
 
-#if !(ae2f_MAC_BUILD)
+#if !(ae2f_MAC_BUILD) || 1
 
 #define ae2f_AnnSlpInit		__ae2f_AnnSlpInit_C
 #define ae2f_AnnSlpMk		__ae2f_AnnSlpMk_C

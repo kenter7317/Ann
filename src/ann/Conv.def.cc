@@ -11,7 +11,7 @@
 	   / stride) \
 	   + 1)
 
-static size_t iter_indices(
+inline static size_t ae2f_AnnCnnIterIdx(
 		size_t dim, size_t* indices, const size_t* max_indices) {
 	size_t i;
 	for (i = dim; i--;) {
@@ -24,7 +24,7 @@ static size_t iter_indices(
 	return 0;
 }
 
-static void get_conv_indices(
+inline static void ae2f_AnnCnnConvIdx(
 		size_t dim,
 		const size_t* out_indices, const size_t* filter_indices,
 		const size_t* in_dims, const size_t* filter_dims,
@@ -66,7 +66,7 @@ static void get_conv_indices(
  * @brief
  * all vectors are suggested initiated as 0. 
  * */
-	ae2f_SHAREDEXPORT ae2f_err_t
+static ae2f_err_t
 ae2f_AnnCnnConv1d(
 		const ae2f_float_t* infv,
 		size_t infc,
@@ -121,7 +121,7 @@ _return:
 	return err;
 }
 
-ae2f_extern ae2f_SHAREDEXPORT
+static
 ae2f_err_t ae2f_AnnCnnPool1d(
 		const ae2f_float_t* inv,
 		const size_t inc,
@@ -208,7 +208,7 @@ ae2f_err_t ae2f_AnnCnnPool1d(
  * All elemtns in [outc] timed.
  * You need to set it to zero. it will calculate it for you.
  * */
-ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnConv(
+static ae2f_err_t ae2f_AnnCnnConv(
 		size_t dim,
 		const ae2f_float_t* infv,
 		const size_t* infc,
@@ -247,14 +247,14 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnConv(
 		do {
 			size_t in_idx, filter_idx, out_idx;
 			int is_padded;
-			get_conv_indices(dim, out_indices, filter_indices, infc, ingc,
+			ae2f_AnnCnnConvIdx(dim, out_indices, filter_indices, infc, ingc,
 					stride_opt, pad_opt, &in_idx, &filter_idx,
 					&out_idx, &is_padded);
 			if (!is_padded) {
 				outv[out_idx] += infv[in_idx] * ingv[filter_idx];
 			}
-		} while (iter_indices(dim, filter_indices, ingc));
-	} while (iter_indices(dim, out_indices, out_dims));
+		} while (ae2f_AnnCnnIterIdx(dim, filter_indices, ingc));
+	} while (ae2f_AnnCnnIterIdx(dim, out_indices, out_dims));
 
 	free(out_dims);
 	free(out_indices);
@@ -264,7 +264,7 @@ ae2f_SHAREDEXPORT ae2f_err_t ae2f_AnnCnnConv(
 }
 
 
-ae2f_extern ae2f_SHAREDEXPORT
+static
 ae2f_err_t ae2f_AnnCnnPool_imp(
 		size_t dim, const ae2f_float_t* inv, const size_t* inc, size_t incc,
 		ae2f_float_t* outv, size_t* opt_outc, size_t outcc,
@@ -335,11 +335,11 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 					if (inv[in_idx] < res) res = inv[in_idx];
 					break;
 			}
-		} while (iter_indices(dim, window_indices, window_opt));
+		} while (ae2f_AnnCnnIterIdx(dim, window_indices, window_opt));
 
 		outv[out_idx] = res;
 		free(window_indices);
-	} while (iter_indices(dim, out_indices, out_dims));
+	} while (ae2f_AnnCnnIterIdx(dim, out_indices, out_dims));
 
 	free(out_dims);
 	free(out_indices);
@@ -347,7 +347,7 @@ ae2f_err_t ae2f_AnnCnnPool_imp(
 	return 0;
 }
 
-	ae2f_extern ae2f_SHAREDEXPORT ae2f_err_t
+	ae2f_extern  ae2f_err_t
 ae2f_AnnCnnPool(size_t dim, const ae2f_float_t *inv, const size_t *inc,
 		size_t incc, ae2f_float_t *outv, size_t *opt_outc, size_t outcc,
 		const size_t *window_opt, size_t windowcc,
