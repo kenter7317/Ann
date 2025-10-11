@@ -18,7 +18,7 @@ typedef void clMlpGetHD1_t(
 /** 
  * @brief 
  * delta to delta 
- * Propagate
+ * Bwd
  *
  * @inp aka out_then
  * @deltaseed 

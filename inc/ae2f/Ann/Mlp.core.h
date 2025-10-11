@@ -154,7 +154,7 @@ ae2f_structdef(struct, ae2f_AnnMlpMk_t) {
 ae2f_structdef(struct, ae2f_AnnMlpHidDeltaSingle_t) {
 	/** 
 	 * @brief delta seed, not delta.
-	 * Use __ae2f_AnnPropagate to make delta.
+	 * Use __ae2f_AnnBwd to make delta.
 	 * */
 	ae2f_float_t	m_ret;
 	/**
@@ -174,7 +174,7 @@ ae2f_structdef(struct, ae2f_AnnMlpHidDeltaSingle_t) {
  * Stack data for backpropagation.
  * @deprecated This is deprecated.
  */
-ae2f_structdef_n(union, ae2f_AnnMlpPropagateAllStack_t, ae2f_AnnMlpFollowStack_t) {
+ae2f_structdef_n(union, ae2f_AnnMlpBwdAllStack_t, ae2f_AnnMlpFollowStack_t) {
 	size_t m_send;
 };
 
@@ -183,7 +183,7 @@ ae2f_structdef_n(union, ae2f_AnnMlpPropagateAllStack_t, ae2f_AnnMlpFollowStack_t
  * Structure for backpropagation through all layers.
  * @deprecated This is deprecated.
  */
-ae2f_structdef_n(struct, ae2f_AnnMlpPropagateAll_t, ae2f_AnnMlpFollow_t) {
+ae2f_structdef_n(struct, ae2f_AnnMlpBwdAll_t, ae2f_AnnMlpFollow_t) {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
@@ -208,7 +208,7 @@ ae2f_structdef_n(struct, ae2f_AnnMlpPropagateAll_t, ae2f_AnnMlpFollow_t) {
 	 * @brief
 	 * Stack for propagation.
 	 */
-	ae2f_AnnMlpPropagateAllStack_t	m_stack;
+	ae2f_AnnMlpBwdAllStack_t	m_stack;
 	/**
 	 * @brief
 	 * Return value.
@@ -256,7 +256,7 @@ ae2f_structdef(struct, ae2f_AnnMlpTrain_t) {
 	 * @brief
 	 * Stack for propagation.
 	 */
-	ae2f_AnnMlpPropagateAllStack_t	m_stack;
+	ae2f_AnnMlpBwdAllStack_t	m_stack;
 	/**
 	 * @brief
 	 * Return value.

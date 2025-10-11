@@ -65,7 +65,7 @@ size_t i, j, k;
 union TEST_STACK {
 	ae2f_AnnMlpPredictStream_t	m_predictsteam;
 	ae2f_AnnSlpFetchDelta_t		m_fetch;
-	ae2f_AnnMlpPropagateAll_t	m_propagate;
+	ae2f_AnnMlpBwdAll_t	m_Bwd;
 } __test_stack;
 
 int main() {
@@ -128,7 +128,7 @@ int main() {
 					);
 
 			__ae2f_AnnMlpFollow_imp(
-					__test_stack.m_propagate, mlp, prm_inp[i]
+					__test_stack.m_Bwd, mlp, prm_inp[i]
 					, &mlp_deltastream[MLP_OUT_GREATEST],
 					mlp_szv, mlp_outstream, mlp_deltastream,
 					mlp_weights, mlp_bias,

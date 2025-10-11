@@ -28,7 +28,7 @@ if(NOT TARGET ae2f::MMap)
 	ae2f_Macro_init(1 100 100)
 
 	ae2f_Macro_Lib_V(
-    ae2f MMap INTERFACE
+		ae2f MMap INTERFACE
 		${PROJECT_SOURCE_DIR}/src/mmap "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/mmap "*.def.c" 
 		${PROJECT_SOURCE_DIR}/inc/ae2f/MMap ".auto.h"
@@ -36,8 +36,8 @@ if(NOT TARGET ae2f::MMap)
 		${mmap-inc}
 		)
 
-  target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Core)
-  target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Preproc)
+	target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Core)
+	target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Preproc)
 endif()
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
@@ -45,7 +45,7 @@ if(NOT TARGET ae2f::Ann)
 	file(GLOB Ann-inc ${PROJECT_SOURCE_DIR}/inc/ae2f/Ann/*.h)
 
 	ae2f_Macro_Lib_V(
-    ae2f Ann INTERFACE
+		ae2f Ann INTERFACE
 		${PROJECT_SOURCE_DIR}/src/ann "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/ann "*.def.c*" 
 		${PROJECT_SOURCE_DIR}/inc/ae2f/Ann ".auto.h"
@@ -53,7 +53,7 @@ if(NOT TARGET ae2f::Ann)
 		${Ann-inc}
 		)
 
-    target_link_libraries(${ae2f__Ann__TENT} INTERFACE ${ae2f__MMap__TENT})
+	target_link_libraries(${ae2f__Ann__TENT} INTERFACE ${ae2f__MMap__TENT})
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
 endif()
 
@@ -149,7 +149,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		)
 
 	ae2f_Macro_Lib_V(
-    ae2fVK Ann INTERFACE 
+		ae2fVK Ann INTERFACE 
 		${PROJECT_SOURCE_DIR}/src/vk "*.imp.c" 
 		${PROJECT_SOURCE_DIR}/src/vk "*.def.c*" 
 		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann ".auto.h"
@@ -159,7 +159,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 		${PROJECT_SOURCE_DIR}/inc/ae2fVK/Ann/Slp.core.h
 		)
 
-    target_link_libraries(${ae2fVK__Ann__TENT} INTERFACE ae2f::Ann)
-    target_link_libraries(${ae2fVK__Ann__TENT} INTERFACE ae2fVK::Core)
+	target_link_libraries(${ae2fVK__Ann__TENT} INTERFACE ae2f::Ann)
+	target_link_libraries(${ae2fVK__Ann__TENT} INTERFACE ae2fVK::Core)
 	ae2f_CoreTestTent(${ae2fVK__Ann__TENT} "test/vk")
 endif()
