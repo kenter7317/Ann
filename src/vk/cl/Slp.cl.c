@@ -1,20 +1,13 @@
 #pragma OPENCL EXTENSION cl-fast-relaxed-math : enable
 #pragma OPENCL EXTENSION pod-pushconstant : enable
 
-#define ae2f_NEED_CLASS 0
-
-#define host_float_t ae2f_float
-
-#ifdef	ae2f_float_t
-#define	ae2f_Float_h
-#include <ae2f/Float.auto.h>
-#endif
-
 #if __ae2f_MACRO_GENERATED
 #define ae2fVK_clspv_IS_OPENCL 1
 #endif
 
 #include "./Slp.auto.h"
+
+#define ae2f_NEED_CLASS 0
 
 #ifndef ACT
 #define ACT(r, y, i, c)		*(r) = (y)[i];
@@ -62,7 +55,8 @@ __kernel void kPredict(__global volatile host_float_t* glob, const uint32_t unus
 		, isz = get_global_size(1);
 
 	clSlpPredict(
-			p_out[oidx]
+			__global
+			, p_out[oidx]
 			, p_out
 			, p_inp
 			, p_weight
@@ -102,7 +96,7 @@ __kernel void kTrain(lr_t lr, __global volatile host_float_t* glob, __local vola
 
 	ae2f_float_t		delta, v_tmp = 0, v_tmp1 = 0;
 
-	clSlpPredict(v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	clSlpPredict(__local, v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 
 	if(iidx == 0) {
 		p_out[oidx] = v_tmp;
