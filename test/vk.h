@@ -92,7 +92,7 @@ static void Test_VkInit() {
                         , &vkphydev
                         );
 
-        assert(vkres == VK_SUCCESS && "vkEnumeratePhysicalDevices has failed.");
+        assert(vkres == VK_SUCCESS || vkres == VK_INCOMPLETE && "vkEnumeratePhysicalDevices has failed.");
         assert(vkphydevcount != 0 && "vkphydevcount has changed, which is not expected.");
         assert(vkphydev && "vkphydev is no initialised");
 

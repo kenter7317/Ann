@@ -1,19 +1,15 @@
 #pragma OPENCL EXTENSION cl-fast-relaxed-math : enable
-#pragma OPENCL EXTENSION -pod-pushconstant : enable
-#pragma OPENCL EXTENSION -cl-fast-relaxed-math : enable
-
-#define ae2f_NEED_CLASS 0
-
-#define host_float_t ae2f_float
-
-#ifdef ae2f_float_t
-#define ae2f_Float_h
-#include <ae2f/Float.auto.h>
-#endif
+#pragma OPENCL EXTENSION pod-pushconstant : enable
 
 #if __ae2f_MACRO_GENERATED
 #define ae2fVK_clspv_IS_OPENCL 1
 #endif
+
+#define ae2f_NEED_CLASS 0
+
+
+
+
 
 #include "./Mlp.auto.h"
 
@@ -121,15 +117,15 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t pus
 	size_t	lidx = 0;
 	ae2f_float_t	predict;
 
-	clSlpPredict(predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(__local, predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 
 	while(++lidx < llsz - 1) {
 		if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = predict;
-		clSlpPredict(predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+		clSlpPredict(__local, predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	}
 
 	if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = predict;
-	clSlpPredict(r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(__local, r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
 
@@ -147,12 +143,12 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 	size_t	lidx = 0;
 	ae2f_float_t	v_predict;
 
-	clSlpPredict(v_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(__local, v_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	
 
 	while(++lidx < llsz - 1) {
 		if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = v_predict;
-		clSlpPredict(v_predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+		clSlpPredict(__local, v_predict, l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 
 		if(oidx < r_osz && !iidx)
 			r_out[oidx] = v_predict;
@@ -160,7 +156,7 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 
 
 	if(iidx < r_isz && !oidx) l_inp(&1)[iidx] = v_predict;
-	clSlpPredict(r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(__local, r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
 ae2f_structdef(union, lrlszel_t) {
@@ -228,7 +224,8 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
 	}
 
 	clMlpGetHD(
-			l_delta_then
+			__local
+			, l_delta_then
 			, r_weight_then
 			, r_delta
 			, iidx, r_isz
@@ -268,7 +265,8 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
 		}
 
 		clMlpGetHD(
-				l_delta_then
+				__local
+				, l_delta_then
 				, r_weight_then
 				, l_delta
 				, iidx, r_isz
@@ -331,11 +329,11 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 		l_inp()[iidx] = r_inp[iidx];
 
 	for(; lidx < llsz - 1; lidx++) {
-		clSlpPredict(l_out()[oidx], l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+		clSlpPredict(__local, l_out()[oidx], l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	}
 
 	/** lidx == llsz - 1 */
-	clSlpPredict(tmp2, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
+	clSlpPredict(__local, tmp2, l_out(), l_inp(), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 
 	if(oidx < r_osz && iidx == 0) {
 		r_out[oidx] = tmp2;
@@ -376,7 +374,8 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 		}
 
 		clMlpGetHD(
-				l_delta_then
+				__local
+				, l_delta_then
 				, r_weight_then
 				, l_delta
 				, iidx, r_isz

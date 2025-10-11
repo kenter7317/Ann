@@ -1,6 +1,7 @@
 #include <ae2f/Call.h>
 
 #ifndef ae2f_MAC_BUILD
-#define	ae2f_MAC_BUILD @ae2f_MAC_BUILD@
+/** Header only library */
+#define	ae2f_MAC_BUILD OFF
 #endif
 

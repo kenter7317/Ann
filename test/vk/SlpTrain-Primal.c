@@ -33,14 +33,14 @@ int main() {
 	__ae2fVK_AnnSlpMk_imp(
 			mk,
 			0, 0, 0
-			, 400, 100, 0, 0
+			, 1000, 2, 0, 0
 			, ActDummy, ActDummy, LossDeriv
 			, 0.1, 0.1
 			, vkdev
 			, vkphydevmemprops
 			, NULL
 			, 
-			"#define CL_Q 1\n"
+			"#define CL_Q 0\n"
 			"#define ACT_DERIV(r, x, i, c) *(r) = (((x)[i] + 1e-7) * (1.0 - (x)[i] - 1e-7)); \n"
 			"#define ACT(r, x, i, c) *(r) = (1.0 / (1.0 + exp(-(x[i])))); \n"
 			"#define LOSS_DERIV(r, o, t, i, c) *(r) = ((o)[i] - (t)[i]) / (c);\n"

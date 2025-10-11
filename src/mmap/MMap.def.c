@@ -28,11 +28,12 @@ ae2f_structdef(struct, ae2f_MMap) {
 	ae2f_mMMap	mmap;
 };
 
+#if 0
 ae2f_extern ae2f_SHAREDCALL
 void ae2f_mMMapInit(
 		ae2f_mMMap* const mmap
 		, const size_t dim
-		, const size_t* const lens
+		, const size_t* const lenS
 		, ae2f_err_t* const opt_ret_err
 		, size_t* const opt_ret_sz
 		) ae2f_noexcept;
@@ -61,8 +62,8 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapSz(
 ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapDel(
 		ae2f_mMMap*	mmap
 		);
+#endif
 
-#if !(ae2f_MAC_BUILD && __ae2f_MACRO_GENERATED)
 
 #define ae2f_mMMapInit		__ae2f_mMMapInit
 #define ae2f_mMMapMk		__ae2f_mMMapMk
@@ -73,7 +74,6 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapDel(
 #include <string.h>
 #include <stdlib.h>
 
-#endif /** Function declarations */
 
 
 /** @brief Length vector for every dimension index. */

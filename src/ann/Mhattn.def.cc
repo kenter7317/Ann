@@ -33,7 +33,7 @@
  * @param prm_wval	(prm_mdldist, prm_mdldist)
  * @param prm_wout	(prm_mdldist, prm_mdldist)
  * */
-ae2f_MAC() ae2f_AnnMhattnForward_imp(
+ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 		ae2f_AnnMhattnForward_t			ref_mem,
 
 		ae2f_float_t* const			ref_qcache,

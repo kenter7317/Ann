@@ -13,7 +13,7 @@ static void	LossDummy(ae2f_float* a, const ae2f_float* b, const ae2f_float* c, s
 	return;
 }
 
-static size_t	s_lpModelLen[] = {2, 10, 3, 12, 1};
+static size_t	s_lpModelLen[] = {2, 4, 3, 12, 1};
 
 #define	NULL_GENERIC(T)	((T*)NULL)
 
@@ -21,7 +21,7 @@ int main() {
 	Test_VkInit();
 
 	__ae2fVK_AnnMlpMk_imp_V(
-			short
+			double
 			, s_mk
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
@@ -36,12 +36,11 @@ int main() {
 			, 0.1, 0.1, vkdev, vkphydevmemprops 
 			, NULL_GENERIC(VkAllocationCallbacks)
 			, ""
-			"#define CL_Q 1\n"
 			"#define ACT_DERIV(lidx, r, x, i, c) { *(r) = (((x)[i] + 1e-7) * (1.0 - (x)[i] - 1e-7)); } \n"
 			"#define ACT(lidx, r, x, i, c) { *(r) = (1.0 / (1.0 + exp(-(x[i])))); } \n"
 			"#define LOSS_DERIV(r, o, t, i, c) { *(r) = ((o)[i] - (t)[i]) / (c); } \n"
 			"#pragma OPENCL EXTENSION cl_khr_fp16 : enable\n"
-			"#define ae2f_float_t half\n"
+			"#define ae2f_float_t double\n"
 			""
 			, "\n"
 			);

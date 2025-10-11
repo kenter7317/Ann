@@ -14,6 +14,7 @@
 
 #include "./Slp.h"
 #include <ae2f/Pack/Beg.h>
+#include <assert.h>
 
 /**
  * @brief
@@ -155,7 +156,7 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 #include <ae2f/Pack/End.h>
 
 
-#if ae2f_MAC_BUILD
+#if ae2f_MAC_BUILD && 0
 
 ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpMk(
 		ae2f_opt ae2f_err_t* ae2f_restrict const	reterr

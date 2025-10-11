@@ -520,7 +520,7 @@ ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 }
 
 /** @brief delta to delta */
-ae2f_MAC() _ae2f_AnnMlpPropagate_imp(
+ae2f_MAC() _ae2f_AnnMlpBwd_imp(
 		ae2f_float_t			v_tmp,
 		size_t				v_send
 		, const ae2f_AnnSlp_t		slp_then
@@ -616,7 +616,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 
 	/** nxt-delta to then-delta */
 	if((actderiv)[(v_follow).m_k - 1]) {
-		__ae2f_AnnMlpPropagate_imp(
+		__ae2f_AnnMlpBwd_imp(
 				(v_follow).m_ret
 				, (v_follow).m_stack.m_send
 				, (v_follow)
@@ -626,7 +626,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 				, ((outstream) + (v_follow).m_pg_out * ((v_follow).m_k - 1)) /** input of (v_follow).m_k */
 				);
 	} else {
-		__ae2f_AnnMlpPropagate_imp(
+		__ae2f_AnnMlpBwd_imp(
 				(v_follow).m_ret
 				, (v_follow).m_stack.m_send
 				, (v_follow)
@@ -682,7 +682,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 
 		/** nxt-delta to then-delta */
 		if((actderiv)[(v_follow).m_k - 1]) {
-			__ae2f_AnnMlpPropagate_imp(
+			__ae2f_AnnMlpBwd_imp(
 					(v_follow).m_ret
 					, (v_follow).m_stack.m_send
 					, (v_follow)
@@ -692,7 +692,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 					, ((outstream) + (v_follow).m_pg_out * ((v_follow).m_k - 1))
 					);
 		} else {
-			__ae2f_AnnMlpPropagate_imp(
+			__ae2f_AnnMlpBwd_imp(
 					(v_follow).m_ret
 					, (v_follow).m_stack.m_send
 					, (v_follow)
