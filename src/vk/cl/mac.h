@@ -12,4 +12,13 @@
 #define CL_Q_CVRT(x)	x
 #endif
 
+#include <ae2fVK/clspv/addrspec.h>
+#include <ae2fVK/clspv/wrkitem.h>
+#include <ae2fVK/clspv/atom.h>
+
+#if ae2fVK_CL(!)0
+#define work_group_reduce_add(v)	0
+#endif
+
+
 #endif
