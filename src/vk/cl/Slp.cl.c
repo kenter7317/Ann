@@ -1,6 +1,5 @@
 #pragma OPENCL EXTENSION cl-fast-relaxed-math : enable
-#pragma OPENCL EXTENSION -pod-pushconstant : enable
-#pragma OPENCL EXTENSION -cl-fast-relaxed-math : enable
+#pragma OPENCL EXTENSION pod-pushconstant : enable
 
 #define ae2f_NEED_CLASS 0
 

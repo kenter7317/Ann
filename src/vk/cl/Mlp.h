@@ -79,10 +79,7 @@ ae2f_MAC() clMlpGetHD1(
 
 	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz)) {
 		unless((i_oidx)) (r_delta_then)[i_iidx] = 0;
-		atomic_add(
-				&(r_delta_then)[(i_iidx)]
-				, (i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx]
-				);
+		atomic_add(&(r_delta_then)[(i_iidx)], (i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx]);
 	}
 }
 

@@ -371,10 +371,6 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnMlpMk_imp_V(
 							1, NULL
 							, &(v_mk).m_U1.m_clsrc
 							, ""
-							"-pod-pushconstant "
-							"-cl-fast-relaxed-math "
-							"-cl-single-precision-constant"
-
 							, ae2f_const_cast(
 								char**
 								, ae2f_reinterpret_cast(

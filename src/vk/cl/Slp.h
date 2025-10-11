@@ -25,10 +25,8 @@ ae2f_MAC() clSlpPredict(
 	if((oidx) < (osz) && (iidx) < (isz)) {
 		unless((iidx)) (loc)[oidx] = 0;
 
-		atomic_add(
-				&(loc)[oidx]
-				, (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
-				);
+		atomic_add((loc)[oidx], (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]);
+		/** (loc)[oidx] += (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]; */
 
 		unless(iidx) {
 			(loc)[oidx] += (p_bias)[oidx];

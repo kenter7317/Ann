@@ -48,7 +48,7 @@ int main() {
 			, vkphydevmemprops
 			, NULL
 			, 
-			"#define CL_Q 1\n"
+			"#define CL_Q 0\n"
 			"#define LOSS_DERIV(r, y, y_desired, i, c)  \n"
 			"#define ACT(r, y, i, c) { (*(r) = (1.0 / (1.0 + exp(-y[i])))); } \n"
 			, "/** This is also a comment */\n"
