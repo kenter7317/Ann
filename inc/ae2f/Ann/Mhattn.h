@@ -92,7 +92,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn_t)
  * @param prm_j		{const size_t} < prm_mdldist
  * @param prm_k		{const size_t} < prm_mdldist
  * */
-#define ae2f_AnnMhattnForwardSeqConvOne_imp(		\
+#define ae2f_AnnMhattnFwdSeqConvOne_imp(		\
 		prm_seq,				\
 		prm_w,					\
 		prm_mdldist,				\
