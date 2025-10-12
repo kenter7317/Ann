@@ -33,7 +33,7 @@ ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float
 
 	while((v_mem).m_count--) {
 		atom_cmpxchg(
-				(__global volatile uint32_t* const)prm_dst
+				(((__global volatile uint32_t* const)prm_dst) + (v_mem).m_count)
 				, (v_mem).m_atom[0].m_u[(v_mem).m_count]
 				, (v_mem).m_atom[1].m_u[(v_mem).m_count]
 			    );
