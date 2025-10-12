@@ -34,7 +34,7 @@
  * @param prm_wout	(prm_mdldist, prm_mdldist)
  * */
 ae2f_MAC() ae2f_AnnMhattnFwd_imp(
-		ae2f_AnnMhattnForward_t			ref_mem,
+		ae2f_AnnMhattnFwd_t			ref_mem,
 
 		ae2f_float_t* const			ref_qcache,
 		ae2f_float_t* const			ref_kcache,
@@ -61,23 +61,23 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 )
 {
 	{
-		assert(ref_kcache && "ae2f_AnnMhattnForward_imp");
-		assert(ref_qcache && "ae2f_AnnMhattnForward_imp");
-		assert(ref_vcache && "ae2f_AnnMhattnForward_imp");
-		assert(ref_attnw_cache && "ae2f_AnnMhattnForward_imp");
+		assert(ref_kcache && "ae2f_AnnMhattnFwd_imp");
+		assert(ref_qcache && "ae2f_AnnMhattnFwd_imp");
+		assert(ref_vcache && "ae2f_AnnMhattnFwd_imp");
+		assert(ref_attnw_cache && "ae2f_AnnMhattnFwd_imp");
 
-		assert(prm_wqry && "ae2f_AnnMhattnForward_imp");
-		assert(prm_wkey && "ae2f_AnnMhattnForward_imp");
-		assert(prm_wval && "ae2f_AnnMhattnForward_imp");
-		assert(prm_wout && "ae2f_AnnMhattnForward_imp");
+		assert(prm_wqry && "ae2f_AnnMhattnFwd_imp");
+		assert(prm_wkey && "ae2f_AnnMhattnFwd_imp");
+		assert(prm_wval && "ae2f_AnnMhattnFwd_imp");
+		assert(prm_wout && "ae2f_AnnMhattnFwd_imp");
 
-		assert(prm_qry && "ae2f_AnnMhattnForward_imp");
-		assert(prm_key && "ae2f_AnnMhattnForward_imp");
-		assert(prm_val && "ae2f_AnnMhattnForward_imp");
+		assert(prm_qry && "ae2f_AnnMhattnFwd_imp");
+		assert(prm_key && "ae2f_AnnMhattnFwd_imp");
+		assert(prm_val && "ae2f_AnnMhattnFwd_imp");
 
-		assert(ret_out && "ae2f_AnnMhattnForward_imp");
-		assert(ret_attnw && "ae2f_AnnMhattnForward_imp");
-		assert(ret_attno && "ae2f_AnnMhattnForward_imp");
+		assert(ret_out && "ae2f_AnnMhattnFwd_imp");
+		assert(ret_attnw && "ae2f_AnnMhattnFwd_imp");
+		assert(ret_attno && "ae2f_AnnMhattnFwd_imp");
 	}
 
 	(ref_mem).m_i = (prm_seqlen) /* i */ * ((prm_mhattn).m_mdldist) /* k */; 
@@ -92,7 +92,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 
 		for((ref_mem).m_j = (prm_mhattn).m_mdldist /* j */; (ref_mem).m_j--;) {
 			(ref_mem).m_U0.m_S0.m_q
-				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+				+= ae2f_AnnMhattnFwdSeqConvOne_imp(
 						prm_qry
 						, prm_wqry
 						, (prm_mhattn).m_mdldist
@@ -103,7 +103,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 						);
 
 			(ref_mem).m_U0.m_S0.m_k
-				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+				+= ae2f_AnnMhattnFwdSeqConvOne_imp(
 						prm_key
 						, prm_wkey
 						, (prm_mhattn).m_mdldist
@@ -114,7 +114,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 						);
 
 			(ref_mem).m_U0.m_S0.m_v
-				+= ae2f_AnnMhattnForwardSeqConvOne_imp(
+				+= ae2f_AnnMhattnFwdSeqConvOne_imp(
 						prm_val
 						, prm_wval
 						, (prm_mhattn).m_mdldist
@@ -245,6 +245,14 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 
 		(ret_out)[(ref_mem).m_i] = (ref_mem).m_U0.m_one;
 	}
+}
+
+ae2f_MAC() ae2f_AnnMhattnBwd_imp(
+		const ae2f_AnnMhattn_t			prm_mhattn,
+		ae2f_float_t* const			ret_attnw,
+		ae2f_float_t* const			ret_attno
+		) 
+{
 }
 
 #endif

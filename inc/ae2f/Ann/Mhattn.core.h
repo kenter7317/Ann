@@ -8,18 +8,22 @@
 #include <ae2f/Pack/Beg.h>
 
 
-ae2f_structdef(struct, ae2f_AnnMhattnForwardU0S0_t) {
+ae2f_structdef(struct, ae2f_AnnMhattnFwdU0S0_t) {
 	ae2f_float_t m_q, m_k, m_v;
 };
 
-ae2f_structdef(union, ae2f_AnnMhattnForwardU0_t) {
-	ae2f_AnnMhattnForwardU0S0_t	m_S0;
+ae2f_structdef(union, ae2f_AnnMhattnFwdU0_t) {
+	ae2f_AnnMhattnFwdU0S0_t	m_S0;
 	ae2f_float_t			m_one;
 };
 
-ae2f_structdef(struct, ae2f_AnnMhattnForward_t) {
+ae2f_structdef(struct, ae2f_AnnMhattnFwd_t) {
 	size_t		m_i, m_j, m_k;
-	ae2f_AnnMhattnForwardU0_t m_U0;
+	ae2f_AnnMhattnFwdU0_t m_U0;
+};
+
+ae2f_structdef(struct, ae2f_AnnMhattnBwd_t) {
+	int		m_unused;
 };
 
 #include <ae2f/Pack/End.h>
