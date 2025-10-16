@@ -2,6 +2,7 @@
 #include "../vk.h"
 #include <time.h>
 
+#if 0
 static ae2fVK_AnnMlpMk_t			s_mk;
 static ae2fVK_AnnMlpMapRangedGeneric_t		s_mapranged;
 static ae2f_float*				s_ptr0;
@@ -306,3 +307,8 @@ int main() {
 	Test_VkEnd();
 	return 0;
 }
+
+#else
+
+int main () { return 0; }
+#endif

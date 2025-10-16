@@ -54,9 +54,9 @@ __kernel void kPredict(__global volatile host_float_t* glob, const uint32_t unus
 		, iidx = get_global_id(1)
 		, isz = get_global_size(1);
 
-	clSlpPredict_t	v_predict;
+	_clAtomAddF_t(host_float_t)	v_predict;
 
-	clSlpPredict(
+	_clSlpPredict(
 			__global
 			, v_predict
 			, p_out[oidx]
@@ -98,11 +98,11 @@ __kernel void kTrain(lr_t lr, __global volatile host_float_t* glob, __local vola
 		;
 
 	ae2f_float_t		v_tmp = 0;
-	clSlpPredict_t		slppredict;
+	_clAtomAddF_t(ae2f_float_t)	slppredict;
 #define delta	slppredict.m_atom[0].m_f
 #define v_tmp1	slppredict.m_atom[1].m_f
 
-	clSlpPredict(__local, slppredict, v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+	_clSlpPredict(__local, slppredict, v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
 
 	if(iidx == 0) {
 		p_out[oidx] = v_tmp;

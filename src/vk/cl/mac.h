@@ -4,8 +4,7 @@
 #include <ae2fVK/clspv/addrspec.h>
 #include <ae2fVK/clspv/wrkitem.h>
 #include <ae2fVK/clspv/atom.h>
-#include <ae2fVK/clspv/sclr.h>
-#include <ae2fVK/clspv/sync.h>
+#include <ae2fVK/clspv/stdint.h>
 
 #define host_float_t ae2f_float
 

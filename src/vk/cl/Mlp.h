@@ -33,10 +33,9 @@ ae2f_MAC() clMlpRvrse(
 	}
 }
 
-typedef struct clMlpGetHD1_t { 
-	ae2f_float_t	m_tmp; 
-	clAtomAddF_t	m_atadd; 
-} clMlpGetHD1_t;
+
+#define _clMlpGetHD1_t	_clAtomAddF_t
+typedef _clMlpGetHD1_t(host_float_t) clMlpGetHD1_t;
 
 ae2f_MAC(__global, ) clMlpGetHD1(
 		clMlpGetHD1_t			v_mem,
@@ -54,12 +53,10 @@ ae2f_MAC(__global, ) clMlpGetHD1(
 {
 	if((i_oidx) < (i_osz) && (i_iidx) < (i_isz)) {
 		unless((i_oidx)) (r_delta_then)[i_iidx] = 0;
-		(v_mem).m_tmp = (i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx];
-
 		_clAtomAddF(__global
-				, (v_mem).m_atadd
+				, (v_mem)
 				, &(r_delta_then)[(i_iidx)]
-				, (v_mem).m_tmp
+				, (i_weight)[(i_isz) * (i_oidx) + (i_iidx)] * (i_delta)[i_oidx]
 			   );
 	}
 }

@@ -14,25 +14,25 @@
 #define _clAtomAddF(a, b, c, d)		clAtomAddF(b, c, d)
 #endif
 
-typedef struct clAtomAddF_t {
-	union {
-		host_float_t m_f; 
-		uint32_t m_u[sizeof(host_float_t) >> 2];
-	} m_atom[2];
+#define _clAtomAddF_t(host_float_t) struct { \
+	union { \
+		host_float_t m_f;  \
+		uint32_t m_u[sizeof(host_float_t) >> 2]; \
+	} m_atom[2]; \
+	uint32_t	m_count; \
+}
 
-	uint32_t	m_count;
-} clAtomAddF_t;
-
+typedef _clAtomAddF_t(host_float_t) clAtomAddF_t;
 
 ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float_t* prm_dst, ae2f_float_t prm_val)
 {
 	typedef char clatomaddf_is_host_float_32bit_family[sizeof(host_float_t) & 3 ? -1 : 1];
 	(v_mem).m_count = (sizeof(host_float_t) >> 2);
 	((v_mem).m_atom)[0].m_f = *(prm_dst);
-	((v_mem).m_atom)[1].m_f = ((v_mem).m_atom)[0].m_f + (host_float_t)(prm_val);
+	((v_mem).m_atom)[1].m_f = ((v_mem).m_atom)[0].m_f + (prm_val);
 
 	while((v_mem).m_count--) {
-		atom_cmpxchg(
+		atom_cmpxchg_u(
 				(((__global volatile uint32_t* const)prm_dst) + (v_mem).m_count)
 				, (v_mem).m_atom[0].m_u[(v_mem).m_count]
 				, (v_mem).m_atom[1].m_u[(v_mem).m_count]
@@ -42,10 +42,11 @@ ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float
 
 #if 1
 
-typedef clAtomAddF_t _clSlpPredict_t;
+#define _clSlpPredict_t	_clAtomAddF_t
+typedef clAtomAddF_t clSlpPredict_t;
 
 ae2f_MAC(__global, ) clSlpPredict(
-		_clSlpPredict_t	v_mem,
+		clSlpPredict_t	v_mem,
 		ae2f_float_t	ret,
 		__local ae2f_float_t* const loc,
 		const __global ae2f_float_t* const p_inp,
@@ -58,8 +59,7 @@ ae2f_MAC(__global, ) clSlpPredict(
 {
 	if((oidx) < (osz) && (iidx) < (isz)) {
 		unless((iidx)) (loc)[oidx] = 0;
-		ae2f_float_t v_tmp = (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx];
-		_clAtomAddF(__global, v_mem, &(loc)[oidx], v_tmp);
+		_clAtomAddF(__global, v_mem, &(loc)[oidx], (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]);
 		unless(iidx) {
 			(loc)[oidx] += (p_bias)[oidx];
 			ACT(&(ret), (loc), oidx, osz);
@@ -69,8 +69,5 @@ ae2f_MAC(__global, ) clSlpPredict(
 }
 
 #endif
-
-#define clSlpPredict	CL_Q_CVRT(_clSlpPredict)
-#define clSlpPredict_t	CL_Q_CVRT(_clSlpPredict_t)
 
 #endif
