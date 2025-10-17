@@ -17,7 +17,8 @@
 #define _clAtomAddF_t(host_float_t) struct { \
 	union { \
 		host_float_t m_f;  \
-		uint32_t m_u[sizeof(host_float_t) >> 2]; \
+		host_float_t m_fa[MAX(1, 4 / sizeof(host_float_t))]; \
+		uint32_t m_u[(MAX(1, sizeof(host_float_t) >> 2))]; \
 	} m_atom[2]; \
 	uint32_t	m_count; \
 }
@@ -27,16 +28,27 @@ typedef _clAtomAddF_t(host_float_t) clAtomAddF_t;
 ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float_t* prm_dst, ae2f_float_t prm_val)
 {
 	/* typedef char clatomaddf_is_host_float_32bit_family[sizeof((v_mem).m_atom[0].m_f) & 3 ? -1 : 1]; */
-	(v_mem).m_count = (sizeof(((v_mem).m_atom[0].m_f)) >> 2);
-	((v_mem).m_atom)[0].m_f = *(prm_dst);
-	((v_mem).m_atom)[1].m_f = ((v_mem).m_atom)[0].m_f + (prm_val);
 
+	if(sizeof((v_mem).m_atom[0].m_f) < 4) {
+		(v_mem).m_count = 4 / sizeof((v_mem).m_atom[0].m_f);
+		while((v_mem).m_count--) {
+			(v_mem).m_atom[0].m_fa[(v_mem).m_count]
+				= (prm_dst)[(v_mem).m_count]
+				;
+		}
+	} else {
+		((v_mem).m_atom)[0].m_f = ((v_mem).m_atom)[1].m_f = *(prm_dst);
+	}
+
+	((v_mem).m_atom)[1].m_f += (prm_val);
+	
+	(v_mem).m_count = MAX(1, (sizeof(((v_mem).m_atom[0].m_f)) >> 2));
 	while((v_mem).m_count--) {
-		atom_cmpxchg_u(
-				(((__global volatile uint32_t* const)prm_dst) + (v_mem).m_count)
-				, (v_mem).m_atom[0].m_u[(v_mem).m_count]
+		atom_xchg_u(
+				((__global uint*)(((intptr_t)(prm_dst)) + (v_mem).m_count))
+				/* , (v_mem).m_atom[0].m_u[(v_mem).m_count] */
 				, (v_mem).m_atom[1].m_u[(v_mem).m_count]
-			    );
+			   );
 	}
 }
 
@@ -59,7 +71,10 @@ ae2f_MAC(__global, ) clSlpPredict(
 {
 	if((oidx) < (osz) && (iidx) < (isz)) {
 		unless((iidx)) (loc)[oidx] = 0;
-		_clAtomAddF(__global, v_mem, &(loc)[oidx], (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]);
+		_clAtomAddF(__global
+				, v_mem, &(loc)[oidx]
+				, (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx]
+			   );
 		unless(iidx) {
 			(loc)[oidx] += (p_bias)[oidx];
 			ACT(&(ret), (loc), oidx, osz);

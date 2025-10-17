@@ -14,6 +14,7 @@
 #endif
 
 #define	CAST(t, x)	((t)(x))
+#define MAX(a, b)	((a) < (b) ? (b) : (a))
 
 #define size_t		uint32_t
 
