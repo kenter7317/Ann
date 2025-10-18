@@ -27,8 +27,6 @@ typedef _clAtomAddF_t(host_float_t) clAtomAddF_t;
 
 ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float_t* prm_dst, ae2f_float_t prm_val)
 {
-	/* typedef char clatomaddf_is_host_float_32bit_family[sizeof((v_mem).m_atom[0].m_f) & 3 ? -1 : 1]; */
-
 	if(sizeof((v_mem).m_atom[0].m_f) < 4) {
 		(v_mem).m_count = 4 / sizeof((v_mem).m_atom[0].m_f);
 		while((v_mem).m_count--) {
@@ -45,8 +43,7 @@ ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float
 	(v_mem).m_count = MAX(1, (sizeof(((v_mem).m_atom[0].m_f)) >> 2));
 	while((v_mem).m_count--) {
 		atom_xchg_u(
-				((__global uint*)(((intptr_t)(prm_dst)) + (v_mem).m_count))
-				/* , (v_mem).m_atom[0].m_u[(v_mem).m_count] */
+				PTRCAST(__global uint*, prm_dst, (v_mem).m_count << 2)
 				, (v_mem).m_atom[1].m_u[(v_mem).m_count]
 			   );
 	}

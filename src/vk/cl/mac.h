@@ -14,6 +14,7 @@
 #endif
 
 #define	CAST(t, x)	((t)(x))
+#define PTRCAST(t, x, pad)	CAST(t, CAST(intptr_t, x) + (pad))
 #define MAX(a, b)	((a) < (b) ? (b) : (a))
 
 #define size_t		uint32_t
