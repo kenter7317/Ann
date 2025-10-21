@@ -22,10 +22,6 @@ ae2f_structdef(struct, ae2f_AnnMhattnFwd_t) {
 	ae2f_AnnMhattnFwdU0_t m_U0;
 };
 
-ae2f_structdef(struct, ae2f_AnnMhattnBwd_t) {
-	int		m_unused;
-};
-
 #include <ae2f/Pack/End.h>
 
 #endif
