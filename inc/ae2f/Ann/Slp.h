@@ -50,17 +50,17 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 	 * @brief
 	 * Activation function.
 	 */
-	ae2f_AnnAct_t * m_act;
+	ae2f_AnnActFFN_t * m_act;
 	/**
 	 * @brief
 	 * Derivative of the activation function.
 	 */
-	ae2f_AnnAct_t * m_actderiv;
+	ae2f_AnnActFFN_t * m_actderiv;
 	/**
 	 * @brief
 	 * Derivative of the loss function.
 	 */
-	ae2f_AnnLoss_t* m_lossderiv;
+	ae2f_AnnLossFFN_t* m_lossderiv;
 
 	/**
 	 * @brief
@@ -87,9 +87,9 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 		const size_t					outc,
 		const size_t					offset_opt,
 
-		ae2f_opt ae2f_AnnAct_t* const			act,
-		ae2f_opt ae2f_AnnAct_t* const			actderiv,
-		ae2f_AnnLoss_t* const				lossderiv,
+		ae2f_opt ae2f_AnnActFFN_t* const			act,
+		ae2f_opt ae2f_AnnActFFN_t* const			actderiv,
+		ae2f_AnnLossFFN_t* const				lossderiv,
 		ae2f_float_t					learningrate,
 		ae2f_float_t					learningrate_bias,
 		ae2f_opt ae2f_err_t* ae2f_restrict const		err_opt
@@ -179,9 +179,9 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpMk(
 		const size_t					extra_opt,
 		ae2f_FREE(ae2f_AnnSlpDel, __ae2f_AnnSlpDel) 
 		ae2f_AnnSlp* ae2f_restrict * ae2f_restrict const		slp,
-		ae2f_opt ae2f_AnnAct_t* const			act,
-		ae2f_opt ae2f_AnnAct_t* const			actderiv,
-		ae2f_AnnLoss_t* const				lossderiv,
+		ae2f_opt ae2f_AnnActFFN_t* const			act,
+		ae2f_opt ae2f_AnnActFFN_t* const			actderiv,
+		ae2f_AnnLossFFN_t* const				lossderiv,
 		ae2f_float_t					learningrate,
 		ae2f_float_t					learningrate_bias,
 		ae2f_opt ae2f_err_t* ae2f_restrict const			err_opt
@@ -334,9 +334,9 @@ inline void* ae2f_TMP operator new(
 		const size_t					outc,
 		const size_t					offset_opt,
 
-		ae2f_opt ae2f_AnnAct_t* const			act,
-		ae2f_opt ae2f_AnnAct_t* const			actderiv,
-		ae2f_AnnLoss_t* const				lossderiv,
+		ae2f_opt ae2f_AnnActFFN_t* const			act,
+		ae2f_opt ae2f_AnnActFFN_t* const			actderiv,
+		ae2f_AnnLossFFN_t* const				lossderiv,
 		ae2f_float_t					learningrate,
 		ae2f_float_t					learningrate_bias,
 		ae2f_opt ae2f_err_t* const			err_opt

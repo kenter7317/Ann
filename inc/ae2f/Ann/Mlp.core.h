@@ -86,12 +86,12 @@ ae2f_structdef(union, ae2f_AnnMlpInitMkPtr_t) {
 	 * @brief
 	 * Pointer to an array of activation functions.
 	 */
-	ae2f_AnnAct_t** ae2f_restrict	m_Act;
+	ae2f_AnnActFFN_t** ae2f_restrict	m_Act;
 	/**
 	 * @brief
 	 * Pointer to an array of loss functions.
 	 */
-	ae2f_AnnLoss_t** ae2f_restrict	m_Loss;
+	ae2f_AnnLossFFN_t** ae2f_restrict	m_Loss;
 
 	/** for 1-byte padding */
 	char* ae2f_restrict		m_byte;

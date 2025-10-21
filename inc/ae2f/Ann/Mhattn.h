@@ -125,7 +125,7 @@ ae2f_structdef(struct, ae2f_AnnMhattn) {
 	/** @brief Head count */
 	size_t		m_headc;
 
-	ae2f_AnnLoss_t*	m_loss;
+	ae2f_AnnLossFFN_t*	m_loss;
 };
 
 #include <ae2f/Pack/End.h>

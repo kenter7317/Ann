@@ -342,9 +342,9 @@ ae2f_MAC() _ae2fVK_AnnSlpMk_imp(
 		, const uint32_t	outc
 		, ae2f_opt const size_t	prm_offset
 		, ae2f_opt const size_t	extra
-		, ae2f_opt ae2f_AnnAct_t* const act
-		, ae2f_opt ae2f_AnnAct_t* const actderiv
-		, ae2f_AnnLoss_t* const lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t* const act
+		, ae2f_opt ae2f_AnnActFFN_t* const actderiv
+		, ae2f_AnnLossFFN_t* const lossderiv
 		, ae2f_float_t learningrate
 		, ae2f_float_t learningrate_bias
 
@@ -402,9 +402,9 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
 		, const uint32_t	outc
 		, ae2f_opt const size_t	prm_offset
 		, ae2f_opt const size_t	extra
-		, ae2f_opt ae2f_AnnAct_t* const act
-		, ae2f_opt ae2f_AnnAct_t* const actderiv
-		, ae2f_AnnLoss_t* const lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t* const act
+		, ae2f_opt ae2f_AnnActFFN_t* const actderiv
+		, ae2f_AnnLossFFN_t* const lossderiv
 		, ae2f_float_t learningrate
 		, ae2f_float_t learningrate_bias
 

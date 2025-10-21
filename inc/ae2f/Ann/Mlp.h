@@ -71,17 +71,17 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 	 * @brief
 	 * Activation functions for each layer.
 	 */
-	ae2f_LP(m_depth - 1) ae2f_AnnAct_t** ae2f_restrict	m_act;
+	ae2f_LP(m_depth - 1) ae2f_AnnActFFN_t** ae2f_restrict	m_act;
 	/**
 	 * @brief
 	 * Derivatives of activation functions for each layer.
 	 */
-	ae2f_LP(m_depth - 1) ae2f_AnnAct_t** ae2f_restrict	m_actderiv;
+	ae2f_LP(m_depth - 1) ae2f_AnnActFFN_t** ae2f_restrict	m_actderiv;
 	/**
 	 * @brief
 	 * Derivative of the loss function.
 	 */
-	ae2f_AnnLoss_t*					m_lossderiv;
+	ae2f_AnnLossFFN_t*					m_lossderiv;
 
 	/**
 	 * @brief
@@ -166,8 +166,8 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpMk(
 		, const size_t* ae2f_restrict const		szvector				ae2f_LP(depth)
 		, ae2f_opt size_t* ae2f_restrict const	szswap_opt				ae2f_LP(depth)
 
-		, ae2f_opt ae2f_AnnAct_t** ae2f_restrict const	act				ae2f_LP(depth - 1)
-		, ae2f_opt ae2f_AnnAct_t** ae2f_restrict const	actderiv			ae2f_LP(depth - 1)
+		, ae2f_opt ae2f_AnnActFFN_t** ae2f_restrict const	act				ae2f_LP(depth - 1)
+		, ae2f_opt ae2f_AnnActFFN_t** ae2f_restrict const	actderiv			ae2f_LP(depth - 1)
 		, ae2f_AnnLoss_t* const				lossderiv
 
 		, ae2f_opt ae2f_float_t* ae2f_restrict const	deltastream	ae2f_LP(max(szvector) * (depth - 1))

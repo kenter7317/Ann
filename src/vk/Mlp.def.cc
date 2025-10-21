@@ -38,10 +38,10 @@ ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 		ae2f_opt const size_t	i_prm_offset,
 		ae2f_opt const size_t	i_extra,
 
-		ae2f_opt ae2f_AnnAct_t** const i_act,
-		ae2f_opt ae2f_AnnAct_t** const i_actderiv,
+		ae2f_opt ae2f_AnnActFFN_t** const i_act,
+		ae2f_opt ae2f_AnnActFFN_t** const i_actderiv,
 
-		ae2f_AnnLoss_t* const i_lossderiv,
+		ae2f_AnnLossFFN_t* const i_lossderiv,
 
 		ae2f_float_t i_learningrate,
 		ae2f_float_t i_learningrate_bias,
@@ -104,10 +104,10 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnMlpMk_imp_V(
 		ae2f_opt const size_t	i_prm_offset,
 		ae2f_opt const size_t	i_extra,
 
-		ae2f_opt ae2f_AnnAct_t** const i_act,
-		ae2f_opt ae2f_AnnAct_t** const i_actderiv,
+		ae2f_opt ae2f_AnnActFFN_t** const i_act,
+		ae2f_opt ae2f_AnnActFFN_t** const i_actderiv,
 
-		ae2f_AnnLoss_t* const i_lossderiv,
+		ae2f_AnnLossFFN_t* const i_lossderiv,
 
 		ae2f_float_t i_learningrate,
 		ae2f_float_t i_learningrate_bias,

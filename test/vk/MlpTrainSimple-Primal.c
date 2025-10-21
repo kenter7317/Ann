@@ -29,7 +29,7 @@ int main() {
 			, s_lpModelLen
 			, NULL_GENERIC(size_t)
 			, 0, 0
-			, NULL_GENERIC(ae2f_AnnAct_t*), NULL_GENERIC(ae2f_AnnAct_t*)
+			, NULL_GENERIC(ae2f_AnnActFFN_t*), NULL_GENERIC(ae2f_AnnActFFN_t*)
 			, LossDummy
 			, 0.1, 0.1, vkdev, vkphydevmemprops 
 			, NULL_GENERIC(VkAllocationCallbacks)

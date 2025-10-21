@@ -63,7 +63,7 @@ ae2f_MAC(__global, ) clSlpPredict(
 		const __global ae2f_float_t* const p_bias,
 		const size_t iidx, const size_t isz, 
 		const size_t oidx, const size_t osz,
-		ae2f_AnnAct_t ACT
+		ae2f_AnnActFFN_t ACT
 		)
 {
 	if((oidx) < (osz) && (iidx) < (isz)) {

@@ -17,15 +17,15 @@
 #include <ae2f/Guide.h>
 
 /// @brief Customisable activasion function type.
-typedef void ae2f_AnnAct_t (
+typedef void ae2f_AnnActFFN_t (
 		ae2f_float_t*				ret
 		, ae2f_LP(count) const ae2f_float_t*	out
 		, const size_t				index
 		, const size_t				count
 		);
 
-#define ae2f_AnnAct_PASS(r, o, i, c)		*(r) = (o)[i]
-#define ae2f_AnnActDeriv_PASS(r, o, i, c)	
+#define ae2f_AnnActFFN_PASS(r, o, i, c)		*(r) = (o)[i]
+#define ae2f_AnnActDerivFFN_PASS(r, o, i, c)	*(r) = 1.0
 
 /// @brief
 /// Specify the way of calculating loss.
@@ -34,8 +34,8 @@ typedef void ae2f_AnnAct_t (
 /// and that value will be added to each weights field and bias.
 /// @param out Predicted value
 /// @param goal Expected value (wanted)
-/// @return Calculated loss.
-typedef void ae2f_AnnLoss_t (
+/// @param ret Calculated loss.
+typedef void ae2f_AnnLossFFN_t (
 		ae2f_float_t* 				ret,
 		ae2f_LP(count) const ae2f_float_t*	out, 
 		ae2f_LP(count) const ae2f_float_t* 	goal,
@@ -43,6 +43,21 @@ typedef void ae2f_AnnLoss_t (
 		const size_t				count
 		);
 
-#define ae2f_AnnLossDeriv_PASS(r, o, g, i, c)	*(r) = (o)[i] * (1.0 - (g)[i]);
+#define ae2f_AnnLossDerivFFN_PASS(r, o, g, i, c)	*(r) = (o)[i] * (1.0 - (g)[i]);
+
+typedef void ae2f_AnnActFwdMHATTN_t(
+		ae2f_float_t* 				ret,
+		size_t					prm_retidx,
+		ae2f_LP(prm_len) const ae2f_float_t*	prm_inp,
+		size_t					prm_len
+		);
+
+typedef void ae2f_AnnActBwdMHATTN_t(
+		ae2f_float_t*				ret,
+		size_t					prm_retidx,
+		ae2f_LP(prm_len) const ae2f_float_t*	prm_grad_in,
+		ae2f_LP(prm_len) const ae2f_float_t*	prm_softmax_out,
+		size_t					prm_len
+		);
 
 #endif

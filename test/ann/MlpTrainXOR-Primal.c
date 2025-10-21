@@ -57,8 +57,8 @@ ae2f_float_t mlp_outstream[(MLP_DEPTH - 1) * MLP_OUT_GREATEST] = {0};
 ae2f_float_t mlp_deltastream[(MLP_DEPTH - 1) * MLP_OUT_GREATEST] = {0};
 // --- End Corrected Memory Layout ---
 
-ae2f_AnnAct_t* mlp_acts[MLP_DEPTH - 1] = { Act, Act };
-ae2f_AnnAct_t* mlp_actderivs[MLP_DEPTH - 1] = { ActDeriv, ActDeriv };
+ae2f_AnnActFFN_t* mlp_acts[MLP_DEPTH - 1] = { Act, Act };
+ae2f_AnnActFFN_t* mlp_actderivs[MLP_DEPTH - 1] = { ActDeriv, ActDeriv };
 
 size_t i, j, k;
 

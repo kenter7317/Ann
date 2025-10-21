@@ -35,9 +35,9 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 		, const size_t* const			szvector
 		, ae2f_opt size_t* const		szswap_opt
 
-		, ae2f_opt ae2f_AnnAct_t** const	act
-		, ae2f_opt ae2f_AnnAct_t** const	actderiv
-		, ae2f_AnnLoss_t* const			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	act
+		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
+		, ae2f_AnnLossFFN_t* const			lossderiv
 
 		, ae2f_opt ae2f_float_t* const	deltastream
 		, ae2f_opt ae2f_float_t* const	outcache
@@ -92,9 +92,9 @@ ae2f_MAC() _ae2f_AnnMlpMk_imp(
 		, const size_t* const		szvector
 		, size_t*	const		szswap_opt
 
-		, ae2f_opt ae2f_AnnAct_t** const	act
-		, ae2f_opt ae2f_AnnAct_t** const	actderiv
-		, ae2f_AnnLoss_t* const			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	act
+		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
+		, ae2f_AnnLossFFN_t* const			lossderiv
 
 		, ae2f_opt ae2f_float_t* const	deltastream
 		, ae2f_opt ae2f_float_t* const	outcache
@@ -202,8 +202,8 @@ ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		, const size_t		weightc
 		, const size_t		depth
 		, ae2f_opt const size_t* const		szswap
-		, ae2f_opt ae2f_AnnAct_t** const	act
-		, ae2f_opt ae2f_AnnAct_t** const	actderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	act
+		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
 		, ae2f_opt ae2f_float_t* const		deltastream
 		, ae2f_opt ae2f_float_t* const		outcache
 		, ae2f_opt ae2f_float_t* const		weight
@@ -233,9 +233,9 @@ ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
 		, const size_t* const		szvector
 		, size_t*	const		szswap_opt
 
-		, ae2f_opt ae2f_AnnAct_t** const	act
-		, ae2f_opt ae2f_AnnAct_t** const	actderiv
-		, ae2f_AnnLoss_t* const			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	act
+		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
+		, ae2f_AnnLossFFN_t* const			lossderiv
 
 		, ae2f_opt ae2f_float_t* const	deltastream
 		, ae2f_opt ae2f_float_t* const	outcache
@@ -279,9 +279,9 @@ ae2f_MAC() _ae2f_AnnMlpInit_imp(
 		, const size_t* const		szvector
 		, size_t*	const		szswap_opt
 
-		, ae2f_opt ae2f_AnnAct_t** const	act
-		, ae2f_opt ae2f_AnnAct_t** const	actderiv
-		, ae2f_AnnLoss_t* const			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	act
+		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
+		, ae2f_AnnLossFFN_t* const			lossderiv
 
 		, ae2f_opt ae2f_float_t* const	deltastream
 		, ae2f_opt ae2f_float_t* const	outcache
@@ -343,7 +343,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 		, const ae2f_float_t* const		bias
 		, ae2f_float_t* const			outcache
 
-		, ae2f_AnnAct_t* const * const	act_opt
+		, ae2f_AnnActFFN_t* const * const	act_opt
 		)
 {
 	assert((mlp).m_depth > 2);
@@ -527,7 +527,7 @@ ae2f_MAC() _ae2f_AnnMlpBwd_imp(
 		, ae2f_float_t* const		retdelta_then
 
 		, const ae2f_float_t* const		deltaseed
-		, ae2f_AnnAct_t			actderiv_then
+		, ae2f_AnnActFFN_t			actderiv_then
 
 		, const ae2f_float_t* const		inp
 		)
@@ -562,7 +562,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		, const ae2f_float_t			learningrate
 		, const ae2f_float_t			learningrate_bias
 
-		, ae2f_AnnAct_t* const * const	actderiv
+		, ae2f_AnnActFFN_t* const * const	actderiv
 		)
 {
 	assert(((mlp).m_depth > 2) && "m_depth must be more than 1.");
@@ -780,9 +780,9 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 		, const ae2f_float_t			learningrate
 		, const ae2f_float_t			learningrate_bias
 
-		, ae2f_opt ae2f_AnnAct_t* const * const	act
-		, ae2f_opt ae2f_AnnAct_t* const * const	actderiv
-		, ae2f_AnnLoss_t*			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t* const * const	act
+		, ae2f_opt ae2f_AnnActFFN_t* const * const	actderiv
+		, ae2f_AnnLossFFN_t*			lossderiv
 )
 {
 	assert((lenv) && "lengh vector nil");
@@ -808,7 +808,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 	} else {
 		__ae2f_AnnSlpFetchDelta_imp(
 				(v_train), (v_train), (out), (out_desired)
-				, ae2f_AnnActDeriv_PASS
+				, ae2f_AnnActDerivFFN_PASS
 				, (lossderiv)
 				, (&((deltacache)[(mlp).m_outc * (((mlp).m_depth - 2) OPER_NONE)]))
 				);

@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 
-static ae2f_AnnAct_t Act, ActDeriv;
+static ae2f_AnnActFFN_t Act, ActDeriv;
 
 static void
 Act(ae2f_float_t* r, const ae2f_float_t* x, size_t i, size_t c) {
@@ -17,7 +17,7 @@ ActDeriv(ae2f_float_t* r, const ae2f_float_t* _output, size_t i, size_t c) {
 	r[0] = output * (1.0 - output);
 }
 
-static ae2f_AnnLoss_t LossDeriv;
+static ae2f_AnnLossFFN_t LossDeriv;
 
 /** Cross entrophy */
 static void

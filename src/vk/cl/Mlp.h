@@ -21,7 +21,7 @@ ae2f_MAC() clMlpRvrse(
 		const size_t			i_iidx,
 		const size_t			i_isz,
 
-		ae2f_AnnAct_t			i_actderiv_then,
+		ae2f_AnnActFFN_t			i_actderiv_then,
 
 		const ae2f_float_t* const	i_inp,
 		const ae2f_float_t* const	i_deltaseed

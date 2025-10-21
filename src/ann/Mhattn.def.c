@@ -53,7 +53,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 
 		const size_t				prm_seqlen,
 
-		ae2f_AnnAct_t				prm_act,
+		ae2f_AnnActFwdMHATTN_t			prm_act,
 
 		ae2f_float_t* const			ret_out,
 		ae2f_float_t* const			ret_attnw,
@@ -99,7 +99,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 						, prm_seqlen
 						, (ref_mem).m_i / (prm_mhattn).m_mdldist
 						, (ref_mem).m_j
-						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						, (ref_mem).m_i % (prm_mhattn).m_mdldist
 						);
 
 			(ref_mem).m_U0.m_S0.m_k
@@ -110,7 +110,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 						, prm_seqlen
 						, (ref_mem).m_i / (prm_mhattn).m_mdldist
 						, (ref_mem).m_j
-						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						, (ref_mem).m_i % (prm_mhattn).m_mdldist
 						);
 
 			(ref_mem).m_U0.m_S0.m_v
@@ -121,7 +121,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 						, prm_seqlen
 						, (ref_mem).m_i / (prm_mhattn).m_mdldist
 						, (ref_mem).m_j
-						, (ref_mem).m_k % (prm_mhattn).m_mdldist
+						, (ref_mem).m_i % (prm_mhattn).m_mdldist
 						);
 		}
 
@@ -139,7 +139,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 		/** 
 		 * q * Transpose(k) goes to (prm_seqlen, prm_seqlen)
 		 * */
-		while( (ref_mem).m_j--) {
+		while((ref_mem).m_j--) {
 			(ref_mem).m_U0.m_one = 0;
 			(ref_mem).m_k = ae2f_AnnMhattnKDist(prm_mhattn) /* j */;
 
@@ -183,20 +183,23 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 			(ref_mem).m_k = (prm_seqlen);
 			while((ref_mem).m_k--) {
 				prm_act(
+						/* ret */
 						&(ret_attnw)[ae2f_AnnUtilIdx3(
 							(ref_mem).m_i
 							, (prm_mhattn).m_headc
 							, (ref_mem).m_j, (prm_seqlen)
 							, (ref_mem).m_k, (prm_seqlen)
-							)]
-
-						, &(ref_attnw_cache)[ae2f_AnnUtilIdx3(
-							(ref_mem.m_i), (prm_mhattn).m_headc
+							)],
+						/* prm_retidx */
+						(ref_mem).m_k,
+						/* prm_inp */
+						&(ref_attnw_cache)[ae2f_AnnUtilIdx3(
+							(ref_mem).m_i, (prm_mhattn).m_headc
 							, (ref_mem).m_j, (prm_seqlen)
 							, 0, prm_seqlen
-							)]
-						, (ref_mem).m_k
-						, (prm_seqlen)
+							)],
+						/* prm_len */
+						(prm_seqlen)
 				       );
 			}
 		}
@@ -308,7 +311,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 		const ae2f_float_t* const		prm_attnw,
 		const ae2f_float_t* const		prm_attno,
 
-		ae2f_AnnAct_t				prm_actderiv,
+		ae2f_AnnActBwdMHATTN_t				prm_actderiv,
 
 		ae2f_float_t* const			ret_grad_wqry, 
 		ae2f_float_t* const			ret_grad_wkey,
@@ -372,7 +375,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 						, (reg_bwd).m_j, (prm_mhattn).m_mdldist
 						)]
 				* (prm_wout)[ae2f_AnnUtilIdx2(/**/
-						(reg_bwd).m_j % (prm_mhattn).m_mdldist, (prm_mhattn).m_mdldist /**/
+						(reg_bwd).m_i % (prm_mhattn).m_mdldist, (prm_mhattn).m_mdldist /**/
 						, (reg_bwd).m_j, (prm_mhattn).m_mdldist
 						)]
 				;
@@ -430,7 +433,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 							, (reg_bwd).m_i / (prm_seqlen), prm_seqlen
 							, (reg_bwd).m_j, ae2f_AnnMhattnKDist(prm_mhattn)
 							)] * /**/
-					(prm_key)[ae2f_AnnMhattnHeadSplit_imp(
+					(prm_val)[ae2f_AnnMhattnHeadSplit_imp(
 							prm_mhattn, prm_seqlen
 							, (reg_bwd).m_hidx
 							, (reg_bwd).m_i % (prm_seqlen)
@@ -449,19 +452,27 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 			(reg_bwd).m_j = (prm_seqlen);
 			while((reg_bwd).m_j--) {
 				prm_actderiv(
-						(ref_bwd).m_U0.m_fa
-						, &(prm_attnw)[ae2f_AnnUtilIdx3(
-							(reg_bwd).m_hidx, (prm_mhattn).m_headc
-							, (reg_bwd).m_i, prm_seqlen
-							, 0, prm_seqlen)]
-						, (reg_bwd).m_j
-						, (prm_seqlen)
-						);
-
-				(ref_grad_scores)[ae2f_AnnUtilIdx2(
-						(reg_bwd).m_i, (prm_seqlen)
-						, (reg_bwd).m_j, (prm_seqlen))
-				] *= (ref_bwd).m_U0.m_f;
+					/* ret */
+					&(ref_grad_scores)[ae2f_AnnUtilIdx2(
+						(reg_bwd).m_i, prm_seqlen,
+						(reg_bwd).m_j, prm_seqlen
+						)],
+					/* prm_retidx */
+					(reg_bwd).m_j,
+					/* prm_grad_in */
+					&(ref_grad_scores)[ae2f_AnnUtilIdx2(
+						(reg_bwd).m_i, prm_seqlen,
+						0, prm_seqlen
+						)],
+					/* prm_softmax_out */
+					&(prm_attnw)[ae2f_AnnUtilIdx3(
+						(reg_bwd).m_hidx, (prm_mhattn).m_headc,
+						(reg_bwd).m_i, prm_seqlen,
+						0, prm_seqlen
+						)],
+					/* prm_len */
+					prm_seqlen
+				);
 			} /** SEQLEN */
 		} /** SEQLEN (ACTDERIV) */
 
@@ -521,7 +532,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 
 		(reg_bwd).m_j = (prm_seqlen);
 		while((reg_bwd).m_j--) {
-			(reg_bwd).m_U0.m_S0.m_q = 
+			(reg_bwd).m_U0.m_S0.m_q += 
 				(prm_qry)[ae2f_AnnUtilIdx2(
 						(reg_bwd).m_i / (prm_mhattn).m_mdldist, prm_seqlen
 						, (reg_bwd).m_j, (prm_mhattn).m_mdldist
@@ -531,7 +542,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 						, (reg_bwd).m_i % (prm_mhattn).m_mdldist, (prm_mhattn).m_mdldist
 						)];
 
-			(reg_bwd).m_U0.m_S0.m_k = 
+			(reg_bwd).m_U0.m_S0.m_k += 
 				(prm_key)[ae2f_AnnUtilIdx2(
 						(reg_bwd).m_i / (prm_mhattn).m_mdldist, prm_seqlen
 						, (reg_bwd).m_j, (prm_mhattn).m_mdldist
@@ -541,7 +552,7 @@ ae2f_MAC() ae2f_AnnMhattnBwd_imp(
 						, (reg_bwd).m_i % (prm_mhattn).m_mdldist, (prm_mhattn).m_mdldist
 						)];
 
-			(reg_bwd).m_U0.m_S0.m_v = 
+			(reg_bwd).m_U0.m_S0.m_v += 
 				(prm_val)[ae2f_AnnUtilIdx2(
 						(reg_bwd).m_i / (prm_mhattn).m_mdldist, prm_seqlen
 						, (reg_bwd).m_j, (prm_mhattn).m_mdldist
