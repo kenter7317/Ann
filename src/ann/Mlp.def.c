@@ -23,8 +23,6 @@
 
 #define ae2f_Ann_Mlp_c
 
-#if	ae2f_NEED_CLASS
-
 #define __ae2f_AnnMlpDel_C(a) free(ae2f_reinterpret_cast(void*, a))
 
 ae2f_MAC() _ae2f_AnnMlpMk_C(
@@ -72,18 +70,6 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 	}
 }
 
-#else
-
-#define	__ae2f_AnnMlpDel_C(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#define	__ae2f_AnnMlpMk_C(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-
-#endif
-
-#if	ae2f_NEED_CLASS
 
 /**
  * @def __ae2f_AnnMlpMk_imp(reg_mk, prm_depth, pprm_szvector, propptr_szswap_opt, lppfn_act_opt, lppfn_actderiv_opt, pfn_lossderiv, propptr_deltastream_opt, propptr_outcache_opt, propptr_weight_opt, propptr_bias_opt, prm_learningrate, prm_learningrate_bias, prm_offset_opt, prm_extra_opt)
@@ -391,21 +377,6 @@ ae2f_MAC() _ae2f_AnnMlpInit_imp(
 			);
 }
 
-#else
-
-#define __ae2f_AnnMlpMk_imp(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#define __ae2f_AnnMlpSz_imp(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#define __ae2f_AnnMlpInitWithOutSz_imp(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#define __ae2f_AnnMlpInit_imp(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#endif
 
 /** @brief layer must be more than 2 */
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
@@ -534,7 +505,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal_imp(
 	}
 }
 
-#if	ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 		ae2f_err_t*			reterr
 		, const ae2f_AnnMlp* const	mlp
@@ -560,12 +530,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 				);
 	}
 }
-#else
-
-#define __ae2f_AnnMlpPredictPrimal(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#endif
 
 #define	__ae2f_AnnMlpPredictStream_imp(v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt) \
 	__ae2f_AnnMlpPredictPrimal_imp(-1, , v_predict, mlp, inp, out, sz, weight, bias, outcache, act_opt)
@@ -797,7 +761,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 			);
 }
 
-#if ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 		ae2f_err_t* const		reterr
 		, const ae2f_AnnMlp*			mlp
@@ -825,13 +788,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 				);
 	}
 }
-
-#else
-
-#define	__ae2f_AnnMlpFollowPrimal(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#endif
 
 #define	__ae2f_AnnMlpFollow_C(reterr, mlp, inp, delta) \
 	__ae2f_AnnMlpFollowPrimal(&1 ? 0 : 1,&1, reterr, mlp, inp, delta)
@@ -902,7 +858,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 			);
 }
 
-#if ae2f_NEED_CLASS
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal(
 		ae2f_err_t* const ae2f_opt	reterr
 		, ae2f_AnnMlp* const		mlp
@@ -956,15 +911,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainAutoPrimal(
 				);
 	}
 }
-
-#else
-#define	__ae2f_AnnMlpTrainPrimal(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#define __ae2f_AnnMlpTrainAutoPrimal(...) \
-	typedef char NO_ae2f_NEED_CLASS[-1]
-
-#endif
 
 
 #define	__ae2f_AnnMlpTrain_C(reterr, mlp, inp, out, out_desired) \
