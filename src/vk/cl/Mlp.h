@@ -35,7 +35,10 @@ ae2f_MAC() clMlpRvrse(
 
 
 #define _clMlpGetHD1_t	_clAtomAddF_t
-typedef _clMlpGetHD1_t(host_float_t) clMlpGetHD1_t;
+
+#if !__ae2f_MACRO_GENERATED
+typedef _clMlpGetHD1_t(__global, host_float_t) clMlpGetHD1_t;
+#endif
 
 ae2f_MAC(__global, ) clMlpGetHD1(
 		clMlpGetHD1_t			v_mem,

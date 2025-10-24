@@ -153,7 +153,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 							, (ref_mem).m_j / (prm_seqlen)
 							, (ref_mem).m_k)
 					]
-					* (ref_kcache)[ae2f_AnnMhattnHeadSplit_imp(/**/
+					* (ref_kcache)[ae2f_AnnMhattnHeadSplit_imp( /**/
 							prm_mhattn
 							, prm_seqlen
 							, (ref_mem).m_i
@@ -173,7 +173,7 @@ ae2f_MAC() ae2f_AnnMhattnFwd_imp(
 				((ref_mem).m_U0.m_one / sqrt(
 					ae2f_static_cast(
 						ae2f_float_t
-						, ae2f_AnnMhattnKDist(prm_mhattn)))
+						,  ae2f_AnnMhattnKDist(prm_mhattn)))
 				)
 				+ ((prm_mask_opt) ? (prm_mask_opt)[(ref_mem).m_j] : 0.);
 		}

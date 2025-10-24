@@ -1,5 +1,3 @@
-#include <ae2f/Ann/Util.h>
-
 #if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
 #include <assert.h>
 #include <stdlib.h>
@@ -85,113 +83,113 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 
 #if	ae2f_NEED_CLASS
 
+
 ae2f_MAC() _ae2f_AnnMlpMk_imp(
-		ae2f_AnnMlpMk_t			v_mk
-		, const size_t			depth
+		ae2f_AnnMlpMk_t			reg_mk
+		, const size_t			prm_depth
 
-		, const size_t* const		szvector
-		, size_t*	const		szswap_opt
+		, const size_t* const		pprm_szvector
+		, size_t*	const		propptr_szswap_opt
 
-		, ae2f_opt ae2f_AnnActFFN_t** const	act
-		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
-		, ae2f_AnnLossFFN_t* const			lossderiv
+		, ae2f_opt ae2f_AnnActFFN_t** const	lppfn_act_opt
+		, ae2f_opt ae2f_AnnActFFN_t** const	lppfn_actderiv_opt
+		, ae2f_AnnLossFFN_t* const		pfn_lossderiv
 
-		, ae2f_opt ae2f_float_t* const	deltastream
-		, ae2f_opt ae2f_float_t* const	outcache
-		, ae2f_opt ae2f_float_t* const	weight
-		, ae2f_opt ae2f_float_t* const	bias
+		, ae2f_opt ae2f_float_t* const	propptr_deltastream_opt
+		, ae2f_opt ae2f_float_t* const	propptr_outcache_opt
+		, ae2f_opt ae2f_float_t* const	propptr_weight_opt
+		, ae2f_opt ae2f_float_t* const	propptr_bias_opt
 
-		, ae2f_float_t const learningrate
-		, ae2f_float_t const learningrate_bias
+		, const ae2f_float_t prm_learningrate
+		, const ae2f_float_t prm_learningrate_bias
 
-		, ae2f_opt const size_t		offset
-		, ae2f_opt const size_t		extra
+		, ae2f_opt const size_t		prm_offset_opt
+		, ae2f_opt const size_t		prm_extra_opt
 )
 {
-	assert((szvector) && "Size vector is null");
-	assert((lossderiv) && "Loss deriv must be initialised");
-	assert((depth) > 2 && "Depth must be greater than 2");
+	assert((pprm_szvector) && "Size vector is null");
+	assert((pfn_lossderiv) && "Loss deriv must be initialised");
+	assert((prm_depth) > 2 && "Depth must be greater than 2");
 
-	(v_mk).m_outc = 1;
-	(v_mk).m_weightc = 1;
-	for((v_mk).m_i = (depth); (v_mk).m_i--; ) {
-		assert((szvector)[(v_mk).m_i] && "Zero value is permitted");
-		(v_mk).m_outc < (szvector)[(v_mk).m_i] && ((v_mk).m_outc = (szvector)[(v_mk).m_i]);
-		if((v_mk).m_i == (depth) - 1) continue;
-		(v_mk).m_weightc = 
-			(v_mk).m_weightc < (szvector)[(v_mk).m_i] * (szvector)[(v_mk).m_i + 1] ?
-			(szvector)[(v_mk).m_i] * (szvector)[(v_mk).m_i + 1] :
-			(v_mk).m_weightc
+	(reg_mk).m_outc = 1;
+	(reg_mk).m_weightc = 1;
+	for((reg_mk).m_i = (prm_depth); (reg_mk).m_i--; ) {
+		assert((pprm_szvector)[(reg_mk).m_i] && "Zero value is permitted");
+		(reg_mk).m_outc < (pprm_szvector)[(reg_mk).m_i] && ((reg_mk).m_outc = (pprm_szvector)[(reg_mk).m_i]);
+		if((reg_mk).m_i == (prm_depth) - 1) continue;
+		(reg_mk).m_weightc = 
+			(reg_mk).m_weightc < (pprm_szvector)[(reg_mk).m_i] * (pprm_szvector)[(reg_mk).m_i + 1] ?
+			(pprm_szvector)[(reg_mk).m_i] * (pprm_szvector)[(reg_mk).m_i + 1] :
+			(reg_mk).m_weightc
 			;
-			
 	}
 
 	__ae2f_AnnMlpSz_imp(
-			(v_mk).m_i
-			, (v_mk).m_outc
-			, (v_mk).m_weightc
-			, depth, szswap_opt
-			, act, actderiv
-			, deltastream, outcache
-			, weight, bias
+			(reg_mk).m_i
+			, (reg_mk).m_outc
+			, (reg_mk).m_weightc
+			, prm_depth, propptr_szswap_opt
+			, lppfn_act_opt, lppfn_actderiv_opt
+			, propptr_deltastream_opt, propptr_outcache_opt
+			, propptr_weight_opt, propptr_bias_opt
 			);
 
-	(v_mk).m_mkptr.m_void = calloc(1, (v_mk).m_i + (offset) + (extra));
-	(v_mk).m_mkbase = (v_mk).m_mkptr.m_mlp;
+	(reg_mk).m_mkptr.m_void = calloc(1, (reg_mk).m_i + (prm_offset_opt) + (prm_extra_opt));
+	(reg_mk).m_mkbase = (reg_mk).m_mkptr.m_mlp;
 
-	if((v_mk).m_mkptr.m_void) {
+	if((reg_mk).m_mkptr.m_void) {
 		__ae2f_AnnMlpInitWithOutSz_imp(
-				*(v_mk).m_mkptr.m_mlp
-				, (v_mk).m_i
-				, depth
-				, (v_mk).m_outc
-				, (v_mk).m_weightc
-				, szvector
-				, (szswap_opt) ? (szswap_opt) : ae2f_reinterpret_cast(
+				*(reg_mk).m_mkptr.m_mlp
+				, (reg_mk).m_i
+				, prm_depth
+				, (reg_mk).m_outc
+				, (reg_mk).m_weightc
+				, pprm_szvector
+				, (propptr_szswap_opt) ? (propptr_szswap_opt) : ae2f_reinterpret_cast(
 					size_t*
-					, (v_mk).m_mkptr.m_mlp + 1)
-				, act
-				, actderiv
-				, lossderiv
-				, deltastream
-				, outcache
-				, weight
-				, bias
-				, learningrate
-				, learningrate_bias
+					, (reg_mk).m_mkptr.m_mlp + 1)
+				, lppfn_act_opt
+				, lppfn_actderiv_opt
+				, pfn_lossderiv
+				, propptr_deltastream_opt
+				, propptr_outcache_opt
+				, propptr_weight_opt
+				, propptr_bias_opt
+				, prm_learningrate
+				, prm_learningrate_bias
 				);
 
-		(v_mk).m_mkptr.m_mlp += 1;
-		(v_mk).m_mkptr.m_byte += (offset);
-		(v_mk).m_mkptr.m_sz += (depth);
+		(reg_mk).m_mkptr.m_mlp += 1;
+		(reg_mk).m_mkptr.m_byte += (prm_offset_opt);
+		(reg_mk).m_mkptr.m_sz += (prm_depth);
 
-		unless(act) {
-			(v_mk).m_mkbase->m_act = (v_mk).m_mkptr.m_Act;
-			(v_mk).m_mkptr.m_Act += (depth) - 1;
+		unless(lppfn_act_opt) {
+			(reg_mk).m_mkbase->m_act = (reg_mk).m_mkptr.m_Act;
+			(reg_mk).m_mkptr.m_Act += (prm_depth) - 1;
 		}
 
-		unless(actderiv) {
-			(v_mk).m_mkbase->m_actderiv = (v_mk).m_mkptr.m_Act;
-			(v_mk).m_mkptr.m_Act += (depth) - 1;
+		unless(lppfn_actderiv_opt) {
+			(reg_mk).m_mkbase->m_actderiv = (reg_mk).m_mkptr.m_Act;
+			(reg_mk).m_mkptr.m_Act += (prm_depth) - 1;
 		}
 
-		unless(deltastream) {
-			(v_mk).m_mkbase->m_deltastream = (v_mk).m_mkptr.m_f;
-			(v_mk).m_mkptr.m_f += ((depth) - 1) * (v_mk).m_outc;
+		unless(propptr_deltastream_opt) {
+			(reg_mk).m_mkbase->m_deltastream = (reg_mk).m_mkptr.m_f;
+			(reg_mk).m_mkptr.m_f += ((prm_depth) - 1) * (reg_mk).m_outc;
 		}
 
-		unless(outcache) {
-			(v_mk).m_mkbase->m_outcache = (v_mk).m_mkptr.m_f;
-			(v_mk).m_mkptr.m_f += ((depth) - 1) * (v_mk).m_outc;
+		unless(propptr_outcache_opt) {
+			(reg_mk).m_mkbase->m_outcache = (reg_mk).m_mkptr.m_f;
+			(reg_mk).m_mkptr.m_f += ((prm_depth) - 1) * (reg_mk).m_outc;
 		}
 
-		unless(bias) {
-			(v_mk).m_mkbase->m_bias = (v_mk).m_mkptr.m_f;
-			(v_mk).m_mkptr.m_f += ((depth) - 1) * (v_mk).m_outc;
+		unless(propptr_bias_opt) {
+			(reg_mk).m_mkbase->m_bias = (reg_mk).m_mkptr.m_f;
+			(reg_mk).m_mkptr.m_f += ((prm_depth) - 1) * (reg_mk).m_outc;
 		}
 
-		unless(weight) {
-			(v_mk).m_mkbase->m_weight = (v_mk).m_mkptr.m_f;
+		unless(propptr_weight_opt) {
+			(reg_mk).m_mkbase->m_weight = (reg_mk).m_mkptr.m_f;
 		}
 	}
 }
@@ -201,13 +199,13 @@ ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		, const size_t		outc
 		, const size_t		weightc
 		, const size_t		depth
-		, ae2f_opt const size_t* const		szswap
-		, ae2f_opt ae2f_AnnActFFN_t** const	act
-		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
-		, ae2f_opt ae2f_float_t* const		deltastream
-		, ae2f_opt ae2f_float_t* const		outcache
-		, ae2f_opt ae2f_float_t* const		weight
-		, ae2f_opt ae2f_float_t* const		bias
+		, const bool		szswap
+		, const bool		act
+		, const bool		actderiv
+		, const bool		deltastream
+		, const	bool		outcache
+		, const	bool		weight
+		, const	bool		bias
 		)
 {
 	assert((depth) > 2);
@@ -504,7 +502,7 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 
 ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 		ae2f_AnnMlpHidDeltaSingle_t	v_single
-		, const ae2f_AnnSlp_t		slp
+		, const ae2f_AnnSlpREG_t		slp
 		, const ae2f_float_t* const	weight
 		, const ae2f_float_t* const	delta
 		, const size_t			iidx
@@ -523,7 +521,7 @@ ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 ae2f_MAC() _ae2f_AnnMlpBwd_imp(
 		ae2f_float_t			v_tmp,
 		size_t				v_send
-		, const ae2f_AnnSlp_t		slp_then
+		, const ae2f_AnnSlpREG_t		slp_then
 		, ae2f_float_t* const		retdelta_then
 
 		, const ae2f_float_t* const		deltaseed
@@ -812,7 +810,6 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 				, (lossderiv)
 				, (&((deltacache)[(mlp).m_outc * (((mlp).m_depth - 2) OPER_NONE)]))
 				);
-
 	}
 
 	__ae2f_AnnMlpFollowPrimal_imp(

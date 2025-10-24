@@ -29,6 +29,8 @@
 #define p_delta		((p_out) + osz)
 #define p_goal		((p_delta) + osz)
 
+#define loc		CAST(__local ae2f_float_t*, _loc)
+
 const ae2f_structdef(struct, lr_t) {
 	host_float_t	m_weight;
 	host_float_t	m_bias;
@@ -47,14 +49,14 @@ const ae2f_structdef(struct, lr_t) {
  * 	, ae2f_float_t[Out]			\n
  *
  * */
-__kernel void kPredict(__global volatile host_float_t* glob, const uint unused) {
+__kernel void kPredict(__global host_float_t* restrict glob, const uint unused) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
 		, iidx = get_global_id(1)
 		, isz = get_global_size(1);
 
-	_clAtomAddF_t(host_float_t)	v_predict;
+	_clAtomAddF_t(__global, host_float_t)	v_predict;
 
 	_clSlpPredict(
 			__global
@@ -89,7 +91,7 @@ __kernel void kPredict(__global volatile host_float_t* glob, const uint unused) 
  * Local: \n
  * 	ae2f_float_t[Out]		\n
  * */
-__kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t* loc) {
+__kernel void kTrain(lr_t lr, __global host_float_t* restrict glob, __local uint* restrict _loc) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
@@ -98,7 +100,7 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
 		;
 
 	ae2f_float_t		v_tmp = 0;
-	_clAtomAddF_t(ae2f_float_t)	slppredict;
+	_clAtomAddF_t(__local, ae2f_float_t)	slppredict;
 #define delta	slppredict.m_atom[0].m_f
 #define v_tmp1	slppredict.m_atom[1].m_f
 
@@ -160,7 +162,7 @@ __kernel void kTrain(lr_t lr, __global host_float_t* glob, __local ae2f_float_t*
  * 	, ae2f_float_t[Out] : Goal	\n
  *
  * */
-__kernel void kFit(lr_t lr, __global volatile host_float_t* glob) {
+__kernel void kFit(lr_t lr, __global host_float_t* restrict glob) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)
@@ -216,7 +218,7 @@ __kernel void kFit(lr_t lr, __global volatile host_float_t* glob) {
  * 	, ae2f_float_t[Inp]		\n
  * 	, ae2f_float_t[Out] : Delta	\n
  * */
-__kernel void kFollow(lr_t lr, __global volatile host_float_t* glob) {
+__kernel void kFollow(lr_t lr, __global host_float_t* restrict glob) {
 	const size_t
 		oidx = get_global_id(0)
 		, osz = get_global_size(0)

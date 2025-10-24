@@ -11,11 +11,6 @@ option(ae2f_DEVEL ""	ON)
 
 include(cmake/Core.cmake)
 
-# Soon will be doomed
-if(NOT WIN32 AND ${ae2f_TEST})
-	link_libraries(m)
-endif()
-
 project(MMap VERSION 0.0.0 LANGUAGES C CXX)
 
 if(NOT TARGET ae2f::MMap)
@@ -38,6 +33,10 @@ if(NOT TARGET ae2f::MMap)
 
 	target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Core)
 	target_link_libraries(${ae2f__MMap__TENT} INTERFACE ae2f::Preproc)
+
+	if(NOT WIN32 AND ${ae2f_TEST})
+		target_link_libraries(${ae2f__MMap__TENT} INTERFACE m)
+	endif()
 endif()
 
 project(Ann VERSION 0.0.0 LANGUAGES C CXX)
@@ -53,7 +52,7 @@ if(NOT TARGET ae2f::Ann)
 		${Ann-inc}
 		)
 
-	target_link_libraries(${ae2f__Ann__TENT} INTERFACE ${ae2f__MMap__TENT})
+	target_link_libraries(${ae2f__Ann__TENT} INTERFACE ae2f::MMap)
 	ae2f_CoreTestTent(${ae2f__Ann__TENT} "test/ann")
 endif()
 

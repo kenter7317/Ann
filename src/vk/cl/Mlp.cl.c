@@ -37,9 +37,9 @@
 #define llsz		(lsz - 1)
 
 /** @brief lsz * sizeof(uint32_t) */
-#define p_layerszlist	CAST(__global uint32_t*, glob)
+#define p_layerszlist	CAST(__global uint* restrict, glob)
 /** @brief sizeof(ae2f_float_t) * lsz * pgsz */
-#define p_outstream	(CAST(__global host_float_t*, p_layerszlist + lsz))
+#define p_outstream	(CAST(__global host_float_t* restrict, p_layerszlist + lsz))
 #define p_inp		p_outstream
 
 /** @brief sizeof(ae2f_float_t) * pgsz_sqr * llsz */
@@ -78,6 +78,7 @@
 #define r_isz_then	_r_isz(lidx-1)
 #define r_osz_then	_r_osz(lidx-1)
 
+#define loc		CAST(__local ae2f_float_t*, _loc)
 #define l_inp(O_R)	(((loc) + pgsz * ((lidx) O_R)))
 #define l_out(O_R)	(((loc) + pgsz * ((lidx + 1) O_R)))
 
@@ -91,7 +92,7 @@
 #define ACT_DERIV_RUN(r, y, i, c)		ACT_DERIV(lidx, r, y, i, c)
 
 #define ACT_RUN_THEN(r, y, i, c)		ACT((lidx - 1), r, y, i, c)
-#define ACT_DERIV_RUN_THEN(r, y, i, c)	ACT_DERIV((lidx - 1), r, y, i, c)
+#define ACT_DERIV_RUN_THEN(r, y, i, c)		ACT_DERIV((lidx - 1), r, y, i, c)
 
 typedef const struct sz2_t {
 	uint32_t	m_lsz;
@@ -108,14 +109,14 @@ typedef const struct sz2_t {
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t push) {
+__kernel void kPredict(__global void* restrict glob, __local uint* restrict _loc, sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
 		, sz = get_global_size(0);
 
 	size_t	lidx = 0;
-	_clSlpPredict_t(ae2f_float_t)	v_predict;
+	_clAtomAddF_t(__local, ae2f_float_t)	v_predict;
 	ae2f_float_t	r_predict;
 
 	_clSlpPredict(__local, v_predict, r_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
@@ -135,7 +136,7 @@ __kernel void kPredict(__global void* glob, __local ae2f_float_t* loc, sz2_t pus
  * ae2f_float_t[Page]:	inp
  * ae2f_float_t[Page]:	out
  * */
-__kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, const sz2_t push) {
+__kernel void kPredictStream(__global void* restrict glob, __local uint* restrict _loc, const sz2_t push) {
 	const size_t
 		oidx = get_global_id(0)
 		, iidx = get_global_id(1)
@@ -143,7 +144,7 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 
 	size_t	lidx = 0;
 	ae2f_float_t	v_predict;
-	_clSlpPredict_t(ae2f_float_t)	slppredict;
+	_clAtomAddF_t(__local, ae2f_float_t)	slppredict;
 
 	_clSlpPredict(__local, slppredict, v_predict, l_out(&1), r_inp, r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 	
@@ -163,7 +164,7 @@ __kernel void kPredictStream(__global void* glob, __local ae2f_float_t* loc, con
 
 ae2f_structdef(union, lrlszel_t) {
 	host_float_t	m_f;
-	uint32_t	m_u;
+	uint		m_u;
 };
 
 const ae2f_structdef(struct, lrlsz_t)
@@ -172,7 +173,7 @@ const ae2f_structdef(struct, lrlsz_t)
 };
 
 typedef char STATIC_ASSERT_LRLSZEL_SZ[
-	sizeof(lrlszel_t) == (sizeof(uint32_t) > sizeof(host_float_t) ? sizeof(uint32_t) : sizeof(host_float_t))
+	sizeof(lrlszel_t) == (sizeof(uint) > sizeof(host_float_t) ? sizeof(uint) : sizeof(host_float_t))
 	? 1 : -1
 ];
 
@@ -192,9 +193,9 @@ typedef char STATIC_ASSERT_LRLSZ_SZ[sizeof(lrlsz_t) ==  sizeof(lrlszel_t) * 4 ? 
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
+__kernel void kFollow(__global void* restrict glob, __local uint* restrict _loc, lrlsz_t lr) {
 	size_t		lidx = llsz - 1;
-	clMlpGetHD1_t	gethd;
+	_clMlpGetHD1_t(__local, ae2f_float_t)	gethd;
 	ae2f_float_t	v_tmp;
 
 	const size_t
@@ -316,7 +317,7 @@ __kernel void kFollow(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr
  * ae2f_float_t[lsz - 1][Page]: OutStream
  * ae2f_float_t[lsz - 1][Page]: DeltaStream
  * */
-__kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t lr) {
+__kernel void kTrainAuto(__global void* restrict glob, __local uint* restrict  _loc, lrlsz_t lr) {
 	size_t		lidx = 0;
 	const size_t
 		oidx = get_global_id(0)
@@ -325,7 +326,7 @@ __kernel void kTrainAuto(__global void* glob, __local ae2f_float_t* loc, lrlsz_t
 
 	ae2f_float_t	tmp0, tmp2;
 
-	_clMlpGetHD1_t(ae2f_float_t)	gethd;
+	_clMlpGetHD1_t(__local, ae2f_float_t)	gethd;
 #define tmp1	gethd.m_atom[0].m_f
 
 

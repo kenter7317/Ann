@@ -9,8 +9,6 @@
 #include "./Slp.core.h"
 #include "./Act.h"
 #include <ae2f/Pack/Beg.h>
-#include <assert.h>
-#include <stdlib.h>
 
 /**
  * @brief
@@ -44,7 +42,7 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 	 * @brief
 	 * SLP data.
 	 */
-	ae2f_AnnSlp_t m_Slp[1];
+	ae2f_AnnSlpREG_t m_Slp[1];
 
 	/**
 	 * @brief
@@ -152,7 +150,7 @@ ae2f_structdef(struct, ae2f_AnnSlp)
  * No allocation is occurred on this function.
  */
 ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpInit(
-		ae2f_AnnSlp_t* ae2f_restrict _this,
+		ae2f_AnnSlpREG_t* ae2f_restrict _this,
 		const size_t inc,
 		const size_t outc,
 		const size_t offset_opt,
@@ -273,38 +271,7 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
 #endif /** macbuild */
 #endif
 
-#if !defined(ae2f_Ann_Slp_imp_h)
-#define ae2f_Ann_Slp_imp_h
 
-#include <ae2f/Pack/Beg.h>
-
-
-ae2f_AnnUtilV2(,ae2f_float_t,*ae2f_restrict, ,ae2f_AnnSlp, *ae2f_restrict);
-
-/**
- * @brief
- * Structure for SLP creation data.
- */
-ae2f_structdef(struct, ae2f_AnnSlpMk_t) {
-	/**
-	 * @brief
-	 * Stack size and allocation count.
-	 */
-	size_t m_stack, m_alloccount;
-	/**
-	 * @brief
-	 * Pointer to the created SLP.
-	 */
-	ae2f_AnnSlp* ae2f_restrict m_ptr;
-	/**
-	 * @brief
-	 * Field pointer for SLP data.
-	 */
-	ae2f_AnnUtilV2Name(ae2f_float_t, ae2f_AnnSlp) m_fieldptr;
-};
-
-#include <ae2f/Pack/End.h>
-#endif
 
 #include "./Slp.auto.h"
 

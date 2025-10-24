@@ -2,7 +2,7 @@
 #include "../vk.h"
 #include <time.h>
 
-#if 1
+#if 0
 static ae2fVK_AnnMlpMk_t			s_mk;
 static ae2fVK_AnnMlpMapRangedGeneric_t		s_mapranged;
 static ae2f_float*				s_ptr0;
@@ -22,7 +22,7 @@ int main() {
 	Test_VkInit();
 
 	__ae2fVK_AnnMlpMk_imp_V(
-			double
+			uint32_t
 			, s_mk
 			, NULL_GENERIC(ae2f_float)
 			, NULL_GENERIC(ae2f_float)
@@ -41,7 +41,7 @@ int main() {
 			"#define ACT(lidx, r, x, i, c) { *(r) = (1.0 / (1.0 + exp(-(x[i])))); } \n"
 			"#define LOSS_DERIV(r, o, t, i, c) { *(r) = ((o)[i] - (t)[i]) / (c); } \n"
 			"#pragma OPENCL EXTENSION cl_khr_fp16 : enable\n"
-			"#define ae2f_float_t double\n"
+			"#define ae2f_float_t half\n"
 			""
 			, "\n"
 			);
