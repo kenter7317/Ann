@@ -1,3 +1,5 @@
+/** @file Mlp.auto.h */
+
 #if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
 #include <assert.h>
 #include <stdlib.h>
@@ -83,7 +85,84 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 
 #if	ae2f_NEED_CLASS
 
-
+/**
+ * @def __ae2f_AnnMlpMk_imp(reg_mk, prm_depth, pprm_szvector, propptr_szswap_opt, lppfn_act_opt, lppfn_actderiv_opt, pfn_lossderiv, propptr_deltastream_opt, propptr_outcache_opt, propptr_weight_opt, propptr_bias_opt, prm_learningrate, prm_learningrate_bias, prm_offset_opt, prm_extra_opt)
+ *
+ * @brief
+ * Automatically allocates ae2f_AnnMlp and store its pointer at `(reg_mk).m_mkbase`.
+ *
+ * @details
+ * If some parameter has <prop>, it means it's element(or value) will be handled by mlp in future. 	\n
+ * 	> Which means it must be valid at least longer than a class newly allocated.			\n
+ * 	> Unless a parameter has <prop> with <init>, memory of the given parameter will not be initialised.
+ *
+ * <reg> means it has state(which is mutable), and its memory does not require to be allocated linearly.
+ *
+ * <opt> means its value could be '0', '\0', 0, 0x0, NULL, or nullptr.
+ *
+ * <prm> means it could be primitive value, such as non-variable.
+ * 
+ * @param[in, out] reg_mk	<reg>			\n
+ * Type: ae2f_reg ae2f_AnnMlpMk_t&			\n
+ * Brief: A temporary buffer for this function.	
+ *
+ * @param prm_depth	<prm>	\n
+ * Type: const size_t		\n
+ * Brief: Depth for this machine willing to allocate.
+ *
+ * @param[in] pprm_szvector	<ptr> <const>		\n
+ * Type: const size_t[prm_depth]			\n
+ * Brief: A shape of the model.
+ *
+ * @param[out] propptr_szswap_opt	<prop> <ptr> <opt> <init>		\n
+ * Type: size_t[prm_depth]&							\n
+ * Brief: Optional valid buffer for Mlp to store the value of pprm_szvector.
+ *
+ * @param lppfn_act_opt	<prop> <ptr> <fn> <opt>				\n
+ * Type: ae2f_AnnActFFN_t[prm_depth]&					\n
+ * Brief: Optional valid buffer for activation function for each layer.
+ *
+ * @param lppfn_actderiv_opt <prop> <ptr> <fn> <opt>				\n
+ * Type: ae2f_AnnActFFN_t[prm_depth]&						\n
+ * Brief: Optional valid buffer for activation derivative for each layer.
+ *
+ * @param pfn_lossderiv	<fn> <ptr> <prm>	\n
+ * Type: ae2f_AnnLossFFN_t			\n
+ * Brief: Derivative of loss function for mlp model.
+ *
+ * @param propptr_deltastream_opt	<prop> <ptr>		\n
+ * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&	\n
+ * Brief: Optional delta stream buffer.
+ *
+ * @param propptr_outcache_opt		<prop> <ptr>		\n
+ * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&	\n
+ * Brief: Optional output stream buffer.
+ *
+ * @param propptr_weight_opt		<prop> <ptr>			\n
+ * Type: ae2f_float_t[MAXWEIGHT(pprm_szvector) * ((prm_depth) - 1)]	\n
+ * Brief: Optional weight buffer.					\n
+ * Details: To compute MAXWEIGHT, you could find a max value of multiplications of each neighbour.
+ *
+ * @param propptr_bias_opt		<prop> <ptr>		\n
+ * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&	\n
+ * Brief: Optional bias buffer.
+ *
+ * @param prm_learningrate	<prm>	\n
+ * Type: const ae2f_float_t		\n
+ * Brief: learning rate for weights.
+ *
+ * @param prm_learningrate_bias	<prm>	\n
+ * Type: const ae2f_float_t		\n
+ * Brief: learning rate for bias.
+ *
+ * @param prm_offset_opt	<prm> <opt>	\n
+ * Type: const size_t				\n
+ * Brief: Desired gap between structure itself and additional buffers as bytes.
+ *
+ * @param prm_extra_opt		<prm> <opt>	\n
+ * Type: const size_t				\n
+ * Brief: Desired extra buffer size as bytes.
+ * */
 ae2f_MAC() _ae2f_AnnMlpMk_imp(
 		ae2f_AnnMlpMk_t			reg_mk
 		, const size_t			prm_depth
