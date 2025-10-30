@@ -282,7 +282,7 @@ ae2f_MAC() _ae2f_mMMapInit_imp(
 {
 	(mmap)->m_dim = (dim);
 	for(v_init.m_i = 0; v_init.m_i < (dim); v_init.m_i++)
-		ae2f_mMMapDimLen(mmap)[v_init.m_i] = (lens)[v_init.m_i]; /*FIXME*/
+		ae2f_mMMapDimLen(mmap)[v_init.m_i] = (lens)[v_init.m_i]; /*FIXME : pointer (lens) could be nullable*/
 
 	memcpy(ae2f_mMMapDimLen(mmap), lens, (dim) * sizeof(size_t));
 	__ae2f_mMMapSz((dim), lens, &v_init.m_ret);
