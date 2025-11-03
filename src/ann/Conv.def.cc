@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <stddef.h>
 
 #define ae2f_AnnConv1dSz(in_f, in_g, pad, stride) \
 	(((((pad << 1) + *ae2f_mMMapDimLen(in_f, const)) \

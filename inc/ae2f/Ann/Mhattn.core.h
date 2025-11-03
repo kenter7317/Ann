@@ -2,7 +2,9 @@
 #define ae2f_Ann_Mhattn_core_h
 
 #include <ae2f/Cast.h>
+#include <ae2f/Keys.h>
 #include <ae2f/Float.h>
+#include <stddef.h>
 #include "./Util.h"
 
 #include <ae2f/Pack/Beg.h>

@@ -16,7 +16,10 @@
 #include <ae2f/Float.h>
 #include <ae2f/Guide.h>
 
-/// @brief Customisable activasion function type.
+/**
+ * @typedef ae2f_AnnActFFN_t
+ * @brief Customisable activasion function type for FFN(Mlp). 
+ * */
 typedef void ae2f_AnnActFFN_t (
 		ae2f_float_t*				ret
 		, ae2f_LP(count) const ae2f_float_t*	out
@@ -27,14 +30,16 @@ typedef void ae2f_AnnActFFN_t (
 #define ae2f_AnnActFFN_PASS(r, o, i, c)		*(r) = (o)[i]
 #define ae2f_AnnActDerivFFN_PASS(r, o, i, c)	*(r) = 1.0
 
-/// @brief
-/// Specify the way of calculating loss.
-/// 
-/// This will be multiplied with learning rate, \n
-/// and that value will be added to each weights field and bias.
-/// @param out Predicted value
-/// @param goal Expected value (wanted)
-/// @param ret Calculated loss.
+/**
+ @brief
+ Specify the way of calculating loss for FFN(Mlp).
+ 
+ This will be multiplied with learning rate, \n
+ and that value will be added to each weights field and bias.
+ @param out Predicted value
+ @param goal Expected value (wanted)
+ @param ret Calculated loss.
+ */
 typedef void ae2f_AnnLossFFN_t (
 		ae2f_float_t* 				ret,
 		ae2f_LP(count) const ae2f_float_t*	out, 

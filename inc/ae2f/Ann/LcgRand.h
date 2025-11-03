@@ -12,7 +12,7 @@
 #ifndef ae2f_Ann_LcgRand_h
 #define ae2f_Ann_LcgRand_h
 
-#include <stdint.h>
+#include <ae2f/c90/StdInt.h>
 
 #define ae2f_AnnLcgRandA 1664525
 #define ae2f_AnnLcgRandC 1013904223
