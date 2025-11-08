@@ -218,27 +218,31 @@ typedef struct {
  * @brief
  * Structure for MLP training data.
  */
-ae2f_structdef(struct, ae2f_AnnMlpTrain_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
 	 */
 	size_t				m_i, m_j, m_inc, m_outc;
+
 	/**
 	 * @brief
 	 * Layer index.
 	 */
 	size_t				m_k;
+
 	/**
 	 * @brief
 	 * Page size for weights.
 	 */
 	size_t				m_pg_weight;
+
 	/**
 	 * @brief
 	 * Page size for outputs.
 	 */
 	size_t				m_pg_out;
+
 	/**
 	 * @brief
 	 * Maximum output size.
@@ -255,12 +259,13 @@ ae2f_structdef(struct, ae2f_AnnMlpTrain_t) {
 	 * Stack for propagation.
 	 */
 	ae2f_AnnMlpBwdAllStack_t	m_stack;
+
 	/**
 	 * @brief
 	 * Return value.
 	 */
 	ae2f_float_t				m_ret, m_tmp, m_tmp1;
-};
+} ae2f_AnnMlpTrain_t;
 
 #include <ae2f/Pack/End.h>
 
