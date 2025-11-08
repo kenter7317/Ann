@@ -6,6 +6,7 @@
 #include <ae2f/Float.h>
 #include <ae2f/errGlob.h>
 #include <ae2f/Cmp.h>
+#include <stddef.h>
 
 #include <ae2f/Pack/Beg.h>
 #include <ae2f/Macro.h>

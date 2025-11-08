@@ -8,6 +8,7 @@
 
 #include "./Slp.core.h"
 #include "./Act.h"
+
 #include <ae2f/Pack/Beg.h>
 
 /**
@@ -76,8 +77,8 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 
 	inline static void ae2f_TMP operator delete(void* end);
 	inline static void* ae2f_TMP operator new(
-		size_t oneonly
-		, ae2f_LP(inc * outc) ae2f_float_t* ae2f_restrict const	weight_opt,
+		size_t oneonly,
+		ae2f_LP(inc * outc) ae2f_float_t* ae2f_restrict const	weight_opt,
 		ae2f_LP(outc) ae2f_float_t* ae2f_restrict const 			bias_opt,
 		ae2f_LP(outc) ae2f_float_t* ae2f_restrict const 			cache_opt,
 
@@ -140,122 +141,6 @@ ae2f_structdef(struct, ae2f_AnnSlp)
  * Weight	(input * output)
  */
 #define ae2f_AnnSlpFieldSz(inc, outc) ((((inc) + 2) * ((outc)) * sizeof(ae2f_float_t)) + sizeof(ae2f_AnnSlp))
-
-#if ae2f_NEED_CLASS
-
-/**
- * @brief
- * Initiator
- *
- * No allocation is occurred on this function.
- */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpInit(
-		ae2f_AnnSlpREG_t* ae2f_restrict _this,
-		const size_t inc,
-		const size_t outc,
-		const size_t offset_opt,
-		ae2f_err_t* ae2f_restrict const err_opt,
-		size_t* ae2f_restrict const initsz_opt
-		) ae2f_noexcept;
-
-/* 
- * @memberof ae2f_AnnSlp
- * @brief 
- * Makes a typical( @ref ae2f_mAnnSp::expected ) perceptron.
- * See @ref ae2f_mAnnSlpInit.
- * 
- * It is heap-allocated. pass the output @ref ae2f_mAnnSpDel after use.
- */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpMk(
-		ae2f_LP(inc * outc) ae2f_float_t* ae2f_restrict const	weight_opt,
-		ae2f_LP(outc) ae2f_float_t* ae2f_restrict const 			bias_opt,
-		ae2f_LP(outc) ae2f_float_t* ae2f_restrict const 			cache_opt,
-
-		const size_t					inc,
-		const size_t					outc,
-		const size_t					offset_opt,
-		const size_t					extra_opt,
-		ae2f_FREE(ae2f_AnnSlpDel, __ae2f_AnnSlpDel) 
-		ae2f_AnnSlp* ae2f_restrict * ae2f_restrict const		slp,
-		ae2f_opt ae2f_AnnActFFN_t* const			act,
-		ae2f_opt ae2f_AnnActFFN_t* const			actderiv,
-		ae2f_AnnLossFFN_t* const				lossderiv,
-		ae2f_float_t					learningrate,
-		ae2f_float_t					learningrate_bias,
-		ae2f_opt ae2f_err_t* ae2f_restrict const			err_opt
-		) ae2f_noexcept;
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpDel(
-		ae2f_AnnSlp* ae2f_restrict const slp
-		) ae2f_noexcept;
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpPredict(
-		ae2f_err_t* ae2f_restrict const err_opt
-		, const ae2f_AnnSlp* ae2f_restrict const _this
-		, ae2f_LP(_this::inc)
-		const ae2f_float_t* ae2f_restrict const prm_in
-		, ae2f_LP(_this::outc)
-		ae2f_float_t* ae2f_restrict const out
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the field based on delta
-	 *
-	 * @param delta
-	 *
-	 * @param prm_in
-	 *
-	 * @param field
-	 * Contains weights and biases
-	 *
-	 * @param learningrate
-	 * Learning rate for weights
-	 *
-	 * @param learningrate_bias
-	 * Learning rate for biases 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFollow(
-		ae2f_err_t* ae2f_restrict const reterr_opt
-		, const ae2f_AnnSlp* ae2f_restrict const _this
-		, ae2f_LP(_this::inc)
-		const ae2f_float_t* ae2f_restrict const prm_in
-		, ae2f_LP(_this::outc) 
-		const ae2f_float_t* ae2f_restrict const delta
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief
-	 * Adjusts the delta based on output and desired output.
-	 * */
-		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFit(
-				ae2f_err_t* const reterr_opt
-				, const ae2f_AnnSlp* const _this
-				, ae2f_LP(_this::inc) const ae2f_float_t* ae2f_restrict const prm_inp
-				, ae2f_LP(_this::outc) const ae2f_float_t* ae2f_restrict const prm_out
-				, ae2f_LP(_this::outc) const ae2f_float_t* ae2f_restrict const prm_out_desired
-				) ae2f_noexcept;
-
-	/** @brief Calculates the delta based on output and desired output. */
-		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpFetchDelta(
-				ae2f_opt ae2f_err_t* ae2f_restrict const		err
-				, const ae2f_AnnSlp* ae2f_restrict			slp
-
-				, ae2f_LP(slp::outc) const ae2f_float_t* ae2f_restrict const	out
-				, ae2f_LP(slp::outc) const ae2f_float_t* ae2f_restrict const	out_desired
-
-				, ae2f_LP(slp::outc) ae2f_float_t* ae2f_restrict const	retdelta
-				) ae2f_noexcept;
-
-	/** @brief Adjusts the weights and biases based on predicted output from input and desired outpu. */
-		ae2f_extern ae2f_SHAREDCALL void ae2f_AnnSlpTrain(
-				ae2f_err_t* const ae2f_restrict					err
-				, ae2f_AnnSlp*	ae2f_restrict				slp
-				, ae2f_LP(slp::inc)	const ae2f_float_t*	ae2f_restrict	inp
-				, ae2f_LP(slp::outc)	const ae2f_float_t*	ae2f_restrict	out_desired
-				) ae2f_noexcept;
-
-#endif
 
 #if !(ae2f_MAC_BUILD) || 1
 

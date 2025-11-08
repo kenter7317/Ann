@@ -5,7 +5,6 @@
 #include <ae2f/errGlob.h>
 #include <ae2f/Cast.h>
 #include <ae2f/Keys.h>
-#include <ae2f/c90/StdBool.h>
 #include <ae2f/Guide.h>
 
 #include "./Act.h"

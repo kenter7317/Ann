@@ -1,7 +1,8 @@
 #ifndef ae2f_Ann_Conv_h
 #define ae2f_Ann_Conv_h
 
-#include <ae2f/Call.h>
+#include <stddef.h>
+#include <ae2f/Float.h>
 #include <ae2f/Cast.h>
 #include <ae2f/MMap/MMap.h>
 #include <ae2f/errGlob.h>

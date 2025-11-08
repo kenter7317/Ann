@@ -15,13 +15,10 @@
 typedef ae2f_float_t cllocfloat_t;
 #endif
 
-#if !__ae2f_MACRO_GENERATED || !ae2f_MAC_BUILD
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
 #include <assert.h>
-#endif 
-
 
 ae2f_MAC() _ae2fVK_AnnMlpMk_imp(
 		ae2fVK_AnnMlpMk_t	v_mk,

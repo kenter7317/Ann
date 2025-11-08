@@ -1,5 +1,7 @@
 #include "ae2f/Float.h"
 #include "ae2f/errGlob.h"
+#include <ae2f/c90/StdBool.h>
+
 #include <ae2f/Ann/Slp.h>
 #include <stdio.h>
 #include <math.h>
