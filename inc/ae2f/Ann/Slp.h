@@ -142,7 +142,6 @@ typedef struct ae2f_AnnSlp
  */
 #define ae2f_AnnSlpFieldSz(inc, outc) ((((inc) + 2) * ((outc)) * sizeof(ae2f_float_t)) + sizeof(ae2f_AnnSlp))
 
-
 #define ae2f_AnnSlpInit		__ae2f_AnnSlpInit_C
 #define ae2f_AnnSlpMk		__ae2f_AnnSlpMk_C
 #define ae2f_AnnSlpDel		__ae2f_AnnSlpDel_C
