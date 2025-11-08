@@ -228,21 +228,25 @@ typedef struct {
 	 * Loop counters and layer sizes.
 	 */
 	size_t				m_i, m_j, m_inc, m_outc;
+
 	/**
 	 * @brief
 	 * Layer index.
 	 */
 	size_t				m_k;
+
 	/**
 	 * @brief
 	 * Page size for weights.
 	 */
 	size_t				m_pg_weight;
+
 	/**
 	 * @brief
 	 * Page size for outputs.
 	 */
 	size_t				m_pg_out;
+
 	/**
 	 * @brief
 	 * Maximum output size.
@@ -259,6 +263,7 @@ typedef struct {
 	 * Stack for propagation.
 	 */
 	ae2f_AnnMlpBwdAllStack_t	m_stack;
+
 	/**
 	 * @brief
 	 * Return value.

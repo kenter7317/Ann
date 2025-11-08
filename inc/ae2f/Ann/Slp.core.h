@@ -91,11 +91,6 @@ typedef struct {
 
 typedef struct ae2f_AnnSlp ae2f_AnnSlp;
 
-typedef union {
-	ae2f_float_t* ae2f_restrict	a;
-	ae2f_AnnSlp* ae2f_restrict	b;
-} ae2f_AnnSlpMkU0_t;
-
 /**
  * @brief
  * Structure for SLP creation data.
@@ -115,25 +110,24 @@ typedef struct {
 	 * @brief
 	 * Field pointer for SLP data.
 	 */
-	ae2f_AnnSlpMkU0_t m_fieldptr;
-} ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t;
+	union {
+		ae2f_float_t* ae2f_restrict	a;
+		ae2f_AnnSlp* ae2f_restrict	b;
+	} m_fieldptr;
+} ae2f_AnnSlpMk_t, ae2f_AnnSlpMkRAM_t, ae2f_AnnSlpMkREG_t;
 
-typedef struct
-{
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
-} 		ae2f_AnnSlpFollow_t
-, ae2f_AnnSlpFollowREG_t
-, ae2f_AnnSlpFitREG_t
-, ae2f_AnnSlpFetchDeltaREG_t;
-
-typedef struct
-{	ae2f_float_t		m_tmp, m_tmp1;
 }
-ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t;
+ae2f_AnnSlpFollow_t, ae2f_AnnSlpFollowREG_t, ae2f_AnnSlpFitREG_t, ae2f_AnnSlpFetchDeltaREG_t;
+
+typedef struct {
+	ae2f_float_t		m_tmp, m_tmp1;
+} ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t;
 
 /**
  * @brief
@@ -146,7 +140,7 @@ typedef struct {
 	 */
 	size_t			m_i, m_j;
 	ae2f_float_t		m_tmp, m_tmp1;
-} ae2f_AnnSlpFit_t, ae2f_AnnSlpFetchDelta_t ;
+} ae2f_AnnSlpFit_t, ae2f_AnnSlpFetchDelta_t;
 
 #include <ae2f/Pack/End.h>
 
