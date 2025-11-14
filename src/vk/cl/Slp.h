@@ -26,7 +26,7 @@
 typedef _clAtomAddF_t(__global, host_float_t) clAtomAddF_t;
 #endif
 
-ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float_t* prm_dst, ae2f_float_t prm_val)
+ae2f_MAC((__global, )) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float_t* prm_dst, ae2f_float_t prm_val)
 {
 	if(sizeof((v_mem).m_atom[0].m_f) < 4) {
 		(v_mem).m_count = 4 / sizeof((v_mem).m_atom[0].m_f);
@@ -55,7 +55,7 @@ ae2f_MAC(__global, ) clAtomAddF(clAtomAddF_t v_mem, __global volatile host_float
 typedef clAtomAddF_t clSlpPredict_t;
 #endif 
 
-ae2f_MAC(__global, ) clSlpPredict(
+ae2f_MAC((__global, )) clSlpPredict(
 		clSlpPredict_t	v_mem,
 		ae2f_float_t	ret,
 		__local ae2f_float_t* const loc,

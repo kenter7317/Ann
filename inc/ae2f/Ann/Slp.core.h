@@ -20,7 +20,7 @@
  * Multiple input, multiple output. \n
  * For predicting & training operations are able to be parallel.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlp_t, ae2f_AnnSlpREG_t) {
+typedef struct {
 	/**
 	 * @brief 
 	 * input count
@@ -32,13 +32,13 @@ ae2f_structdef_n(struct, ae2f_AnnSlp_t, ae2f_AnnSlpREG_t) {
 	 * output count
 	 */
 	size_t m_outc;
-};
+} ae2f_AnnSlp_t, ae2f_AnnSlpREG_t;
 
 /**
  * @brief
  * Structure for SLP prediction and training data.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpPredict_t, ae2f_AnnSlpPredictREG_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
@@ -46,16 +46,16 @@ ae2f_structdef_n(struct, ae2f_AnnSlpPredict_t, ae2f_AnnSlpPredictREG_t) {
 	size_t			m_i, m_j;
 
 	ae2f_float_t		m_ret;
-};
+} ae2f_AnnSlpPredict_t, ae2f_AnnSlpPredictREG_t;
 
-ae2f_structdef(struct, ae2f_AnnSlpTrainREG_t) {
+typedef struct {
 	size_t			m_i, m_j;
 
 	ae2f_float_t		m_ret;
 
-};
+} ae2f_AnnSlpTrainREG_t;
 
-ae2f_structdef(struct, ae2f_AnnSlpTrain_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
@@ -64,45 +64,44 @@ ae2f_structdef(struct, ae2f_AnnSlpTrain_t) {
 
 	ae2f_float_t		m_ret;
 	ae2f_float_t		m_tmp, m_tmp1;
-};
+} ae2f_AnnSlpTrain_t;
 
-ae2f_structdef(struct, ae2f_AnnSlpPredictOne_t) {
+typedef struct {
 	size_t		m_j;
 	ae2f_float_t	m_ret;
 	ae2f_float_t	m_tmp;
-};
+} ae2f_AnnSlpPredictOne_t;
 
-ae2f_structdef(struct, ae2f_AnnSlpTrainOne_t) {
+typedef struct {
 	size_t		m_j;
 	ae2f_float_t	m_ret;
 	ae2f_float_t	m_tmp, m_tmp1;
-};
+} ae2f_AnnSlpTrainOne_t;
 
 /**
  * @brief
  * Structure for a single step of the follow operation.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpFollowOne_t, ae2f_AnnSlpFollowOneREG_t, ae2f_AnnSlpFitOne_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counter.
 	 */
 	size_t			m_j;
-};
+} ae2f_AnnSlpFollowOne_t, ae2f_AnnSlpFollowOneREG_t, ae2f_AnnSlpFitOne_t;
 
+typedef struct ae2f_AnnSlp ae2f_AnnSlp;
 
-ae2f_structdef(struct, ae2f_AnnSlp);
-
-ae2f_structdef(union, ae2f_AnnSlpMkU0_t) {
+typedef union {
 	ae2f_float_t* ae2f_restrict	a;
 	ae2f_AnnSlp* ae2f_restrict	b;
-};
+} ae2f_AnnSlpMkU0_t;
 
 /**
  * @brief
  * Structure for SLP creation data.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Stack size and allocation count.
@@ -118,39 +117,37 @@ ae2f_structdef_n(struct, ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t) {
 	 * Field pointer for SLP data.
 	 */
 	ae2f_AnnSlpMkU0_t m_fieldptr;
-};
+} ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t;
 
-ae2f_structdef_n(
-		struct
-		, ae2f_AnnSlpFollow_t
-		, ae2f_AnnSlpFollowREG_t
-		, ae2f_AnnSlpFitREG_t
-		, ae2f_AnnSlpFetchDeltaREG_t
-		)
+typedef struct
 {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
-};
+} 		ae2f_AnnSlpFollow_t
+, ae2f_AnnSlpFollowREG_t
+, ae2f_AnnSlpFitREG_t
+, ae2f_AnnSlpFetchDeltaREG_t;
 
-ae2f_structdef_n(struct, ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t) {
-	ae2f_float_t		m_tmp, m_tmp1;
-};
+typedef struct
+{	ae2f_float_t		m_tmp, m_tmp1;
+}
+ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t;
 
 /**
  * @brief
  * Structure for SLP follow, fit, and fetch delta operations.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpFit_t, ae2f_AnnSlpFetchDelta_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
 	ae2f_float_t		m_tmp, m_tmp1;
-};
+} ae2f_AnnSlpFit_t, ae2f_AnnSlpFetchDelta_t ;
 
 #include <ae2f/Pack/End.h>
 

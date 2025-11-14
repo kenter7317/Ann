@@ -17,7 +17,7 @@
  *
  * This is the main structure for the SLP.
  */
-ae2f_structdef(struct, ae2f_AnnSlp) 
+typedef struct ae2f_AnnSlp
 #if ae2f_NEED_CLASS
 {
 	/**
@@ -125,7 +125,7 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 
 #undef ae2f_TMP
 #endif 
-}
+} ae2f_AnnSlp
 #endif
 ;
 
@@ -142,7 +142,6 @@ ae2f_structdef(struct, ae2f_AnnSlp)
  */
 #define ae2f_AnnSlpFieldSz(inc, outc) ((((inc) + 2) * ((outc)) * sizeof(ae2f_float_t)) + sizeof(ae2f_AnnSlp))
 
-#if !(ae2f_MAC_BUILD) || 1
 
 #define ae2f_AnnSlpInit		__ae2f_AnnSlpInit_C
 #define ae2f_AnnSlpMk		__ae2f_AnnSlpMk_C
@@ -153,7 +152,6 @@ ae2f_structdef(struct, ae2f_AnnSlp)
 #define ae2f_AnnSlpTrain	__ae2f_AnnSlpTrain_C
 #define ae2f_AnnSlpFetchDelta	__ae2f_AnnSlpFetchDelta_C
 
-#endif /** macbuild */
 #endif
 
 

@@ -19,51 +19,15 @@
  *
  * 
  * */
-ae2f_structdef_v(struct, ae2f_mMMap, ae2f_mMMap)
+typedef struct
 {
 	/** @brief aka dimension count */
 	size_t m_dim;
-};
+} ae2f_mMMap, ae2f_mMMap;
 
-ae2f_structdef(struct, ae2f_MMap) {
+typedef struct {
 	ae2f_mMMap	mmap;
-};
-
-#if 0
-ae2f_extern ae2f_SHAREDCALL
-void ae2f_mMMapInit(
-		ae2f_mMMap* const mmap
-		, const size_t dim
-		, const size_t* const lenS
-		, ae2f_err_t* const opt_ret_err
-		, size_t* const opt_ret_sz
-		) ae2f_noexcept;
-
-
-ae2f_extern ae2f_SHAREDCALL
-void ae2f_mMMapMk(
-		const size_t dim,
-		const size_t* const lens,
-		ae2f_err_t* const opt_ret_err,
-		ae2f_FREE(free, ae2f_mMMapDel) ae2f_mMMap** const ret_mmap
-		) ae2f_noexcept;
-
-ae2f_extern ae2f_SHAREDCALL 
-void ae2f_mMMapFieldIdx(
-		const ae2f_mMMap* const mmap,
-		const size_t dim,
-		const size_t* const idxs,
-		size_t* const ret
-		);
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapSz(
-		const size_t dim, const size_t* const lens
-		, size_t* const ret);
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapDel(
-		ae2f_mMMap*	mmap
-		);
-#endif
+} ae2f_MMap;
 
 
 #define ae2f_mMMapInit		__ae2f_mMMapInit
@@ -86,28 +50,28 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_mMMapDel(
 	ae2f_reinterpret_cast(__VA_ARGS__ ae2f_float_t*, ae2f_mMMapDimLen(mmap, __VA_ARGS__) + (mmap)->m_dim)
 
 
-ae2f_structdef(struct, ae2f_mMMapSz_t) {
+typedef struct {
 	/** @brief output */
 	size_t m_ret;
 	size_t m_dim;
-};
+} ae2f_mMMapSz_t;
 
-ae2f_structdef(struct, ae2f_mMMapFieldIdx_t) {
+typedef struct {
 	size_t m_ret;
 	size_t m_i;
 	size_t m_dim;
 
 	size_t m_L, m_I;
-};
+} ae2f_mMMapFieldIdx_t;
 
-ae2f_structdef(struct, ae2f_mMMapInit_t) {
+typedef struct {
 	size_t m_i, m_ret;
-};
+} ae2f_mMMapInit_t;
 
-ae2f_structdef(struct, ae2f_mMMapMk_t) {
+typedef struct {
 	ae2f_mMMap* m_ptr;
 	ae2f_mMMapInit_t m_initstack;
-};
+} ae2f_mMMapMk_t;
 
 #include <ae2f/Pack/End.h>
 

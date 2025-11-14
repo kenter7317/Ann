@@ -9,9 +9,7 @@
 #include <math.h>
 #endif
 
-#if !__ae2f_MACRO_GENERATED
 #include <ae2f/Macro.h>
-#endif
 
 /**
  * @brief
