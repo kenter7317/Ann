@@ -3,7 +3,9 @@
 
 #include <ae2f/Keys.h>
 #include "./Act.h"
-#include <ae2f/Keys.h>
+
+#include <ae2f/Pack/Beg.h>
+#include "./Act.h"
 
 typedef struct ae2f_AnnMlp ae2f_AnnMlp;
 
@@ -13,7 +15,9 @@ typedef struct ae2f_AnnMlp ae2f_AnnMlp;
  *
  * This is a data-only structure, used for type-punning.
  */
-typedef struct {
+
+typedef struct
+{
 	/**
 	 * @brief
 	 * Depth of the network, including input and output layers.
@@ -30,12 +34,12 @@ typedef struct {
 	size_t	m_weightc;
 } ae2f_AnnMlp_t;
 
-
 /**
  * @brief
  * Structure used for MLP prediction.
  */
-typedef struct {
+typedef struct
+{
 	/**
 	 * @brief
 	 * Input, output, and loop counters.
@@ -172,7 +176,8 @@ typedef struct {
  * Stack data for backpropagation.
  * @deprecated This is deprecated.
  */
-typedef union {
+typedef union 
+{
 	size_t m_send;
 } ae2f_AnnMlpBwdAllStack_t, ae2f_AnnMlpFollowStack_t;
 
@@ -181,7 +186,8 @@ typedef union {
  * Structure for backpropagation through all layers.
  * @deprecated This is deprecated.
  */
-typedef struct {
+typedef struct
+{
 	/**
 	 * @brief
 	 * Loop counters and layer sizes.

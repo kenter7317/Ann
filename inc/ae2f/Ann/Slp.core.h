@@ -96,7 +96,7 @@ typedef struct ae2f_AnnSlp ae2f_AnnSlp;
  * @brief
  * Structure for SLP creation data.
  */
-ae2f_structdef_n(struct, ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t) {
+typedef struct {
 	/**
 	 * @brief
 	 * Stack size and allocation count.
@@ -123,12 +123,15 @@ typedef struct {
 	 * Loop counters and layer sizes.
 	 */
 	size_t			m_i, m_j;
-}
-ae2f_AnnSlpFollow_t, ae2f_AnnSlpFollowREG_t, ae2f_AnnSlpFitREG_t, ae2f_AnnSlpFetchDeltaREG_t;
+} 		ae2f_AnnSlpFollow_t
+, ae2f_AnnSlpFollowREG_t
+, ae2f_AnnSlpFitREG_t
+, ae2f_AnnSlpFetchDeltaREG_t;
 
-typedef struct {
-	ae2f_float_t		m_tmp, m_tmp1;
-} ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t;
+typedef struct
+{	ae2f_float_t		m_tmp, m_tmp1;
+}
+ae2f_AnnSlpFitRAM_t, ae2f_AnnSlpFetchDeltaRAM_t, ae2f_AnnSlpTrainRAM_t;
 
 /**
  * @brief

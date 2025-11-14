@@ -24,7 +24,7 @@
  *
  * This is the main structure for the MLP.
  */
-ae2f_structdef(struct, ae2f_AnnMlp)
+typedef struct ae2f_AnnMlp
 #if	ae2f_NEED_CLASS
 {
 	/**
@@ -151,139 +151,13 @@ ae2f_structdef(struct, ae2f_AnnMlp)
 			) ae2f_noexcept;
 
 #endif
-}
+} ae2f_AnnMlp
 #endif
 ;
 
 #include <ae2f/Pack/End.h>
 
 
-#if ae2f_MAC_BUILD && 0
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpMk(
-		ae2f_opt ae2f_err_t* ae2f_restrict const	reterr
-		, ae2f_AnnMlp* ae2f_restrict* ae2f_restrict const	retmk				ae2f_FREE(ae2f_AnnMlpDel)
-
-		, const size_t				depth
-		, const size_t* ae2f_restrict const		szvector				ae2f_LP(depth)
-		, ae2f_opt size_t* ae2f_restrict const	szswap_opt				ae2f_LP(depth)
-
-		, ae2f_opt ae2f_AnnActFFN_t** ae2f_restrict const	act				ae2f_LP(depth - 1)
-		, ae2f_opt ae2f_AnnActFFN_t** ae2f_restrict const	actderiv			ae2f_LP(depth - 1)
-		, ae2f_AnnLoss_t* const				lossderiv
-
-		, ae2f_opt ae2f_float_t* ae2f_restrict const	deltastream	ae2f_LP(max(szvector) * (depth - 1))
-		, ae2f_opt ae2f_float_t* ae2f_restrict const	outcache	ae2f_LP(max(szvector) * (depth - 1))
-		, ae2f_opt ae2f_float_t* ae2f_restrict const	weight	ae2f_LP(pow(max(szvector), 2) * (depth - 1))
-		, ae2f_opt ae2f_float_t* ae2f_restrict const	bias				ae2f_LP(max(szvector) * (depth - 1))
-
-		, ae2f_float_t const	learningrate
-		, ae2f_float_t const	learningrate_bias
-
-		, ae2f_opt const size_t	offset
-, ae2f_opt const size_t	extra
-) ae2f_noexcept;
-
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpDel(
-		ae2f_AnnMlp* ae2f_restrict const block
-		) ae2f_noexcept;
-
-/**
- * @brief
- * Predict the output from mlp.
- * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpPredict(
-		ae2f_opt ae2f_err_t* ae2f_restrict		reterr
-		, const ae2f_AnnMlp* ae2f_restrict const	mlp
-		, const ae2f_float_t* ae2f_restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* ae2f_restrict const		out	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/**
-	 * @brief
-	 * Predict the output from mlp.
-	 *
-	 * @details
-	 * Every output calculated for each layer will be stored on mlp->m_outcache
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpPredictStream(
-		ae2f_err_t* ae2f_restrict			reterr
-		, const ae2f_AnnMlp* ae2f_restrict const	mlp
-		, const ae2f_float_t* ae2f_restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* ae2f_restrict const		out	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given delta for last layer. 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpFollow(
-		ae2f_opt ae2f_err_t* ae2f_restrict const	reterr
-		, const ae2f_AnnMlp* ae2f_restrict		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* ae2f_restrict const	delta	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given delta for last layer. 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpFollowStream(
-		ae2f_opt ae2f_err_t* ae2f_restrict const	reterr
-		, const ae2f_AnnMlp* ae2f_restrict		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp	ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* ae2f_restrict const	delta	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given input and output_desired 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrain(
-		ae2f_err_t* ae2f_restrict const ae2f_opt	reterr
-		, ae2f_AnnMlp* ae2f_restrict const		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp				ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* ae2f_restrict const		out				ae2f_LP(mlp::m_sz[fin])
-		, const ae2f_float_t* ae2f_restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given input and output_desired 
-	 * Previous output will be 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainStream(
-		ae2f_err_t* ae2f_restrict const ae2f_opt	reterr
-		, ae2f_AnnMlp* ae2f_restrict const		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp				ae2f_LP(mlp::m_sz[0])
-		, ae2f_float_t* ae2f_restrict const		out				ae2f_LP(mlp::m_sz[fin])
-		, const ae2f_float_t* ae2f_restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given input and output_desired 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAuto(
-		ae2f_err_t* ae2f_restrict const ae2f_opt	reterr
-		, ae2f_AnnMlp* ae2f_restrict const		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp				ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* ae2f_restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-	/** 
-	 * @brief 
-	 * Adjusts the weights and biases with given input and output_desired 
-	 * Previous output will be 
-	 * */
-ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAutoStream(
-		ae2f_err_t* ae2f_restrict const ae2f_opt	reterr
-		, ae2f_AnnMlp* ae2f_restrict const		mlp
-		, const ae2f_float_t* ae2f_restrict const	inp				ae2f_LP(mlp::m_sz[0])
-		, const ae2f_float_t* ae2f_restrict const	out_desired	ae2f_LP(mlp::m_sz[fin])
-		) ae2f_noexcept;
-
-#else
 
 #define ae2f_AnnMlpMk	__ae2f_AnnMlpMk_C
 #define ae2f_AnnMlpDel	__ae2f_AnnMlpDel_C
@@ -297,8 +171,6 @@ ae2f_extern ae2f_SHAREDCALL void ae2f_AnnMlpTrainAutoStream(
 #define ae2f_AnnMlpTrainAuto		__ae2f_AnnMlpTrainAuto_C
 #define ae2f_AnnMlpTrainAutoStream	__ae2f_AnnMlpTrainAutoStream_C
 
-
-#endif
 
 #include "./Mlp.auto.h"
 

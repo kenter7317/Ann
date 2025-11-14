@@ -31,10 +31,10 @@
 
 #define loc		CAST(__local ae2f_float_t*, _loc)
 
-const ae2f_structdef(struct, lr_t) {
+typedef const struct {
 	host_float_t	m_weight;
 	host_float_t	m_bias;
-};
+} lr_t;
 
 
 /**

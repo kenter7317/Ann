@@ -46,7 +46,7 @@ static ae2f_err_t ae2f_AnnCnnConv(
  * Pooling type.
  * See @ref ae2f_AnnCnnPool
  * */
-typedef enum ae2f_eAnnCnnPool {
+typedef enum {
 
   /** @brief Max */
   ae2f_eAnnCnnPool_MAX = 0b00,
