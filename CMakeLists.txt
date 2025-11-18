@@ -69,9 +69,9 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	ae2f_Macro_init(1 100 100)
 
 	ae2f_Inc_init(
-		10 10 10 ON ON ON
+		10 10 2 ON ON ON
 		"-DINC_LEAVE_NFOUND=OFF"
-		"-DNDEBUG=OFF"
+		"-DNDEBUG=ON"
 		)
 
 	get_target_property(Core_INCLUDE_DIRS ae2f::Core INCLUDE_DIRECTORIES)
@@ -132,7 +132,7 @@ if(ae2fVK_needed AND NOT TARGET ae2fVK::Ann)
 	# MLP Shader configuring end
 
 	ae2f_Inc_init(
-		100 100 3 ON ON ON
+		100 100 2 ON ON ON
 		"-DINC_LEAVE_NFOUND=ON"
 		"-DNDEBUG=ON"
 		)

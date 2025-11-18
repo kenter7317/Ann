@@ -4,8 +4,10 @@
 #define ae2fVK_AnnSlpPool_h
 #endif
 
-#if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
+
 #include <ae2f/Macro.h>
+
+#if !__ae2f_MACRO_GENERATED
 #include <assert.h>
 #endif
 
@@ -104,7 +106,7 @@ ae2f_MAC() _ae2fVK_AnnSlpDescPoolClean_imp(
 /** 
  * @param  i_desccount Descriptor Count or Kernel parameter(argument) count.
  * */
-ae2f_MAC(COMMANDONRECORDING,) _ae2fVK_AnnSlpDescPoolCmdMk_imp(
+ae2f_MAC((COMMANDONRECORDING,)) _ae2fVK_AnnSlpDescPoolCmdMk_imp(
 		ae2fVK_AnnSlpDescPoolCmdMk_t	v_cmdmk,
 
 		ae2fVK_AnnSlpDescPoolCmd	r_cmd,
@@ -293,7 +295,6 @@ ae2f_MAC() _ae2fVK_AnnSlpDescPoolCmdMkPredict_imp(
 		)
 {
 	__ae2fVK_AnnSlpDescPoolCmdMk_imp(
-			ae2f_CastMerge(
 				{
 				vkCmdPushConstants(
 						i_vkcmdbuf
@@ -311,7 +312,6 @@ ae2f_MAC() _ae2fVK_AnnSlpDescPoolCmdMkPredict_imp(
 						, 1
 					     );
 				}
-				)
 			, v_cmdmk
 			, r_cmd
 			, iv_slp
@@ -346,35 +346,33 @@ ae2f_MAC() _ae2fVK_AnnSlpDescPoolCmdMkTrain_imp(
 		)
 {
 	__ae2fVK_AnnSlpDescPoolCmdMk_imp(
-			ae2f_CastMerge(
-				{
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_slp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, 0
-						, sizeof(ae2f_float_t)
-						, &(iv_slp).m_slp.m_learningrate
-						);
+			{
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_slp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, 0
+					, sizeof(ae2f_float_t)
+					, &(iv_slp).m_slp.m_learningrate
+					);
 
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_slp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, sizeof(ae2f_float_t)
-						, sizeof(ae2f_float_t)
-						, &(iv_slp).m_slp.m_learningrate_bias
-						);
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_slp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, sizeof(ae2f_float_t)
+					, sizeof(ae2f_float_t)
+					, &(iv_slp).m_slp.m_learningrate_bias
+					);
 
-				vkCmdDispatch(
-						(i_vkcmdbuf)
-						, (iv_slp).m_slp.m_Slp[0].m_outc
-						, (iv_slp).m_slp.m_Slp[0].m_inc
-						, 1
-					     );
-				}
-	)
-		, v_cmdmk
+			vkCmdDispatch(
+					(i_vkcmdbuf)
+					, (iv_slp).m_slp.m_Slp[0].m_outc
+					, (iv_slp).m_slp.m_Slp[0].m_inc
+					, 1
+				     );
+			}
+	, v_cmdmk
 		, r_cmd
 		, iv_slp
 		, i_pool

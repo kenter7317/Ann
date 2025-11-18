@@ -303,7 +303,7 @@ int main() {
 
 	__ae2fVK_AnnMlpClean_imp(*((s_mk).m_U0.m_mkswap.m_mkbase));
 	free((s_mk).m_U0.m_mkswap.m_mkbase);
-	Test_VkEnd();
+	// Test_VkEnd();
 	return 0;
 }
 

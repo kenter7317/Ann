@@ -1,23 +1,23 @@
 #ifndef ae2fVK_Ann_Slp_c
 
-#if !__ae2f_MACRO_GENERATED
 #include <ae2f/Macro.h>
-#endif
 
 #include <ae2fVK/Ann/Slp.h>
-
-#define ae2fVK_Ann_Slp_c
-
-#if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
+#include <ae2f/c90/Limits.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+
+#define ae2fVK_Ann_Slp_c
+
+#if !__ae2f_MACRO_GENERATED
+
 #define CMDONERR
 #endif
 
 #include <ae2fVK/Ann/SlpSHADER.auto.h>
 
-ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkFndMemProp_imp(
+ae2f_MAC((CMDONERR, )) _ae2fVK_AnnSlpMkFndMemProp_imp(
 		unsigned char				r_memtypeidx,
 		ae2f_err_t				v_errbit,
 		const unsigned char			memtypeidx_invalid_minus_one,
@@ -44,7 +44,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkFndMemProp_imp(
 	}
 }
 
-ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatBuf(
+ae2f_MAC((CMDONERR, )) _ae2fVK_AnnSlpMkCreatBuf(
 		const size_t			sz,
 		VkResult			r_vkres,
 		VkBuffer			r_vkbuf,
@@ -86,7 +86,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkCreatBuf(
 	}
 }
 
-ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkAllocVKMem_imp(
+ae2f_MAC((CMDONERR, )) _ae2fVK_AnnSlpMkAllocVKMem_imp(
 		const size_t			sz,
 		VkResult			r_vkres,
 		VkBuffer			r_vkbuf,
@@ -186,7 +186,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkAllocVKMem_imp(
 	}
 }
 
-ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkLoadPipeCreat_imp(
+ae2f_MAC((CMDONERR, )) _ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 		ae2f_err_t				r_reterr,
 		VkComputePipelineCreateInfo* const	pipecreat
 		, VkPipelineLayout* const		pipelayout
@@ -221,7 +221,7 @@ ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkLoadPipeCreat_imp(
 	(pipecreat)[idx_pipe].stage.flags = 0;
 }
 
-ae2f_MAC(CMDONERR, ) _ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp(
+ae2f_MAC((CMDONERR, )) _ae2fVK_AnnSlpMkOnePipeLayoutVerbose_imp(
 		VkPushConstantRange			v_vkpushconstrange,
 		VkPipelineLayoutCreateInfo		v_vkpipelayoutcreatinfo,
 		ae2f_err_t				r_reterr,
@@ -393,7 +393,7 @@ typedef ae2f_float_t cllocfloat_t;
  * @param vkcldeclaration
  * @param vkcldefinition
  * */
-ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
+ae2f_MAC((cllocfloat_t, )) _ae2fVK_AnnSlpMk_imp_V(
 		ae2fVK_AnnSlpMk_t	v_mk
 		, ae2f_float_t* const weight_opt
 		, ae2f_float_t* const bias_opt
@@ -617,6 +617,7 @@ ae2f_MAC(cllocfloat_t, ) _ae2fVK_AnnSlpMk_imp_V(
 
 			assert((v_mk).m_U0.m_alter.m_ptr);
 
+
 			switch(clspvCompileFromSourcesString(
 						1
 						, ae2f_reinterpret_cast(const size_t*, NULL)
@@ -825,7 +826,7 @@ ae2f_MAC() _ae2fVK_AnnSlpMap_imp(
 #define T int
 #endif
 
-ae2f_MAC(T,) _ae2fVK_AnnSlpMapRangedGeneric_imp(
+ae2f_MAC((T,)) _ae2fVK_AnnSlpMapRangedGeneric_imp(
 		VkMappedMemoryRange	v_vkmapmemrange,
 		ae2fVK_AnnSlp		iv_slp,
 

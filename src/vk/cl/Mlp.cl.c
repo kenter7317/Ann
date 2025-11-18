@@ -162,15 +162,15 @@ __kernel void kPredictStream(__global void* restrict glob, __local uint* restric
 	_clSlpPredict(__local, slppredict, r_out[oidx], l_out(&1), l_inp(&1), r_weight, r_bias, iidx, r_isz, oidx, r_osz, ACT_RUN);
 }
 
-ae2f_structdef(union, lrlszel_t) {
+typedef union {
 	host_float_t	m_f;
 	uint		m_u;
-};
+}  lrlszel_t;
 
-const ae2f_structdef(struct, lrlsz_t)
+typedef const struct 
 {
 	lrlszel_t m_lsz, m_weight, m_bias, m_wsz;
-};
+} lrlsz_t;
 
 typedef char STATIC_ASSERT_LRLSZEL_SZ[
 	sizeof(lrlszel_t) == (sizeof(uint) > sizeof(host_float_t) ? sizeof(uint) : sizeof(host_float_t))

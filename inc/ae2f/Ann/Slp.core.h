@@ -10,7 +10,6 @@
 #include "./Act.h"
 #include "./Util.h"
 
-#include <ae2f/Macro.h>
 #include <ae2f/Pack/Beg.h>
 
 /**

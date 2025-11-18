@@ -25,4 +25,5 @@
 #endif
 
 #undef	ae2f_MAC
+
 #define ae2f_MAC(...)	void
