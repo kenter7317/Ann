@@ -8,7 +8,7 @@
 #include "./Mlp.auto.h"
 #include "./MlpPool.auto.h"
 
-ae2f_structdef(struct, ae2fVK_AnnMlp) {
+typedef struct ae2fVK_AnnMlp {
 	ae2f_AnnMlp	m_mlp;
 
 	VkDevice	m_vkdev;
@@ -21,7 +21,7 @@ ae2f_structdef(struct, ae2fVK_AnnMlp) {
 	VkPipelineLayout	m_vkpipelayout[ae2fVK_eAnnMlpPipeLayouts_LEN];
 	VkShaderModule		m_vkshadermodule;
 	VkPipeline		m_vkpipeline[ae2fVK_eAnnMlpPipes_LEN];
-};
+} ae2fVK_AnnMlp;
 
 typedef ae2fVK_AnnSlpDescPool ae2fVK_AnnMlpDescPool;
 typedef ae2fVK_AnnSlpDescPoolCmd ae2fVK_AnnMlpDescPoolCmd;

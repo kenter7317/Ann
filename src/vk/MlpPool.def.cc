@@ -4,11 +4,8 @@
 #define ae2fVK_AnnMlpPool_h
 #endif
 
-#if !ae2f_MAC_BUILD || !__ae2f_MACRO_GENERATED
 #include <ae2f/Macro.h>
 #include <assert.h>
-#endif
-
 #include <ae2fVK/Ann/Mlp.h>
 #include <ae2fVK/Ann/MlpPool.auto.h>
 #include <ae2fVK/Ann/SlpPool.auto.h>
@@ -26,55 +23,53 @@ ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkPredict_imp(
 		)
 {
 	__ae2fVK_AnnMlpDescPoolCmdMk_imp(
-			ae2f_CastMerge(
-				{
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, 0
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_depth
-						);
+			{
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, 0
+					, sizeof(uint32_t)
+					, &(iv_mlp).m_mlp.m_depth
+					);
 
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, sizeof(uint32_t)
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_weightc
-						);
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kPredict]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, sizeof(uint32_t)
+					, sizeof(uint32_t)
+					, &(iv_mlp).m_mlp.m_weightc
+					);
 
-				vkCmdDispatch(
-						i_vkcmdbuf
-						, (iv_mlp).m_mlp.m_outc
-						, (iv_mlp).m_mlp.m_outc
-						, 1
-					     );
-				}
-				)
+			vkCmdDispatch(
+					i_vkcmdbuf
+					, (iv_mlp).m_mlp.m_outc
+					, (iv_mlp).m_mlp.m_outc
+					, 1
+				     );
+			}
 
-			, v_cmdmk
-			, r_cmd
-			, iv_mlp
-			, i_pool
-			, iv_err
+	, v_cmdmk
+		, r_cmd
+		, iv_mlp
+		, i_pool
+		, iv_err
 
-			, 1
+		, 1
 
-			, 0
-			, 0
-			+ sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
-			+ sizeof(ae2f_float_t) * ((iv_mlp).m_mlp.m_outc) * ((iv_mlp).m_mlp.m_depth * 2 + 1)
-			+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
-			, 0, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * 2
+		, 0
+		, 0
+		+ sizeof(uint32_t) * (iv_mlp).m_mlp.m_depth
+		+ sizeof(ae2f_float_t) * ((iv_mlp).m_mlp.m_outc) * ((iv_mlp).m_mlp.m_depth * 2 + 1)
+		+ sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_outc * (iv_mlp).m_mlp.m_depth
+		, 0, sizeof(ae2f_float_t) * (iv_mlp).m_mlp.m_outc * 2
 
-			, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
-			, ae2fVK_eAnnMlpPipes_kPredict /** i_pipe */
-			, ae2fVK_eAnnMlpPipeLayouts_kPredict /** i_pipelayout */
-			, i_vkcmdbuf
-			);
+		, ae2fVK_eAnnMlpDescLayouts_ONLY /** i_desclayout */
+		, ae2fVK_eAnnMlpPipes_kPredict /** i_pipe */
+		, ae2fVK_eAnnMlpPipeLayouts_kPredict /** i_pipelayout */
+		, i_vkcmdbuf
+		);
 }
 
 ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkTrain_imp(
@@ -91,53 +86,51 @@ ae2f_MAC() _ae2fVK_AnnMlpDescPoolCmdMkTrain_imp(
 		)
 {
 	__ae2fVK_AnnSlpDescPoolCmdMk_imp(
-			ae2f_CastMerge(
-				{
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, 0
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_depth
-						);
+			{
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, 0
+					, sizeof(uint32_t)
+					, &(iv_mlp).m_mlp.m_depth
+					);
 
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t))
-						, sizeof(ae2f_float_t)
-						, &(iv_mlp).m_mlp.m_learningrate
-						);
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t))
+					, sizeof(ae2f_float_t)
+					, &(iv_mlp).m_mlp.m_learningrate
+					);
 
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 2
-						, sizeof(ae2f_float_t)
-						, &(iv_mlp).m_mlp.m_learningrate_bias
-						);
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 2
+					, sizeof(ae2f_float_t)
+					, &(iv_mlp).m_mlp.m_learningrate_bias
+					);
 
-				vkCmdPushConstants(
-						i_vkcmdbuf
-						, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
-						, VK_SHADER_STAGE_COMPUTE_BIT
-						, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 3
-						, sizeof(uint32_t)
-						, &(iv_mlp).m_mlp.m_weightc
-						);
+			vkCmdPushConstants(
+					i_vkcmdbuf
+					, (iv_mlp).m_vkpipelayout[ae2fVK_eAnnSlpPipeLayouts_kTrain]
+					, VK_SHADER_STAGE_COMPUTE_BIT
+					, ae2f_CmpGetGt(sizeof(ae2f_float_t), sizeof(uint32_t)) * 3
+					, sizeof(uint32_t)
+					, &(iv_mlp).m_mlp.m_weightc
+					);
 
-				vkCmdDispatch(
-						i_vkcmdbuf
-						, (iv_mlp).m_mlp.m_outc
-						, (iv_mlp).m_mlp.m_outc
-						, 1
-					     );
-				}
-	)
-		, v_cmdmk
+			vkCmdDispatch(
+					i_vkcmdbuf
+					, (iv_mlp).m_mlp.m_outc
+					, (iv_mlp).m_mlp.m_outc
+					, 1
+				     );
+			}
+	, v_cmdmk
 		, r_cmd
 		, iv_mlp
 		, i_pool
