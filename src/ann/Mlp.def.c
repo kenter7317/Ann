@@ -71,21 +71,33 @@
 * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
 * Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
 *
-* @param outcache
+* @param outcache <ptr>
 * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
-* Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
+* Brief: @see ae2f__AnnMlpMk(), with propptr_outcache_opt
 *
-* @param weight
+* @param weight <ptr>
+* Type: ae2f_float_t[MAXWEIGHT(pprm_szvector) * ((prm_depth) - 1)]&	\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_weight_opt
 *
-* @param bias,
+* @param bias <ptr>
+* Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_bias_opt				\n
 *
-* @param learningrate
+* @param learningrate <ptr>
+* Type: const ae2f_float_t&
+* Brief: @see ae2f__AnnMlpMk(), with prm_learningrate				\n
 *
-* @param learningrate_bias
+* @param learningrate_bias <ptr>
+* Type: const ae2f_float_t&											\n
+* Brief: @see ae2f__AnnMlpMk(), with prm_learningrate_bias			\n
 *
-* @param offset
+* @param offset <ptr>
+* Type: const size_t												\n
+* Brief: @see ae2f__AnnMlpMk(), with offset_opt	\n
 *
-* @param extra
+* @param extra <ptr>
+* Type: const size_t				\n
+* Brief: @see ae2f__AnnMlpMk(), with offset_opt \n
 **/
 ae2f_MAC() _ae2f_AnnMlpMk_C(
 	ae2f_err_t* const			reterr
@@ -323,6 +335,21 @@ ae2f_MAC() _ae2f_AnnMlpMk_imp(
 	}
 }
 
+
+/**
+ *
+ * @param ret_sz
+ * @param outc
+ * @param weightc
+ * @param depth
+ * @param szswap
+ * @param act
+ * @param actderiv
+ * @param deltastream
+ * @param outcache
+ * @param weight
+ * @param bias
+ */
 ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		size_t			ret_sz
 		, const size_t		outc
@@ -350,6 +377,25 @@ ae2f_MAC() _ae2f_AnnMlpSz_imp(
 		* (!(weight) * (weightc) * (depth));
 }
 
+/**
+ *
+ * @param v_mlp
+ * @param v_init
+ * @param depth
+ * @param outsz
+ * @param weightsz
+ * @param szvector
+ * @param szswap_opt
+ * @param act
+ * @param actderiv
+ * @param lossderiv
+ * @param deltastream
+ * @param outcache
+ * @param weight
+ * @param bias
+ * @param learningrate
+ * @param learningrate_bias
+ */
 ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
 		ae2f_AnnMlp			v_mlp
 		, size_t			v_init
@@ -399,6 +445,23 @@ ae2f_MAC() _ae2f_AnnMlpInitWithOutSz_imp(
 		}
 }
 
+/**
+ *
+ * @param v_mlp
+ * @param v_init
+ * @param depth
+ * @param szvector
+ * @param szswap_opt
+ * @param act
+ * @param actderiv
+ * @param lossderiv
+ * @param deltastream
+ * @param outcache
+ * @param weight
+ * @param bias
+ * @param learningrate
+ * @param learningrate_bias
+ */
 ae2f_MAC() _ae2f_AnnMlpInit_imp(
 		ae2f_AnnMlp			v_mlp
 		, ae2f_AnnMlpInit_t		v_init
@@ -606,7 +669,14 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpPredictPrimal(
 
 #define	__ae2f_AnnMlpPredict_C(reterr, mlp, inp, delta) \
 	__ae2f_AnnMlpPredictPrimal(&1 ? 0 : 1, &1, reterr, mlp, inp, delta)
-
+/**
+ *
+ * @param v_single
+ * @param slp
+ * @param weight
+ * @param delta
+ * @param iidx
+ */
 ae2f_MAC() _ae2f_AnnMlpHidDeltaSingle_imp(
 		ae2f_AnnMlpHidDeltaSingle_t	v_single
 		, const ae2f_AnnSlpREG_t		slp
@@ -650,6 +720,21 @@ ae2f_MAC() _ae2f_AnnMlpBwd_imp(
 #define	__ae2f_AnnMlpFollow_imp(v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv) \
 	__ae2f_AnnMlpFollowPrimal_imp(&1 ? 0 : 1,&1, v_follow, mlp, inp, delta, lenv, outstream, deltacache, weight, bias, lr_w, lr_b, actderiv)
 
+/**
+ *
+ * @param v_follow
+ * @param mlp
+ * @param inp
+ * @param delta
+ * @param lenv
+ * @param outstream
+ * @param deltacache
+ * @param weight
+ * @param bias
+ * @param learningrate
+ * @param learningrate_bias
+ * @param actderiv
+ */
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 		ae2f_AnnMlpFollow_t			v_follow
 		, const ae2f_AnnMlp_t			mlp
@@ -825,6 +910,13 @@ ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal_imp(
 			);
 }
 
+/**
+ *
+ * @param reterr
+ * @param mlp
+ * @param inp
+ * @param delta
+ */
 ae2f_MAC(OPER_NEG, OPER_NONE,) _ae2f_AnnMlpFollowPrimal(
 		ae2f_err_t* const		reterr
 		, const ae2f_AnnMlp*			mlp
@@ -922,6 +1014,14 @@ ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal_imp(
 			);
 }
 
+/**
+ *
+ * @param reterr
+ * @param mlp
+ * @param inp
+ * @param out
+ * @param out_desired
+ */
 ae2f_MAC(OPER_NEG, OPER_NONE, ) _ae2f_AnnMlpTrainPrimal(
 		ae2f_err_t* const ae2f_opt	reterr
 		, ae2f_AnnMlp* const		mlp
