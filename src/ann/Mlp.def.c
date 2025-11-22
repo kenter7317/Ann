@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #endif
 
-#if !__ae2f_MACRO_GENERATED
-#include <ae2f/Macro.h>
+#if __ae2f_MACRO_GENERATED
+#else
 #include <ae2f/Ann/Slp.h>
 #endif
 
@@ -22,31 +22,93 @@
 #endif
 
 #define ae2f_Ann_Mlp_c
-
-#define __ae2f_AnnMlpDel_C(a) free(ae2f_reinterpret_cast(void*, a))
-
+#if __ae2f_MACRO_GENERATED
+#else
+#include <ae2f/Macro.h>
+#endif
+/**
+* @def __ae2f_AnnMlpMk_C(reterr, retmk, depth, szvector, szswap_opt, act, actderiv, lossderiv, deltastream, outcache, weight, bias,learningrate, learningrate_bias, offset, extra)
+*
+* @brief
+* Automatically initializes ae2f__AnnMlpMk() with built-in error filtering and validation
+*
+* @details
+* unless reterr's relative param is NULL and class is valid, run _ae2f_AnnMlpMk_imp() with providing parameter.
+*
+* @param reterr	<reg>			\n
+* Type: ae2f_err_t&				\n
+* Brief: An error class pointer, which has valid value or that's pointer has valid value, this method do noting.
+*
+* @param retmk <reg>			\n
+* Type: ae2f_AnnMlp&			\n
+* Brief: An MLP class pointer, which has return value type with ae2f_AnnMlp instance (if this field isn't valid, method return with error)
+*
+* @param depth					\n
+* Type: const size_t			\n
+* Brief: ae2f__AnnMlpMk()'s prm_depth (Depth for this machine willing to allocate.)
+*
+* @param szvector 				\n
+* Type: const size_t[prm_depth]		\n
+* Brief: @see _ae2f_AnnMlpMk_imp(), with pprm_szvector
+*
+* @param szswap_opt <opt>		\n
+* Type: const size_t[prm_depth]&		\n
+* Brief: @see _ae2f_AnnMlpMk_imp(), with propptr_szswap_opt
+*
+* @param act <ptr>		\n
+* Type: ae2f_AnnActFFN_t[prm_depth]&&		\n
+* Brief: @see _ae2f_AnnMlpMk_imp(), with lppfn_act_opt
+*
+* @param actderiv <ptr>		\n
+* Type: ae2f_AnnActFFN_t[prm_depth]&&		\n
+* Brief: @see _ae2f__AnnMlpMk(), with lppfn_actderiv_opt
+*
+* @param lossderiv <ptr>		\n
+* Type: ae2f_AnnLossFFN_t&		\n
+* Brief: @see ae2f__AnnMlpMk(), with pfn_lossderiv_opt
+*
+* @param deltastream <ptr>	\n
+* Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
+*
+* @param outcache
+* Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
+*
+* @param weight
+*
+* @param bias,
+*
+* @param learningrate
+*
+* @param learningrate_bias
+*
+* @param offset
+*
+* @param extra
+**/
 ae2f_MAC() _ae2f_AnnMlpMk_C(
-		ae2f_err_t* const			reterr
-		, ae2f_AnnMlp** const			retmk
+	ae2f_err_t* const			reterr
+	, ae2f_AnnMlp** const			retmk
 
-		, const size_t				depth
-		, const size_t* const			szvector
-		, ae2f_opt size_t* const		szswap_opt
+	, const size_t				depth
+	, const size_t* const			szvector
+	, ae2f_opt size_t* const		szswap_opt
 
-		, ae2f_opt ae2f_AnnActFFN_t** const	act
-		, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
-		, ae2f_AnnLossFFN_t* const			lossderiv
+	, ae2f_opt ae2f_AnnActFFN_t** const	act
+	, ae2f_opt ae2f_AnnActFFN_t** const	actderiv
+	, ae2f_AnnLossFFN_t* const			lossderiv
 
-		, ae2f_opt ae2f_float_t* const	deltastream
-		, ae2f_opt ae2f_float_t* const	outcache
-		, ae2f_opt ae2f_float_t* const	weight
-		, ae2f_opt ae2f_float_t* const	bias
+	, ae2f_opt ae2f_float_t* const	deltastream
+	, ae2f_opt ae2f_float_t* const	outcache
+	, ae2f_opt ae2f_float_t* const	weight
+	, ae2f_opt ae2f_float_t* const	bias
 
-		, ae2f_float_t const	learningrate
-		, ae2f_float_t const	learningrate_bias
+	, ae2f_float_t const	learningrate
+	, ae2f_float_t const	learningrate_bias
 
-		, ae2f_opt const size_t	offset
-, ae2f_opt const size_t	extra
+	, ae2f_opt const size_t	offset
+	, ae2f_opt const size_t	extra
 ) {
 	if((reterr) && *(reterr)) {}
 	else unless((szvector) && (lossderiv) && (retmk))
@@ -54,13 +116,13 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 	else {
 		ae2f_AnnMlpMk_t v_mk;
 		__ae2f_AnnMlpMk_imp(
-				v_mk
-				, depth, szvector, szswap_opt
-				, act, actderiv, lossderiv
-				, deltastream, outcache, weight
-				, bias, learningrate, learningrate_bias
-				, offset, extra
-				);
+			v_mk
+			, depth, szvector, szswap_opt
+			, act, actderiv, lossderiv
+			, deltastream, outcache, weight
+			, bias, learningrate, learningrate_bias
+			, offset, extra
+		);
 
 		assert(v_mk.m_mkbase && "Initialising has failed");
 		*(retmk) = v_mk.m_mkbase;
@@ -69,6 +131,8 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
 		}
 	}
 }
+
+#define __ae2f_AnnMlpDel_C(a) free(ae2f_reinterpret_cast(void*, a))
 
 
 /**
@@ -90,7 +154,7 @@ ae2f_MAC() _ae2f_AnnMlpMk_C(
  * 
  * @param[in, out] reg_mk	<reg>			\n
  * Type: ae2f_reg ae2f_AnnMlpMk_t&			\n
- * Brief: A temporary buffer for this function.	
+ * Brief: A temporary buffer for this function.
  *
  * @param prm_depth	<prm>	\n
  * Type: const size_t		\n
