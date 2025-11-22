@@ -1,0 +1,884 @@
+./Slp.auto.cl:1:8: warning: macro name is a reserved identifier
+    1 | #undef  __ae2f_MACRO_GENERATED
+      |         ^
+./Slp.auto.cl:2:9: warning: macro name is a reserved identifier
+    2 | #define __ae2f_MACRO_GENERATED  1
+      |         ^
+./Slp.auto.cl:3:28: warning: missing ':' after 'cl' - ignoring
+    3 | #pragma OPENCL EXTENSION cl-fast-relaxed-math : enable
+      |                            ^
+./Slp.auto.cl:4:29: warning: missing ':' after 'pod' - ignoring
+    4 | #pragma OPENCL EXTENSION pod-pushconstant : enable
+      |                             ^
+./Slp.auto.cl:21:8: warning: macro name is a reserved identifier
+   21 | #undef  __ae2f_MACRO_GENERATED
+      |         ^
+./Slp.auto.cl:22:9: warning: macro name is a reserved identifier
+   22 | #define __ae2f_MACRO_GENERATED  1
+      |         ^
+./Slp.auto.cl:78:19: warning: variadic macros are a Clang extension in OpenCL
+   78 | #define ae2fVK_CL(...)  __VA_ARGS__
+      |                   ^
+./Slp.auto.cl:79:20: warning: variadic macros are a Clang extension in OpenCL
+   79 | #define ae2fVK_NCL(...)
+      |                    ^
+./Slp.auto.cl:868:18: warning: variadic macros are a Clang extension in OpenCL
+  868 | #define ae2f_MAC(...)   void
+      |                  ^
+./Slp.auto.cl:871:8: warning: macro name is a reserved identifier
+  871 | #undef __ae2f_MACRO_GENERATED
+      |        ^
+./Slp.auto.cl:22:9: warning: macro is not used
+   22 | #define __ae2f_MACRO_GENERATED  1
+      |         ^
+./Slp.auto.cl:872:9: warning: macro name is a reserved identifier
+  872 | #define __ae2f_MACRO_GENERATED 1
+      |         ^
+./Slp.auto.cl:1935:9: warning: macro name is a reserved identifier
+ 1935 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+      |         ^
+./Slp.auto.cl:1936:9: warning: macro name is a reserved identifier
+ 1936 | #define __ae2f_lvcheck_cc(v) (ae2f_LangVer_CC >= (v))   
+      |         ^
+./Slp.auto.cl:1924:9: warning: macro is not used
+ 1924 | #define ae2f_LangVer_C 1990             
+      |         ^
+./Slp.auto.cl:1932:9: warning: macro is not used
+ 1932 | #define ae2f_LangVer_CC 2017    
+      |         ^
+./Slp.auto.cl:429834:9: warning: macro name is a reserved identifier
+ 429834 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+        |         ^
+./Slp.auto.cl:1935:9: warning: macro is not used
+ 1935 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+      |         ^
+./Slp.auto.cl:429835:9: warning: macro name is a reserved identifier
+ 429835 | #define __ae2f_lvcheck_cc(v) (ae2f_LangVer_CC >= (v))   
+        |         ^
+./Slp.auto.cl:1936:9: warning: macro is not used
+ 1936 | #define __ae2f_lvcheck_cc(v) (ae2f_LangVer_CC >= (v))   
+      |         ^
+./Slp.auto.cl:429845:9: warning: macro is not used
+ 429845 | #define ae2f_stdcc_v    (199711L)
+        |         ^
+./Slp.auto.cl:429849:9: warning: macro is not used
+ 429849 | #define ae2f_stdcc_v    (201103L)
+        |         ^
+./Slp.auto.cl:429854:9: warning: macro is not used
+ 429854 | #define ae2f_stdcc_v    (201402L)
+        |         ^
+./Slp.auto.cl:429904:8: warning: macro name is a reserved identifier
+ 429904 | #undef  __ae2f_stdcheck_C
+        |         ^
+./Slp.auto.cl:429905:8: warning: macro name is a reserved identifier
+ 429905 | #undef  __ae2f_stdcheck_CC
+        |         ^
+./Slp.auto.cl:429907:9: warning: macro name is a reserved identifier
+ 429907 | #define __ae2f_stdcheck_C(v)    (ae2f_stdc_v >= (v))
+        |         ^
+./Slp.auto.cl:429908:9: warning: macro name is a reserved identifier
+ 429908 | #define __ae2f_stdcheck_CC(v)   (ae2f_stdcc_v >= (v))
+        |         ^
+./Slp.auto.cl:429951:9: warning: macro is not used
+ 429951 | #define ae2f_constevalmethod            constexpr
+        |         ^
+./Slp.auto.cl:430000:9: warning: macro is not used
+ 430000 | #define ae2f_noexcept noexcept
+        |         ^
+./Slp.auto.cl:429823:9: warning: macro is not used
+ 429823 | #define ae2f_LangVer_C 1990             
+        |         ^
+./Slp.auto.cl:430064:9: warning: macro name is a reserved identifier
+ 430064 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+        |         ^
+./Slp.auto.cl:429834:9: warning: macro is not used
+ 429834 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+        |         ^
+./Slp.auto.cl:430065:9: warning: macro name is a reserved identifier
+ 430065 | #define __ae2f_lvcheck_cc(v) (ae2f_LangVer_CC >= (v))   
+        |         ^
+./Slp.auto.cl:430075:9: warning: macro is not used
+ 430075 | #define ae2f_stdcc_v    (199711L)
+        |         ^
+./Slp.auto.cl:430079:9: warning: macro is not used
+ 430079 | #define ae2f_stdcc_v    (201103L)
+        |         ^
+./Slp.auto.cl:430084:9: warning: macro is not used
+ 430084 | #define ae2f_stdcc_v    (201402L)
+        |         ^
+./Slp.auto.cl:429876:9: warning: macro is not used
+ 429876 | #define ae2f_stdc_v     (__STDC_VERSION__)
+        |         ^
+./Slp.auto.cl:430134:8: warning: macro name is a reserved identifier
+ 430134 | #undef  __ae2f_stdcheck_C
+        |         ^
+./Slp.auto.cl:429907:9: warning: macro is not used
+ 429907 | #define __ae2f_stdcheck_C(v)    (ae2f_stdc_v >= (v))
+        |         ^
+./Slp.auto.cl:430135:8: warning: macro name is a reserved identifier
+ 430135 | #undef  __ae2f_stdcheck_CC
+        |         ^
+./Slp.auto.cl:430137:9: warning: macro name is a reserved identifier
+ 430137 | #define __ae2f_stdcheck_C(v)    (ae2f_stdc_v >= (v))
+        |         ^
+./Slp.auto.cl:430138:9: warning: macro name is a reserved identifier
+ 430138 | #define __ae2f_stdcheck_CC(v)   (ae2f_stdcc_v >= (v))
+        |         ^
+./Slp.auto.cl:1969:9: warning: macro is not used
+ 1969 | #define ae2f_NONE
+      |         ^
+./Slp.auto.cl:622297:9: warning: macro is not used
+ 622297 | #define ae2f_LP(a) ae2f_NONE
+        |         ^
+./Slp.auto.cl:622284:9: warning: macro is not used
+ 622284 | #define ae2f_NONE
+        |         ^
+./Slp.auto.cl:622300:9: warning: macro is not used
+ 622300 | #define ae2f_opt ae2f_NONE
+        |         ^
+./Slp.auto.cl:622307:9: warning: macro is not used
+ 622307 | #define ae2f_FREE(a) ae2f_NONE
+        |         ^
+./Slp.auto.cl:622310:9: warning: macro is not used
+ 622310 | #define ae2f_v ae2f_NONE
+        |         ^
+./Slp.auto.cl:877376:9: warning: macro is not used
+ 877376 | #define ae2f_LP(a) ae2f_NONE
+        |         ^
+./Slp.auto.cl:877363:9: warning: macro is not used
+ 877363 | #define ae2f_NONE
+        |         ^
+./Slp.auto.cl:877379:9: warning: macro is not used
+ 877379 | #define ae2f_opt ae2f_NONE
+        |         ^
+./Slp.auto.cl:877386:9: warning: macro is not used
+ 877386 | #define ae2f_FREE(a) ae2f_NONE
+        |         ^
+./Slp.auto.cl:877389:9: warning: macro is not used
+ 877389 | #define ae2f_v ae2f_NONE
+        |         ^
+./Slp.auto.cl:877752:36: warning: variadic macros are a Clang extension in OpenCL
+ 877752 | #define ae2f_AnnUtilPtr2(A_t, B_t, ...) \
+        |                                    ^
+./Slp.auto.cl:878037:8: warning: macro name is a reserved identifier
+ 878037 | #undef __ae2f_MACRO_GENERATED
+        |        ^
+./Slp.auto.cl:872:9: warning: macro is not used
+  872 | #define __ae2f_MACRO_GENERATED 1
+      |         ^
+./Slp.auto.cl:878038:9: warning: macro name is a reserved identifier
+ 878038 | #define __ae2f_MACRO_GENERATED 1
+        |         ^
+./Slp.auto.cl:878051:8: warning: macro name is a reserved identifier
+ 878051 | #undef  __ae2f_MACRO_GENERATED
+        |         ^
+./Slp.auto.cl:878038:9: warning: macro is not used
+ 878038 | #define __ae2f_MACRO_GENERATED 1
+        |         ^
+./Slp.auto.cl:878052:9: warning: macro name is a reserved identifier
+ 878052 | #define __ae2f_MACRO_GENERATED  1
+        |         ^
+./Slp.auto.cl:1170661:8: warning: macro name is a reserved identifier
+ 1170661 | #undef __ae2f_MACRO_GENERATED
+         |        ^
+./Slp.auto.cl:1170662:9: warning: macro name is a reserved identifier
+ 1170662 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1170675:8: warning: macro name is a reserved identifier
+ 1170675 | #undef __ae2f_MACRO_GENERATED
+         |        ^
+./Slp.auto.cl:1170662:9: warning: macro is not used
+ 1170662 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1170676:9: warning: macro name is a reserved identifier
+ 1170676 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1170678:9: warning: macro name is a reserved identifier
+ 1170678 | #define __ae2f_AnnSlpDel        free
+         |         ^
+./Slp.auto.cl:1170679:9: warning: macro name is a reserved identifier
+ 1170679 | #define __ae2f_AnnSlpDel_C      free
+         |         ^
+./Slp.auto.cl:1170783:8: warning: macro name is a reserved identifier
+ 1170783 | #undef  __ae2f_AnnSlpInitInpSz_imp
+         |         ^
+./Slp.auto.cl:1170784:9: warning: macro name is a reserved identifier
+ 1170784 | #define __ae2f_AnnSlpInitInpSz_imp(...) \
+         |         ^
+./Slp.auto.cl:1170784:36: warning: variadic macros are a Clang extension in OpenCL
+ 1170784 | #define __ae2f_AnnSlpInitInpSz_imp(...) \
+         |                                    ^
+./Slp.auto.cl:1170787:8: warning: macro name is a reserved identifier
+ 1170787 | #undef  __ae2f_AnnSlpInit_imp
+         |         ^
+./Slp.auto.cl:1170788:9: warning: macro name is a reserved identifier
+ 1170788 | #define __ae2f_AnnSlpInit_imp(...) \
+         |         ^
+./Slp.auto.cl:1170788:31: warning: variadic macros are a Clang extension in OpenCL
+ 1170788 | #define __ae2f_AnnSlpInit_imp(...) \
+         |                               ^
+./Slp.auto.cl:1170791:8: warning: macro name is a reserved identifier
+ 1170791 | #undef  __ae2f_AnnSlpInit
+         |         ^
+./Slp.auto.cl:1170792:9: warning: macro name is a reserved identifier
+ 1170792 | #define __ae2f_AnnSlpInit(...) \
+         |         ^
+./Slp.auto.cl:1170792:27: warning: variadic macros are a Clang extension in OpenCL
+ 1170792 | #define __ae2f_AnnSlpInit(...) \
+         |                           ^
+./Slp.auto.cl:1170798:9: warning: macro name is a reserved identifier
+ 1170798 | #define __ae2f_AnnSlpInit_C __ae2f_AnnSlpInit
+         |         ^
+./Slp.auto.cl:1170925:8: warning: macro name is a reserved identifier
+ 1170925 | #undef  __ae2f_AnnSlpMk_imp
+         |         ^
+./Slp.auto.cl:1170926:9: warning: macro name is a reserved identifier
+ 1170926 | #define __ae2f_AnnSlpMk_imp(...) \
+         |         ^
+./Slp.auto.cl:1170926:29: warning: variadic macros are a Clang extension in OpenCL
+ 1170926 | #define __ae2f_AnnSlpMk_imp(...) \
+         |                             ^
+./Slp.auto.cl:1170929:8: warning: macro name is a reserved identifier
+ 1170929 | #undef  __ae2f_AnnSlpMk
+         |         ^
+./Slp.auto.cl:1170930:9: warning: macro name is a reserved identifier
+ 1170930 | #define __ae2f_AnnSlpMk(...) \
+         |         ^
+./Slp.auto.cl:1170930:25: warning: variadic macros are a Clang extension in OpenCL
+ 1170930 | #define __ae2f_AnnSlpMk(...) \
+         |                         ^
+./Slp.auto.cl:1170934:9: warning: macro name is a reserved identifier
+ 1170934 | #define __ae2f_AnnSlpMk_C __ae2f_AnnSlpMk
+         |         ^
+./Slp.auto.cl:1170937:9: warning: macro name is a reserved identifier
+ 1170937 | #define __ae2f_AnnSlpPredict_imp( \
+         |         ^
+./Slp.auto.cl:1170970:9: warning: macro name is a reserved identifier
+ 1170970 | #define __ae2f_AnnSlpPredict( \
+         |         ^
+./Slp.auto.cl:1171034:8: warning: macro name is a reserved identifier
+ 1171034 | #undef  __ae2f_AnnSlpPredict_C
+         |         ^
+./Slp.auto.cl:1171035:9: warning: macro name is a reserved identifier
+ 1171035 | #define __ae2f_AnnSlpPredict_C(...)  \
+         |         ^
+./Slp.auto.cl:1171035:32: warning: variadic macros are a Clang extension in OpenCL
+ 1171035 | #define __ae2f_AnnSlpPredict_C(...)  \
+         |                                ^
+./Slp.auto.cl:1171040:9: warning: macro name is a reserved identifier
+ 1171040 | #define __ae2f_AnnSlpFollowOneW_imp( \
+         |         ^
+./Slp.auto.cl:1171059:9: warning: macro name is a reserved identifier
+ 1171059 | #define __ae2f_AnnSlpFollowOneB_imp( \
+         |         ^
+./Slp.auto.cl:1171069:9: warning: macro name is a reserved identifier
+ 1171069 | #define __ae2f_AnnSlpFollowOne_imp( \
+         |         ^
+./Slp.auto.cl:1171094:9: warning: macro name is a reserved identifier
+ 1171094 | #define __ae2f_AnnSlpFollow_imp( \
+         |         ^
+./Slp.auto.cl:1171123:9: warning: macro name is a reserved identifier
+ 1171123 | #define __ae2f_AnnSlpFollow( \
+         |         ^
+./Slp.auto.cl:1171182:8: warning: macro name is a reserved identifier
+ 1171182 | #undef  __ae2f_AnnSlpFollow_C
+         |         ^
+./Slp.auto.cl:1171183:9: warning: macro name is a reserved identifier
+ 1171183 | #define __ae2f_AnnSlpFollow_C(...) \
+         |         ^
+./Slp.auto.cl:1171183:31: warning: variadic macros are a Clang extension in OpenCL
+ 1171183 | #define __ae2f_AnnSlpFollow_C(...) \
+         |                               ^
+./Slp.auto.cl:1171187:9: warning: macro name is a reserved identifier
+ 1171187 | #define __ae2f_AnnSlpFetchDeltaOne_imp( \
+         |         ^
+./Slp.auto.cl:1171209:9: warning: macro name is a reserved identifier
+ 1171209 | #define __ae2f_AnnSlpFetchDeltaVerbose_imp( \
+         |         ^
+./Slp.auto.cl:1171245:9: warning: macro name is a reserved identifier
+ 1171245 | #define __ae2f_AnnSlpFetchDelta_imp( \
+         |         ^
+./Slp.auto.cl:1171268:9: warning: macro name is a reserved identifier
+ 1171268 | #define __ae2f_AnnSlpFetchDelta( \
+         |         ^
+./Slp.auto.cl:1171359:8: warning: macro name is a reserved identifier
+ 1171359 | #undef  __ae2f_AnnSlpFetchDelta_C
+         |         ^
+./Slp.auto.cl:1171360:9: warning: macro name is a reserved identifier
+ 1171360 | #define __ae2f_AnnSlpFetchDelta_C(...) \
+         |         ^
+./Slp.auto.cl:1171360:35: warning: variadic macros are a Clang extension in OpenCL
+ 1171360 | #define __ae2f_AnnSlpFetchDelta_C(...) \
+         |                                   ^
+./Slp.auto.cl:1171365:9: warning: macro name is a reserved identifier
+ 1171365 | #define __ae2f_AnnSlpFitVerbose_imp( \
+         |         ^
+./Slp.auto.cl:1171399:9: warning: macro name is a reserved identifier
+ 1171399 | #define __ae2f_AnnSlpFit_imp( \
+         |         ^
+./Slp.auto.cl:1171428:9: warning: macro name is a reserved identifier
+ 1171428 | #define __ae2f_AnnSlpFit( \
+         |         ^
+./Slp.auto.cl:1171528:8: warning: macro name is a reserved identifier
+ 1171528 | #undef  __ae2f_AnnSlpFit_C
+         |         ^
+./Slp.auto.cl:1171529:9: warning: macro name is a reserved identifier
+ 1171529 | #define __ae2f_AnnSlpFit_C(...) \
+         |         ^
+./Slp.auto.cl:1171529:28: warning: variadic macros are a Clang extension in OpenCL
+ 1171529 | #define __ae2f_AnnSlpFit_C(...) \
+         |                            ^
+./Slp.auto.cl:1171533:9: warning: macro name is a reserved identifier
+ 1171533 | #define __ae2f_AnnSlpTrainVerbose_imp( \
+         |         ^
+./Slp.auto.cl:1171579:9: warning: macro name is a reserved identifier
+ 1171579 | #define __ae2f_AnnSlpTrain_imp( \
+         |         ^
+./Slp.auto.cl:1171642:8: warning: macro name is a reserved identifier
+ 1171642 | #undef  __ae2f_AnnSlpTrain_C
+         |         ^
+./Slp.auto.cl:1171643:9: warning: macro name is a reserved identifier
+ 1171643 | #define __ae2f_AnnSlpTrain_C \
+         |         ^
+./Slp.auto.cl:1171648:9: warning: macro name is a reserved identifier
+ 1171648 | #define __ae2f_AnnSlpTrain( \
+         |         ^
+./Slp.auto.cl:1171725:8: warning: macro name is a reserved identifier
+ 1171725 | #undef  __ae2f_MACRO_GENERATED
+         |         ^
+./Slp.auto.cl:1170676:9: warning: macro is not used
+ 1170676 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1171727:9: warning: macro name is a reserved identifier
+ 1171727 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:1171731:8: warning: macro name is a reserved identifier
+ 1171731 | #undef __ae2f_MACRO_GENERATED
+         |        ^
+./Slp.auto.cl:1171727:9: warning: macro is not used
+ 1171727 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:1171732:9: warning: macro name is a reserved identifier
+ 1171732 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1171853:8: warning: macro name is a reserved identifier
+ 1171853 | #undef  __ae2f_MACRO_GENERATED
+         |         ^
+./Slp.auto.cl:1171855:9: warning: macro name is a reserved identifier
+ 1171855 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:1171859:8: warning: macro name is a reserved identifier
+ 1171859 | #undef __ae2f_MACRO_GENERATED
+         |        ^
+./Slp.auto.cl:1171855:9: warning: macro is not used
+ 1171855 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:1171860:9: warning: macro name is a reserved identifier
+ 1171860 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1171894:11: warning: empty paragraph passed to '@brief' command
+ 1171894 |  *  @brief
+         |     ~~~~~~^
+./Slp.auto.cl:1171917:2: warning: implicit conversion changes signedness: 'intptr_t' (aka 'int') to 'uint' (aka 'unsigned int')
+ 1171917 |         _clSlpPredict(
+         |         ^~~~~~~~~~~~~~
+ 1171918 |                         __global
+         |                         ~~~~~~~~
+ 1171919 |                         , v_predict
+         |                         ~~~~~~~~~~~
+ 1171920 |                         , p_out[oidx]
+         |                         ~~~~~~~~~~~~~
+ 1171921 |                         , p_out
+         |                         ~~~~~~~
+ 1171922 |                         , p_inp
+         |                         ~~~~~~~
+ 1171923 |                         , p_weight
+         |                         ~~~~~~~~~~
+ 1171924 |                         , p_bias
+         |                         ~~~~~~~~
+ 1171925 |                         , iidx
+         |                         ~~~~~~
+ 1171926 |                         , isz
+         |                         ~~~~~
+ 1171927 |                         , oidx
+         |                         ~~~~~~
+ 1171928 |                         , osz
+         |                         ~~~~~
+ 1171929 |                         , ACT
+         |                         ~~~~~
+ 1171930 |                         );
+         |                         ~
+./Slp.auto.cl:1171811:3: note: expanded from macro '_clSlpPredict'
+ 1171811 |                 _clAtomAddF(__global \
+         |                 ^~~~~~~~~~~~~~~~~~~~~~
+ 1171812 |                                 , v_mem, &(loc)[oidx] \
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+ 1171813 |                                 , (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx] \
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1171814 |                            ); \
+         |                            ~
+./Slp.auto.cl:1171779:5: note: expanded from macro '_clAtomAddF'
+ 1171779 |                                 PTRCAST(__global volatile uint*, (prm_dst), 4 * (v_mem).m_count) \
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./Slp.auto.cl:856:36: note: expanded from macro 'PTRCAST'
+  856 | #define PTRCAST(t, x, pad)      CAST(t, CAST(intptr_t, x) + (pad))
+      |                                 ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+./Slp.auto.cl:855:21: note: expanded from macro 'CAST'
+  855 | #define CAST(t, x)      ((t)(x))
+      |                          ^
+./Slp.auto.cl:855:25: note: expanded from macro 'CAST'
+  855 | #define CAST(t, x)      ((t)(x))
+      |                              ^
+./Slp.auto.cl:1171930:5: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1171930 |                         );
+         |                          ^
+./Slp.auto.cl:1171908:73: warning: unused parameter 'unused'
+ 1171908 | __kernel void kPredict(__global host_float_t* restrict glob, const uint unused) {
+         |                                                                         ^
+./Slp.auto.cl:1171935:11: warning: empty paragraph passed to '@brief' command
+ 1171935 |  *  @brief
+         |     ~~~~~~^
+./Slp.auto.cl:1171967:2: warning: implicit conversion changes signedness: 'intptr_t' (aka 'int') to 'uint' (aka 'unsigned int')
+ 1171967 |         _clSlpPredict(__local, slppredict, v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./Slp.auto.cl:1171811:3: note: expanded from macro '_clSlpPredict'
+ 1171811 |                 _clAtomAddF(__global \
+         |                 ^~~~~~~~~~~~~~~~~~~~~~
+ 1171812 |                                 , v_mem, &(loc)[oidx] \
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~
+ 1171813 |                                 , (p_weight)[(oidx) * (isz) + (iidx)] * (p_inp)[iidx] \
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1171814 |                            ); \
+         |                            ~
+./Slp.auto.cl:1171779:5: note: expanded from macro '_clAtomAddF'
+ 1171779 |                                 PTRCAST(__global volatile uint*, (prm_dst), 4 * (v_mem).m_count) \
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./Slp.auto.cl:856:36: note: expanded from macro 'PTRCAST'
+  856 | #define PTRCAST(t, x, pad)      CAST(t, CAST(intptr_t, x) + (pad))
+      |                                 ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+./Slp.auto.cl:855:21: note: expanded from macro 'CAST'
+  855 | #define CAST(t, x)      ((t)(x))
+      |                          ^
+./Slp.auto.cl:855:25: note: expanded from macro 'CAST'
+  855 | #define CAST(t, x)      ((t)(x))
+      |                              ^
+./Slp.auto.cl:1171967:100: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1171967 |         _clSlpPredict(__local, slppredict, v_tmp, loc, p_inp, p_weight, p_bias, iidx, isz, oidx, osz, ACT);
+         |                                                                                                           ^
+./Slp.auto.cl:1171980:6: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1171980 |                                 );
+         |                                  ^
+./Slp.auto.cl:1171986:6: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1171986 |                                 );
+         |                                  ^
+./Slp.auto.cl:1172003:5: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172003 |                         );
+         |                          ^
+./Slp.auto.cl:1172012:11: warning: empty paragraph passed to '@brief' command
+ 1172012 |  *  @brief
+         |     ~~~~~~^
+./Slp.auto.cl:1172048:6: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172048 |                                 );
+         |                                  ^
+./Slp.auto.cl:1172056:6: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172056 |                                 );
+         |                                  ^
+./Slp.auto.cl:1172071:5: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172071 |                         );
+         |                          ^
+./Slp.auto.cl:1172104:5: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172104 |                         );
+         |                          ^
+./Slp.auto.cl:1172111:6: warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning
+ 1172111 |                                 );
+         |                                  ^
+./Slp.auto.cl:1172115:8: warning: macro name is a reserved identifier
+ 1172115 | #undef  __ae2f_MACRO_GENERATED
+         |         ^
+./Slp.auto.cl:1171860:9: warning: macro is not used
+ 1171860 | #define __ae2f_MACRO_GENERATED 1
+         |         ^
+./Slp.auto.cl:1172117:9: warning: macro name is a reserved identifier
+ 1172117 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:655:9: warning: macro is not used
+  655 | #define int_fast32_t   int32_t
+      |         ^
+./Slp.auto.cl:877636:9: warning: macro is not used
+ 877636 | #define ae2f_AnnLossDerivFFN_PASS(r, o, g, i, c)        *(r) = (o)[i] * (1.0 - (g)[i]);
+        |         ^
+./Slp.auto.cl:1055:9: warning: macro is not used
+ 1055 | #define ae2f_stdint_h
+      |         ^
+./Slp.auto.cl:1171035:9: warning: macro is not used
+ 1171035 | #define __ae2f_AnnSlpPredict_C(...)  \
+         |         ^
+./Slp.auto.cl:653:9: warning: macro is not used
+  653 | #define int_fast8_t    int32_t
+      |         ^
+./Slp.auto.cl:868:9: warning: macro is not used
+  868 | #define ae2f_MAC(...)   void
+      |         ^
+./Slp.auto.cl:877668:9: warning: macro is not used
+ 877668 | #define ae2f_Ann_Util_h
+        |         ^
+./Slp.auto.cl:1170784:9: warning: macro is not used
+ 1170784 | #define __ae2f_AnnSlpInitInpSz_imp(...) \
+         |         ^
+./Slp.auto.cl:429929:9: warning: macro is not used
+ 429929 | #define ae2f_constexprvirtual virtual
+        |         ^
+./Slp.auto.cl:429935:9: warning: macro is not used
+ 429935 | #define ae2f_constextendedeval  constexpr
+        |         ^
+./Slp.auto.cl:1171094:9: warning: macro is not used
+ 1171094 | #define __ae2f_AnnSlpFollow_imp( \
+         |         ^
+./Slp.auto.cl:521:9: warning: macro is not used
+  521 | #define atom_cmpxchg_u  atom_cmpxchg
+      |         ^
+./Slp.auto.cl:1171643:9: warning: macro is not used
+ 1171643 | #define __ae2f_AnnSlpTrain_C \
+         |         ^
+./Slp.auto.cl:658:9: warning: macro is not used
+  658 | #define uint_fast8_t   uint32_t
+      |         ^
+./Slp.auto.cl:1171862:9: warning: macro is not used
+ 1171862 | #define ae2f_NEED_CLASS 0
+         |         ^
+./Slp.auto.cl:1171365:9: warning: macro is not used
+ 1171365 | #define __ae2f_AnnSlpFitVerbose_imp( \
+         |         ^
+./Slp.auto.cl:1171648:9: warning: macro is not used
+ 1171648 | #define __ae2f_AnnSlpTrain( \
+         |         ^
+./Slp.auto.cl:651:9: warning: macro is not used
+  651 | #define uint_least64_t  uint64_t
+      |         ^
+./Slp.auto.cl:637:9: warning: macro is not used
+  637 | #define uint16_t        ushort
+      |         ^
+./Slp.auto.cl:1580:9: warning: macro is not used
+ 1580 | #define ae2f_errGlobNormalised(n) (((n) & ae2f_errGlob_DONE_HOWEV) ? ae2f_errGlob_OK : (n))
+      |         ^
+./Slp.auto.cl:622318:9: warning: macro is not used
+ 622318 | #define ae2f_RecordMk(type, v)                                               \
+        |         ^
+./Slp.auto.cl:877746:9: warning: macro is not used
+ 877746 | #define ae2f_AnnUtilV2Name(A_t, B_t) \
+        |         ^
+./Slp.auto.cl:1171533:9: warning: macro is not used
+ 1171533 | #define __ae2f_AnnSlpTrainVerbose_imp( \
+         |         ^
+./Slp.auto.cl:40:9: warning: macro is not used
+   40 | #define mac_h
+      |         ^
+./Slp.auto.cl:1171579:9: warning: macro is not used
+ 1171579 | #define __ae2f_AnnSlpTrain_imp( \
+         |         ^
+./Slp.auto.cl:877755:9: warning: macro is not used
+ 877755 | #define ae2f_AnnUtilIdx1(idx0, sz0)                             (idx0)
+        |         ^
+./Slp.auto.cl:1171399:9: warning: macro is not used
+ 1171399 | #define __ae2f_AnnSlpFit_imp( \
+         |         ^
+./Slp.auto.cl:877417:9: warning: macro is not used
+ 877417 | #define ae2fCL_AnnAct_h
+        |         ^
+./Slp.auto.cl:646:9: warning: macro is not used
+  646 | #define int_least64_t   int64_t
+      |         ^
+./Slp.auto.cl:996:9: warning: macro is not used
+  996 | #define ae2f_float_SUF(x)       x##L
+      |         ^
+./Slp.auto.cl:429981:9: warning: macro is not used
+ 429981 | #define ae2f_consteval
+        |         ^
+./Slp.auto.cl:1170679:9: warning: macro is not used
+ 1170679 | #define __ae2f_AnnSlpDel_C      free
+         |         ^
+./Slp.auto.cl:886:9: warning: macro is not used
+  886 | #define ae2f_Ann_Slp_Core_h
+      |         ^
+./Slp.auto.cl:430053:9: warning: macro is not used
+ 430053 | #define ae2f_LangVer_C 1990             
+        |         ^
+./Slp.auto.cl:2005:9: warning: macro is not used
+ 2005 | #define ae2f_is_cxx ae2f_WhenC(0) ae2f_WhenCXX(1)
+      |         ^
+./Slp.auto.cl:877285:9: warning: macro is not used
+ 877285 | #define ae2f_tmpldef(a) template<a>
+        |         ^
+./Slp.auto.cl:877274:9: warning: macro is not used
+ 877274 | #define ae2f_extern ae2f_WhenC(extern) ae2f_WhenCXX(extern "C")
+        |         ^
+./Slp.auto.cl:125:9: warning: macro is not used
+  125 | #define ae2fVK_clspv_wrkitem_h
+      |         ^
+./Slp.auto.cl:1172117:9: warning: macro is not used
+ 1172117 | #define __ae2f_MACRO_GENERATED  0
+         |         ^
+./Slp.auto.cl:2026:9: warning: macro is not used
+ 2026 | #define ae2f_cxx_check && ae2f_is_cxx
+      |         ^
+./Slp.auto.cl:877615:9: warning: macro is not used
+ 877615 | #define ae2f_AnnActDerivFFN_PASS(r, o, i, c)    *(r) = 1.0
+        |         ^
+./Slp.auto.cl:1170792:9: warning: macro is not used
+ 1170792 | #define __ae2f_AnnSlpInit(...) \
+         |         ^
+./Slp.auto.cl:429937:9: warning: macro is not used
+ 429937 | #define ae2f_constextendedmethod        constexpr
+        |         ^
+./Slp.auto.cl:429934:9: warning: macro is not used
+ 429934 | #define ae2f_constextendedfun   constexpr
+        |         ^
+./Slp.auto.cl:877304:9: warning: macro is not used
+ 877304 | #define ae2f_evaldef(tmpldef, tmpluse, keyeval, keyexpr, ret_t, nameeval, nameexpr, prmdef, prmuse) \
+        |         ^
+./Slp.auto.cl:877614:9: warning: macro is not used
+ 877614 | #define ae2f_AnnActFFN_PASS(r, o, i, c)         *(r) = (o)[i]
+        |         ^
+./Slp.auto.cl:430008:9: warning: macro is not used
+ 430008 | #define ae2f_noexcept
+        |         ^
+./Slp.auto.cl:1171123:9: warning: macro is not used
+ 1171123 | #define __ae2f_AnnSlpFollow( \
+         |         ^
+./Slp.auto.cl:1171069:9: warning: macro is not used
+ 1171069 | #define __ae2f_AnnSlpFollowOne_imp( \
+         |         ^
+./Slp.auto.cl:1171245:9: warning: macro is not used
+ 1171245 | #define __ae2f_AnnSlpFetchDelta_imp( \
+         |         ^
+./Slp.auto.cl:650:9: warning: macro is not used
+  650 | #define uint_least32_t  uint32_t
+      |         ^
+./Slp.auto.cl:660:9: warning: macro is not used
+  660 | #define uint_fast32_t  uint32_t
+      |         ^
+./Slp.auto.cl:1170934:9: warning: macro is not used
+ 1170934 | #define __ae2f_AnnSlpMk_C __ae2f_AnnSlpMk
+         |         ^
+./Slp.auto.cl:1170930:9: warning: macro is not used
+ 1170930 | #define __ae2f_AnnSlpMk(...) \
+         |         ^
+./Slp.auto.cl:430064:9: warning: macro is not used
+ 430064 | #define __ae2f_lvcheck_c(v) (ae2f_LangVer_C >= (v))     
+        |         ^
+./Slp.auto.cl:877752:9: warning: macro is not used
+ 877752 | #define ae2f_AnnUtilPtr2(A_t, B_t, ...) \
+        |         ^
+./Slp.auto.cl:1171183:9: warning: macro is not used
+ 1171183 | #define __ae2f_AnnSlpFollow_C(...) \
+         |         ^
+./Slp.auto.cl:622330:9: warning: macro is not used
+ 622330 | #define ae2f_reinterpret_cast(t, v)                                            \
+        |         ^
+./Slp.auto.cl:877286:9: warning: macro is not used
+ 877286 | #define ae2f_tmpluse(a) <a>
+        |         ^
+./Slp.auto.cl:634:9: warning: macro is not used
+  634 | #define int8_t          char
+      |         ^
+./Slp.auto.cl:643:9: warning: macro is not used
+  643 | #define int_least8_t    int8_t
+      |         ^
+./Slp.auto.cl:656:9: warning: macro is not used
+  656 | #define int_fast64_t   int64_t
+      |         ^
+./Slp.auto.cl:1170926:9: warning: macro is not used
+ 1170926 | #define __ae2f_AnnSlpMk_imp(...) \
+         |         ^
+./Slp.auto.cl:429938:9: warning: macro is not used
+ 429938 | #define ae2f_constextendedmethodeval    constexpr
+        |         ^
+./Slp.auto.cl:654:9: warning: macro is not used
+  654 | #define int_fast16_t   int32_t
+      |         ^
+./Slp.auto.cl:1171360:9: warning: macro is not used
+ 1171360 | #define __ae2f_AnnSlpFetchDelta_C(...) \
+         |         ^
+./Slp.auto.cl:1170647:9: warning: macro is not used
+ 1170647 | #define ae2f_Ann_Slp_c
+         |         ^
+./Slp.auto.cl:877749:9: warning: macro is not used
+ 877749 | #define ae2f_AnnUtilV2(A_LEFT, A_t, A_POST, B_LEFT, B_t, B_POST) \
+        |         ^
+./Slp.auto.cl:622381:9: warning: macro is not used
+ 622381 | #define ae2f_Keys_h
+        |         ^
+./Slp.auto.cl:645:9: warning: macro is not used
+  645 | #define int_least32_t   int32_t
+      |         ^
+./Slp.auto.cl:429930:9: warning: macro is not used
+ 429930 | #define ae2f_constinit  /* not available */
+        |         ^
+./Slp.auto.cl:1171428:9: warning: macro is not used
+ 1171428 | #define __ae2f_AnnSlpFit( \
+         |         ^
+./Slp.auto.cl:429794:9: warning: macro is not used
+ 429794 | #define ae2f_Cast_consteval_hpp
+        |         ^
+./Slp.auto.cl:649:9: warning: macro is not used
+  649 | #define uint_least16_t  uint16_t
+      |         ^
+./Slp.auto.cl:430002:9: warning: macro is not used
+ 430002 | #define ae2f_constexpr constexpr
+        |         ^
+./Slp.auto.cl:638:9: warning: macro is not used
+  638 | #define int32_t         int
+      |         ^
+./Slp.auto.cl:24:9: warning: macro is not used
+   24 | #define Slp_h
+      |         ^
+./Slp.auto.cl:877280:9: warning: macro is not used
+ 877280 | #define ae2f_var ae2f_WhenCXX(extern "C")
+        |         ^
+./Slp.auto.cl:430137:9: warning: macro is not used
+ 430137 | #define __ae2f_stdcheck_C(v)    (ae2f_stdc_v >= (v))
+        |         ^
+./Slp.auto.cl:877757:9: warning: macro is not used
+ 877757 | #define ae2f_AnnUtilIdx3(idx2, sz2, idx1, sz1, idx0, sz0)       ((idx2) * (sz1) * (sz0) + (idx1) * (sz0) + (idx0))
+        |         ^
+./Slp.auto.cl:421:9: warning: macro is not used
+  421 | #define ae2fVK_clspv_atom_h
+      |         ^
+./Slp.auto.cl:1171268:9: warning: macro is not used
+ 1171268 | #define __ae2f_AnnSlpFetchDelta( \
+         |         ^
+./Slp.auto.cl:877277:9: warning: macro is not used
+ 877277 | #define ae2f_class ae2f_WhenC(struct) ae2f_WhenCXX(class)
+        |         ^
+./Slp.auto.cl:622322:9: warning: macro is not used
+ 622322 | #define ae2f_static_cast(t, v)                                                 \
+        |         ^
+./Slp.auto.cl:622326:9: warning: macro is not used
+ 622326 | #define ae2f_dynamic_cast(t, v)                                                \
+        |         ^
+./Slp.auto.cl:877595:9: warning: macro is not used
+ 877595 | #define ae2f_FREE(a) ae2f_NONE
+        |         ^
+./Slp.auto.cl:429984:9: warning: macro is not used
+ 429984 | #define ae2f_constevalmethod ae2f_constexprmethod
+        |         ^
+./Slp.auto.cl:1170970:9: warning: macro is not used
+ 1170970 | #define __ae2f_AnnSlpPredict( \
+         |         ^
+./Slp.auto.cl:56:9: warning: macro is not used
+   56 | #define ae2fVK_clspv_addrspec_h
+      |         ^
+./Slp.auto.cl:1170937:9: warning: macro is not used
+ 1170937 | #define __ae2f_AnnSlpPredict_imp( \
+         |         ^
+./Slp.auto.cl:659:9: warning: macro is not used
+  659 | #define uint_fast16_t  uint32_t
+      |         ^
+./Slp.auto.cl:429950:9: warning: macro is not used
+ 429950 | #define ae2f_constexprfun               constexpr
+        |         ^
+./Slp.auto.cl:1171529:9: warning: macro is not used
+ 1171529 | #define __ae2f_AnnSlpFit_C(...) \
+         |         ^
+./Slp.auto.cl:78:9: warning: macro is not used
+   78 | #define ae2fVK_CL(...)  __VA_ARGS__
+      |         ^
+./Slp.auto.cl:877737:9: warning: macro is not used
+ 877737 | #define ae2f_MAC_BUILD OFF
+        |         ^
+./Slp.auto.cl:524:9: warning: macro is not used
+  524 | #define atom_xchg_i     atom_xchg
+      |         ^
+./Slp.auto.cl:877598:9: warning: macro is not used
+ 877598 | #define ae2f_v ae2f_NONE
+        |         ^
+./Slp.auto.cl:877756:9: warning: macro is not used
+ 877756 | #define ae2f_AnnUtilIdx2(idx1, sz1, idx0, sz0)                  ((idx1) * (sz0) + (idx0))
+        |         ^
+./Slp.auto.cl:1171209:9: warning: macro is not used
+ 1171209 | #define __ae2f_AnnSlpFetchDeltaVerbose_imp( \
+         |         ^
+./Slp.auto.cl:636:9: warning: macro is not used
+  636 | #define int16_t         short
+      |         ^
+./Slp.auto.cl:622252:9: warning: macro is not used
+ 622252 | #define ae2f_NIL        ae2f_WhenC(NULL)        ae2f_WhenCXX(nullptr)
+        |         ^
+./Slp.auto.cl:640:9: warning: macro is not used
+  640 | #define int64_t         long
+      |         ^
+./Slp.auto.cl:1170788:9: warning: macro is not used
+ 1170788 | #define __ae2f_AnnSlpInit_imp(...) \
+         |         ^
+./Slp.auto.cl:79:9: warning: macro is not used
+   79 | #define ae2fVK_NCL(...)
+      |         ^
+./Slp.auto.cl:1170798:9: warning: macro is not used
+ 1170798 | #define __ae2f_AnnSlpInit_C __ae2f_AnnSlpInit
+         |         ^
+./Slp.auto.cl:1170678:9: warning: macro is not used
+ 1170678 | #define __ae2f_AnnSlpDel        free
+         |         ^
+./Slp.auto.cl:877588:9: warning: macro is not used
+ 877588 | #define ae2f_opt ae2f_NONE
+        |         ^
+./Slp.auto.cl:2001:9: warning: macro is not used
+ 2001 | #define ae2f_WhenCXX(a) ae2f_NONE
+      |         ^
+./Slp.auto.cl:1994:9: warning: macro is not used
+ 1994 | #define ae2f_WhenC(a) a
+      |         ^
+./Slp.auto.cl:429952:9: warning: macro is not used
+ 429952 | #define ae2f_virtual            virtual
+        |         ^
+./Slp.auto.cl:622351:9: warning: macro is not used
+ 622351 | #define ae2f_union_cast(tThen, tNow, v)                                        \
+        |         ^
+./Slp.auto.cl:429765:9: warning: macro is not used
+ 429765 | #define ae2f_reg        ae2f_WhenCXX() ae2f_WhenC(register)
+        |         ^
+./Slp.auto.cl:1031:9: warning: macro is not used
+ 1031 | #define ae2f_errGlobal_h
+      |         ^
+./Slp.auto.cl:877743:9: warning: macro is not used
+ 877743 | #define ae2f_AnnUtilPtr2Name(A_t, B_t) \
+        |         ^
+./Slp.auto.cl:520:9: warning: macro is not used
+  520 | #define atom_cmpxchg_i  atom_cmpxchg
+      |         ^
+./Slp.auto.cl:2017:9: warning: macro is not used
+ 2017 | #define ae2f_c_check && !ae2f_is_cxx
+      |         ^
+./Slp.auto.cl:2045:9: warning: macro is not used
+ 2045 | #define ae2f_Cxx_Reg_h
+      |         ^
+./Slp.auto.cl:622334:9: warning: macro is not used
+ 622334 | #define ae2f_const_cast(t, v)                                                  \
+        |         ^
+./Slp.auto.cl:644:9: warning: macro is not used
+  644 | #define int_least16_t   int16_t
+      |         ^
+./Slp.auto.cl:429922:9: warning: macro is not used
+ 429922 | #define ae2f_if_consteval       if (0)
+        |         ^
+./Slp.auto.cl:429949:9: warning: macro is not used
+ 429949 | #define ae2f_constexprmethod            constexpr
+        |         ^
+./Slp.auto.cl:862:9: warning: macro is not used
+  862 | #define CL_Q_CVRT(x)    x
+      |         ^
+./Slp.auto.cl:429914:9: warning: macro is not used
+ 429914 | #define ae2f_if_constexpr if constexpr
+        |         ^
+./Slp.auto.cl:661:9: warning: macro is not used
+  661 | #define uint_fast64_t  uint64_t
+      |         ^
+./Slp.auto.cl:641:9: warning: macro is not used
+  641 | #define uint64_t        ulong
+      |         ^
+./Slp.auto.cl:877266:9: warning: macro is not used
+ 877266 | #define ae2f_struct ae2f_WhenC(struct)
+        |         ^
+./Slp.auto.cl:545:9: warning: macro is not used
+  545 | #define ae2fVK_clspv_stdint_h
+      |         ^

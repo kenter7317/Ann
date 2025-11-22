@@ -119,12 +119,7 @@ typedef struct {
 		ae2f_float_t* ae2f_restrict	a;
 		ae2f_AnnSlp* ae2f_restrict	b;
 	} m_fieldptr;
-
 } ae2f_AnnSlpMk_t, ae2f_AnnSlpMkRAM_t, ae2f_AnnSlpMkREG_t;
-
-typedef struct {
-	ae2f_AnnSlpMkU0_t m_fieldptr;
-} ae2f_AnnSlpMk_t, ae2f_AnnSlpMkREG_t;
 
 typedef struct
 {

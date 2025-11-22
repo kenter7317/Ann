@@ -2,10 +2,7 @@
 #define ae2f_Ann_Mlp_core_h
 
 #include <ae2f/Keys.h>
-#include "./Act.h"
-
 #include <ae2f/Pack/Beg.h>
-
 #include "./Act.h"
 #include <ae2f/Keys.h>
 

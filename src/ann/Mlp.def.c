@@ -71,21 +71,33 @@
 * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
 * Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
 *
-* @param outcache
+* @param outcache <ptr>
 * Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
-* Brief: @see ae2f__AnnMlpMk(), with propptr_deltastream_opt
+* Brief: @see ae2f__AnnMlpMk(), with propptr_outcache_opt
 *
-* @param weight
+* @param weight <ptr>
+* Type: ae2f_float_t[MAXWEIGHT(pprm_szvector) * ((prm_depth) - 1)]&	\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_weight_opt
 *
-* @param bias,
+* @param bias <ptr>
+* Type: ae2f_float_t[MAX(pprm_szvector) * ((prm_depth) - 1)]&		\n
+* Brief: @see ae2f__AnnMlpMk(), with propptr_bias_opt				\n
 *
-* @param learningrate
+* @param learningrate <ptr>
+* Type: const ae2f_float_t&
+* Brief: @see ae2f__AnnMlpMk(), with prm_learningrate				\n
 *
-* @param learningrate_bias
+* @param learningrate_bias <ptr>
+* Type: const ae2f_float_t&											\n
+* Brief: @see ae2f__AnnMlpMk(), with prm_learningrate_bias			\n
 *
-* @param offset
+* @param offset <ptr>
+* Type: const size_t												\n
+* Brief: @see ae2f__AnnMlpMk(), with offset_opt	\n
 *
-* @param extra
+* @param extra <ptr>
+* Type: const size_t				\n
+* Brief: @see ae2f__AnnMlpMk(), with offset_opt \n
 **/
 ae2f_MAC() _ae2f_AnnMlpMk_C(
 	ae2f_err_t* const			reterr
